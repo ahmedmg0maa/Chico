@@ -25,15 +25,15 @@ const links:{id:Tab;label:string;en:string;icon:typeof Home}[]=[
   {id:'settings',label:'الإعدادات',en:'Settings',icon:Settings2}
 ];
 const previewRows:Row[]=[
-  {id:'sample1',name:'CHICO | Marwan',rank:'Administrator',active:true,tickets:588,flags:3,rating:4.94,hours:16,lastUpdate:'2026-11-12',in_reporting:true},
-  {id:'sample2',name:'CHICO | Sherlock',rank:'SN.Helper',active:true,tickets:476,flags:5,rating:4.92,hours:14,lastUpdate:'2026-11-12',in_reporting:true},
-  {id:'sample3',name:'CHICO | Gehad',rank:'SN.Helper',active:true,tickets:443,flags:2,rating:4.96,hours:18,lastUpdate:'2026-11-11',in_reporting:true},
-  {id:'sample4',name:'CHICO | Leogirl',rank:'Helper',active:true,tickets:412,flags:7,rating:4.85,hours:12,lastUpdate:'2026-11-10',in_reporting:true},
-  {id:'sample5',name:'CHICO | Darklight',rank:'Moderator',active:true,tickets:375,flags:14,rating:4.71,hours:15,lastUpdate:'2026-11-12',in_reporting:true},
-  {id:'sample6',name:'CHICO | Elyas',rank:'Moderator',active:true,tickets:312,flags:1,rating:4.91,hours:11,lastUpdate:'2026-11-09',in_reporting:true},
-  {id:'sample7',name:'CHICO | Yoyo',rank:'Helper',active:false,tickets:null,flags:null,rating:null,hours:null,lastUpdate:null,in_reporting:false}
+  {id:'sample1',name:'Demo Admin 01',rank:'Administrator',active:true,tickets:588,flags:3,rating:4.94,hours:16,lastUpdate:'2026-11-12',in_reporting:true},
+  {id:'sample2',name:'Demo Admin 02',rank:'SN.Helper',active:true,tickets:476,flags:5,rating:4.92,hours:14,lastUpdate:'2026-11-12',in_reporting:true},
+  {id:'sample3',name:'Demo Admin 03',rank:'SN.Helper',active:true,tickets:443,flags:2,rating:4.96,hours:18,lastUpdate:'2026-11-11',in_reporting:true},
+  {id:'sample4',name:'Demo Admin 04',rank:'Helper',active:true,tickets:412,flags:7,rating:4.85,hours:12,lastUpdate:'2026-11-10',in_reporting:true},
+  {id:'sample5',name:'Demo Admin 05',rank:'Moderator',active:true,tickets:375,flags:14,rating:4.71,hours:15,lastUpdate:'2026-11-12',in_reporting:true},
+  {id:'sample6',name:'Demo Admin 06',rank:'Moderator',active:true,tickets:312,flags:1,rating:4.91,hours:11,lastUpdate:'2026-11-09',in_reporting:true},
+  {id:'sample7',name:'Demo Admin 07',rank:'Helper',active:false,tickets:null,flags:null,rating:null,hours:null,lastUpdate:null,in_reporting:false}
 ];
-const previewTrends=[{d:'الإثنين',tickets:210,flags:3},{d:'الثلاثاء',tickets:280,flags:5},{d:'الأربعاء',tickets:350,flags:2},{d:'الخميس',tickets:310,flags:7},{d:'الجمعة',tickets:410,flags:8},{d:'السبت',tickets:530,flags:5},{d:'الأحد',tickets:590,flags:6}];
+const previewTrends=[{d:'الإثنين',tickets:600,flags:12},{d:'الثلاثاء',tickets:750,flags:16},{d:'الأربعاء',tickets:900,flags:19},{d:'الخميس',tickets:820,flags:20},{d:'الجمعة',tickets:920,flags:25},{d:'السبت',tickets:1024,flags:29},{d:'الأحد',tickets:1200,flags:27}];
 
 function pretty(v:number|null|undefined,kind?:'percent'|'rating'){
  if(v===null||v===undefined||!Number.isFinite(v))return '—';
@@ -81,8 +81,8 @@ export default function ExecutiveCommand({review=false}:{review?:boolean}){
  const rows=useMemo(()=>review?previewRows:latestRows(state),[review,state]);
  const visible=useMemo(()=>rows.filter(r=>(rank==='all'||r.rank===rank)&&(r.name.toLowerCase().includes(filter.toLowerCase()))),[rows,rank,filter]);
  const summary=state?.summary;
- const active=rows.filter(r=>r.active).length;
- const covered=rows.filter(r=>r.active&&r.lastUpdate!==null).length;
+ const active=review?25:rows.filter(r=>r.active).length;
+ const covered=review?25:rows.filter(r=>r.active&&r.lastUpdate!==null).length;
  const totals=review?{tickets:6214,flags:148,rate:2.38,rating:4.78,members:27,coverage:93}:{
   tickets:summary?.tickets??null,flags:summary?.flags??null,rate:summary?.rate??null,rating:summary?.rating??null,
   members:rows.length,coverage:active?Math.round(100*covered/active):null
@@ -212,11 +212,11 @@ export default function ExecutiveCommand({review=false}:{review?:boolean}){
         ].map(({label,icon:Icon,id})=><button key={id} onClick={()=>open(id)}><Icon size={24}/><span>{label}</span></button>)}</div>
        </section>
        <section className="x-panel x-teamstatus"><CardTitle icon={Users} title="حالة الفريق" en="TEAM STATUS"/>
-        <div className="x-donut-wrap"><div className="x-donut" style={{background:'conic-gradient(#2bcc76 0 '+(rows.length?active/rows.length*100:0)+'%, #c43e47 0 100%)'}}><div><strong>{rows.length}</strong><span>إداري</span></div></div><div className="x-donut-list"><p><i className="x-dot-green"/>نشط <b>{active}</b></p><p><i className="x-dot-red"/>غير نشط <b>{rows.length-active}</b></p><p><i className="x-dot-gold"/>بتحديثات <b>{covered}</b></p></div></div>
+        <div className="x-donut-wrap"><div className="x-donut" style={{background:'conic-gradient(#2bcc76 0 '+((review?27:rows.length)?active/(review?27:rows.length)*100:0)+'%, #c43e47 0 100%)'}}><div><strong>{review?27:rows.length}</strong><span>إداري</span></div></div><div className="x-donut-list"><p><i className="x-dot-green"/>نشط <b>{active}</b></p><p><i className="x-dot-red"/>غير نشط <b>{(review?27:rows.length)-active}</b></p><p><i className="x-dot-gold"/>بتحديثات <b>{covered}</b></p></div></div>
        </section>
       </div>
       <section className="x-panel x-table-panel"><CardTitle icon={Users} title="نظرة على الفريق" en="TEAM PERFORMANCE" action={<button className="x-text-action" onClick={()=>open('team')}>كل الإداريين <ArrowLeft size={15}/></button>}/>
-       <TeamTable rows={rows.slice(0,7)} onFocus={setFocused}/>
+       <TeamTable rows={rows.slice(0,7)} onFocus={r=>{setTab('team');setFocused(r);}}/>
       </section>
      </>}
      {tab==='team'&&<>
