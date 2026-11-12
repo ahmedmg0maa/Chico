@@ -15,8 +15,10 @@ export async function GET(){
   try {
     // Empty input is guaranteed not to match a correctly configured 12+ character password.
     isPasswordCorrect('');
-  } catch {
-    console.error('[health:auth] Login credentials or session secret are not configured correctly');
+  } catch (error) {
+    const code=error instanceof Error?error.message:'unknown';
+    const category=code==='OWNER_PASSWORD_NOT_CONFIGURED'?'OWNER_PASSWORD_LENGTH':code==='SESSION_SECRET_NOT_CONFIGURED'?'SESSION_SECRET_LENGTH':'AUTH_UNKNOWN';
+    console.error('[health:auth]',category);
     return response({ok:false,error:'AUTH_NOT_READY',database:'connected'},503);
   }
   return response({ok:true,service:'CHICO Next Generation',database:'connected',auth:'ready',version:'6.0-preview'});
