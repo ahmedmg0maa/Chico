@@ -105,7 +105,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
  }catch(e){setError(e instanceof Error?e.message:'خطأ في الدخول');}finally{setWorking(false);}}
  async function logout(){if(review){setPreviewLogin(true);return;}await fetch('/api/auth',{method:'DELETE'});setAuth('out');setState(null);setPass('');}
  const open=(id:Tab)=>{setTab(id);setFocused(null);setMenu(false);setNotice('');const u=new URL(window.location.href);u.searchParams.set('tab',id);window.history.replaceState(null,'',u.pathname+u.search);};
- const simulate=(name:string)=>setNotice('هذه الحزمة مخصصة لمراجعة التصميم؛ وظيفة «'+name+'» ستظل في النظام الحالي لحين نقلها واختبارها.');
+ 
 
  const intervalRows=(state?.readings??[]).filter(r=>r.week_start===summary?.week_start).sort((a,b)=>b.to_date.localeCompare(a.to_date)||b.created_at.localeCompare(a.created_at)).slice(0,8);
  const alerts=review?[]:warnings.filter(r=>r.lastUpdate!==null||r.flagsIncomplete).slice(0,3).map(r=>({label:r.name,desc:r.flagsIncomplete?'رصيد Flags السابق غير معروف':r.flags!==null&&r.flags>7?'Flags مرتفعة — '+r.flags:r.rating!==null&&r.rating<4.8?'التقييم '+pretty(r.rating,'rating'):'تحتاج مراجعة',severity:'warning'}));
@@ -143,7 +143,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
     <nav>{links.map(({id,label,en,icon:Icon})=><button type="button" key={id} className={'x-nav-link '+(tab===id?'x-nav-active':'')} onClick={()=>open(id)}>
       <Icon size={20}/><span><b>{label}</b><small>{en}</small></span>{tab===id?<i className="x-active-chevron"/>:null}
     </button>)}</nav>
-    <div className="x-side-crest"><img src="/assets/chico-wolf-safe-512.png" alt="" /><strong>CHICO ME</strong><span>GENERAL ADMINISTRATION</span></div>
+    <div className="x-sidebar-footer"><span>ONE STATE RP</span><strong>CHICO ME</strong><small>PRIVATE MANAGEMENT</small></div>
    </aside>
    {menu&&<button className="x-mobile-scrim" aria-label="إغلاق القائمة" onClick={()=>setMenu(false)}/>}
    <main className="x-body">
@@ -162,9 +162,14 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
      {error&&<div className="x-error"><AlertTriangle size={17}/>{error}<button onClick={()=>void refresh()}>إعادة المحاولة</button></div>}
      {notice&&<div className="x-inline-notice"><Shield size={18}/>{notice}<button onClick={()=>setNotice('')}><X size={17}/></button></div>}
      {tab==='dashboard'&&<>
-      <section className="x-hero"><div className="x-hero-sparks"/><div className="x-hero-wolf"><img src="/assets/chico-wolf-safe-512.png" alt="" /></div>
-       <div className="x-hero-main"><div className="x-crown">♛</div><h1>CHICO</h1><div className="x-hero-rule"/><p>G E N E R A L &nbsp; T E A M</p><span>ELITE OPERATIONS SUITE</span></div>
-       <div className="x-hero-meta"><span>ONE STATE RP</span><strong>مركز إدارة الفريق</strong><small>قرارات أوضح · أداء أدق · قيادة أقوى</small></div>
+      <section className="x-hero x-hero-v3">
+       <div className="x-hero-identity"><div className="x-hero-identity-frame"><img src="/assets/chico-wolf-safe-512.png" alt="CHICO General Team crest"/></div></div>
+       <div className="x-hero-editorial"><span className="x-hero-eyebrow">CHICO GENERAL TEAM <i/> ONE STATE RP</span>
+        <h1>مركز قيادة الفريق</h1>
+        <p>لوحة إدارة واضحة للرتب والقراءات والتقارير</p>
+        <div className="x-hero-pill"><Shield size={15}/>CHICO ME <span>•</span> نظام الإدارة الداخلي</div>
+       </div>
+       <div className="x-hero-quickstat"><small>قائمة الفريق</small><strong>{rows.length}</strong><span>إداري مسجل بالاسم والرتبة</span></div>
       </section>
       <div className="x-kpi-grid">{kpis.map(({title,english,value,icon:Icon,tone})=><div className={'x-kpi x-tone-'+tone} key={title}><div className="x-kpi-title"><Icon size={25}/><div><b>{title}</b><small>{english}</small></div></div><strong>{value}</strong><span>{review?'لا توجد قراءات بعد': 'الأسبوع الحالي'}</span></div>)}</div>
       <section className="x-weekbanner"><div className="x-weeklabel"><CalendarDays size={26}/><div><small>WEEKLY OPERATIONS</small><strong>متابعة الأسبوع الحالي</strong></div></div><div className="x-week-center"><Star size={29}/><div><b>مؤشرات الأداء والمتابعة</b><span>{review?'الأسماء معتمدة · لا توجد إحصائيات':'المعلومات المستمدة من سجلات الفريق'}</span></div></div><div className="x-week-mini">ONE STATE · CHICO ME</div></section>
