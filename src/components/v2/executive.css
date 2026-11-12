@@ -206,3 +206,8 @@
 .chico-v2.x-light .x-op-metric{background:linear-gradient(145deg,#fffaf1,#eee4d8)}.chico-v2.x-light .x-op-metric strong{color:#764c18}.chico-v2.x-light .x-op-table td{color:#392b23}.chico-v2.x-light .x-op-check{color:#55402b}
 @media(max-width:1040px){.chico-v2 .x-op-form{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:700px){.chico-v2 .x-op-card{padding:13px}.chico-v2 .x-op-form{grid-template-columns:1fr}.chico-v2 .x-op-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.chico-v2 .x-op-metric strong{font-size:22px}}
+
+/* Original bespoke rank insignia, no emoji badges */
+.chico-v2 .x-person-icon{font-size:initial;box-shadow:none;background:linear-gradient(145deg,#191d25,#101318);border:1px solid #82663c;color:#d9bb80}
+.chico-v2 .x-person-icon svg{width:24px;height:24px;filter:drop-shadow(0 0 3px rgba(207,170,103,.18))}
+.chico-v2 .x-profile-seal svg{width:70px;height:70px}

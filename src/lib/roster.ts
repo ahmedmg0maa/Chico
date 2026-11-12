@@ -1,9 +1,35 @@
-import type { Rank } from './types';
-/** Names/ranks transcribed from the CHICO 1.1 source; no performance records. Confirm before importing. */
-export const APPROVED_ROSTER: {name:string;rank:Rank}[] = [
-  {name:'General',rank:'Responsible'},
-  {name:'Marwan',rank:'Administrator'},{name:'Bashar',rank:'Administrator'},{name:'Nar',rank:'Administrator'},
-  ...['Alhassan','Bish','Gambul','Haitham','Sundus','Sirbos','Darklight','Zeroo','Dark','Elyas','Bnammo'].map(name=>({name,rank:'Moderator' as const})),
-  ...['Sherlock','Gaby','Moody','Gehad'].map(name=>({name,rank:'SN.Helper' as const})),
-  ...['Abdullahh','Alrawi','Yoyo','Rey','Mohamad','Kararr','Coconot','Leogirl'].map(name=>({name,rank:'Helper' as const}))
+import type {Rank} from './types';
+/** Approved CHICO roster. Names, ranks, levels only. No synthetic metrics. */
+export const APPROVED_ROSTER: ReadonlyArray<{name:string;rank:Rank;admin_level:1|2|3}> = [
+ {name:'Alajmi',rank:'Helper' as Rank,admin_level:1},
+ {name:'Alkhaldy',rank:'Helper' as Rank,admin_level:1},
+ {name:'Bieso',rank:'Helper' as Rank,admin_level:1},
+ {name:'Coconot',rank:'Helper' as Rank,admin_level:1},
+ {name:'Gaby',rank:'SN.Helper' as Rank,admin_level:1},
+ {name:'Gehad',rank:'SN.Helper' as Rank,admin_level:1},
+ {name:'Kararr',rank:'Helper' as Rank,admin_level:1},
+ {name:'Leogirl',rank:'Helper' as Rank,admin_level:1},
+ {name:'Mohamad',rank:'Helper' as Rank,admin_level:1},
+ {name:'Moody',rank:'SN.Helper' as Rank,admin_level:1},
+ {name:'Pot',rank:'Helper' as Rank,admin_level:1},
+ {name:'Rare',rank:'Helper' as Rank,admin_level:1},
+ {name:'Rey',rank:'Helper' as Rank,admin_level:1},
+ {name:'Shahd',rank:'Helper' as Rank,admin_level:1},
+ {name:'Sherlock',rank:'SN.Helper' as Rank,admin_level:1},
+ {name:'Yoyo',rank:'Helper' as Rank,admin_level:1},
+ {name:'Me',rank:'Helper' as Rank,admin_level:1},
+ {name:'Alhassan',rank:'Moderator' as Rank,admin_level:2},
+ {name:'Bish',rank:'Moderator' as Rank,admin_level:2},
+ {name:'Bnammoo',rank:'Moderator' as Rank,admin_level:2},
+ {name:'Dark',rank:'Moderator' as Rank,admin_level:2},
+ {name:'Darklight',rank:'Moderator' as Rank,admin_level:2},
+ {name:'Elyas',rank:'Moderator' as Rank,admin_level:2},
+ {name:'Gambul',rank:'Moderator' as Rank,admin_level:2},
+ {name:'Haitham',rank:'Moderator' as Rank,admin_level:2},
+ {name:'Sirbos',rank:'Moderator' as Rank,admin_level:2},
+ {name:'Zeroo',rank:'Moderator' as Rank,admin_level:2},
+ {name:'Marwan',rank:'Administrator' as Rank,admin_level:3},
+ {name:'Bashar',rank:'Administrator' as Rank,admin_level:3},
+ {name:'Nar',rank:'Administrator' as Rank,admin_level:3},
+ {name:'General',rank:'Responsible' as Rank,admin_level:3},
 ];

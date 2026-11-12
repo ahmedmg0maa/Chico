@@ -10,10 +10,11 @@ import {
 } from 'lucide-react';
 import type {Admin,Reading,State,Rank} from '@/lib/types';
 import ExecutiveOperations,{ExecutiveTeamManager} from './ExecutiveOperations';
+import {APPROVED_ROSTER} from '@/lib/roster';
 
 export type Tab='dashboard'|'team'|'updates'|'excel'|'server'|'reports'|'weeks'|'alerts'|'settings';
 type Auth='checking'|'out'|'in';
-type Row={id:string;name:string;rank:Rank;active:boolean;tickets:number|null;flags:number|null;rating:number|null;hours:number|null;lastUpdate:string|null;in_reporting:boolean;flagsIncomplete?:boolean;periodFrom?:string|null};
+type Row={id:string;name:string;rank:Rank;active:boolean;tickets:number|null;flags:number|null;rating:number|null;hours:number|null;lastUpdate:string|null;in_reporting:boolean;admin_level?:number|null;flagsIncomplete?:boolean;periodFrom?:string|null};
 const links:{id:Tab;label:string;en:string;icon:typeof Home}[]=[
   {id:'dashboard',label:'مركز القيادة',en:'Command Center',icon:LayoutDashboard},
   {id:'team',label:'الفريق',en:'Team Management',icon:Users},
@@ -25,16 +26,7 @@ const links:{id:Tab;label:string;en:string;icon:typeof Home}[]=[
   {id:'alerts',label:'التنبيهات والمتابعة',en:'Tasks & Alerts',icon:ShieldAlert},
   {id:'settings',label:'الإعدادات',en:'Settings',icon:Settings2}
 ];
-const previewRows:Row[]=[
-  {id:'sample1',name:'Demo Admin 01',rank:'Administrator',active:true,tickets:588,flags:3,rating:4.94,hours:16,lastUpdate:'2026-11-12',in_reporting:true},
-  {id:'sample2',name:'Demo Admin 02',rank:'SN.Helper',active:true,tickets:476,flags:5,rating:4.92,hours:14,lastUpdate:'2026-11-12',in_reporting:true},
-  {id:'sample3',name:'Demo Admin 03',rank:'SN.Helper',active:true,tickets:443,flags:2,rating:4.96,hours:18,lastUpdate:'2026-11-11',in_reporting:true},
-  {id:'sample4',name:'Demo Admin 04',rank:'Helper',active:true,tickets:412,flags:7,rating:4.85,hours:12,lastUpdate:'2026-11-10',in_reporting:true},
-  {id:'sample5',name:'Demo Admin 05',rank:'Moderator',active:true,tickets:375,flags:14,rating:4.71,hours:15,lastUpdate:'2026-11-12',in_reporting:true},
-  {id:'sample6',name:'Demo Admin 06',rank:'Moderator',active:true,tickets:312,flags:1,rating:4.91,hours:11,lastUpdate:'2026-11-09',in_reporting:true},
-  {id:'sample7',name:'Demo Admin 07',rank:'Helper',active:false,tickets:null,flags:null,rating:null,hours:null,lastUpdate:null,in_reporting:false}
-];
-const previewTrends=[{d:'الإثنين',tickets:600,flags:12},{d:'الثلاثاء',tickets:750,flags:16},{d:'الأربعاء',tickets:900,flags:19},{d:'الخميس',tickets:820,flags:20},{d:'الجمعة',tickets:920,flags:25},{d:'السبت',tickets:1024,flags:29},{d:'الأحد',tickets:1200,flags:27}];
+const previewRows:Row[]=APPROVED_ROSTER.map((r,i)=>({id:'roster-'+i,name:r.name,rank:r.rank,admin_level:r.admin_level,active:true,tickets:null,flags:null,rating:null,hours:null,lastUpdate:null,in_reporting:true}));
 
 function pretty(v:number|null|undefined,kind?:'percent'|'rating'){
  if(v===null||v===undefined||!Number.isFinite(v))return '—';
@@ -53,13 +45,13 @@ function latestRows(state:State|null):Row[]{
  });
 }
 function normalizedGraph(series:number[],max:number){return series.map((n,i)=>(36+i*88)+','+(174-Math.max(0,n)/Math.max(1,max)*126)).join(' ');}
-function emblem(rank:string){return rank==='Responsible'||rank==='Administrator'?'♛':rank==='Moderator'?'◆':rank==='SN.Helper'?'✦':'✧';}
+function RankMark({rank}:{rank:Rank}){const leader=rank==='Responsible'||rank==='Administrator';return <svg viewBox="0 0 48 48" width="30" height="30" fill="none" role="img" aria-label={rank}><path d="M24 2 42 12v24L24 46 6 36V12Z" stroke="currentColor" strokeWidth="1.8"/><path d="M12 15 24 8l12 7v18l-12 7-12-7Z" stroke="currentColor" opacity=".38"/>{leader?<path d="m11 20 6 6 7-12 7 12 6-6-3 14H14Z" fill="currentColor"/>:rank==='Moderator'?<path d="M24 11 34 22l-10 15-10-15Z" fill="currentColor"/>:rank==='SN.Helper'?<path d="m24 10 4 10 10 4-10 4-4 10-4-10-10-4 10-4Z" fill="currentColor"/>:<path d="m24 10 4.5 9.5 10.5 1.5-7.5 8 2 11-9.5-5-9.5 5 2-11-7.5-8 10.5-1.5Z" fill="currentColor"/>}</svg>}
 function statusFor(r:Row){return !r.active?'غير نشط':(r.rating!==null&&r.rating<4.8)||(r.flags!==null&&r.flags>7)?'متابعة':r.flagsIncomplete?'رصيد Flags غير مكتمل':!r.lastUpdate?'بلا تحديث':'نشط';}
 function CardTitle({icon:Icon,title,en,action}:{icon:typeof Home;title:string;en:string;action?:React.ReactNode}){
  return <div className="x-card-title"><div className="x-section-heading"><Icon size={19}/><span>{title}</span><small>{en}</small></div>{action}</div>;
 }
 function Brand({small=false}:{small?:boolean}){return <div className={'x-brand '+(small?'x-brand-small':'')}>
- <div className="x-brand-wolf"><img src="/assets/chico-wolf-safe-192.png" alt="شعار الذئب الرسمي لفريق CHICO"/></div>
+ <div className="x-brand-wolf"><img src="/assets/chico-wolf-safe-512.png" alt="شعار الذئب الرسمي لفريق CHICO"/></div>
  <div className="x-brand-words"><b>CHICO</b><small>G E N E R A L &nbsp; T E A M</small></div>
  </div>;}
 
@@ -82,15 +74,12 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
  const rows=useMemo(()=>review?previewRows:latestRows(state),[review,state]);
  const visible=useMemo(()=>rows.filter(r=>(rank==='all'||r.rank===rank)&&(r.name.toLowerCase().includes(filter.toLowerCase()))),[rows,rank,filter]);
  const summary=state?.summary;
- const active=review?25:rows.filter(r=>r.active).length;
- const covered=review?25:rows.filter(r=>r.active&&r.lastUpdate!==null).length;
- const totals=review?{tickets:6214,flags:148,rate:2.38,rating:4.78,members:27,coverage:93}:{
-  tickets:summary?.tickets??null,flags:summary?.flags??null,rate:summary?.rate??null,rating:summary?.rating??null,
-  members:rows.length,coverage:active?Math.round(100*covered/active):null
- };
- const top=review?previewRows.filter(r=>r.rank==='Helper'||r.rank==='SN.Helper').sort((a,b)=>(b.tickets??0)-(a.tickets??0)).slice(0,3):rows.filter(r=>(r.rank==='Helper'||r.rank==='SN.Helper')&&r.tickets!==null).sort((a,b)=>(b.tickets??0)-(a.tickets??0)).slice(0,3);
+ const active=rows.filter(r=>r.active).length;
+ const covered=rows.filter(r=>r.active&&r.lastUpdate!==null).length;
+ const totals={tickets:review?null:summary?.tickets??null,flags:review?null:summary?.flags??null,rate:review?null:summary?.rate??null,rating:review?null:summary?.rating??null,members:rows.length,coverage:active?Math.round(100*covered/active):null};
+ const top=rows.filter(r=>(r.rank==='Helper'||r.rank==='SN.Helper')&&r.tickets!==null).sort((a,b)=>(b.tickets??0)-(a.tickets??0)).slice(0,3);
  const warnings=rows.filter(r=>r.flagsIncomplete||(r.flags!==null&&r.flags>7)||(r.rating!==null&&r.rating<4.8)||(!r.lastUpdate&&r.active));
- const timeLabel=review?'أسبوع تجريبي':summary?.week_start||'الأسبوع الحالي';
+ const timeLabel=review?'القائمة المعتمدة':summary?.week_start||'الأسبوع الحالي';
  async function refresh(){
   if(review)return;
   try{
@@ -114,18 +103,9 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
  async function logout(){if(review){setPreviewLogin(true);return;}await fetch('/api/auth',{method:'DELETE'});setAuth('out');setState(null);setPass('');}
  const open=(id:Tab)=>{setTab(id);setFocused(null);setMenu(false);setNotice('');const u=new URL(window.location.href);u.searchParams.set('tab',id);window.history.replaceState(null,'',u.pathname+u.search);};
  const simulate=(name:string)=>setNotice('هذه الحزمة مخصصة لمراجعة التصميم؛ وظيفة «'+name+'» ستظل في النظام الحالي لحين نقلها واختبارها.');
- const chartSeries=review?previewTrends:(()=>{
-  const dates=Array.from({length:7},(_,i)=>{const d=new Date((summary?.week_start||'2026-11-09')+'T00:00:00Z');d.setUTCDate(d.getUTCDate()+i);return d.toISOString().slice(0,10);});
-  return dates.map((d,i)=>({d:['الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت','الأحد'][i],tickets:state?.readings.filter(r=>r.to_date===d).reduce((s,r)=>s+(r.tickets_delta??0),0)??0,flags:state?.readings.filter(r=>r.to_date===d).reduce((s,r)=>s+(r.flags_delta??0),0)??0}));
- })();
- const maxTickets=Math.max(...chartSeries.map(x=>x.tickets),1),maxFlags=Math.max(...chartSeries.map(x=>x.flags),1);
- const hasGraph=review;
+
  const intervalRows=(state?.readings??[]).filter(r=>r.week_start===summary?.week_start).sort((a,b)=>b.to_date.localeCompare(a.to_date)||b.created_at.localeCompare(a.created_at)).slice(0,8);
- const alerts=review?[
-  {label:'ارتفاع Flags',desc:'إداري تجاوز حد المتابعة الأسبوعي',severity:'danger'},
-  {label:'تحديثات ناقصة',desc:'مراجعة الفترة غير المسجلة',severity:'warning'},
-  {label:'تقييم أقل من 4.80',desc:'متابعة جودة الأداء',severity:'info'}
- ]:warnings.slice(0,3).map(r=>({label:r.name,desc:r.flagsIncomplete?'رصيد Flags السابق غير معروف':r.flags!==null&&r.flags>7?'Flags مرتفعة — '+r.flags:r.rating!==null&&r.rating<4.8?'التقييم '+pretty(r.rating,'rating'):'لم يُسجّل تحديث',severity:'warning'}));
+ const alerts=review?[]:warnings.filter(r=>r.lastUpdate!==null||r.flagsIncomplete).slice(0,3).map(r=>({label:r.name,desc:r.flagsIncomplete?'رصيد Flags السابق غير معروف':r.flags!==null&&r.flags>7?'Flags مرتفعة — '+r.flags:r.rating!==null&&r.rating<4.8?'التقييم '+pretty(r.rating,'rating'):'تحتاج مراجعة',severity:'warning'}));
  const kpis=[
   {title:'إجمالي الفريق',english:'Total Staff',value:pretty(totals.members),icon:Users,tone:'gold'},
   {title:'تذاكر الأسبوع',english:'Weekly Tickets',value:pretty(totals.tickets),icon:Ticket,tone:'gold'},
@@ -136,7 +116,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
  ];
  const isLogin=(auth!=='in')||previewLogin;
  if(isLogin)return <div className={'chico-v2 x-auth-scene '+(light?'x-light':'')} dir="rtl">
-  {review&&<div className="x-review-ribbon">معاينة تصميم فقط · لا توجد بيانات حقيقية</div>}
+  {review&&<div className="x-review-ribbon">معاينة أسماء الفريق المعتمدة · بدون إحصائيات</div>}
   <div className="x-auth-frame"><div className="x-auth-art"><div className="x-auth-art-inner"><div className="x-auth-crown">♛</div><Brand/><p>ONE STATE RP · CHICO ME</p><span>ELITE ADMINISTRATION SYSTEM</span></div></div>
    <div className="x-auth-form">
     <div className="x-auth-mini"><span><span className="x-live-dot"/>PRIVATE ADMINISTRATION</span><button type="button" onClick={()=>setLight(!light)} aria-label="تغيير المظهر">{light?<Moon size={17}/>:<Sun size={17}/>}</button></div>
@@ -151,7 +131,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
    </div></div></div>;
 
  return <div className={'chico-v2 '+(light?'x-light':'')} dir="rtl">
-  {review&&<div className="x-review-ribbon">معاينة بصرية تجريبية · الأرقام والأسماء التوضيحية ليست بيانات CHICO الفعلية ولا تُحفظ</div>}
+  {review&&<div className="x-review-ribbon">قائمة الفريق من Excel المعتمد · لا توجد إحصائيات مسجلة · المعاينة غير متصلة بالحفظ</div>}
   <div className="x-layout">
    <aside className={'x-sidebar '+(menu?'x-sidebar-open':'')} aria-label="القائمة الرئيسية">
     <Brand small/>
@@ -160,7 +140,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
     <nav>{links.map(({id,label,en,icon:Icon})=><button type="button" key={id} className={'x-nav-link '+(tab===id?'x-nav-active':'')} onClick={()=>open(id)}>
       <Icon size={20}/><span><b>{label}</b><small>{en}</small></span>{tab===id?<i className="x-active-chevron"/>:null}
     </button>)}</nav>
-    <div className="x-side-crest"><img src="/assets/chico-wolf-safe-192.png" alt="" /><strong>CHICO ME</strong><span>GENERAL ADMINISTRATION</span></div>
+    <div className="x-side-crest"><img src="/assets/chico-wolf-safe-512.png" alt="" /><strong>CHICO ME</strong><span>GENERAL ADMINISTRATION</span></div>
    </aside>
    {menu&&<button className="x-mobile-scrim" aria-label="إغلاق القائمة" onClick={()=>setMenu(false)}/>}
    <main className="x-body">
@@ -179,26 +159,18 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
      {error&&<div className="x-error"><AlertTriangle size={17}/>{error}<button onClick={()=>void refresh()}>إعادة المحاولة</button></div>}
      {notice&&<div className="x-inline-notice"><Shield size={18}/>{notice}<button onClick={()=>setNotice('')}><X size={17}/></button></div>}
      {tab==='dashboard'&&<>
-      <section className="x-hero"><div className="x-hero-sparks"/><div className="x-hero-wolf"><img src="/assets/chico-wolf-safe-192.png" alt="" /></div>
+      <section className="x-hero"><div className="x-hero-sparks"/><div className="x-hero-wolf"><img src="/assets/chico-wolf-safe-512.png" alt="" /></div>
        <div className="x-hero-main"><div className="x-crown">♛</div><h1>CHICO</h1><div className="x-hero-rule"/><p>G E N E R A L &nbsp; T E A M</p><span>ELITE OPERATIONS SUITE</span></div>
        <div className="x-hero-meta"><span>ONE STATE RP</span><strong>مركز إدارة الفريق</strong><small>قرارات أوضح · أداء أدق · قيادة أقوى</small></div>
       </section>
-      <div className="x-kpi-grid">{kpis.map(({title,english,value,icon:Icon,tone})=><div className={'x-kpi x-tone-'+tone} key={title}><div className="x-kpi-title"><Icon size={25}/><div><b>{title}</b><small>{english}</small></div></div><strong>{value}</strong><span>{review?'مثال توضيحي': 'الأسبوع الحالي'}</span></div>)}</div>
-      <section className="x-weekbanner"><div className="x-weeklabel"><CalendarDays size={26}/><div><small>WEEKLY OPERATIONS</small><strong>متابعة الأسبوع الحالي</strong></div></div><div className="x-week-center"><Star size={29}/><div><b>مؤشرات الأداء والمتابعة</b><span>{review?'بيانات تجريبية لعرض التكوين':'المعلومات المستمدة من سجلات الفريق'}</span></div></div><div className="x-week-mini">ONE STATE · CHICO ME</div></section>
+      <div className="x-kpi-grid">{kpis.map(({title,english,value,icon:Icon,tone})=><div className={'x-kpi x-tone-'+tone} key={title}><div className="x-kpi-title"><Icon size={25}/><div><b>{title}</b><small>{english}</small></div></div><strong>{value}</strong><span>{review?'لا توجد قراءات بعد': 'الأسبوع الحالي'}</span></div>)}</div>
+      <section className="x-weekbanner"><div className="x-weeklabel"><CalendarDays size={26}/><div><small>WEEKLY OPERATIONS</small><strong>متابعة الأسبوع الحالي</strong></div></div><div className="x-week-center"><Star size={29}/><div><b>مؤشرات الأداء والمتابعة</b><span>{review?'الأسماء معتمدة · لا توجد إحصائيات':'المعلومات المستمدة من سجلات الفريق'}</span></div></div><div className="x-week-mini">ONE STATE · CHICO ME</div></section>
       <div className="x-triple">
        <section className="x-panel x-alerts-panel"><CardTitle icon={Bell} title="تنبيهات القيادة" en="LEADERSHIP ALERTS" action={<button className="x-text-action" onClick={()=>open('alerts')}>عرض الكل <ArrowLeft size={14}/></button>}/>
         {alerts.length?alerts.map((a,i)=><button className={'x-alert x-alert-'+a.severity} key={i} onClick={()=>open('alerts')}><div><b>{a.label}</b><span>{a.desc}</span></div><AlertTriangle size={18}/></button>):<div className="x-empty"><CheckCircle2 size={24}/><b>لا توجد تنبيهات مسجلة</b><p>تنبيهات الأداء تظهر هنا تلقائيًا</p></div>}
        </section>
-       <section className="x-panel x-chart-panel"><CardTitle icon={TrendingUp} title={review?"اتجاه الأداء الأسبوعي":"القراءات حسب نطاق التغطية"} en={review?"WEEKLY PERFORMANCE":"RECORDED PERIODS"}/>
-        {hasGraph?<div className="x-chart-area"><svg viewBox="0 0 650 220" role="img" aria-label="رسم اتجاه Tickets وFlags خلال الأسبوع" preserveAspectRatio="none">
-          <defs><linearGradient id="x-goldgrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#e4b451" stopOpacity=".35"/><stop offset="1" stopColor="#e4b451" stopOpacity="0"/></linearGradient></defs>
-          {[48,90,132,174].map(y=><line key={y} x1="36" y1={y} x2="592" y2={y} stroke="currentColor" strokeOpacity=".13"/>)}
-          <polyline points={'36,174 '+normalizedGraph(chartSeries.map(x=>x.tickets),maxTickets)+' 564,174'} fill="url(#x-goldgrad)" stroke="none"/>
-          <polyline points={normalizedGraph(chartSeries.map(x=>x.tickets),maxTickets)} fill="none" stroke="#efba57" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"/>
-          <polyline points={normalizedGraph(chartSeries.map(x=>x.flags),maxFlags)} fill="none" stroke="#d9424b" strokeWidth="2.7" strokeLinecap="round" strokeLinejoin="round"/>
-          {chartSeries.map((v,i)=><circle key={i} cx={36+i*88} cy={174-v.tickets/maxTickets*126} r="4" fill="#ffe1a0" stroke="#a97922" strokeWidth="1.5"/>)}
-          {chartSeries.map((v,i)=><text key={'t'+i} x={36+i*88} y="205" fill="currentColor" opacity=".6" textAnchor="middle" fontSize="12">{v.d.slice(0,3)}</text>)}
-         </svg><div className="x-chart-legend"><span><i className="x-legend-gold"/>Tickets</span><span><i className="x-legend-red"/>Flags</span><small>كل سلسلة بمقياس مستقل</small></div></div>:intervalRows.length?<div className="x-period-list">
+       <section className="x-panel x-chart-panel"><CardTitle icon={TrendingUp} title="القراءات حسب نطاق التغطية" en="RECORDED PERIODS"/>
+        {intervalRows.length?<div className="x-period-list">
           {intervalRows.map(r=><div className="x-period-row" key={r.id}>
            <b dir="auto">{r.admin_name}</b>
            <span>{r.from_date===r.to_date?r.to_date:r.from_date+' — '+r.to_date}</span>
@@ -209,7 +181,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
          </div>:<div className="x-empty"><Activity size={26}/><b>لا توجد قراءات مسجلة لهذا الأسبوع</b><p>ستظهر الفترة الحقيقية لكل قراءة بعد تسجيلها، دون أرقام افتراضية</p></div>}
        </section>
        <section className="x-panel x-leaders-panel"><CardTitle icon={Trophy} title="أفضل الإداريين" en="TOP PERFORMERS" action={<button className="x-text-action" onClick={()=>open('team')}>الفريق <ArrowLeft size={14}/></button>}/>
-        {top.length?top.map((r,i)=><button className="x-leader" key={r.id} onClick={()=>{setFocused(r);open('team');setFocused(r);}}><span className={'x-place x-place-'+i}>{i+1}</span><span className="x-person-icon">{emblem(r.rank)}</span><span className="x-leader-name"><b>{r.name}</b><small>{r.rank}</small></span><strong>{pretty(r.tickets)}</strong></button>):<div className="x-empty"><Trophy size={26}/><b>لا يوجد ترتيب متاح</b><p>يبدأ الترتيب بعد تسجيل أداء المؤهلين</p></div>}
+        {top.length?top.map((r,i)=><button className="x-leader" key={r.id} onClick={()=>{setFocused(r);open('team');setFocused(r);}}><span className={'x-place x-place-'+i}>{i+1}</span><span className="x-person-icon"><RankMark rank={r.rank}/></span><span className="x-leader-name"><b>{r.name}</b><small>{r.rank}</small></span><strong>{pretty(r.tickets)}</strong></button>):<div className="x-empty"><Trophy size={26}/><b>لا يوجد ترتيب متاح</b><p>يبدأ الترتيب بعد تسجيل أداء المؤهلين</p></div>}
         <p className="x-panel-footnote">الترتيب يستبعد رتبة Moderator والرتب القيادية</p>
        </section>
       </div>
@@ -222,7 +194,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
         ].map(({label,icon:Icon,id})=><button key={id} onClick={()=>open(id)}><Icon size={24}/><span>{label}</span></button>)}</div>
        </section>
        <section className="x-panel x-teamstatus"><CardTitle icon={Users} title="حالة الفريق" en="TEAM STATUS"/>
-        <div className="x-donut-wrap"><div className="x-donut" style={{background:'conic-gradient(#2bcc76 0 '+((review?27:rows.length)?active/(review?27:rows.length)*100:0)+'%, #c43e47 0 100%)'}}><div><strong>{review?27:rows.length}</strong><span>إداري</span></div></div><div className="x-donut-list"><p><i className="x-dot-green"/>نشط <b>{active}</b></p><p><i className="x-dot-red"/>غير نشط <b>{(review?27:rows.length)-active}</b></p><p><i className="x-dot-gold"/>بتحديثات <b>{covered}</b></p></div></div>
+        <div className="x-donut-wrap"><div className="x-donut" style={{background:'conic-gradient(#2bcc76 0 '+((rows.length)?active/(rows.length)*100:0)+'%, #c43e47 0 100%)'}}><div><strong>{rows.length}</strong><span>إداري</span></div></div><div className="x-donut-list"><p><i className="x-dot-green"/>نشط <b>{active}</b></p><p><i className="x-dot-red"/>غير نشط <b>{(rows.length)-active}</b></p><p><i className="x-dot-gold"/>بتحديثات <b>{covered}</b></p></div></div>
        </section>
       </div>
       <section className="x-panel x-table-panel"><CardTitle icon={Users} title="نظرة على الفريق" en="TEAM PERFORMANCE" action={<button className="x-text-action" onClick={()=>open('team')}>كل الإداريين <ArrowLeft size={15}/></button>}/>
@@ -232,14 +204,14 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
      {tab==='team'&&<>
       <section className="x-titleband"><span className="x-kicker">CHICO / TEAM DIRECTORY</span><h1>قيادة الفريق والإداريين</h1><p>الأسماء والرتب والأداء في مكان واحد، مع الوصول المباشر لكل ملف إداري.</p></section>
       <div className="x-kpi-grid x-team-kpis">{[
-       {name:'إجمالي الإداريين',val:review?27:rows.length,icon:Users},{name:'النشطون',val:active,icon:CheckCircle2},{name:'بلا تحديث هذا الأسبوع',val:rows.filter(r=>r.active&&!r.lastUpdate).length,icon:Clock3},{name:'حالات تحتاج متابعة',val:warnings.length,icon:AlertTriangle}
+       {name:'إجمالي الإداريين',val:rows.length,icon:Users},{name:'النشطون',val:active,icon:CheckCircle2},{name:'بلا تحديث هذا الأسبوع',val:rows.filter(r=>r.active&&!r.lastUpdate).length,icon:Clock3},{name:'حالات تحتاج متابعة',val:warnings.length,icon:AlertTriangle}
       ].map(x=><div className="x-kpi" key={x.name}><div className="x-kpi-title"><x.icon size={23}/><b>{x.name}</b></div><strong>{x.val}</strong></div>)}</div>
       <ExecutiveTeamManager state={state} review={review} onRefresh={refresh}/>
       <section className="x-panel x-directory"><CardTitle icon={Users} title="سجل الإداريين" en="TEAM DIRECTORY"/>
        <div className="x-filterbar"><div className="x-filtersearch"><Search size={18}/><input placeholder="ابحث بالاسم…" value={filter} onChange={e=>setFilter(e.target.value)}/></div><select value={rank} onChange={e=>setRank(e.target.value)} aria-label="تصفية حسب الرتبة"><option value="all">جميع الرتب</option><option value="Administrator">Administrator</option><option value="Moderator">Moderator</option><option value="SN.Helper">SN.Helper</option><option value="Helper">Helper</option></select><span className="x-table-count">{visible.length} إداري</span></div>
        <TeamTable rows={visible} onFocus={setFocused}/>
       </section>
-      {focused&&<div className="x-detail-scrim" onMouseDown={e=>{if(e.target===e.currentTarget)setFocused(null)}}><aside className="x-detail-card" role="dialog" aria-modal="true" aria-label="ملف إداري"><button className="x-detail-close" onClick={()=>setFocused(null)}><X size={20}/></button><div className="x-profile-seal">{emblem(focused.rank)}</div><span className="x-kicker">ADMINISTRATOR PROFILE</span><h2>{focused.name}</h2><p>{focused.rank} · {focused.active?'نشط':'غير نشط'}</p><div className="x-profile-stats"><div><b>{pretty(focused.tickets)}</b><small>Tickets</small></div><div><b>{pretty(focused.flags)}</b><small>Flags</small></div><div><b>{pretty(focused.rating,'rating')}</b><small>Rating</small></div><div><b>{pretty(focused.hours)}</b><small>TIME</small></div></div><div className="x-detail-foot"><CalendarDays size={17}/> آخر قراءة: {focused.lastUpdate?(focused.periodFrom&&focused.periodFrom!==focused.lastUpdate?focused.periodFrom+' — ':'')+focused.lastUpdate:'غير مسجل'}</div><p className="x-muted">صفحة معاينة تفصيلية، وسيُستكمل سجل الرتب والمناوبات في حزمة إدارة الفريق.</p></aside></div>}
+      {focused&&<div className="x-detail-scrim" onMouseDown={e=>{if(e.target===e.currentTarget)setFocused(null)}}><aside className="x-detail-card" role="dialog" aria-modal="true" aria-label="ملف إداري"><button className="x-detail-close" onClick={()=>setFocused(null)}><X size={20}/></button><div className="x-profile-seal"><RankMark rank={focused.rank}/></div><span className="x-kicker">ADMINISTRATOR PROFILE</span><h2>{focused.name}</h2><p>{focused.rank} · {focused.active?'نشط':'غير نشط'}</p><div className="x-profile-stats"><div><b>{pretty(focused.tickets)}</b><small>Tickets</small></div><div><b>{pretty(focused.flags)}</b><small>Flags</small></div><div><b>{pretty(focused.rating,'rating')}</b><small>Rating</small></div><div><b>{pretty(focused.hours)}</b><small>TIME</small></div></div><div className="x-detail-foot"><CalendarDays size={17}/> آخر قراءة: {focused.lastUpdate?(focused.periodFrom&&focused.periodFrom!==focused.lastUpdate?focused.periodFrom+' — ':'')+focused.lastUpdate:'غير مسجل'}</div><p className="x-muted">صفحة معاينة تفصيلية، وسيُستكمل سجل الرتب والمناوبات في حزمة إدارة الفريق.</p></aside></div>}
      </>}
      {tab!=='dashboard'&&tab!=='team'&&<ExecutiveOperations tab={tab} state={state} review={review} onRefresh={refresh}/>}
 
@@ -252,5 +224,5 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
 
 function TeamTable({rows,onFocus}:{rows:Row[];onFocus:(r:Row)=>void}){
  if(!rows.length)return <div className="x-empty"><Users size={30}/><b>لا توجد أسماء مطابقة</b><p>لا نعرض أسماء أو إحصائيات وهمية في الوضع الحقيقي.</p></div>;
- return <div className="x-table-scroll"><table className="x-table"><thead><tr><th>#</th><th>الإداري</th><th>الرتبة</th><th>Tickets</th><th>Flags</th><th>Rating</th><th>TIME</th><th>الحالة</th><th>الملف</th></tr></thead><tbody>{rows.map((r,i)=><tr key={r.id}><td className="x-num"> {String(i+1).padStart(2,'0')} </td><td><div className="x-table-name"><span className="x-person-icon">{emblem(r.rank)}</span><b dir="auto">{r.name}</b></div></td><td><span className="x-ranktag">{r.rank}</span></td><td className="x-num">{pretty(r.tickets)}</td><td><span className={'x-cell-badge '+(r.flags===null?'x-neutral':r.flags>7?'x-critical':r.flags>5?'x-warning':'x-good')}>{pretty(r.flags)}</span></td><td><span className={'x-cell-badge '+(r.rating===null?'x-neutral':r.rating<4.8?'x-critical':'x-good')}>{pretty(r.rating,'rating')}</span></td><td className="x-num">{pretty(r.hours)}</td><td><span className={'x-status-label '+(!r.active?'x-inactive':statusFor(r)==='متابعة'||r.flagsIncomplete?'x-needs-attention':'')}>{statusFor(r)}</span></td><td><button className="x-row-button" onClick={()=>onFocus(r)} aria-label={'فتح ملف '+r.name}><ArrowUpRight size={17}/></button></td></tr>)}</tbody></table></div>;
+ return <div className="x-table-scroll"><table className="x-table"><thead><tr><th>#</th><th>الإداري</th><th>الرتبة</th><th>Tickets</th><th>Flags</th><th>Rating</th><th>TIME</th><th>الحالة</th><th>الملف</th></tr></thead><tbody>{rows.map((r,i)=><tr key={r.id}><td className="x-num"> {String(i+1).padStart(2,'0')} </td><td><div className="x-table-name"><span className="x-person-icon"><RankMark rank={r.rank}/></span><b dir="auto">{r.name}</b></div></td><td><span className="x-ranktag">{r.rank}</span></td><td className="x-num">{pretty(r.tickets)}</td><td><span className={'x-cell-badge '+(r.flags===null?'x-neutral':r.flags>7?'x-critical':r.flags>5?'x-warning':'x-good')}>{pretty(r.flags)}</span></td><td><span className={'x-cell-badge '+(r.rating===null?'x-neutral':r.rating<4.8?'x-critical':'x-good')}>{pretty(r.rating,'rating')}</span></td><td className="x-num">{pretty(r.hours)}</td><td><span className={'x-status-label '+(!r.active?'x-inactive':statusFor(r)==='متابعة'||r.flagsIncomplete?'x-needs-attention':'')}>{statusFor(r)}</span></td><td><button className="x-row-button" onClick={()=>onFocus(r)} aria-label={'فتح ملف '+r.name}><ArrowUpRight size={17}/></button></td></tr>)}</tbody></table></div>;
 }
