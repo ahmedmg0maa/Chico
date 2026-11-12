@@ -222,7 +222,7 @@ export default function ExecutiveCommand({review=false}:{review?:boolean}){
      {tab==='team'&&<>
       <section className="x-titleband"><span className="x-kicker">CHICO / TEAM DIRECTORY</span><h1>قيادة الفريق والإداريين</h1><p>الأسماء والرتب والأداء في مكان واحد، مع الوصول المباشر لكل ملف إداري.</p></section>
       <div className="x-kpi-grid x-team-kpis">{[
-       {name:'إجمالي الإداريين',val:rows.length,icon:Users},{name:'النشطون',val:active,icon:CheckCircle2},{name:'بلا تحديث هذا الأسبوع',val:rows.filter(r=>r.active&&!r.lastUpdate).length,icon:Clock3},{name:'حالات تحتاج متابعة',val:warnings.length,icon:AlertTriangle}
+       {name:'إجمالي الإداريين',val:review?27:rows.length,icon:Users},{name:'النشطون',val:active,icon:CheckCircle2},{name:'بلا تحديث هذا الأسبوع',val:rows.filter(r=>r.active&&!r.lastUpdate).length,icon:Clock3},{name:'حالات تحتاج متابعة',val:warnings.length,icon:AlertTriangle}
       ].map(x=><div className="x-kpi" key={x.name}><div className="x-kpi-title"><x.icon size={23}/><b>{x.name}</b></div><strong>{x.val}</strong></div>)}</div>
       <section className="x-panel x-directory"><CardTitle icon={Users} title="سجل الإداريين" en="TEAM DIRECTORY"/>
        <div className="x-filterbar"><div className="x-filtersearch"><Search size={18}/><input placeholder="ابحث بالاسم…" value={filter} onChange={e=>setFilter(e.target.value)}/></div><select value={rank} onChange={e=>setRank(e.target.value)} aria-label="تصفية حسب الرتبة"><option value="all">جميع الرتب</option><option value="Administrator">Administrator</option><option value="Moderator">Moderator</option><option value="SN.Helper">SN.Helper</option><option value="Helper">Helper</option></select><span className="x-table-count">{visible.length} إداري</span></div>
