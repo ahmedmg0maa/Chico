@@ -62,7 +62,7 @@ export function CommandCenter(){
  function addAdmin(){setCurrentAdmin(null);setDraftAdmin({name:'',rank:'Helper',active:true,in_reporting:true});setDialog('admin');}
  function editAdmin(a:Admin){setCurrentAdmin(a);setDraftAdmin({name:a.name,rank:a.rank,active:a.active,in_reporting:a.in_reporting});setDialog('admin');}
  function newReading(){setCurrentReading(null);setDraftReading(emptyReading(state?.admins[0]?.id||''));setDialog('reading');}
- function editReading(r:Reading){setCurrentReading(r);setDraftReading({admin_id:r.admin_id,from_date:r.from_date,to_date:r.to_date,tickets_counter:r.tickets_counter,flags_counter:r.flags_counter,flags_baseline:null,hours:r.hours,rating:r.rating,note:r.note});setDialog('reading');}
+ function editReading(r:Reading){setCurrentReading(r);setDraftReading({admin_id:r.admin_id,from_date:r.from_date,to_date:r.to_date,tickets_counter:r.tickets_counter,flags_counter:r.flags_counter,flags_baseline:r.flags_baseline,hours:r.hours,rating:r.rating,note:r.note});setDialog('reading');}
  async function deleteAdmin(a:Admin){if(!window.confirm(t('confirmDelete')))return;await run(()=>api(`/api/roster/${a.id}`,{method:'DELETE',body:JSON.stringify({confirm:'DELETE'})}));}
  async function deleteReading(r:Reading){if(!window.confirm(t('deleteReading')+'?'))return;await run(()=>api(`/api/readings/${r.id}`,{method:'DELETE',body:JSON.stringify({confirm:'DELETE'})}));}
  function selectTab(key:Tab){setTab(key);setOpenMenu(false);setError('');}

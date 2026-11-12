@@ -36,11 +36,11 @@ export async function POST(req:NextRequest){
   const timeCol=find(h=>h==='time'||h==='ساعات'||h==='الساعات'||(h.includes('time')&&h.includes('hours')));
   const ratingCol=find(h=>h.includes('rating')||h.includes('التقييم'));
   if(nameCol<0||dateCol<0)return response({ok:false,error:'XLSX_UNRECOGNIZED_HEADERS',headers:heads.slice(1)},422);
+  if(sheet.rowCount>502)return response({ok:false,error:'XLSX_TOO_MANY_ROWS',totalRows:sheet.rowCount,maxDataRows:501},422);
   const sql=db();const adminRows=await sql`SELECT id,name FROM chico_next.admins`;
   const names=new Map(adminRows.map(r=>[String(r.name).trim().toLowerCase(),String(r.id)]));
   const rows:Record<string,unknown>[]=[];
   const warnings:string[]=[];
-  if(sheet.rowCount>502)warnings.push('More than 501 data rows: remaining rows were not inspected. Split the file before importing.');
   for(let i=2;i<=Math.min(sheet.rowCount,502);i++){
    const cells=sheet.getRow(i).values as unknown[];
    const name=str(cells[nameCol]);if(!name)continue;
@@ -51,7 +51,7 @@ export async function POST(req:NextRequest){
    else hours=decimal(sourceHours);
    if(!when)warnings.push(`Row ${i}: invalid date`);
    if(!member)warnings.push(`Row ${i}: unknown administrator ${name}`);
-   rows.push({row:i,name,admin_id:member,date:when,tickets_counter:ticketsCol>=0?integer(cells[ticketsCol]):null,flags_counter:flagsCol>=0?integer(cells[flagsCol]):null,hours,rating:ratingCol>=0?decimal(cells[ratingCol]):null});
+   rows.push({row:i,name,admin_id:member,date:when,tickets_counter:ticketsCol>=0?integer(cells[ticketsCol]):null,flags_counter:flagsCol>=0?integer(cells[flagsCol]):null,hours,time_was_date:sourceHours instanceof Date,rating:ratingCol>=0?decimal(cells[ratingCol]):null});
   }
   if(!rows.length)return response({ok:false,error:'EMPTY_XLSX'},400);
   const digest=createHash('sha256').update(buf).digest('hex');

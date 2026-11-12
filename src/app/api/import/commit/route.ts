@@ -6,7 +6,7 @@ import {weekStart} from '@/lib/rules';
 import {recompute} from '@/lib/recompute';
 export const runtime='nodejs';
 const schema=z.object({preview_id:z.string().uuid(),confirm:z.literal('IMPORT REVIEWED')});
-type Item={name:string;admin_id:string|null;date:string|null;tickets_counter:number|null;flags_counter:number|null;hours:number|null;rating:number|null};
+type Item={name:string;admin_id:string|null;date:string|null;tickets_counter:number|null;flags_counter:number|null;hours:number|null;rating:number|null;time_was_date?:boolean};
 export async function POST(req:NextRequest){const denied=await requireOwner(req);if(denied)return denied;
  try{
   const {preview_id}=schema.parse(await req.json());
@@ -16,6 +16,7 @@ export async function POST(req:NextRequest){const denied=await requireOwner(req)
   if(!staged.length||staged[0].committed_at)return response({ok:false,error:'PREVIEW_EXPIRED_OR_USED'},409);
   const previewRows=staged[0].payload as Item[];
   if(previewRows.some(r=>!r.admin_id||!r.date))return response({ok:false,error:'REVIEW_REQUIRED_UNKNOWN_NAMES_OR_DATES'},422);
+  if(previewRows.some(r=>r.time_was_date))return response({ok:false,error:'REVIEW_REQUIRED_TIME_CONVERSION'},422);
   await snapshot(sql,'Before Excel import');
   // Lock staging row: import, delta recompute and "committed" marker either all succeed or all rollback.
   const inserted=await sql.begin(async tx=>{
@@ -25,6 +26,7 @@ export async function POST(req:NextRequest){const denied=await requireOwner(req)
     if(duplicate.length)throw new Error('FILE_ALREADY_IMPORTED');
     const rows=selected[0].payload as Item[];
     if(rows.some(r=>!r.admin_id||!r.date))throw new Error('REVIEW_REQUIRED_UNKNOWN_NAMES_OR_DATES');
+    if(rows.some(r=>r.time_was_date))throw new Error('REVIEW_REQUIRED_TIME_CONVERSION');
     let total=0;
     for(const r of rows){
       if(!r.admin_id||!r.date)throw new Error('REVIEW_REQUIRED_UNKNOWN_NAMES_OR_DATES');

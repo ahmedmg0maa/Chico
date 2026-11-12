@@ -31,3 +31,9 @@ Do not merge the V2 preview into `main` or promote it to production without owne
 - Excel staging commit locks its preview row and recomputes all deltas **inside the same SQL transaction** as writing readings, marking the preview used, and audit. A recomputation error rolls back the import instead of leaving a committed staging row with stale statistics.
 - Files larger than the inspected row limit now surface a blocking warning rather than silently importing a truncated dataset.
 - V2 validates Monday for a manual weekly close/reopen action before calling the server.
+
+## Data integrity follow-up
+
+- Restored `flags_baseline` through the public `Reading` type and state mapper. Editing a previously baselined reading on either the original or V2 interface preserves that baseline instead of silently nulling it.
+- Excel previews containing date-coerced TIME values now persist a per-row `time_was_date` marker. The import-commit API refuses these staged rows until the original file is fixed and reviewed again; this protection is enforced by the server, not only by V2 UI.
+- XLSX files over the inspected-row limit are rejected by the preview endpoint instead of silently truncating the import to 501 rows.

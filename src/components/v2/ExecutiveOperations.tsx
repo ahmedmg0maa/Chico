@@ -89,7 +89,7 @@ export default function ExecutiveOperations({tab,state,review,onRefresh}:Props){
  const records=(state?.readings||[]).filter(r=>r.week_start===summary?.week_start);
  const activeWeek=week||summary?.week_start||'';
  const currentWeek=state?.weeks.find(w=>w.week_start===activeWeek);
- const edit=(r:Reading)=>{setEditing(r.id);setReading({admin_id:r.admin_id,from_date:r.from_date,to_date:r.to_date,tickets_counter:r.tickets_counter,flags_counter:r.flags_counter,flags_baseline:null,hours:r.hours,rating:r.rating,note:r.note});setError('');};
+ const edit=(r:Reading)=>{setEditing(r.id);setReading({admin_id:r.admin_id,from_date:r.from_date,to_date:r.to_date,tickets_counter:r.tickets_counter,flags_counter:r.flags_counter,flags_baseline:r.flags_baseline,hours:r.hours,rating:r.rating,note:r.note});setError('');};
  const perform=async(fn:()=>Promise<unknown>,message='تم حفظ العملية بنجاح')=>{
   if(review){setError('التعديل غير متاح في المعاينة');return;}
   setBusy(true);setError('');setSuccess('');
