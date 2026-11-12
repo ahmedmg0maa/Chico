@@ -10,8 +10,8 @@ export async function POST(req:NextRequest){
     const sql=db();const rows=await sql`SELECT count(*)::int AS n FROM chico_next.admins`;
     if(Number(rows[0].n)>0)return response({ok:false,error:'ROSTER_NOT_EMPTY'},409);
     await sql.begin(async tx=>{
-      for(const {name,rank} of APPROVED_ROSTER){await tx`INSERT INTO chico_next.admins(name,rank) VALUES(${name},${rank})`;}
-      await tx`INSERT INTO chico_next.audit(action,summary) VALUES('ROSTER_SEED','Imported verified names/ranks only; no statistics')`;
+      for(const {name,rank,admin_level} of APPROVED_ROSTER){const rows=await tx`INSERT INTO chico_next.admins(name,rank,admin_level) VALUES(${name},${rank},${admin_level}) RETURNING id`;await tx`INSERT INTO chico_next.rank_history(admin_id,new_rank) VALUES(${rows[0].id},${rank})`;}
+      await tx`INSERT INTO chico_next.audit(action,summary) VALUES('ROSTER_SEED','Imported approved names/ranks/admin levels only; no statistics')`;
     });return response({ok:true,imported:APPROVED_ROSTER.length});
   }catch(e){return failure(e);}
 }

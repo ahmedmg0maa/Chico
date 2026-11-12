@@ -37,6 +37,7 @@ export function ExecutiveTeamManager({state,review,onRefresh,previewAdmins,onPre
  const [name,setName]=useState('');
  const [rank,setRank]=useState<Rank>('Helper');
  const [adminLevel,setAdminLevel]=useState(1);
+ const [shiftLabel,setShiftLabel]=useState('');
  const [active,setActive]=useState(true);
  const [inReporting,setInReporting]=useState(true);
  const [busy,setBusy]=useState(false);
@@ -44,8 +45,8 @@ export function ExecutiveTeamManager({state,review,onRefresh,previewAdmins,onPre
  const [error,setError]=useState('');
  const currentAdmins=review?(previewAdmins||[]):(state?.admins||[]);
  const editing=currentAdmins.find(a=>a.id===selected);
- const openEdit=(a:Admin)=>{setSelected(a.id);setName(a.name);setRank(a.rank);setAdminLevel(a.admin_level||1);setActive(a.active);setInReporting(a.in_reporting);setError('');setMessage('');};
- const reset=()=>{setSelected(null);setName('');setRank('Helper');setAdminLevel(1);setActive(true);setInReporting(true);};
+ const openEdit=(a:Admin)=>{setSelected(a.id);setName(a.name);setRank(a.rank);setAdminLevel(a.admin_level||1);setShiftLabel(a.shift_label||'');setActive(a.active);setInReporting(a.in_reporting);setError('');setMessage('');};
+ const reset=()=>{setSelected(null);setName('');setRank('Helper');setAdminLevel(1);setShiftLabel('');setActive(true);setInReporting(true);};
  const run=async(fn:()=>Promise<unknown>,localChange?:()=>void)=>{
   setBusy(true);setError('');setMessage('');
   try{if(review){localChange?.();}else{await fn();await onRefresh();}reset();setMessage(review?'تم تحديث نسخة المعاينة المحلية فقط':'تم حفظ التغيير ومراجعة البيانات المحدثة');}
@@ -53,8 +54,8 @@ export function ExecutiveTeamManager({state,review,onRefresh,previewAdmins,onPre
   finally{setBusy(false);}
  };
  const submit=(e:FormEvent)=>{e.preventDefault();if(currentAdmins.some(a=>a.name.toLowerCase()===name.trim().toLowerCase()&&a.id!==selected)){setError('الاسم موجود بالفعل');return;}
-  void run(()=>api(selected?'/api/roster/'+selected:'/api/roster',selected?'PATCH':'POST',selected?{name:name.trim(),rank,admin_level:adminLevel,active,in_reporting:inReporting}:{name:name.trim(),rank,admin_level:adminLevel}),()=>{
-   const next=selected?currentAdmins.map(a=>a.id===selected?{...a,name:name.trim(),rank,admin_level:adminLevel,active,in_reporting:inReporting}:a):[...currentAdmins,{id:'local-'+Date.now(),name:name.trim(),rank,admin_level:adminLevel,active:true,in_reporting:true,sort_order:currentAdmins.length+1,joined_on:null}];
+  void run(()=>api(selected?'/api/roster/'+selected:'/api/roster',selected?'PATCH':'POST',selected?{name:name.trim(),rank,admin_level:adminLevel,shift_label:shiftLabel.trim()||null,active,in_reporting:inReporting}:{name:name.trim(),rank,admin_level:adminLevel}),()=>{
+   const next=selected?currentAdmins.map(a=>a.id===selected?{...a,name:name.trim(),rank,admin_level:adminLevel,shift_label:shiftLabel.trim()||null,active,in_reporting:inReporting}:a):[...currentAdmins,{id:'local-'+Date.now(),name:name.trim(),rank,admin_level:adminLevel,shift_label:null,active:true,in_reporting:true,sort_order:currentAdmins.length+1,joined_on:null}];
    onPreviewAdminsChange?.(next);
   });
  };
@@ -71,6 +72,7 @@ export function ExecutiveTeamManager({state,review,onRefresh,previewAdmins,onPre
    <label>اسم الإداري<input required maxLength={80} value={name} onChange={e=>setName(e.target.value)} disabled={busy} placeholder="اكتب الاسم كما يظهر في اللعبة"/></label>
    <label>الرتبة<select value={rank} onChange={e=>setRank(e.target.value as Rank)} disabled={busy}>{RANKS.map(r=><option key={r}>{r}</option>)}</select></label>
    <label>المستوى الإداري<select value={adminLevel} onChange={e=>setAdminLevel(Number(e.target.value))} disabled={busy}><option value={1}>1</option><option value={2}>2</option><option value={3}>3</option></select></label>
+   {selected&&<label className="x-op-full">المناوبة الثابتة<input maxLength={120} disabled={busy} value={shiftLabel} onChange={e=>setShiftLabel(e.target.value)} placeholder="تظل كما هي حتى تغيّرها بنفسك، مثال: السبت 20:00–22:00"/></label>}
    {selected&&<><label className="x-op-check"><input type="checkbox" checked={active} onChange={e=>setActive(e.target.checked)} disabled={busy}/>نشط</label><label className="x-op-check"><input type="checkbox" checked={inReporting} onChange={e=>setInReporting(e.target.checked)} disabled={busy}/>يظهر في التقارير</label></>}
    <div className="x-op-actions"><button className="x-primary" type="submit" disabled={busy||!name.trim()}><Save size={17}/>{editing?'حفظ تعديلات الإداري':'إضافة إداري'}</button>{selected&&<><button className="x-secondary" type="button" onClick={reset}>إلغاء التعديل</button><button className="x-op-danger" type="button" onClick={remove} disabled={busy}><Trash2 size={16}/>حذف</button></>}</div>
   </form>

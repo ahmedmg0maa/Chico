@@ -37,3 +37,9 @@ Do not merge the V2 preview into `main` or promote it to production without owne
 - Restored `flags_baseline` through the public `Reading` type and state mapper. Editing a previously baselined reading on either the original or V2 interface preserves that baseline instead of silently nulling it.
 - Excel previews containing date-coerced TIME values now persist a per-row `time_was_date` marker. The import-commit API refuses these staged rows until the original file is fixed and reviewed again; this protection is enforced by the server, not only by V2 UI.
 - XLSX files over the inspected-row limit are rejected by the preview endpoint instead of silently truncating the import to 501 rows.
+
+## Approved roster, administrative levels and fixed shifts
+- Official roster now has exactly 31 approved names and explicit levels 1–3 from Excel. No metrics are synthesized.
+- Schema migration `db/002_admin_directory_enrichment.sql` adds structured administrative level, optional fixed shift, and shift-change history, without daily duplication.
+- **Apply on isolated Preview database before connecting an authenticated V2 Preview**. This migration has not been applied to Production as part of UI work.
+- The V2 review page supports local add/edit/delete. Local data is not Supabase data and may be reset from the roster form.

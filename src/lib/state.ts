@@ -3,7 +3,7 @@ import { weekStart, isEligibleForTop, summarizeReadings } from './rules';
 import type { Admin, Reading, State, Summary, Week } from './types';
 
 function mapAdmin(row:Record<string,unknown>):Admin{
-  return {id:String(row.id),name:String(row.name),rank:row.rank as Admin['rank'],active:!!row.active,in_reporting:!!row.in_reporting,sort_order:Number(row.sort_order),joined_on:row.joined_on?String(row.joined_on).slice(0,10):null};
+  return {id:String(row.id),name:String(row.name),rank:row.rank as Admin['rank'],active:!!row.active,in_reporting:!!row.in_reporting,sort_order:Number(row.sort_order),admin_level:row.admin_level===null?null:Number(row.admin_level),shift_label:row.shift_label?String(row.shift_label):null,joined_on:row.joined_on?String(row.joined_on).slice(0,10):null};
 }
 function mapReading(row:Record<string,unknown>):Reading{
   const n=(x:unknown)=>x===null||x===undefined?null:Number(x);
@@ -12,7 +12,7 @@ function mapReading(row:Record<string,unknown>):Reading{
 export async function loadState():Promise<State>{
   const sql=db();
   const [ar,rr,wr]=await Promise.all([
-    sql`SELECT id,name,rank,active,in_reporting,sort_order,joined_on FROM chico_next.admins ORDER BY sort_order ASC, name ASC`,
+    sql`SELECT id,name,rank,active,in_reporting,sort_order,admin_level,shift_label,joined_on FROM chico_next.admins ORDER BY sort_order ASC, name ASC`,
     sql`SELECT r.*,a.name AS admin_name,a.rank FROM chico_next.readings r JOIN chico_next.admins a ON a.id=r.admin_id ORDER BY r.to_date DESC,r.created_at DESC`,
     sql`SELECT week_start,status,closed_at FROM chico_next.weekly_status ORDER BY week_start DESC LIMIT 52`
   ]);
