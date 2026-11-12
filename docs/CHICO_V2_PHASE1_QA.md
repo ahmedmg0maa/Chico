@@ -47,3 +47,11 @@ Do not merge the V2 preview into `main` or promote it to production without owne
 - Build gate now checks the 31-name approved roster (13 Helper, 4 SN.Helper, 10 Moderator, 3 Administrator, 1 Responsible), name uniqueness, explicit level assignments and absence of fake performance fields.
 - Until any readings actually exist for a reporting week, absence of readings no longer triggers blanket performance warnings for all administrators.
 - Shift edit events are exposed in the member's shift history. No daily shift rows are created.
+
+## Isolated preview connection safety
+
+- Removed the production Supabase tenant ID from pooler username normalization. If `DATABASE_URL` uses the generic `postgres` pooler user, set `CHICO_DB_POOLER_TENANT` for the appropriate environment; otherwise use a fully qualified branch-specific username.
+- **A Preview deployment rejects** database URLs whose hostname or user includes the production project ref. Preview must never use production credentials.
+- On production, `CHICO_DB_POOLER_TENANT` must be configured (or a fully-qualified username used in `DATABASE_URL`) **before** any merge into main; current production is unchanged.
+- Backup snapshots now include fixed-shift history. Insertion of an admin and their initial rank record is atomic.
+- Supabase branch creation is cost-gated; no new branch was created without explicit hourly-charge approval.
