@@ -74,7 +74,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
  const [focused,setFocused]=useState<Row|null>(null);
  const [previewLogin,setPreviewLogin]=useState(false);
  const [searchOpen,setSearchOpen]=useState(false);
- const rows=useMemo(()=>review?reviewAdmins.map(a=>({id:a.id,name:a.name,rank:a.rank,admin_level:a.admin_level,active:a.active,in_reporting:a.in_reporting,tickets:null,flags:null,rating:null,hours:null,lastUpdate:null})):latestRows(state),[review,reviewAdmins,state]);
+ const rows:Row[]=useMemo<Row[]>(()=>review?reviewAdmins.map(a=>({id:a.id,name:a.name,rank:a.rank,admin_level:a.admin_level,active:a.active,in_reporting:a.in_reporting,tickets:null,flags:null,rating:null,hours:null,lastUpdate:null})):latestRows(state),[review,reviewAdmins,state]);
  const visible=useMemo(()=>rows.filter(r=>(rank==='all'||r.rank===rank)&&(r.name.toLowerCase().includes(filter.toLowerCase()))),[rows,rank,filter]);
  const summary=state?.summary;
  const active=rows.filter(r=>r.active).length;
