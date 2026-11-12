@@ -3,11 +3,17 @@ let pool: ReturnType<typeof postgres> | undefined;
 export function db() {
   const url=process.env.DATABASE_URL;
   if (!url || !/^postgres(ql)?:\/\//.test(url)) throw new Error('DATABASE_NOT_CONFIGURED');
-  // Supavisor (shared pooler) needs postgres.<project-ref> as its username.
-  // Keep the existing secret and host; only normalize the omitted tenant suffix.
+  // A preview branch must NEVER silently inherit the production project's tenant.
   const connection=new URL(url);
-  if (connection.hostname.endsWith('.pooler.supabase.com') && connection.username==='postgres') {
-    connection.username='postgres.vaxdjjcsnvsfojeddqih';
+  const isPooler=connection.hostname.endsWith('.pooler.supabase.com');
+  if(isPooler && connection.username==='postgres'){
+    const tenant=process.env.CHICO_DB_POOLER_TENANT;
+    if(!tenant||!/^[a-z0-9]{20}$/.test(tenant))throw new Error('DATABASE_POOLER_TENANT_REQUIRED');
+    connection.username='postgres.'+tenant;
+  }
+  if(process.env.VERCEL_ENV==='preview'){
+    const productionRef='vaxdjjcsnvsfojeddqih';
+    if(connection.hostname.includes(productionRef)||connection.username.includes(productionRef))throw new Error('PREVIEW_PRODUCTION_DATABASE_BLOCKED');
   }
   // Optional raw password override: URL handles encoding of symbols such as @, # and %.
   // A separate secret prevents accidental malformed DATABASE_URL passwords.
@@ -17,7 +23,7 @@ export function db() {
     console.info('[CHICO_DB_PROFILE]',{
       pooler:connection.hostname.endsWith('.pooler.supabase.com'),
       port:connection.port||'default',
-      tenantQualified:connection.username.endsWith('.vaxdjjcsnvsfojeddqih'),
+      tenantQualified:isPooler&&connection.username.includes('.'),
       hasPassword:Boolean(connection.password),
       passwordSource:passwordOverride?'separate-secret':'database-url'
     });
@@ -35,12 +41,13 @@ export async function audit(sql: ReturnType<typeof postgres>,action:string,summa
 }
 /** Backup is in the isolated chico_next schema; never overwrite legacy datasets. */
 export async function snapshot(sql: ReturnType<typeof postgres>,label:string){
-  const [admins,rank_history,readings,weekly_status]=await Promise.all([
+  const [admins,rank_history,shift_history,readings,weekly_status]=await Promise.all([
     sql`SELECT * FROM chico_next.admins`,
     sql`SELECT * FROM chico_next.rank_history`,
+    sql`SELECT * FROM chico_next.shift_history`,
     sql`SELECT * FROM chico_next.readings`,
     sql`SELECT * FROM chico_next.weekly_status`
   ]);
-  const payload=JSON.stringify({admins:[...admins],rank_history:[...rank_history],readings:[...readings],weekly_status:[...weekly_status]});
+  const payload=JSON.stringify({admins:[...admins],rank_history:[...rank_history],shift_history:[...shift_history],readings:[...readings],weekly_status:[...weekly_status]});
   await sql`INSERT INTO chico_next.backups(label,snapshot) VALUES(${label},${payload}::jsonb)`;
 }

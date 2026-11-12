@@ -1,0 +1,33 @@
+const assert=require('node:assert/strict');
+const fs=require('node:fs'),vm=require('node:vm'),path=require('node:path'),ts=require('typescript');
+const p=path.resolve(__dirname,'../src/lib/localRoster.ts');
+const js=ts.transpileModule(fs.readFileSync(p,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText;
+const mod={exports:{}};vm.runInNewContext(js,{module:mod,exports:mod.exports,require},{filename:p});
+const {applyLocalRosterChange}=mod.exports;
+const now='2026-11-12T10:00:00.000Z';
+const first={id:'a',name:'Alajmi',rank:'Helper',admin_level:1,shift_label:null,active:true,in_reporting:true,sort_order:1,joined_on:null};
+const one={name:'Alkhaldy',rank:'Helper',admin_level:1,shift_label:null,active:true,in_reporting:true};
+const initial=[first];
+const added=applyLocalRosterChange(initial,{kind:'add',id:'b',input:one},now);
+assert.equal(added.admins.length,2);
+assert.equal(added.events.length,1);
+assert.equal(added.events[0].kind,'rank');
+assert.equal(initial.length,1,'source is immutable');
+assert.throws(()=>applyLocalRosterChange(added.admins,{kind:'add',id:'c',input:{...one,name:'ALAJMI'}},now),/DUPLICATE_NAME/);
+assert.throws(()=>applyLocalRosterChange(added.admins,{kind:'add',id:'c',input:{...one,admin_level:4}},now),/INVALID_ADMIN_LEVEL/);
+const edited=applyLocalRosterChange(added.admins,{kind:'edit',id:'b',input:{...one,rank:'SN.Helper',shift_label:'Saturday 20:00-22:00'}},now);
+assert.equal(edited.admins[1].rank,'SN.Helper');
+assert.equal(edited.admins[1].shift_label,'Saturday 20:00-22:00');
+assert.equal(edited.events.filter(e=>e.kind==='rank').length,1);
+assert.equal(edited.events.filter(e=>e.kind==='shift').length,1);
+const unchanged=applyLocalRosterChange(edited.admins,{kind:'edit',id:'b',input:{...one,rank:'SN.Helper',shift_label:'Saturday 20:00-22:00'}},now);
+assert.equal(unchanged.events.length,0);
+const deleted=applyLocalRosterChange(edited.admins,{kind:'delete',id:'b'},now);
+assert.equal(deleted.admins.length,1);
+assert.equal(deleted.admins[0].id,'a');
+assert.equal(deleted.events[0].kind,'delete');
+assert.throws(()=>applyLocalRosterChange(deleted.admins,{kind:'delete',id:'b'},now),/ADMIN_NOT_FOUND/);
+for(const a of [...added.admins,...edited.admins,...deleted.admins]){
+ for(const k of ['tickets','flags','rating','hours'])assert.equal(a[k],undefined,'no invented statistics');
+}
+console.log('PASS CHICO local roster add/edit/delete, rank/shift history, duplicate protection, no fabricated metrics');

@@ -33,9 +33,10 @@ export async function POST(req:NextRequest){
   const dateCol=find(h=>h==='date'||h==='التاريخ');
   const ticketsCol=find(h=>h.includes('total tickets')||h.includes('weekly tickets')||h==='tickets');
   const flagsCol=find(h=>h.includes('total flags')||h.includes('cumulative flags')||h==='flags counter'||h==='flags balance');
-  const timeCol=find(h=>h.includes('time')&&h.includes('hours'));
+  const timeCol=find(h=>h==='time'||h==='ساعات'||h==='الساعات'||(h.includes('time')&&h.includes('hours')));
   const ratingCol=find(h=>h.includes('rating')||h.includes('التقييم'));
   if(nameCol<0||dateCol<0)return response({ok:false,error:'XLSX_UNRECOGNIZED_HEADERS',headers:heads.slice(1)},422);
+  if(sheet.rowCount>502)return response({ok:false,error:'XLSX_TOO_MANY_ROWS',totalRows:sheet.rowCount,maxDataRows:501},422);
   const sql=db();const adminRows=await sql`SELECT id,name FROM chico_next.admins`;
   const names=new Map(adminRows.map(r=>[String(r.name).trim().toLowerCase(),String(r.id)]));
   const rows:Record<string,unknown>[]=[];
@@ -50,7 +51,7 @@ export async function POST(req:NextRequest){
    else hours=decimal(sourceHours);
    if(!when)warnings.push(`Row ${i}: invalid date`);
    if(!member)warnings.push(`Row ${i}: unknown administrator ${name}`);
-   rows.push({row:i,name,admin_id:member,date:when,tickets_counter:ticketsCol>=0?integer(cells[ticketsCol]):null,flags_counter:flagsCol>=0?integer(cells[flagsCol]):null,hours,rating:ratingCol>=0?decimal(cells[ratingCol]):null});
+   rows.push({row:i,name,admin_id:member,date:when,tickets_counter:ticketsCol>=0?integer(cells[ticketsCol]):null,flags_counter:flagsCol>=0?integer(cells[flagsCol]):null,hours,time_was_date:sourceHours instanceof Date,rating:ratingCol>=0?decimal(cells[ratingCol]):null});
   }
   if(!rows.length)return response({ok:false,error:'EMPTY_XLSX'},400);
   const digest=createHash('sha256').update(buf).digest('hex');
