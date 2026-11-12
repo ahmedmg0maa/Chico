@@ -24,3 +24,10 @@
 - Complete real-browser desktop/mobile/light/dark/accessibility checks. HTTP 200 or a READY deployment are not full QA.
 
 Do not merge the V2 preview into `main` or promote it to production without owner review and explicit sign-off.
+
+## Import correctness follow-up
+
+- Excel now recognizes the common bare `TIME` column, while preserving the rule that spreadsheet date-coercion warnings block confirmation in V2 until the source is corrected and re-previewed.
+- Excel staging commit locks its preview row and recomputes all deltas **inside the same SQL transaction** as writing readings, marking the preview used, and audit. A recomputation error rolls back the import instead of leaving a committed staging row with stale statistics.
+- Files larger than the inspected row limit now surface a blocking warning rather than silently importing a truncated dataset.
+- V2 validates Monday for a manual weekly close/reopen action before calling the server.

@@ -33,13 +33,14 @@ export async function POST(req:NextRequest){
   const dateCol=find(h=>h==='date'||h==='التاريخ');
   const ticketsCol=find(h=>h.includes('total tickets')||h.includes('weekly tickets')||h==='tickets');
   const flagsCol=find(h=>h.includes('total flags')||h.includes('cumulative flags')||h==='flags counter'||h==='flags balance');
-  const timeCol=find(h=>h.includes('time')&&h.includes('hours'));
+  const timeCol=find(h=>h==='time'||h==='ساعات'||h==='الساعات'||(h.includes('time')&&h.includes('hours')));
   const ratingCol=find(h=>h.includes('rating')||h.includes('التقييم'));
   if(nameCol<0||dateCol<0)return response({ok:false,error:'XLSX_UNRECOGNIZED_HEADERS',headers:heads.slice(1)},422);
   const sql=db();const adminRows=await sql`SELECT id,name FROM chico_next.admins`;
   const names=new Map(adminRows.map(r=>[String(r.name).trim().toLowerCase(),String(r.id)]));
   const rows:Record<string,unknown>[]=[];
   const warnings:string[]=[];
+  if(sheet.rowCount>502)warnings.push('More than 501 data rows: remaining rows were not inspected. Split the file before importing.');
   for(let i=2;i<=Math.min(sheet.rowCount,502);i++){
    const cells=sheet.getRow(i).values as unknown[];
    const name=str(cells[nameCol]);if(!name)continue;

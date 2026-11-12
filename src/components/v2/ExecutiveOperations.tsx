@@ -116,6 +116,8 @@ export default function ExecutiveOperations({tab,state,review,onRefresh}:Props){
  };
  const changeWeek=(status:'open'|'closed')=>{
   if(!ack||!activeWeek)return;
+  const day=new Date(activeWeek+'T00:00:00Z');
+  if(Number.isNaN(day.getTime())||day.getUTCDay()!==1){setError('اختار تاريخ يوم الإثنين كبداية للأسبوع');return;}
   void perform(()=>api('/api/week','POST',{week:activeWeek,status,confirm:true,note:closeNote}),'تم تحديث حالة الأسبوع وحفظها');
  };
  const doSeed=()=>{if(window.prompt('استيراد الأسماء والرتب فقط لفريق فارغ. اكتب IMPORT NAMES للتأكيد')!=='IMPORT NAMES')return;
@@ -175,7 +177,7 @@ export default function ExecutiveOperations({tab,state,review,onRefresh}:Props){
  </>;
  if(tab==='server')return <>
   <Head en="CHICO / SERVER PERFORMANCE" title="أداء السيرفر" description="الأرقام من القراءات المحفوظة للأسبوع الحالي، مع فصل البيانات المفقودة عن الصفر."/><Hint review={review}/>
-  <div className="x-op-metrics"><Metric label="إجمالي Tickets" value={fmt(summary?.tickets)}/><Metric label="Flags الأسبوع" value={fmt(summary?.flags)}/><Metric label="Server Flag Rate" value={summary?.rate===null||summary?.rate===undefined?'غير متاح':fmt(summary.rate)+'%'}/><Metric label="TIME المسجل" value={fmt(summary?.hours)+'h'}/><Metric label="متوسط Rating" value={fmt(summary?.rating)}/><Metric label="إداريون لهم قراءة" value={fmt(summary?.reported,0)}/></div>
+  <div className="x-op-metrics"><Metric label="إجمالي Tickets" value={fmt(summary?.tickets)}/><Metric label="Flags الأسبوع" value={fmt(summary?.flags)}/><Metric label="Server Flag Rate" value={summary?.rate===null||summary?.rate===undefined?'غير متاح':fmt(summary.rate)+'%'}/><Metric label="TIME المسجل" value={fmt(summary?.hours)+'h'}/><Metric label="متوسط التقييمات المسجلة" value={fmt(summary?.rating)}/><Metric label="إداريون لهم قراءة" value={fmt(summary?.reported,0)}/></div>
   <section className="x-panel x-op-card"><div className="x-op-cardhead"><BarChart3 size={20}/><h2>أفضل الإداريين حسب Tickets</h2></div>{summary?.top.length?<div className="x-op-mini-list">{summary.top.map((r,i)=><div key={r.id}><b>{i+1}. {r.name}</b><span>{r.rank} · {fmt(r.tickets)} Tickets</span></div>)}</div>:<Empty text="لا يوجد ترتيب موثّق لهذا الأسبوع"/>}<p className="x-op-footnote">الترتيب يستبعد Moderator والرتب القيادية.</p></section>
  </>;
  if(tab==='reports')return <>
