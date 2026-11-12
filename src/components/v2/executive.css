@@ -268,3 +268,40 @@
 @media(max-width:820px){.chico-v2 .x-hero.x-hero-v3{grid-template-columns:95px minmax(0,1fr);padding:20px;gap:15px;min-height:190px}.chico-v2 .x-hero-identity-frame{width:92px;height:92px}.chico-v2 .x-hero-editorial h1{font-size:30px;margin:13px 0}.chico-v2 .x-hero-quickstat{grid-column:1/-1;min-height:0;display:flex;flex-direction:row;gap:12px;border-right:0;border-top:1px solid rgba(208,165,104,.18);padding-top:10px}.chico-v2 .x-hero-quickstat strong{font-size:25px}}
 @media(max-width:540px){.chico-v2 .x-hero.x-hero-v3{grid-template-columns:64px 1fr;padding:14px;gap:10px}.chico-v2 .x-hero-identity-frame{width:64px;height:64px;border-radius:10px}.chico-v2 .x-hero-editorial h1{font-size:24px}.chico-v2 .x-hero-eyebrow{font-size:9px;letter-spacing:.06em}.chico-v2 .x-hero-editorial p{font-size:11px}.chico-v2 .x-hero-pill{margin-top:11px;font-size:10px}}
 @media(prefers-reduced-motion:reduce){.chico-v2 *{transition-duration:.001ms!important;animation-duration:.001ms!important}}
+
+/* CHICO V3 administrator dossier — complete, airy and navigable. */
+.chico-v2 .x-profile-v3{width:min(550px,100%);padding:0;display:flex;flex-direction:column;gap:0;background:linear-gradient(180deg,#191b22,#0e1117 65%);border-left:1px solid #a17d51}
+.chico-v2 .x-profile-heading{display:flex;align-items:center;justify-content:space-between;min-height:52px;padding:10px 22px;border-bottom:1px solid rgba(200,160,98,.2)}
+.chico-v2 .x-profile-heading>span{font:700 10px Inter,system-ui,sans-serif;color:#bfa274;letter-spacing:.14em}
+.chico-v2 .x-profile-v3 .x-detail-close{position:static}
+.chico-v2 .x-profile-identity{display:flex;align-items:center;gap:22px;padding:24px 25px 17px}
+.chico-v2 .x-profile-identity .x-profile-seal{flex:none;margin:0;width:92px;height:92px;box-shadow:none;background:#161820;border-radius:14px;border:1px solid rgba(219,171,96,.5)}
+.chico-v2 .x-profile-identity .x-profile-seal svg{width:65px;height:65px}
+.chico-v2 .x-profile-identity h2{margin:7px 0;font-size:29px;line-height:1.2;color:#f5ead6}
+.chico-v2 .x-profile-identity p{font-size:13px;color:#ccb78f}
+.chico-v2 .x-profile-active,.chico-v2 .x-profile-inactive{font-size:11px;display:inline-flex;margin-top:9px;padding:3px 10px;border-radius:30px;background:#153a29;color:#8fe0b0}
+.chico-v2 .x-profile-inactive{background:#3d2928;color:#e5a3a0}
+.chico-v2 .x-profile-edit{display:flex;align-items:center;gap:9px;margin:0 25px 20px;border:1px solid #a88755;border-radius:8px;padding:11px 14px;color:#f0d3a4;background:rgba(142,99,47,.14);font-size:12px;font-weight:750}
+.chico-v2 .x-profile-edit:hover{background:rgba(142,99,47,.25)}
+.chico-v2 .x-profile-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));padding:0 18px;gap:5px;border-bottom:1px solid rgba(202,169,101,.21)}
+.chico-v2 .x-profile-tabs button{border:0;border-bottom:2px solid transparent;background:transparent;color:#a7aab1;padding:12px 4px;font-size:12px;font-weight:700}
+.chico-v2 .x-profile-tabs button.active{border-bottom-color:#dfbb7e;color:#f0d7a7}
+.chico-v2 .x-profile-body{padding:18px 24px;overflow-y:auto}
+.chico-v2 .x-profile-metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-bottom:24px}
+.chico-v2 .x-profile-metrics>div{display:flex;flex-direction:column;gap:13px;min-height:86px;padding:13px 16px;border:1px solid rgba(208,164,94,.2);border-radius:9px;background:#161a20}
+.chico-v2 .x-profile-metrics small{font:600 12px Inter,sans-serif;color:#a9a6a6}
+.chico-v2 .x-profile-metrics strong{font:700 25px Inter,sans-serif;color:#efd5a2;letter-spacing:-.035em}
+.chico-v2 .x-profile-facts{border-top:1px solid rgba(197,161,103,.17)}
+.chico-v2 .x-profile-facts p{display:flex;align-items:baseline;justify-content:space-between;gap:15px;margin:0;padding:15px 2px;border-bottom:1px solid rgba(197,161,103,.13);font-size:12px}
+.chico-v2 .x-profile-facts span{color:#b7b3b0}.chico-v2 .x-profile-facts b{font-weight:750;color:#f1dfc5;text-align:left}
+.chico-v2 .x-profile-section-heading{display:flex;align-items:center;gap:9px;font-size:14px;font-weight:800;color:#efd3a4;margin-bottom:17px}
+.chico-v2 .x-profile-event{display:flex;justify-content:space-between;gap:12px;padding:13px;margin:9px 0;border:1px solid rgba(209,168,96,.2);border-radius:8px;background:#171a21;color:#eadbc7}
+.chico-v2 .x-profile-event>div{display:flex;flex-direction:column;gap:7px}
+.chico-v2 .x-profile-event b{font-size:12px}
+.chico-v2 .x-profile-event span,.chico-v2 .x-profile-event small{font-size:10px;color:#a9a5a4}
+.chico-v2 .x-profile-empty{display:grid;justify-items:center;gap:12px;text-align:center;padding:45px 16px;color:#bbb4ae}
+.chico-v2 .x-profile-empty>svg{color:#b89865}.chico-v2 .x-profile-empty b{color:#f1ddba;font-size:14px}.chico-v2 .x-profile-empty p{max-width:340px;font-size:12px;line-height:1.9}
+.chico-v2 .x-profile-shift{display:grid;justify-items:start;gap:15px;border:1px solid rgba(220,174,95,.25);border-radius:10px;padding:23px 18px;background:#161921}
+.chico-v2 .x-profile-shift>svg{color:#e2bd83}.chico-v2 .x-profile-shift>strong{color:#f0dfbc;font-size:19px}.chico-v2 .x-profile-shift>p{color:#b7b0a7;font-size:12px;line-height:1.9}
+.chico-v2 .x-profile-footer{margin-top:auto;border-top:1px solid rgba(205,164,92,.16);display:flex;gap:9px;align-items:center;padding:16px 25px;font-size:11px;color:#a7a6aa}
+@media(max-width:550px){.chico-v2 .x-profile-identity{padding:17px;gap:14px}.chico-v2 .x-profile-identity .x-profile-seal{width:72px;height:72px}.chico-v2 .x-profile-identity .x-profile-seal svg{width:52px;height:52px}.chico-v2 .x-profile-identity h2{font-size:23px}.chico-v2 .x-profile-body{padding:14px}.chico-v2 .x-profile-edit{margin:0 16px 14px}}

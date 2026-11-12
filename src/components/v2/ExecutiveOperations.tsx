@@ -64,7 +64,7 @@ export function ExecutiveTeamManager({state,review,onRefresh,previewAdmins,onPre
   void run(()=>api('/api/roster/'+selected,'DELETE',{confirm:'DELETE'}),()=>onPreviewAdminsChange?.(currentAdmins.filter(a=>a.id!==selected)));
  };
 
- return <section className="x-panel x-op-card">
+ return <section className="x-panel x-op-card" id="chico-team-editor">
   <div className="x-op-cardhead"><Users size={20}/><h2>إدارة الأسماء والرتب</h2><small>إضافة · تعديل · حذف</small></div>
   {review&&<div className="x-op-hint"><Shield size={18}/>يمكنك تجربة الإضافة والتعديل والحذف هنا. التغييرات تُحفظ على هذا الجهاز فقط، ولا تغيّر بيانات السيرفر.</div>}
   <form className="x-op-form" onSubmit={submit}>
@@ -74,7 +74,7 @@ export function ExecutiveTeamManager({state,review,onRefresh,previewAdmins,onPre
    {selected&&<><label className="x-op-check"><input type="checkbox" checked={active} onChange={e=>setActive(e.target.checked)} disabled={busy}/>نشط</label><label className="x-op-check"><input type="checkbox" checked={inReporting} onChange={e=>setInReporting(e.target.checked)} disabled={busy}/>يظهر في التقارير</label></>}
    <div className="x-op-actions"><button className="x-primary" type="submit" disabled={busy||!name.trim()}><Save size={17}/>{editing?'حفظ تعديلات الإداري':'إضافة إداري'}</button>{selected&&<><button className="x-secondary" type="button" onClick={reset}>إلغاء التعديل</button><button className="x-op-danger" type="button" onClick={remove} disabled={busy}><Trash2 size={16}/>حذف</button></>}</div>
   </form>
-   {!!currentAdmins.length&&<div className="x-op-mini-list">{currentAdmins.map(a=><button key={a.id} disabled={busy} type="button" onClick={()=>openEdit(a)}><Pencil size={13}/><b dir="auto">{a.name}</b><span>{a.rank} · المستوى {a.admin_level||'—'}</span></button>)}</div>}
+   {!!currentAdmins.length&&<div className="x-op-mini-list">{currentAdmins.map(a=><button key={a.id} disabled={busy} type="button" onClick={()=>openEdit(a)} data-chico-edit-id={a.id}><Pencil size={13}/><b dir="auto">{a.name}</b><span>{a.rank} · المستوى {a.admin_level||'—'}</span></button>)}</div>}
   {review&&<button type="button" className="x-secondary" onClick={()=>{localStorage.removeItem('chico-approved-roster-local-v1');location.reload();}}>استعادة قائمة الفريق المعتمدة</button>}
   {message&&<p className="x-op-success"><CheckCircle2 size={16}/>{message}</p>}{error&&<p className="x-op-error"><AlertTriangle size={16}/>{error}</p>}
  </section>;

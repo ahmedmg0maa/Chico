@@ -11,10 +11,11 @@ import {
 import type {Admin,Reading,State,Rank} from '@/lib/types';
 import ExecutiveOperations,{ExecutiveTeamManager} from './ExecutiveOperations';
 import {APPROVED_ROSTER} from '@/lib/roster';
+import ExecutiveProfile from './ExecutiveProfile';
 
 export type Tab='dashboard'|'team'|'updates'|'excel'|'server'|'reports'|'weeks'|'alerts'|'settings';
 type Auth='checking'|'out'|'in';
-type Row={id:string;name:string;rank:Rank;active:boolean;tickets:number|null;flags:number|null;rating:number|null;hours:number|null;lastUpdate:string|null;in_reporting:boolean;admin_level?:number|null;flagsIncomplete?:boolean;periodFrom?:string|null};
+type Row={id:string;name:string;rank:Rank;active:boolean;tickets:number|null;flags:number|null;rating:number|null;hours:number|null;lastUpdate:string|null;in_reporting:boolean;admin_level?:number|null;shift_label?:string|null;flagsIncomplete?:boolean;periodFrom?:string|null};
 const links:{id:Tab;label:string;en:string;icon:typeof Home}[]=[
   {id:'dashboard',label:'مركز القيادة',en:'Command Center',icon:LayoutDashboard},
   {id:'team',label:'الفريق',en:'Team Management',icon:Users},
@@ -39,7 +40,7 @@ function latestRows(state:State|null):Row[]{
  return state.admins.map((a:Admin)=>{
   const arr=state.readings.filter((r:Reading)=>r.admin_id===a.id&&r.week_start===state.summary.week_start).sort((x,y)=>y.to_date.localeCompare(x.to_date));
   const add=(f:(r:Reading)=>number|null)=>{const vals=arr.map(f).filter((n):n is number=>n!==null);return vals.length?vals.reduce((x,y)=>x+y,0):null;};
-  return {id:a.id,name:a.name,rank:a.rank,active:a.active,in_reporting:a.in_reporting,
+  return {id:a.id,name:a.name,rank:a.rank,active:a.active,in_reporting:a.in_reporting,admin_level:a.admin_level,shift_label:a.shift_label,
    tickets:add(r=>r.tickets_delta),flags:arr.some(r=>r.flags_counter!==null&&r.flags_delta===null)?null:add(r=>r.flags_delta),flagsIncomplete:arr.some(r=>r.flags_counter!==null&&r.flags_delta===null),periodFrom:arr[0]?.from_date??null,
    hours:add(r=>r.hours),rating:arr.find(r=>r.rating!==null)?.rating??null,lastUpdate:arr[0]?.to_date??null};
  });
@@ -74,7 +75,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
  const [focused,setFocused]=useState<Row|null>(null);
  const [previewLogin,setPreviewLogin]=useState(false);
  const [searchOpen,setSearchOpen]=useState(false);
- const rows:Row[]=useMemo<Row[]>(()=>review?reviewAdmins.map(a=>({id:a.id,name:a.name,rank:a.rank,admin_level:a.admin_level,active:a.active,in_reporting:a.in_reporting,tickets:null,flags:null,rating:null,hours:null,lastUpdate:null})):latestRows(state),[review,reviewAdmins,state]);
+ const rows:Row[]=useMemo<Row[]>(()=>review?reviewAdmins.map(a=>({id:a.id,name:a.name,rank:a.rank,admin_level:a.admin_level,shift_label:a.shift_label,active:a.active,in_reporting:a.in_reporting,tickets:null,flags:null,rating:null,hours:null,lastUpdate:null})):latestRows(state),[review,reviewAdmins,state]);
  const visible=useMemo(()=>rows.filter(r=>(rank==='all'||r.rank===rank)&&(r.name.toLowerCase().includes(filter.toLowerCase()))),[rows,rank,filter]);
  const summary=state?.summary;
  const active=rows.filter(r=>r.active).length;
@@ -219,7 +220,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
        <div className="x-filterbar"><div className="x-filtersearch"><Search size={18}/><input placeholder="ابحث بالاسم…" value={filter} onChange={e=>setFilter(e.target.value)}/></div><select value={rank} onChange={e=>setRank(e.target.value)} aria-label="تصفية حسب الرتبة"><option value="all">جميع الرتب</option><option value="Administrator">Administrator</option><option value="Moderator">Moderator</option><option value="SN.Helper">SN.Helper</option><option value="Helper">Helper</option></select><span className="x-table-count">{visible.length} إداري</span></div>
        <TeamTable rows={visible} onFocus={setFocused}/>
       </section>
-      {focused&&<div className="x-detail-scrim" onMouseDown={e=>{if(e.target===e.currentTarget)setFocused(null)}}><aside className="x-detail-card" role="dialog" aria-modal="true" aria-label="ملف إداري"><button className="x-detail-close" onClick={()=>setFocused(null)}><X size={20}/></button><div className="x-profile-seal"><RankMark rank={focused.rank}/></div><span className="x-kicker">ADMINISTRATOR PROFILE</span><h2>{focused.name}</h2><p>{focused.rank} · {focused.active?'نشط':'غير نشط'}</p><div className="x-profile-stats"><div><b>{pretty(focused.tickets)}</b><small>Tickets</small></div><div><b>{pretty(focused.flags)}</b><small>Flags</small></div><div><b>{pretty(focused.rating,'rating')}</b><small>Rating</small></div><div><b>{pretty(focused.hours)}</b><small>TIME</small></div></div><div className="x-detail-foot"><CalendarDays size={17}/> آخر قراءة: {focused.lastUpdate?(focused.periodFrom&&focused.periodFrom!==focused.lastUpdate?focused.periodFrom+' — ':'')+focused.lastUpdate:'غير مسجل'}</div><p className="x-muted">صفحة معاينة تفصيلية، وسيُستكمل سجل الرتب والمناوبات في حزمة إدارة الفريق.</p></aside></div>}
+      {focused&&<ExecutiveProfile member={focused} readings={review?[]:state?.readings||[]} review={review} mark={<RankMark rank={focused.rank}/>} onClose={()=>setFocused(null)} onEdit={()=>{const target=focused.id;setFocused(null);requestAnimationFrame(()=>{document.querySelector<HTMLButtonElement>('[data-chico-edit-id="'+target+'"]')?.click();document.getElementById('chico-team-editor')?.scrollIntoView({behavior:'smooth',block:'start'});});}}/>}
      </>}
      {tab!=='dashboard'&&tab!=='team'&&<ExecutiveOperations tab={tab} state={state} review={review} onRefresh={refresh}/>}
 
