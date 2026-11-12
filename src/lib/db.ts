@@ -3,7 +3,13 @@ let pool: ReturnType<typeof postgres> | undefined;
 export function db() {
   const url=process.env.DATABASE_URL;
   if (!url || !/^postgres(ql)?:\/\//.test(url)) throw new Error('DATABASE_NOT_CONFIGURED');
-  if (!pool) pool=postgres(url,{max:1,prepare:false,ssl:'require',connect_timeout:10,idle_timeout:20});
+  // Supavisor (shared pooler) needs postgres.<project-ref> as its username.
+  // Keep the existing secret and host; only normalize the omitted tenant suffix.
+  const connection=new URL(url);
+  if (connection.hostname.endsWith('.pooler.supabase.com') && connection.username==='postgres') {
+    connection.username='postgres.vaxdjjcsnvsfojeddqih';
+  }
+  if (!pool) pool=postgres(connection.toString(),{max:1,prepare:false,ssl:'require',connect_timeout:10,idle_timeout:20});
   return pool;
 }
 export async function dbReady(){
