@@ -70,7 +70,7 @@ export function CommandCenter(){
  const filtered=useMemo(()=>activeAdmins.filter(a=>(!rankFilter||a.rank===rankFilter)&&a.name.toLowerCase().includes(search.toLowerCase())),[activeAdmins,rankFilter,search]);
  const summary=state?.summary;
  const metricCards=[{label:t('tickets'),icon:ListChecks,value:summary?.tickets??null,suffix:''},{label:t('flags'),icon:Flag,value:summary?.flags??null,suffix:''},{label:t('flagRate'),icon:Activity,value:summary?.rate??null,suffix:'%'},{label:t('rating'),icon:Trophy,value:summary?.rating??null,suffix:'/5'}];
- const counterInput=(label:string,field:string)=> <label className="field"><span>{t(label)}</span><input type="number" step={field==='hours'||field==='rating'?'0.01':'1'} min="0" max={field==='rating'?'5':undefined} value={draftReading[field]??''} onChange={e=>setDraftReading(d=>({...d,[field]:e.target.value===''?null:Number(e.target.value)}))} placeholder="—"/></label>;
+ const counterInput=(label:string,field:string)=>{const raw=draftReading[field];const value=typeof raw==='number'||typeof raw==='string'?raw:'';return <label className="field"><span>{t(label)}</span><input type="number" step={field==='hours'||field==='rating'?'0.01':'1'} min="0" max={field==='rating'?'5':undefined} value={value} onChange={e=>setDraftReading(d=>({...d,[field]:e.target.value===''?null:Number(e.target.value)}))} placeholder="—"/></label>;};
  const MetricIcon=({icon:Icon}:{icon:typeof Flag})=><span className="stat-icon"><Icon size={18} strokeWidth={1.75}/></span>;
  function exportPNG(){
   if(!state)return;const cnv=document.createElement('canvas');cnv.width=1600;cnv.height=900;const c=cnv.getContext('2d');if(!c)return;
