@@ -22,7 +22,8 @@ check('Never hide flag counter regression',()=>{assert.throws(()=>r.deltaFlags(3
 check('Decimal hours',()=>{assert.equal(r.decimalHours(1.5),1.5);});
 check('Rate 25 / 1105',()=>{assert.equal(r.serverFlagRate(25,1105),2.26);});
 check('No denominator, no percentage',()=>{assert.equal(r.serverFlagRate(0,null),null);assert.equal(r.serverFlagRate(0,0),null);});
-check('Ranking excludes owner and Administrator',()=>{assert.equal(r.isEligibleForTop('Administrator'),false);assert.equal(r.isEligibleForTop('Moderator'),true);});
+check('Ranking excludes owner and Administrator',()=>{assert.equal(r.isEligibleForTop('Administrator'),false);assert.equal(r.isEligibleForTop('Moderator'),false);});
+check('Only Helper and SN.Helper are eligible for Top 3',()=>{assert.equal(r.isEligibleForTop('Helper'),true);assert.equal(r.isEligibleForTop('SN.Helper'),true);assert.equal(r.isEligibleForTop('Moderator'),false);assert.equal(r.isEligibleForTop('Administrator'),false);assert.equal(r.isEligibleForTop('Responsible'),false);});
 check('Null is different from recorded zero',()=>{const base={id:'a',admin_id:'b',admin_name:'c',rank:'Helper',from_date:'2026-11-09',to_date:'2026-11-09',week_start:'2026-11-09',flags_counter:null,flags_delta:null,hours:null,rating:null,created_at:'',note:''};const s=r.summarizeReadings([{...base,tickets_delta:null,tickets_counter:null}]);assert.equal(s.tickets,null);const t=r.summarizeReadings([{...base,tickets_delta:0,tickets_counter:0}]);assert.equal(t.tickets,0);});
 check('Incomplete flags never show invented rate',()=>{const a={id:'a',admin_id:'b',admin_name:'c',rank:'Helper',from_date:'2026-11-09',to_date:'2026-11-09',week_start:'2026-11-09',flags_counter:25,flags_delta:null,hours:0,rating:4.8,created_at:'',note:'',tickets_delta:120,tickets_counter:120};const s=r.summarizeReadings([a]);assert.equal(s.flags,null);assert.equal(s.rate,null);});
 if(process.exitCode)process.exit(1);

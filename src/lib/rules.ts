@@ -9,7 +9,7 @@ export function weekStart(iso:string): string {
   d.setUTCDate(d.getUTCDate()-offset);
   return d.toISOString().slice(0,10);
 }
-export function isEligibleForTop(rank:Rank){return rank==='Moderator'||rank==='SN.Helper'||rank==='Helper';}
+export function isEligibleForTop(rank:Rank){return rank==='SN.Helper'||rank==='Helper';}
 export function serverFlagRate(flags:number|null,tickets:number|null){return flags===null||tickets===null||tickets<=0?null:Math.round(flags/tickets*10000)/100;}
 export function decimalHours(value:number){if(!Number.isFinite(value)||value<0||value>10000)throw new Error('INVALID_HOURS');return Math.round(value*100)/100;}
 export function deltaTickets(current:number|null,prior:number|null,sameWeek:boolean):number|null {

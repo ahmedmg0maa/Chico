@@ -9,5 +9,8 @@ export const metadata:Metadata={
 export const dynamic='force-dynamic';
 export default async function ExecutivePreview({searchParams}:{searchParams:Promise<{review?:string}>}){
  const q=await searchParams;
- return <ExecutiveCommand review={q.review==='1'}/>;
+ // Preview is a read-only visual environment until a separate test database is provisioned.
+ // Never allow ?review=1 to bypass the production login screen.
+ const isPreview=process.env.VERCEL_ENV==='preview';
+ return <ExecutiveCommand review={(isPreview&&q.review!=='live')||(process.env.NODE_ENV==='development'&&q.review==='1')}/>;
 }

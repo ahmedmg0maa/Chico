@@ -152,3 +152,16 @@
 @media(max-width:700px){.chico-v2 .x-top-actions{gap:3px}.chico-v2 .x-date,.chico-v2 .x-user-button span{display:none}.chico-v2 .x-kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.chico-v2 .x-kpi{min-height:122px;padding:12px 9px}.chico-v2 .x-kpi-title b{font-size:11px}.chico-v2 .x-kpi-title small{font-size:9px}.chico-v2 .x-kpi>strong{font-size:28px}.chico-v2 .x-hero{min-height:170px}.chico-v2 .x-hero-wolf{height:95%;right:-13%;opacity:.55}.chico-v2 .x-hero-main h1{font-size:57px}.chico-v2 .x-weekbanner{flex-wrap:wrap;gap:10px;padding:12px}.chico-v2 .x-week-mini{display:none}.chico-v2 .x-triple,.chico-v2 .x-bottom-grid{display:grid;grid-template-columns:1fr}.chico-v2 .x-alerts-panel,.chico-v2 .x-leaders-panel{grid-column:auto}.chico-v2 .x-action-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.chico-v2 .x-action-grid button{min-height:88px}.chico-v2 .x-donut-wrap{gap:14px}.chico-v2 .x-chart-area svg{height:200px}.chico-v2 .x-auth-frame{display:block}.chico-v2 .x-auth-art{min-height:190px;padding:14px}.chico-v2 .x-auth-art-inner{padding:10px 18px}.chico-v2 .x-auth-art .x-brand-wolf{height:58px;width:58px}.chico-v2 .x-auth-art .x-brand-words b{font-size:45px}.chico-v2 .x-auth-crown{font-size:32px}.chico-v2 .x-auth-art-inner p,.chico-v2 .x-auth-art-inner>span{display:none}.chico-v2 .x-auth-form{min-height:460px;padding:24px}.chico-v2 .x-auth-icon{margin:25px 0 10px}.chico-v2 .x-foot{flex-direction:column;align-items:center}.chico-v2 .x-filterbar{flex-wrap:wrap}.chico-v2 .x-filtersearch{flex-basis:100%}.chico-v2 .x-titleband h1{font-size:25px}}
 @media(max-width:420px){.chico-v2 .x-kpi-title svg{height:20px;width:20px}.chico-v2 .x-kpi-title{gap:5px}.chico-v2 .x-action-grid{grid-template-columns:repeat(2,1fr)}.chico-v2 .x-hero-main h1{font-size:44px}.chico-v2 .x-hero-main p{font-size:10px}.chico-v2 .x-kpi>strong{font-size:24px}.chico-v2 .x-section-heading span{font-size:13px}}
 @media(prefers-reduced-motion:reduce){.chico-v2 *,.chico-v2 *:before,.chico-v2 *:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+/* Record windows are shown as periods, not assigned to an invented daily trend. */
+.chico-v2 .x-period-list{display:grid;gap:8px;padding:16px 14px}
+.chico-v2 .x-period-row{display:grid;grid-template-columns:minmax(92px,1.2fr) minmax(135px,1.5fr) minmax(80px,1fr) minmax(80px,1fr);gap:10px;align-items:center;padding:13px 12px;border:1px solid rgba(228,180,95,.20);border-radius:7px;background:rgba(29,28,34,.74);font-size:12px}
+.chico-v2 .x-period-row b{color:#f1dfc3;overflow:hidden;text-overflow:ellipsis}
+.chico-v2 .x-period-row span{color:#c8bba9;font-variant-numeric:tabular-nums;direction:ltr;text-align:right}
+.chico-v2 .x-period-row strong{color:#e9bb72;font-size:11px;white-space:nowrap}
+.chico-v2 .x-period-list>p{margin:4px 0;color:#baa88d;font-size:11px;line-height:1.7}
+.chico-v2.x-light .x-period-row{background:#f7eddd;border-color:#d6bc92}
+.chico-v2.x-light .x-period-row b{color:#30271c}
+.chico-v2.x-light .x-period-row span{color:#6b5847}
+.chico-v2.x-light .x-period-row strong{color:#895c20}
+@media(max-width:650px){.chico-v2 .x-period-row{grid-template-columns:1fr 1fr;row-gap:9px}.chico-v2 .x-period-row span{text-align:left}.chico-v2 .x-period-row strong{font-size:11px}}

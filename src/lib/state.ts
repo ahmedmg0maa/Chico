@@ -13,7 +13,7 @@ export async function loadState():Promise<State>{
   const sql=db();
   const [ar,rr,wr]=await Promise.all([
     sql`SELECT id,name,rank,active,in_reporting,sort_order,joined_on FROM chico_next.admins ORDER BY sort_order ASC, name ASC`,
-    sql`SELECT r.*,a.name AS admin_name,a.rank FROM chico_next.readings r JOIN chico_next.admins a ON a.id=r.admin_id ORDER BY r.to_date DESC,r.created_at DESC LIMIT 2000`,
+    sql`SELECT r.*,a.name AS admin_name,a.rank FROM chico_next.readings r JOIN chico_next.admins a ON a.id=r.admin_id ORDER BY r.to_date DESC,r.created_at DESC`,
     sql`SELECT week_start,status,closed_at FROM chico_next.weekly_status ORDER BY week_start DESC LIMIT 52`
   ]);
   const admins=ar.map(r=>mapAdmin(r)); const readings=rr.map(r=>mapReading(r));
