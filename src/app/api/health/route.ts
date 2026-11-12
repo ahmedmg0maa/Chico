@@ -1,10 +1,13 @@
 import {dbReady} from '@/lib/db';
+import {loadState} from '@/lib/state';
 import {response} from '@/lib/api';
 import {isPasswordCorrect,isRateLimited} from '@/lib/auth';
 export const runtime='nodejs';
 export async function GET(){
   try {
     await dbReady();
+    // Test the same authenticated state-loading query used by the real dashboard.
+    await loadState();
     // Read-only check of the same rate-limit table used during login.
     await isRateLimited('chico-readiness-check');
   } catch (error) {
@@ -21,5 +24,5 @@ export async function GET(){
     console.error('[health:auth]',category);
     return response({ok:false,error:'AUTH_NOT_READY',database:'connected'},503);
   }
-  return response({ok:true,service:'CHICO Next Generation',database:'connected',auth:'ready',version:'6.0-preview'});
+  return response({ok:true,service:'CHICO Next Generation',database:'connected',auth:'ready',version:process.env.VERCEL_ENV==='production'?'6.0':'6.0-preview'});
 }
