@@ -9,12 +9,17 @@ export function db() {
   if (connection.hostname.endsWith('.pooler.supabase.com') && connection.username==='postgres') {
     connection.username='postgres.vaxdjjcsnvsfojeddqih';
   }
+  // Optional raw password override: URL handles encoding of symbols such as @, # and %.
+  // A separate secret prevents accidental malformed DATABASE_URL passwords.
+  const passwordOverride=process.env.CHICO_DB_PASSWORD;
+  if (passwordOverride) connection.password=passwordOverride;
   if (!pool) {
     console.info('[CHICO_DB_PROFILE]',{
       pooler:connection.hostname.endsWith('.pooler.supabase.com'),
       port:connection.port||'default',
       tenantQualified:connection.username.endsWith('.vaxdjjcsnvsfojeddqih'),
-      hasPassword:Boolean(connection.password)
+      hasPassword:Boolean(connection.password),
+      passwordSource:passwordOverride?'separate-secret':'database-url'
     });
     pool=postgres(connection.toString(),{max:1,prepare:false,ssl:'require',connect_timeout:10,idle_timeout:20});
   }
