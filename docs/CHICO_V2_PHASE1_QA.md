@@ -59,3 +59,11 @@ Do not merge the V2 preview into `main` or promote it to production without owne
 ### Automated preview-database regression test
 
 - `npm run test:preview-db` runs against a simulated Postgres adapter and fake database URLs. It asserts preview refuses production tenant and missing pooler tenancy and that a branch-specific URL is accepted. No real network, credentials or database is contacted.
+
+## Zero-cost local roster QA
+
+- `src/lib/localRoster.ts` contains pure roster add/edit/delete logic, validation, and rank/shift audit events.
+- Preview roster edits persist to this device only; rank and shift history now appear in the admin dossier. Restore resets both roster and locally saved histories.
+- `npm run test:local-roster` guards duplicate names, valid levels, immutable updates, deletion, audit events and absence of fabricated performance.
+- A cost-free second Supabase project was attempted, but the account hit its two-project Free limit. No extra project was created; no existing projects were deleted or paused.
+- PostgreSQL ephemeral table transaction tested 31 names, update/shift/rank audit, reading/decimal hours and cascade deletion; transaction rolled back. This is not live API end-to-end testing.

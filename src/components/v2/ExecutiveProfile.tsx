@@ -3,6 +3,7 @@
 import {useEffect,useMemo,useState,type ReactNode} from 'react';
 import {Activity,CalendarDays,CheckCircle2,Clock3,History,Pencil,Shield,Ticket,Flag,Star,X} from 'lucide-react';
 import type {Rank,Reading} from '@/lib/types';
+import {LOCAL_ROSTER_HISTORY_KEY,type LocalRosterEvent} from '@/lib/localRoster';
 
 type Member={id:string;name:string;rank:Rank;admin_level?:number|null;shift_label?:string|null;active:boolean;in_reporting:boolean;tickets:number|null;flags:number|null;hours:number|null;rating:number|null;lastUpdate:string|null;periodFrom?:string|null};
 type RankEntry={previous_rank:string|null;new_rank:string;changed_at:string};
@@ -16,7 +17,18 @@ export default function ExecutiveProfile({member,readings,review,mark,onClose,on
  const [loading,setLoading]=useState(!review);
  const [error,setError]=useState('');
  const memberReadings=useMemo(()=>readings.filter(r=>r.admin_id===member.id).sort((a,b)=>b.to_date.localeCompare(a.to_date)||b.created_at.localeCompare(a.created_at)),[readings,member.id]);
- useEffect(()=>{if(review)return;let cancelled=false;setLoading(true);setError('');
+ useEffect(()=>{
+  if(review){
+    try{
+      const data=JSON.parse(localStorage.getItem(LOCAL_ROSTER_HISTORY_KEY)||'[]') as LocalRosterEvent[];
+      const valid=Array.isArray(data)?data.filter(e=>e.admin_id===member.id):[];
+      setHistory(valid.filter(e=>e.kind==='rank').map(e=>({previous_rank:e.previous,new_rank:e.next||'',changed_at:e.changed_at})).reverse());
+      setShiftHistory(valid.filter(e=>e.kind==='shift').map(e=>({previous_shift:e.previous,new_shift:e.next,changed_at:e.changed_at})).reverse());
+    }catch{setHistory([]);setShiftHistory([]);}
+    setLoading(false);
+    return;
+  }
+  let cancelled=false;setLoading(true);setError('');
   void fetch('/api/admin-profile/'+encodeURIComponent(member.id),{credentials:'same-origin',cache:'no-store'}).then(async r=>{if(!r.ok)throw new Error('تعذّر قراءة سجل الرتب');return r.json();}).then(data=>{if(!cancelled)setHistory(data.rank_history||[]);setShiftHistory(data.shift_history||[]);}).catch(e=>{if(!cancelled)setError(e instanceof Error?e.message:'تعذر تحميل السجل');}).finally(()=>{if(!cancelled)setLoading(false);});return()=>{cancelled=true;};
  },[member.id,review]);
  const tabs:{id:Tab;title:string}[]=[{id:'overview',title:'الملخص'},{id:'readings',title:'القراءات'},{id:'rank',title:'سجل الرتب'},{id:'shift',title:'المناوبة'}];

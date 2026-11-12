@@ -4,6 +4,7 @@ import {useState, type FormEvent} from 'react';
 import {Activity, AlertTriangle, Archive, BarChart3, CalendarDays, CheckCircle2, Download, FileSpreadsheet, Flag, Pencil, Plus, Save, Shield, Ticket, Trash2, Upload, Users} from 'lucide-react';
 import type {Admin, Reading, State, Rank} from '@/lib/types';
 import {RANKS} from '@/lib/types';
+import {applyLocalRosterChange,LOCAL_ROSTER_HISTORY_KEY,type LocalRosterAction,type LocalRosterEvent} from '@/lib/localRoster';
 
 export type OperationTab = 'updates'|'excel'|'server'|'reports'|'weeks'|'alerts'|'settings';
 type Props = {tab:OperationTab;state:State|null;review:boolean;onRefresh:()=>Promise<void>};
@@ -53,16 +54,29 @@ export function ExecutiveTeamManager({state,review,onRefresh,previewAdmins,onPre
   catch(e){setError(e instanceof Error?e.message:'تعذّر الحفظ');}
   finally{setBusy(false);}
  };
- const submit=(e:FormEvent)=>{e.preventDefault();if(currentAdmins.some(a=>a.name.toLowerCase()===name.trim().toLowerCase()&&a.id!==selected)){setError('الاسم موجود بالفعل');return;}
-  void run(()=>api(selected?'/api/roster/'+selected:'/api/roster',selected?'PATCH':'POST',selected?{name:name.trim(),rank,admin_level:adminLevel,shift_label:shiftLabel.trim()||null,active,in_reporting:inReporting}:{name:name.trim(),rank,admin_level:adminLevel}),()=>{
-   const next=selected?currentAdmins.map(a=>a.id===selected?{...a,name:name.trim(),rank,admin_level:adminLevel,shift_label:shiftLabel.trim()||null,active,in_reporting:inReporting}:a):[...currentAdmins,{id:'local-'+Date.now(),name:name.trim(),rank,admin_level:adminLevel,shift_label:null,active:true,in_reporting:true,sort_order:currentAdmins.length+1,joined_on:null}];
-   onPreviewAdminsChange?.(next);
-  });
+ const applyLocal=(action:LocalRosterAction)=>{
+   const result=applyLocalRosterChange(currentAdmins,action,new Date().toISOString());
+   onPreviewAdminsChange?.(result.admins);
+   if(result.events.length){
+     try{
+       const existing=JSON.parse(localStorage.getItem(LOCAL_ROSTER_HISTORY_KEY)||'[]') as LocalRosterEvent[];
+       const safe=Array.isArray(existing)?existing.filter(e=>typeof e.admin_id==='string'&&typeof e.kind==='string'):[];
+       localStorage.setItem(LOCAL_ROSTER_HISTORY_KEY,JSON.stringify([...safe,...result.events].slice(-500)));
+     }catch{localStorage.setItem(LOCAL_ROSTER_HISTORY_KEY,JSON.stringify(result.events));}
+   }
+ };
+ const submit=(e:FormEvent)=>{
+   e.preventDefault();
+   if(currentAdmins.some(a=>a.name.toLocaleLowerCase()===name.trim().toLocaleLowerCase()&&a.id!==selected)){setError('الاسم موجود بالفعل');return;}
+   const input={name:name.trim(),rank,admin_level:adminLevel,shift_label:shiftLabel.trim()||null,active,in_reporting:inReporting};
+   const op:LocalRosterAction=selected?{kind:'edit',id:selected,input}:{kind:'add',id:'local-'+crypto.randomUUID(),input:{...input,active:true,in_reporting:true}};
+   void run(()=>api(selected?'/api/roster/'+selected:'/api/roster',selected?'PATCH':'POST',selected?input:{name:input.name,rank,admin_level:adminLevel}),()=>applyLocal(op));
  };
  const remove=()=>{
-  if(!selected)return;
-  if(window.prompt(review?'حذف من المعاينة المحلية فقط. اكتب DELETE للتأكيد':'سيُحذف الإداري وسجلاته بعد حفظ نسخة احتياطية. اكتب DELETE للتأكيد')!=='DELETE')return;
-  void run(()=>api('/api/roster/'+selected,'DELETE',{confirm:'DELETE'}),()=>onPreviewAdminsChange?.(currentAdmins.filter(a=>a.id!==selected)));
+   if(!selected)return;
+   if(window.prompt(review?'حذف من المعاينة المحلية فقط. اكتب DELETE للتأكيد':'سيُحذف الإداري وسجلاته بعد حفظ نسخة احتياطية. اكتب DELETE للتأكيد')!=='DELETE')return;
+   const action:LocalRosterAction={kind:'delete',id:selected};
+   void run(()=>api('/api/roster/'+selected,'DELETE',{confirm:'DELETE'}),()=>applyLocal(action));
  };
 
  return <section className="x-panel x-op-card" id="chico-team-editor">
@@ -77,7 +91,7 @@ export function ExecutiveTeamManager({state,review,onRefresh,previewAdmins,onPre
    <div className="x-op-actions"><button className="x-primary" type="submit" disabled={busy||!name.trim()}><Save size={17}/>{editing?'حفظ تعديلات الإداري':'إضافة إداري'}</button>{selected&&<><button className="x-secondary" type="button" onClick={reset}>إلغاء التعديل</button><button className="x-op-danger" type="button" onClick={remove} disabled={busy}><Trash2 size={16}/>حذف</button></>}</div>
   </form>
    {!!currentAdmins.length&&<div className="x-op-mini-list">{currentAdmins.map(a=><button key={a.id} disabled={busy} type="button" onClick={()=>openEdit(a)} data-chico-edit-id={a.id}><Pencil size={13}/><b dir="auto">{a.name}</b><span>{a.rank} · المستوى {a.admin_level||'—'}</span></button>)}</div>}
-  {review&&<button type="button" className="x-secondary" onClick={()=>{localStorage.removeItem('chico-approved-roster-local-v1');location.reload();}}>استعادة قائمة الفريق المعتمدة</button>}
+  {review&&<button type="button" className="x-secondary" onClick={()=>{localStorage.removeItem('chico-approved-roster-local-v1');localStorage.removeItem(LOCAL_ROSTER_HISTORY_KEY);location.reload();}}>استعادة قائمة الفريق المعتمدة</button>}
   {message&&<p className="x-op-success"><CheckCircle2 size={16}/>{message}</p>}{error&&<p className="x-op-error"><AlertTriangle size={16}/>{error}</p>}
  </section>;
 }
