@@ -32,41 +32,50 @@ function Hint({review}:{review:boolean}){return review?<div className="x-op-hint
 function DateRange({reading}:{reading:Reading}){return <span className="x-op-date">{reading.from_date===reading.to_date?reading.to_date:reading.from_date+' — '+reading.to_date}</span>;}
 function Metric({label,value,detail}:{label:string;value:string;detail?:string}){return <div className="x-op-metric"><span>{label}</span><strong>{value}</strong>{detail&&<small>{detail}</small>}</div>;}
 
-export function ExecutiveTeamManager({state,review,onRefresh}:{state:State|null;review:boolean;onRefresh:()=>Promise<void>}){
+export function ExecutiveTeamManager({state,review,onRefresh,previewAdmins,onPreviewAdminsChange}:{state:State|null;review:boolean;onRefresh:()=>Promise<void>;previewAdmins?:Admin[];onPreviewAdminsChange?:(items:Admin[])=>void}){
  const [selected,setSelected]=useState<string|null>(null);
  const [name,setName]=useState('');
  const [rank,setRank]=useState<Rank>('Helper');
+ const [adminLevel,setAdminLevel]=useState(1);
  const [active,setActive]=useState(true);
  const [inReporting,setInReporting]=useState(true);
  const [busy,setBusy]=useState(false);
  const [message,setMessage]=useState('');
  const [error,setError]=useState('');
- const editing=state?.admins.find(a=>a.id===selected);
- const openEdit=(a:Admin)=>{setSelected(a.id);setName(a.name);setRank(a.rank);setActive(a.active);setInReporting(a.in_reporting);setError('');setMessage('');};
- const reset=()=>{setSelected(null);setName('');setRank('Helper');setActive(true);setInReporting(true);};
- const run=async(fn:()=>Promise<unknown>)=>{
-  if(review)return;
+ const currentAdmins=review?(previewAdmins||[]):(state?.admins||[]);
+ const editing=currentAdmins.find(a=>a.id===selected);
+ const openEdit=(a:Admin)=>{setSelected(a.id);setName(a.name);setRank(a.rank);setAdminLevel(a.admin_level||1);setActive(a.active);setInReporting(a.in_reporting);setError('');setMessage('');};
+ const reset=()=>{setSelected(null);setName('');setRank('Helper');setAdminLevel(1);setActive(true);setInReporting(true);};
+ const run=async(fn:()=>Promise<unknown>,localChange?:()=>void)=>{
   setBusy(true);setError('');setMessage('');
-  try{await fn();await onRefresh();reset();setMessage('تم حفظ التغيير ومراجعة البيانات المحدثة');}
+  try{if(review){localChange?.();}else{await fn();await onRefresh();}reset();setMessage(review?'تم تحديث نسخة المعاينة المحلية فقط':'تم حفظ التغيير ومراجعة البيانات المحدثة');}
   catch(e){setError(e instanceof Error?e.message:'تعذّر الحفظ');}
   finally{setBusy(false);}
  };
- const submit=(e:FormEvent)=>{e.preventDefault();void run(()=>api(selected?'/api/roster/'+selected:'/api/roster',selected?'PATCH':'POST',selected?{name:name.trim(),rank,active,in_reporting:inReporting}:{name:name.trim(),rank}));};
- const remove=()=>{
-  if(!selected||review)return;
-  if(window.prompt('سيُحذف الإداري وجميع سجلاته بعد إنشاء نسخة احتياطية. اكتب DELETE للتأكيد')!=='DELETE')return;
-  void run(()=>api('/api/roster/'+selected,'DELETE',{confirm:'DELETE'}));
+ const submit=(e:FormEvent)=>{e.preventDefault();if(currentAdmins.some(a=>a.name.toLowerCase()===name.trim().toLowerCase()&&a.id!==selected)){setError('الاسم موجود بالفعل');return;}
+  void run(()=>api(selected?'/api/roster/'+selected:'/api/roster',selected?'PATCH':'POST',selected?{name:name.trim(),rank,admin_level:adminLevel,active,in_reporting:inReporting}:{name:name.trim(),rank,admin_level:adminLevel}),()=>{
+   const next=selected?currentAdmins.map(a=>a.id===selected?{...a,name:name.trim(),rank,admin_level:adminLevel,active,in_reporting:inReporting}:a):[...currentAdmins,{id:'local-'+Date.now(),name:name.trim(),rank,admin_level:adminLevel,active:true,in_reporting:true,sort_order:currentAdmins.length+1,joined_on:null}];
+   onPreviewAdminsChange?.(next);
+  });
  };
+ const remove=()=>{
+  if(!selected)return;
+  if(window.prompt(review?'حذف من المعاينة المحلية فقط. اكتب DELETE للتأكيد':'سيُحذف الإداري وسجلاته بعد حفظ نسخة احتياطية. اكتب DELETE للتأكيد')!=='DELETE')return;
+  void run(()=>api('/api/roster/'+selected,'DELETE',{confirm:'DELETE'}),()=>onPreviewAdminsChange?.(currentAdmins.filter(a=>a.id!==selected)));
+ };
+
  return <section className="x-panel x-op-card">
   <div className="x-op-cardhead"><Users size={20}/><h2>إدارة الأسماء والرتب</h2><small>إضافة · تعديل · حذف</small></div>
-  <Hint review={review}/>
+  {review&&<div className="x-op-hint"><Shield size={18}/>يمكنك تجربة الإضافة والتعديل والحذف هنا. التغييرات تُحفظ على هذا الجهاز فقط، ولا تغيّر بيانات السيرفر.</div>}
   <form className="x-op-form" onSubmit={submit}>
-   <label>اسم الإداري<input required maxLength={80} value={name} onChange={e=>setName(e.target.value)} disabled={review||busy} placeholder="اكتب الاسم كما يظهر في اللعبة"/></label>
-   <label>الرتبة<select value={rank} onChange={e=>setRank(e.target.value as Rank)} disabled={review||busy}>{RANKS.map(r=><option key={r}>{r}</option>)}</select></label>
-   {selected&&<><label className="x-op-check"><input type="checkbox" checked={active} onChange={e=>setActive(e.target.checked)} disabled={busy||review}/>نشط</label><label className="x-op-check"><input type="checkbox" checked={inReporting} onChange={e=>setInReporting(e.target.checked)} disabled={busy||review}/>يظهر في التقارير</label></>}
-   <div className="x-op-actions"><button className="x-primary" type="submit" disabled={review||busy||!name.trim()}><Save size={17}/>{editing?'حفظ تعديلات الإداري':'إضافة إداري'}</button>{selected&&<><button className="x-secondary" type="button" onClick={reset}>إلغاء التعديل</button><button className="x-op-danger" type="button" onClick={remove} disabled={busy||review}><Trash2 size={16}/>حذف</button></>}</div>
+   <label>اسم الإداري<input required maxLength={80} value={name} onChange={e=>setName(e.target.value)} disabled={busy} placeholder="اكتب الاسم كما يظهر في اللعبة"/></label>
+   <label>الرتبة<select value={rank} onChange={e=>setRank(e.target.value as Rank)} disabled={busy}>{RANKS.map(r=><option key={r}>{r}</option>)}</select></label>
+   <label>المستوى الإداري<select value={adminLevel} onChange={e=>setAdminLevel(Number(e.target.value))} disabled={busy}><option value={1}>1</option><option value={2}>2</option><option value={3}>3</option></select></label>
+   {selected&&<><label className="x-op-check"><input type="checkbox" checked={active} onChange={e=>setActive(e.target.checked)} disabled={busy}/>نشط</label><label className="x-op-check"><input type="checkbox" checked={inReporting} onChange={e=>setInReporting(e.target.checked)} disabled={busy}/>يظهر في التقارير</label></>}
+   <div className="x-op-actions"><button className="x-primary" type="submit" disabled={busy||!name.trim()}><Save size={17}/>{editing?'حفظ تعديلات الإداري':'إضافة إداري'}</button>{selected&&<><button className="x-secondary" type="button" onClick={reset}>إلغاء التعديل</button><button className="x-op-danger" type="button" onClick={remove} disabled={busy}><Trash2 size={16}/>حذف</button></>}</div>
   </form>
-  {!!state?.admins.length&&<div className="x-op-mini-list">{state.admins.map(a=><button key={a.id} disabled={review||busy} type="button" onClick={()=>openEdit(a)}><Pencil size={13}/><b dir="auto">{a.name}</b><span>{a.rank}</span></button>)}</div>}
+   {!!currentAdmins.length&&<div className="x-op-mini-list">{currentAdmins.map(a=><button key={a.id} disabled={busy} type="button" onClick={()=>openEdit(a)}><Pencil size={13}/><b dir="auto">{a.name}</b><span>{a.rank} · المستوى {a.admin_level||'—'}</span></button>)}</div>}
+  {review&&<button type="button" className="x-secondary" onClick={()=>{localStorage.removeItem('chico-approved-roster-local-v1');location.reload();}}>استعادة قائمة الفريق المعتمدة</button>}
   {message&&<p className="x-op-success"><CheckCircle2 size={16}/>{message}</p>}{error&&<p className="x-op-error"><AlertTriangle size={16}/>{error}</p>}
  </section>;
 }

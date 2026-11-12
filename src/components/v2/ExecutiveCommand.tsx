@@ -58,6 +58,9 @@ function Brand({small=false}:{small?:boolean}){return <div className={'x-brand '
 export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{review?:boolean;initialTab?:Tab}){
  const [auth,setAuth]=useState<Auth>(review?'in':'checking');
  const [state,setState]=useState<State|null>(null);
+ const [reviewAdmins,setReviewAdmins]=useState<Admin[]>(()=>previewRows.map((r,i)=>({id:r.id,name:r.name,rank:r.rank,admin_level:r.admin_level,active:r.active,in_reporting:r.in_reporting,sort_order:i+1,joined_on:null})));
+ useEffect(()=>{if(!review)return;try{const stored=localStorage.getItem('chico-approved-roster-local-v1');if(stored){const parsed=JSON.parse(stored) as Admin[];if(Array.isArray(parsed)&&parsed.every(a=>typeof a.id==='string'&&typeof a.name==='string'))setReviewAdmins(parsed);}}catch{}},[review]);
+ const updateReviewAdmins=(next:Admin[])=>{setReviewAdmins(next);setFocused(null);try{localStorage.setItem('chico-approved-roster-local-v1',JSON.stringify(next));}catch{}};
  const [tab,setTab]=useState<Tab>(initialTab);
  const [light,setLight]=useState(false);
  const [menu,setMenu]=useState(false);
@@ -71,7 +74,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
  const [focused,setFocused]=useState<Row|null>(null);
  const [previewLogin,setPreviewLogin]=useState(false);
  const [searchOpen,setSearchOpen]=useState(false);
- const rows=useMemo(()=>review?previewRows:latestRows(state),[review,state]);
+ const rows=useMemo(()=>review?reviewAdmins.map(a=>({id:a.id,name:a.name,rank:a.rank,admin_level:a.admin_level,active:a.active,in_reporting:a.in_reporting,tickets:null,flags:null,rating:null,hours:null,lastUpdate:null})):latestRows(state),[review,reviewAdmins,state]);
  const visible=useMemo(()=>rows.filter(r=>(rank==='all'||r.rank===rank)&&(r.name.toLowerCase().includes(filter.toLowerCase()))),[rows,rank,filter]);
  const summary=state?.summary;
  const active=rows.filter(r=>r.active).length;
@@ -206,7 +209,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
       <div className="x-kpi-grid x-team-kpis">{[
        {name:'إجمالي الإداريين',val:rows.length,icon:Users},{name:'النشطون',val:active,icon:CheckCircle2},{name:'بلا تحديث هذا الأسبوع',val:rows.filter(r=>r.active&&!r.lastUpdate).length,icon:Clock3},{name:'حالات تحتاج متابعة',val:warnings.length,icon:AlertTriangle}
       ].map(x=><div className="x-kpi" key={x.name}><div className="x-kpi-title"><x.icon size={23}/><b>{x.name}</b></div><strong>{x.val}</strong></div>)}</div>
-      <ExecutiveTeamManager state={state} review={review} onRefresh={refresh}/>
+      <ExecutiveTeamManager state={state} review={review} onRefresh={refresh} previewAdmins={reviewAdmins} onPreviewAdminsChange={updateReviewAdmins}/>
       <section className="x-panel x-directory"><CardTitle icon={Users} title="سجل الإداريين" en="TEAM DIRECTORY"/>
        <div className="x-filterbar"><div className="x-filtersearch"><Search size={18}/><input placeholder="ابحث بالاسم…" value={filter} onChange={e=>setFilter(e.target.value)}/></div><select value={rank} onChange={e=>setRank(e.target.value)} aria-label="تصفية حسب الرتبة"><option value="all">جميع الرتب</option><option value="Administrator">Administrator</option><option value="Moderator">Moderator</option><option value="SN.Helper">SN.Helper</option><option value="Helper">Helper</option></select><span className="x-table-count">{visible.length} إداري</span></div>
        <TeamTable rows={visible} onFocus={setFocused}/>
