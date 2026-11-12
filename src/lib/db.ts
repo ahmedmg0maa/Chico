@@ -41,13 +41,11 @@ export async function audit(sql: ReturnType<typeof postgres>,action:string,summa
 }
 /** Backup is in the isolated chico_next schema; never overwrite legacy datasets. */
 export async function snapshot(sql: ReturnType<typeof postgres>,label:string){
-  const [admins,rank_history,shift_history,readings,weekly_status]=await Promise.all([
-    sql`SELECT * FROM chico_next.admins`,
-    sql`SELECT * FROM chico_next.rank_history`,
-    sql`SELECT * FROM chico_next.shift_history`,
-    sql`SELECT * FROM chico_next.readings`,
-    sql`SELECT * FROM chico_next.weekly_status`
-  ]);
+  const admins=await sql`SELECT * FROM chico_next.admins`;
+  const rank_history=await sql`SELECT * FROM chico_next.rank_history`;
+  const shift_history=await sql`SELECT * FROM chico_next.shift_history`;
+  const readings=await sql`SELECT * FROM chico_next.readings`;
+  const weekly_status=await sql`SELECT * FROM chico_next.weekly_status`;
   const payload=JSON.stringify({admins:[...admins],rank_history:[...rank_history],shift_history:[...shift_history],readings:[...readings],weekly_status:[...weekly_status]});
   await sql`INSERT INTO chico_next.backups(label,snapshot) VALUES(${label},${payload}::jsonb)`;
 }

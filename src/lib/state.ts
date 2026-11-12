@@ -11,11 +11,10 @@ function mapReading(row:Record<string,unknown>):Reading{
 }
 export async function loadState():Promise<State>{
   const sql=db();
-  const [ar,rr,wr]=await Promise.all([
-    sql`SELECT id,name,rank,active,in_reporting,sort_order,admin_level,shift_label,joined_on FROM chico_next.admins ORDER BY sort_order ASC, name ASC`,
-    sql`SELECT r.*,a.name AS admin_name,a.rank FROM chico_next.readings r JOIN chico_next.admins a ON a.id=r.admin_id ORDER BY r.to_date DESC,r.created_at DESC`,
-    sql`SELECT week_start,status,closed_at FROM chico_next.weekly_status ORDER BY week_start DESC LIMIT 52`
-  ]);
+  // Shared Supabase transaction pooler: issue each read in sequence on the single connection.
+  const ar=await sql`SELECT id,name,rank,active,in_reporting,sort_order,admin_level,shift_label,joined_on FROM chico_next.admins ORDER BY sort_order ASC, name ASC`;
+  const rr=await sql`SELECT r.*,a.name AS admin_name,a.rank FROM chico_next.readings r JOIN chico_next.admins a ON a.id=r.admin_id ORDER BY r.to_date DESC,r.created_at DESC`;
+  const wr=await sql`SELECT week_start,status,closed_at FROM chico_next.weekly_status ORDER BY week_start DESC LIMIT 52`;
   const admins=ar.map(r=>mapAdmin(r)); const readings=rr.map(r=>mapReading(r));
   const weeks=wr.map(r=>({week_start:String(r.week_start).slice(0,10),status:r.status as Week['status'],closed_at:r.closed_at?String(r.closed_at):null}));
   // Business date: Egypt's date, not UTC calendar day.

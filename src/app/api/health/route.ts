@@ -3,6 +3,7 @@ import {loadState} from '@/lib/state';
 import {response} from '@/lib/api';
 import {isPasswordCorrect,isRateLimited} from '@/lib/auth';
 export const runtime='nodejs';
+export const maxDuration=15;
 export async function GET(){
   try {
     await dbReady();
