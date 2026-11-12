@@ -9,8 +9,9 @@ import {
   Ticket,TrendingUp,Trophy,Users,UserRound,Workflow,X
 } from 'lucide-react';
 import type {Admin,Reading,State,Rank} from '@/lib/types';
+import ExecutiveOperations,{ExecutiveTeamManager} from './ExecutiveOperations';
 
-type Tab='dashboard'|'team'|'updates'|'excel'|'server'|'reports'|'weeks'|'alerts'|'settings';
+export type Tab='dashboard'|'team'|'updates'|'excel'|'server'|'reports'|'weeks'|'alerts'|'settings';
 type Auth='checking'|'out'|'in';
 type Row={id:string;name:string;rank:Rank;active:boolean;tickets:number|null;flags:number|null;rating:number|null;hours:number|null;lastUpdate:string|null;in_reporting:boolean;flagsIncomplete?:boolean;periodFrom?:string|null};
 const links:{id:Tab;label:string;en:string;icon:typeof Home}[]=[
@@ -62,10 +63,10 @@ function Brand({small=false}:{small?:boolean}){return <div className={'x-brand '
  <div className="x-brand-words"><b>CHICO</b><small>G E N E R A L &nbsp; T E A M</small></div>
  </div>;}
 
-export default function ExecutiveCommand({review=false}:{review?:boolean}){
+export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{review?:boolean;initialTab?:Tab}){
  const [auth,setAuth]=useState<Auth>(review?'in':'checking');
  const [state,setState]=useState<State|null>(null);
- const [tab,setTab]=useState<Tab>('dashboard');
+ const [tab,setTab]=useState<Tab>(initialTab);
  const [light,setLight]=useState(false);
  const [menu,setMenu]=useState(false);
  const [pass,setPass]=useState('');
@@ -111,7 +112,7 @@ export default function ExecutiveCommand({review=false}:{review?:boolean}){
   setPass('');setAuth('in');await refresh();
  }catch(e){setError(e instanceof Error?e.message:'خطأ في الدخول');}finally{setWorking(false);}}
  async function logout(){if(review){setPreviewLogin(true);return;}await fetch('/api/auth',{method:'DELETE'});setAuth('out');setState(null);setPass('');}
- const open=(id:Tab)=>{setTab(id);setFocused(null);setMenu(false);setNotice('');};
+ const open=(id:Tab)=>{setTab(id);setFocused(null);setMenu(false);setNotice('');const u=new URL(window.location.href);u.searchParams.set('tab',id);window.history.replaceState(null,'',u.pathname+u.search);};
  const simulate=(name:string)=>setNotice('هذه الحزمة مخصصة لمراجعة التصميم؛ وظيفة «'+name+'» ستظل في النظام الحالي لحين نقلها واختبارها.');
  const chartSeries=review?previewTrends:(()=>{
   const dates=Array.from({length:7},(_,i)=>{const d=new Date((summary?.week_start||'2026-11-09')+'T00:00:00Z');d.setUTCDate(d.getUTCDate()+i);return d.toISOString().slice(0,10);});
@@ -233,13 +234,15 @@ export default function ExecutiveCommand({review=false}:{review?:boolean}){
       <div className="x-kpi-grid x-team-kpis">{[
        {name:'إجمالي الإداريين',val:review?27:rows.length,icon:Users},{name:'النشطون',val:active,icon:CheckCircle2},{name:'بلا تحديث هذا الأسبوع',val:rows.filter(r=>r.active&&!r.lastUpdate).length,icon:Clock3},{name:'حالات تحتاج متابعة',val:warnings.length,icon:AlertTriangle}
       ].map(x=><div className="x-kpi" key={x.name}><div className="x-kpi-title"><x.icon size={23}/><b>{x.name}</b></div><strong>{x.val}</strong></div>)}</div>
+      <ExecutiveTeamManager state={state} review={review} onRefresh={refresh}/>
       <section className="x-panel x-directory"><CardTitle icon={Users} title="سجل الإداريين" en="TEAM DIRECTORY"/>
        <div className="x-filterbar"><div className="x-filtersearch"><Search size={18}/><input placeholder="ابحث بالاسم…" value={filter} onChange={e=>setFilter(e.target.value)}/></div><select value={rank} onChange={e=>setRank(e.target.value)} aria-label="تصفية حسب الرتبة"><option value="all">جميع الرتب</option><option value="Administrator">Administrator</option><option value="Moderator">Moderator</option><option value="SN.Helper">SN.Helper</option><option value="Helper">Helper</option></select><span className="x-table-count">{visible.length} إداري</span></div>
        <TeamTable rows={visible} onFocus={setFocused}/>
       </section>
       {focused&&<div className="x-detail-scrim" onMouseDown={e=>{if(e.target===e.currentTarget)setFocused(null)}}><aside className="x-detail-card" role="dialog" aria-modal="true" aria-label="ملف إداري"><button className="x-detail-close" onClick={()=>setFocused(null)}><X size={20}/></button><div className="x-profile-seal">{emblem(focused.rank)}</div><span className="x-kicker">ADMINISTRATOR PROFILE</span><h2>{focused.name}</h2><p>{focused.rank} · {focused.active?'نشط':'غير نشط'}</p><div className="x-profile-stats"><div><b>{pretty(focused.tickets)}</b><small>Tickets</small></div><div><b>{pretty(focused.flags)}</b><small>Flags</small></div><div><b>{pretty(focused.rating,'rating')}</b><small>Rating</small></div><div><b>{pretty(focused.hours)}</b><small>TIME</small></div></div><div className="x-detail-foot"><CalendarDays size={17}/> آخر قراءة: {focused.lastUpdate?(focused.periodFrom&&focused.periodFrom!==focused.lastUpdate?focused.periodFrom+' — ':'')+focused.lastUpdate:'غير مسجل'}</div><p className="x-muted">صفحة معاينة تفصيلية، وسيُستكمل سجل الرتب والمناوبات في حزمة إدارة الفريق.</p></aside></div>}
      </>}
-     {tab!=='dashboard'&&tab!=='team'&&<section className="x-not-ready"><div className="x-not-ready-emblem"><img src="/assets/chico-wolf-safe-192.png" alt=""/></div><span className="x-kicker">CHICO NEXT GENERATION</span><h1>{links.find(l=>l.id===tab)?.label}</h1><p>تم اعتماد التصميم الموحّد لهذا القسم، وسيُستكمل نقله في حزمة التنفيذ المخصصة له. العمليات الفعلية متاحة في الإصدار الحالي دون تغيير.</p><div className="x-notready-actions"><button className="x-primary" onClick={()=>open('dashboard')}>العودة لمركز القيادة <ArrowLeft size={17}/></button><a className="x-secondary" href="https://chicoteam.vercel.app/" target="_blank" rel="noreferrer">فتح النظام الحالي <ArrowUpRight size={17}/></a></div></section>}
+     {tab!=='dashboard'&&tab!=='team'&&<ExecutiveOperations tab={tab} state={state} review={review} onRefresh={refresh}/>}
+
      <footer className="x-foot"><span>© CHICO GENERAL TEAM · ONE STATE RP</span><span>{review?'VISUAL REVIEW — NOT LIVE DATA':'PROTECTED ADMINISTRATION PLATFORM'}</span></footer>
     </div>
    </main>

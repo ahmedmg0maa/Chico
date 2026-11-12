@@ -18,7 +18,7 @@
 
 - Configure an **isolated** Preview database and password/session secrets; never copy the production database connection/password into public preview.
 - Verify login, session, lockout, role/data permissions, create/edit/delete, reading recompute, multi-day gaps, Monday counter reset, week close/reopen, and Excel preview/import in a safe test environment.
-- Build the seven V2 operational workspaces currently linked as placeholders. Existing V1 routes remain the functional fallback, not a completed migration.
+- V2 now contains real UI wiring for team CRUD, readings, XLSX review/commit, weekly operations, report export, alerts and settings. **Do not mark these flows accepted until end-to-end tests run against an isolated database.** V1 remains the verified fallback until acceptance.
 - Confirm how weekly TIME and Rating should be aggregated from the game's snapshots before claiming a verified weekly calculation.
 - Reassess defense-in-depth RLS on the private `chico_next` schema. At inspection, anonymous/authenticated roles lacked schema/table access, so **absence of RLS is not evidence of public exposure**. Do not apply RLS or grants to production before a migration-and-rollback test.
 - Complete real-browser desktop/mobile/light/dark/accessibility checks. HTTP 200 or a READY deployment are not full QA.
