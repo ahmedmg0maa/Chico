@@ -9,7 +9,15 @@ export function db() {
   if (connection.hostname.endsWith('.pooler.supabase.com') && connection.username==='postgres') {
     connection.username='postgres.vaxdjjcsnvsfojeddqih';
   }
-  if (!pool) pool=postgres(connection.toString(),{max:1,prepare:false,ssl:'require',connect_timeout:10,idle_timeout:20});
+  if (!pool) {
+    console.info('[CHICO_DB_PROFILE]',{
+      pooler:connection.hostname.endsWith('.pooler.supabase.com'),
+      port:connection.port||'default',
+      tenantQualified:connection.username.endsWith('.vaxdjjcsnvsfojeddqih'),
+      hasPassword:Boolean(connection.password)
+    });
+    pool=postgres(connection.toString(),{max:1,prepare:false,ssl:'require',connect_timeout:10,idle_timeout:20});
+  }
   return pool;
 }
 export async function dbReady(){
