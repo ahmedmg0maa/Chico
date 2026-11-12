@@ -305,3 +305,9 @@
 .chico-v2 .x-profile-shift>svg{color:#e2bd83}.chico-v2 .x-profile-shift>strong{color:#f0dfbc;font-size:19px}.chico-v2 .x-profile-shift>p{color:#b7b0a7;font-size:12px;line-height:1.9}
 .chico-v2 .x-profile-footer{margin-top:auto;border-top:1px solid rgba(205,164,92,.16);display:flex;gap:9px;align-items:center;padding:16px 25px;font-size:11px;color:#a7a6aa}
 @media(max-width:550px){.chico-v2 .x-profile-identity{padding:17px;gap:14px}.chico-v2 .x-profile-identity .x-profile-seal{width:72px;height:72px}.chico-v2 .x-profile-identity .x-profile-seal svg{width:52px;height:52px}.chico-v2 .x-profile-identity h2{font-size:23px}.chico-v2 .x-profile-body{padding:14px}.chico-v2 .x-profile-edit{margin:0 16px 14px}}
+
+/* Designed navigation icon set, custom 32px geometry instead of generic pictograms. */
+.chico-v2 .x-nav-iconbox{flex:none;display:grid;place-items:center;width:33px;height:33px;border:1px solid rgba(201,170,112,.16);border-radius:8px;background:#171a20;color:#bdaa8e}
+.chico-v2 .x-nav-iconbox>svg{display:block;width:21px;height:21px}
+.chico-v2 .x-nav-link.x-nav-active .x-nav-iconbox{color:#f0d6a5;border-color:rgba(214,167,99,.47);background:#382628}
+.chico-v2 .x-nav-link:hover .x-nav-iconbox{color:#f4d8ab}

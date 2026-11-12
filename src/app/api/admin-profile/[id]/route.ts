@@ -13,6 +13,7 @@ export async function GET(request:NextRequest,context:Context){
   const found=await sql`SELECT id FROM chico_next.admins WHERE id=${id}`;
   if(!found.length)return response({ok:false,error:'NOT_FOUND'},404);
   const ranks=await sql`SELECT previous_rank,new_rank,changed_at FROM chico_next.rank_history WHERE admin_id=${id} ORDER BY changed_at DESC LIMIT 100`;
-  return response({ok:true,rank_history:ranks});
+  const shifts=await sql`SELECT previous_shift,new_shift,changed_at FROM chico_next.shift_history WHERE admin_id=${id} ORDER BY changed_at DESC LIMIT 100`;
+  return response({ok:true,rank_history:ranks,shift_history:shifts});
  }catch(e){return failure(e);}
 }
