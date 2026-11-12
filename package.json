@@ -8,8 +8,9 @@
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "test:rules": "node scripts/test-rules.cjs",
-    "prebuild": "npm run test:rules && npm run test:roster && npm run typecheck",
-    "test:roster": "node scripts/test-roster.cjs"
+    "prebuild": "npm run test:rules && npm run test:roster && npm run test:preview-db && npm run typecheck",
+    "test:roster": "node scripts/test-roster.cjs",
+    "test:preview-db": "node scripts/test-preview-db.cjs"
   },
   "dependencies": {
     "next": "^16.0.0",

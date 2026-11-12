@@ -55,3 +55,7 @@ Do not merge the V2 preview into `main` or promote it to production without owne
 - On production, `CHICO_DB_POOLER_TENANT` must be configured (or a fully-qualified username used in `DATABASE_URL`) **before** any merge into main; current production is unchanged.
 - Backup snapshots now include fixed-shift history. Insertion of an admin and their initial rank record is atomic.
 - Supabase branch creation is cost-gated; no new branch was created without explicit hourly-charge approval.
+
+### Automated preview-database regression test
+
+- `npm run test:preview-db` runs against a simulated Postgres adapter and fake database URLs. It asserts preview refuses production tenant and missing pooler tenancy and that a branch-specific URL is accepted. No real network, credentials or database is contacted.
