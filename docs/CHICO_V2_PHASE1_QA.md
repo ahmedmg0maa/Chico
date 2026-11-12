@@ -67,3 +67,9 @@ Do not merge the V2 preview into `main` or promote it to production without owne
 - `npm run test:local-roster` guards duplicate names, valid levels, immutable updates, deletion, audit events and absence of fabricated performance.
 - A cost-free second Supabase project was attempted, but the account hit its two-project Free limit. No extra project was created; no existing projects were deleted or paused.
 - PostgreSQL ephemeral table transaction tested 31 names, update/shift/rank audit, reading/decimal hours and cascade deletion; transaction rolled back. This is not live API end-to-end testing.
+
+## Production activation readiness
+- Production root now launches the secured V2 dashboard, not the legacy app. `/v2` remains an alias.
+- Preview-only member names are served via `/api/preview-roster` only in Vercel Preview/development; the 31-name list no longer ships in the public production client bundle. On Production this route responds 404.
+- Administrator profile Edit navigates to the Team tab before opening the edit form.
+- Production DB schema, member seeding and environment variables must be prepared and verified **before merging to main**.

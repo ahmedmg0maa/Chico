@@ -3,7 +3,7 @@ import ExecutiveCommand,{type Tab} from '@/components/v2/ExecutiveCommand';
 import '@/components/v2/executive.css';
 
 export const metadata:Metadata={
- title:'CHICO GENERAL TEAM — Executive Preview',
+ title:'CHICO GENERAL TEAM — إدارة الفريق',
  description:'CHICO Elite Administration Suite · approved visual direction · preview review'
 };
 export const dynamic='force-dynamic';

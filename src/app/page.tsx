@@ -1,3 +1,8 @@
-import {CommandCenter} from '@/components/CommandCenter';
+import type {Metadata} from 'next';
+import ExecutiveCommand from '@/components/v2/ExecutiveCommand';
+import '@/components/v2/executive.css';
+
+export const metadata:Metadata={title:'CHICO GENERAL TEAM | مركز إدارة الفريق',description:'ONE STATE RP · CHICO ME — إدارة الفريق والقراءات والتقارير'};
 export const dynamic='force-dynamic';
-export default function Home(){return <CommandCenter/>;}
+// The actual team is loaded only through the authenticated server API.
+export default function Home(){return <ExecutiveCommand review={false}/>;}

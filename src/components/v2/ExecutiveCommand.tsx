@@ -10,7 +10,6 @@ import {
 } from 'lucide-react';
 import type {Admin,Reading,State,Rank} from '@/lib/types';
 import ExecutiveOperations,{ExecutiveTeamManager} from './ExecutiveOperations';
-import {APPROVED_ROSTER} from '@/lib/roster';
 import ExecutiveProfile from './ExecutiveProfile';
 
 export type Tab='dashboard'|'team'|'updates'|'excel'|'server'|'reports'|'weeks'|'alerts'|'settings';
@@ -27,7 +26,6 @@ const links:{id:Tab;label:string;en:string;icon:typeof Home}[]=[
   {id:'alerts',label:'التنبيهات والمتابعة',en:'Tasks & Alerts',icon:ShieldAlert},
   {id:'settings',label:'الإعدادات',en:'Settings',icon:Settings2}
 ];
-const previewRows:Row[]=APPROVED_ROSTER.map((r,i)=>({id:'roster-'+i,name:r.name,rank:r.rank,admin_level:r.admin_level,active:true,tickets:null,flags:null,rating:null,hours:null,lastUpdate:null,in_reporting:true}));
 
 function pretty(v:number|null|undefined,kind?:'percent'|'rating'){
  if(v===null||v===undefined||!Number.isFinite(v))return '—';
@@ -60,8 +58,27 @@ function Brand({small=false}:{small?:boolean}){return <div className={'x-brand '
 export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{review?:boolean;initialTab?:Tab}){
  const [auth,setAuth]=useState<Auth>(review?'in':'checking');
  const [state,setState]=useState<State|null>(null);
- const [reviewAdmins,setReviewAdmins]=useState<Admin[]>(()=>previewRows.map((r,i)=>({id:r.id,name:r.name,rank:r.rank,admin_level:r.admin_level,active:r.active,in_reporting:r.in_reporting,sort_order:i+1,joined_on:null})));
- useEffect(()=>{if(!review)return;try{const stored=localStorage.getItem('chico-approved-roster-local-v1');if(stored){const parsed=JSON.parse(stored) as Admin[];if(Array.isArray(parsed)&&parsed.every(a=>typeof a.id==='string'&&typeof a.name==='string'))setReviewAdmins(parsed);}}catch{}},[review]);
+ const [reviewAdmins,setReviewAdmins]=useState<Admin[]>([]);
+ useEffect(()=>{
+  if(!review)return;
+  let cancelled=false;
+  try{
+   const stored=localStorage.getItem('chico-approved-roster-local-v1');
+   if(stored){
+    const parsed=JSON.parse(stored) as Admin[];
+    if(Array.isArray(parsed)&&parsed.every(a=>typeof a.id==='string'&&typeof a.name==='string'&&typeof a.rank==='string')){
+     setReviewAdmins(parsed);
+     return;
+    }
+   }
+  }catch{ /* Local browser data may be unavailable. */ }
+  fetch('/api/preview-roster',{cache:'no-store'}).then(async r=>{
+   if(!r.ok)throw Error('لم تُحمّل القائمة الرسمية للمعاينة');
+   return r.json() as Promise<{ok:boolean;admins:Admin[]}>;
+  }).then(data=>{if(!cancelled&&data.ok&&Array.isArray(data.admins))setReviewAdmins(data.admins);})
+    .catch(()=>{if(!cancelled)setError('تعذر تحميل قائمة المعاينة؛ راجع اتصال الموقع');});
+  return ()=>{cancelled=true;};
+ },[review]);
  const updateReviewAdmins=(next:Admin[])=>{setReviewAdmins(next);setFocused(null);try{localStorage.setItem('chico-approved-roster-local-v1',JSON.stringify(next));}catch{}};
  const [tab,setTab]=useState<Tab>(initialTab);
  const [light,setLight]=useState(false);
@@ -222,7 +239,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
        <div className="x-filterbar"><div className="x-filtersearch"><Search size={18}/><input placeholder="ابحث بالاسم…" value={filter} onChange={e=>setFilter(e.target.value)}/></div><select value={rank} onChange={e=>setRank(e.target.value)} aria-label="تصفية حسب الرتبة"><option value="all">جميع الرتب</option><option value="Administrator">Administrator</option><option value="Moderator">Moderator</option><option value="SN.Helper">SN.Helper</option><option value="Helper">Helper</option></select><span className="x-table-count">{visible.length} إداري</span></div>
        <TeamTable rows={visible} onFocus={setFocused}/>
       </section>
-      {focused&&<ExecutiveProfile member={focused} readings={review?[]:state?.readings||[]} review={review} mark={<RankMark rank={focused.rank}/>} onClose={()=>setFocused(null)} onEdit={()=>{const target=focused.id;setFocused(null);requestAnimationFrame(()=>{document.querySelector<HTMLButtonElement>('[data-chico-edit-id="'+target+'"]')?.click();document.getElementById('chico-team-editor')?.scrollIntoView({behavior:'smooth',block:'start'});});}}/>}
+      {focused&&<ExecutiveProfile member={focused} readings={review?[]:state?.readings||[]} review={review} mark={<RankMark rank={focused.rank}/>} onClose={()=>setFocused(null)} onEdit={()=>{const target=focused.id;setFocused(null);setTab('team');requestAnimationFrame(()=>{document.querySelector<HTMLButtonElement>('[data-chico-edit-id="'+target+'"]')?.click();document.getElementById('chico-team-editor')?.scrollIntoView({behavior:'smooth',block:'start'});});}}/>}
      </>}
      {tab!=='dashboard'&&tab!=='team'&&<ExecutiveOperations tab={tab} state={state} review={review} onRefresh={refresh}/>}
 
