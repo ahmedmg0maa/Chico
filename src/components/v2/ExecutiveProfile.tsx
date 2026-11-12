@@ -6,16 +6,18 @@ import type {Rank,Reading} from '@/lib/types';
 
 type Member={id:string;name:string;rank:Rank;admin_level?:number|null;shift_label?:string|null;active:boolean;in_reporting:boolean;tickets:number|null;flags:number|null;hours:number|null;rating:number|null;lastUpdate:string|null;periodFrom?:string|null};
 type RankEntry={previous_rank:string|null;new_rank:string;changed_at:string};
+type ShiftEntry={previous_shift:string|null;new_shift:string|null;changed_at:string};
 type Tab='overview'|'readings'|'rank'|'shift';
 const formatted=(v:number|null|undefined)=>v===null||v===undefined?'—':new Intl.NumberFormat('en-US',{maximumFractionDigits:2}).format(v);
 export default function ExecutiveProfile({member,readings,review,mark,onClose,onEdit}:{member:Member;readings:Reading[];review:boolean;mark:ReactNode;onClose:()=>void;onEdit:()=>void}){
  const [tab,setTab]=useState<Tab>('overview');
  const [history,setHistory]=useState<RankEntry[]>([]);
+ const [shiftHistory,setShiftHistory]=useState<ShiftEntry[]>([]);
  const [loading,setLoading]=useState(!review);
  const [error,setError]=useState('');
  const memberReadings=useMemo(()=>readings.filter(r=>r.admin_id===member.id).sort((a,b)=>b.to_date.localeCompare(a.to_date)||b.created_at.localeCompare(a.created_at)),[readings,member.id]);
  useEffect(()=>{if(review)return;let cancelled=false;setLoading(true);setError('');
-  void fetch('/api/admin-profile/'+encodeURIComponent(member.id),{credentials:'same-origin',cache:'no-store'}).then(async r=>{if(!r.ok)throw new Error('تعذّر قراءة سجل الرتب');return r.json();}).then(data=>{if(!cancelled)setHistory(data.rank_history||[]);}).catch(e=>{if(!cancelled)setError(e instanceof Error?e.message:'تعذر تحميل السجل');}).finally(()=>{if(!cancelled)setLoading(false);});return()=>{cancelled=true;};
+  void fetch('/api/admin-profile/'+encodeURIComponent(member.id),{credentials:'same-origin',cache:'no-store'}).then(async r=>{if(!r.ok)throw new Error('تعذّر قراءة سجل الرتب');return r.json();}).then(data=>{if(!cancelled)setHistory(data.rank_history||[]);setShiftHistory(data.shift_history||[]);}).catch(e=>{if(!cancelled)setError(e instanceof Error?e.message:'تعذر تحميل السجل');}).finally(()=>{if(!cancelled)setLoading(false);});return()=>{cancelled=true;};
  },[member.id,review]);
  const tabs:{id:Tab;title:string}[]=[{id:'overview',title:'الملخص'},{id:'readings',title:'القراءات'},{id:'rank',title:'سجل الرتب'},{id:'shift',title:'المناوبة'}];
  return <div className="x-detail-scrim" onMouseDown={e=>{if(e.target===e.currentTarget)onClose();}}>
@@ -36,6 +38,8 @@ export default function ExecutiveProfile({member,readings,review,mark,onClose,on
    </div>}
    {tab==='shift'&&<div className="x-profile-body"><div className="x-profile-section-heading"><Clock3 size={18}/>المناوبة الثابتة</div>
     <div className="x-profile-shift"><CalendarDays size={24}/><strong>{member.shift_label||'لم تُحدد مناوبة بعد'}</strong><p>المناوبة إعداد مستمر للإداري ولا تُنشأ من جديد كل يوم. يتغير الجدول فقط عند تعديلك له.</p></div>
+    <div className="x-profile-section-heading" style={{marginTop:22}}><History size={18}/>تاريخ تعديل المناوبة</div>
+    {shiftHistory.length?shiftHistory.map((event,i)=><div className="x-profile-event" key={i}><div><b>{event.new_shift||'تم إلغاء المناوبة'}</b><span>{event.previous_shift?'بدلًا من '+event.previous_shift:'أول تعيين'}</span><span>{new Date(event.changed_at).toLocaleString('ar-EG',{dateStyle:'medium',timeStyle:'short'})}</span></div></div>):<p className="x-profile-hint">لا توجد تغييرات مناوبة مسجلة حتى الآن.</p>}
    </div>}
    <footer className="x-profile-footer"><Shield size={16}/>{review?'بيانات الأسماء من Excel المعتمد. الإحصائيات غير مسجلة.':'معلومات محمية · CHICO ME'}</footer>
   </aside>

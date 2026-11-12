@@ -43,3 +43,7 @@ Do not merge the V2 preview into `main` or promote it to production without owne
 - Schema migration `db/002_admin_directory_enrichment.sql` adds structured administrative level, optional fixed shift, and shift-change history, without daily duplication.
 - **Apply on isolated Preview database before connecting an authenticated V2 Preview**. This migration has not been applied to Production as part of UI work.
 - The V2 review page supports local add/edit/delete. Local data is not Supabase data and may be reset from the roster form.
+
+- Build gate now checks the 31-name approved roster (13 Helper, 4 SN.Helper, 10 Moderator, 3 Administrator, 1 Responsible), name uniqueness, explicit level assignments and absence of fake performance fields.
+- Until any readings actually exist for a reporting week, absence of readings no longer triggers blanket performance warnings for all administrators.
+- Shift edit events are exposed in the member's shift history. No daily shift rows are created.

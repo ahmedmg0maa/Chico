@@ -83,7 +83,8 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
  const covered=rows.filter(r=>r.active&&r.lastUpdate!==null).length;
  const totals={tickets:review?null:summary?.tickets??null,flags:review?null:summary?.flags??null,rate:review?null:summary?.rate??null,rating:review?null:summary?.rating??null,members:rows.length,coverage:active?Math.round(100*covered/active):null};
  const top=rows.filter(r=>(r.rank==='Helper'||r.rank==='SN.Helper')&&r.tickets!==null).sort((a,b)=>(b.tickets??0)-(a.tickets??0)).slice(0,3);
- const warnings=rows.filter(r=>r.flagsIncomplete||(r.flags!==null&&r.flags>7)||(r.rating!==null&&r.rating<4.8)||(!r.lastUpdate&&r.active));
+ const hasRegisteredWeek=!!state?.readings.some(r=>r.week_start===summary?.week_start);
+ const warnings=rows.filter(r=>r.flagsIncomplete||(r.flags!==null&&r.flags>7)||(r.rating!==null&&r.rating<4.8)||(!r.lastUpdate&&r.active&&hasRegisteredWeek));
  const timeLabel=review?'القائمة المعتمدة':summary?.week_start||'الأسبوع الحالي';
  async function refresh(){
   if(review)return;

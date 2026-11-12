@@ -28,7 +28,7 @@ function Head({en,title,description}:{en:string;title:string;description:string}
  return <section className="x-titleband"><span className="x-kicker">{en}</span><h1>{title}</h1><p>{description}</p></section>;
 }
 function Empty({text}:{text:string}){return <div className="x-empty"><Activity size={25}/><b>{text}</b></div>;}
-function Hint({review}:{review:boolean}){return review?<div className="x-op-hint"><Shield size={18}/>هذه معاينة تصميم منفصلة: النماذج غير متصلة ولا تحفظ بيانات حقيقية.</div>:null;}
+function Hint({review}:{review:boolean}){return review?<div className="x-op-hint"><Shield size={18}/>هذه معاينة بيانات الأسماء المعتمدة. عمليات القراءات والاستيراد لا تُحفظ قبل تجهيز قاعدة اختبار مستقلة.</div>:null;}
 function DateRange({reading}:{reading:Reading}){return <span className="x-op-date">{reading.from_date===reading.to_date?reading.to_date:reading.from_date+' — '+reading.to_date}</span>;}
 function Metric({label,value,detail}:{label:string;value:string;detail?:string}){return <div className="x-op-metric"><span>{label}</span><strong>{value}</strong>{detail&&<small>{detail}</small>}</div>;}
 
@@ -171,7 +171,7 @@ export default function ExecutiveOperations({tab,state,review,onRefresh}:Props){
    {controls}
   </section>
   <section className="x-panel x-op-card"><div className="x-op-cardhead"><CalendarDays size={20}/><h2>سجل قراءات الأسبوع الحالي</h2><span>{records.length} قراءة</span></div>
-   {records.length?<div className="x-op-table-wrap"><table className="x-op-table"><thead><tr><th>الإداري</th><th>الفترة</th><th>Tickets</th><th>Flags</th><th>TIME</th><th>Rating</th><th>تعديل</th></tr></thead><tbody>{records.map(r=><tr key={r.id}><td>{r.admin_name}</td><td><DateRange reading={r}/></td><td>{fmt(r.tickets_delta)}</td><td>{fmt(r.flags_delta)}</td><td>{fmt(r.hours)}h</td><td>{fmt(r.rating)}</td><td className="x-op-row-actions"><button type="button" disabled={review||busy} onClick={()=>edit(r)} aria-label={'تعديل قراءة '+r.admin_name}><Pencil size={17}/></button><button type="button" disabled={review||busy} onClick={()=>deleteReading(r)} aria-label={'حذف قراءة '+r.admin_name}><Trash2 size={17}/></button></td></tr>)}</tbody></table></div>:<Empty text="لا توجد قراءات حقيقية مسجلة لهذا الأسبوع"/>}
+   {records.length?<div className="x-op-table-wrap"><table className="x-op-table"><thead><tr><th>الإداري</th><th>الفترة</th><th>Tickets</th><th>Flags</th><th>TIME</th><th>Rating</th><th>تعديل</th></tr></thead><tbody>{records.map(r=><tr key={r.id}><td>{r.admin_name}</td><td><DateRange reading={r}/></td><td>{fmt(r.tickets_delta)}</td><td>{fmt(r.flags_delta)}</td><td>{r.hours===null?'—':fmt(r.hours)+' h'}</td><td>{fmt(r.rating)}</td><td className="x-op-row-actions"><button type="button" disabled={review||busy} onClick={()=>edit(r)} aria-label={'تعديل قراءة '+r.admin_name}><Pencil size={17}/></button><button type="button" disabled={review||busy} onClick={()=>deleteReading(r)} aria-label={'حذف قراءة '+r.admin_name}><Trash2 size={17}/></button></td></tr>)}</tbody></table></div>:<Empty text="لا توجد قراءات حقيقية مسجلة لهذا الأسبوع"/>}
   </section>
  </>;
  if(tab==='excel')return <>
@@ -188,7 +188,7 @@ export default function ExecutiveOperations({tab,state,review,onRefresh}:Props){
  </>;
  if(tab==='server')return <>
   <Head en="CHICO / SERVER PERFORMANCE" title="أداء السيرفر" description="الأرقام من القراءات المحفوظة للأسبوع الحالي، مع فصل البيانات المفقودة عن الصفر."/><Hint review={review}/>
-  <div className="x-op-metrics"><Metric label="إجمالي Tickets" value={fmt(summary?.tickets)}/><Metric label="Flags الأسبوع" value={fmt(summary?.flags)}/><Metric label="Server Flag Rate" value={summary?.rate===null||summary?.rate===undefined?'غير متاح':fmt(summary.rate)+'%'}/><Metric label="TIME المسجل" value={fmt(summary?.hours)+'h'}/><Metric label="متوسط التقييمات المسجلة" value={fmt(summary?.rating)}/><Metric label="إداريون لهم قراءة" value={fmt(summary?.reported,0)}/></div>
+  <div className="x-op-metrics"><Metric label="إجمالي Tickets" value={fmt(summary?.tickets)}/><Metric label="Flags الأسبوع" value={fmt(summary?.flags)}/><Metric label="Server Flag Rate" value={summary?.rate===null||summary?.rate===undefined?'غير متاح':fmt(summary.rate)+'%'}/><Metric label="TIME المسجل" value={summary?.hours===null||summary?.hours===undefined?'—':fmt(summary.hours)+' h'}/><Metric label="متوسط التقييمات المسجلة" value={fmt(summary?.rating)}/><Metric label="إداريون لهم قراءة" value={fmt(summary?.reported,0)}/></div>
   <section className="x-panel x-op-card"><div className="x-op-cardhead"><BarChart3 size={20}/><h2>أفضل الإداريين حسب Tickets</h2></div>{summary?.top.length?<div className="x-op-mini-list">{summary.top.map((r,i)=><div key={r.id}><b>{i+1}. {r.name}</b><span>{r.rank} · {fmt(r.tickets)} Tickets</span></div>)}</div>:<Empty text="لا يوجد ترتيب موثّق لهذا الأسبوع"/>}<p className="x-op-footnote">الترتيب يستبعد Moderator والرتب القيادية.</p></section>
  </>;
  if(tab==='reports')return <>
