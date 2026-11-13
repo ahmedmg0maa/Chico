@@ -260,7 +260,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
     {([{id:'dashboard',name:'القيادة'},{id:'team',name:'الفريق'},{id:'updates',name:'تسجيل'},{id:'reports',name:'Discord'}] as const).map(item=>
      <button type="button" key={item.id} className={tab===item.id?'active':''} onClick={()=>open(item.id)} aria-current={tab===item.id?'page':undefined}>
       <CommandIcon name={item.id} compact/><span>{item.name}</span>
-      {item.id==='alerts'&&warnings.length>0&&<i aria-label="توجد تنبيهات"/>}
+      
      </button>
     )}
    </nav>

@@ -22,7 +22,7 @@ function analyze(admin:Admin,readings:Reading[]):PosterRow{
  return {name:admin.name,rank:admin.rank,tickets:total(mine.map(r=>r.tickets_delta)),flags,rating,hours:total(mine.map(r=>r.hours)),status,hasPartial:flagsIncomplete};
 }
 function drawPoster(canvas:HTMLCanvasElement,rows:PosterRow[],range:{start:string;end:string},title:string,image:HTMLImageElement|null,totalReadings:number){
- const w=1800,h=1830;canvas.width=w;canvas.height=h;const g=canvas.getContext('2d');if(!g)return;
+ const w=1800,h=1830;canvas.width=w;canvas.height=h;const context=canvas.getContext('2d');if(!context)return;const g:CanvasRenderingContext2D=context;
  const colors={base:'#090b10',card:'#111720',card2:'#151922',gold:'#d5a75b',goldLight:'#f8deaa',muted:'#a3aab2',ivory:'#f6e8cb',line:'#6e5438',red:'#ca5860',green:'#39c983',blue:'#559ed9',purple:'#9d7ce7'};
  const grad=g.createLinearGradient(0,0,w,h);grad.addColorStop(0,'#151019');grad.addColorStop(.43,'#090c12');grad.addColorStop(1,'#191018');g.fillStyle=grad;g.fillRect(0,0,w,h);
  const glow=g.createRadialGradient(1420,140,10,1420,140,730);glow.addColorStop(0,'rgba(191,104,58,.18)');glow.addColorStop(1,'transparent');g.fillStyle=glow;g.fillRect(0,0,w,800);
