@@ -4,6 +4,7 @@ import '@/components/v2/executive.css';
 import '@/components/v2/executive-v7.css';
 import '@/components/v2/executive-v8.css';
 import '@/components/v2/executive-v9.css';
+import '@/components/v2/executive-v10.css';
 
 export const metadata:Metadata={
  title:'CHICO GENERAL TEAM — إدارة الفريق',
