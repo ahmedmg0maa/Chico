@@ -3,7 +3,7 @@
 import {useEffect,useMemo,useRef,useState} from 'react';
 import {CalendarDays,Download} from 'lucide-react';
 import type {Admin,Reading,State} from '@/lib/types';
-import {summarizeReadings} from '@/lib/rules';
+import {summarizeReadings,weekStart} from '@/lib/rules';
 
 type Props={state:State|null;review:boolean};
 export type LuxuryPosterRow={id:string;name:string;rank:string;order:number;tickets:number|null;flags:number|null;rating:number|null;flagsIncomplete:boolean};
@@ -233,53 +233,65 @@ export function renderLuxuryPoster(
 }
 
 export default function DailyReportStudio({state,review}:Props){
- const [date,setDate]=useState(cairoToday);
+ const today=useMemo(cairoToday,[]);
+ const latestRecord=useMemo(()=>[...(state?.readings||[])].sort((a,b)=>b.to_date.localeCompare(a.to_date)||b.created_at.localeCompare(a.created_at))[0]||null,[state]);
  const touched=useRef(false);
- const [error,setError]=useState('');
- const [downloading,setDownloading]=useState(false);
+ const [from,setFrom]=useState(today),[to,setTo]=useState(today);
+ const [error,setError]=useState(''),[downloading,setDownloading]=useState(false);
  const canvas=useRef<HTMLCanvasElement>(null);
- const dates=useMemo(()=>[...new Set((state?.readings||[]).filter(r=>r.from_date===r.to_date).map(r=>r.to_date))].sort().reverse(),[state]);
- const latest=dates[0]||null;
- useEffect(()=>{if(latest&&!touched.current)setDate(latest);},[latest]);
- const readings=useMemo(()=>state?.readings.filter(r=>r.from_date===date&&r.to_date===date)||[],[state,date]);
- const partial=useMemo(()=>state?.readings.filter(r=>r.from_date<=date&&r.to_date>=date&&r.to_date!==r.from_date).length||0,[state,date]);
+ useEffect(()=>{
+  if(latestRecord&&!touched.current){setFrom(latestRecord.from_date);setTo(latestRecord.to_date);}
+ },[latestRecord]);
+ const valid=Boolean(from&&to)&&from<=to&&weekStart(from)===weekStart(to);
+ const readings=useMemo(()=>state?.readings.filter(r=>valid&&r.from_date>=from&&r.to_date<=to)||[],[state,from,to,valid]);
+ const partial=useMemo(()=>state?.readings.filter(r=>valid&&r.from_date<=to&&r.to_date>=from&&(r.from_date<from||r.to_date>to)).length||0,[state,from,to,valid]);
  const rows=useMemo(()=>state?.admins.filter(eligible).map(a=>dailyRow(a,readings))||[],[state,readings]);
  const staff=state?.admins.filter(a=>a.active).length||0;
- const totals=useMemo(()=>{const allowed=new Set(state?.admins.filter(a=>a.rank!=='Responsible'&&a.in_reporting).map(a=>a.id)||[]);const summary=summarizeReadings(readings.filter(r=>allowed.has(r.admin_id)));return {tickets:summary.tickets,flags:summary.flags,rating:summary.rating};},[state,readings]);
+ const totals=useMemo(()=>{const allowed=new Set(state?.admins.filter(a=>a.rank!=='Responsible'&&a.in_reporting).map(a=>a.id)||[]);
+  const metrics=summarizeReadings(readings.filter(r=>allowed.has(r.admin_id)));
+  return {tickets:metrics.tickets,flags:metrics.flags,rating:metrics.rating};
+ },[state,readings]);
+ const label=from===to?from:from+'  —  '+to;
+ const title=from===to?'إحصائيات يومية':'إحصائيات الفترة المجمعة';
  useEffect(()=>{
+  if(!canvas.current||!valid)return;
   let cancelled=false;
   const paths=['/assets/chico-approved-onestate.avif','/assets/chico-approved-wolf.avif','/assets/chico-banner-original.png','/assets/medal-gold.png','/assets/medal-silver.png','/assets/medal-bronze.png'];
   (async()=>{const art=await Promise.all(paths.map(loadLuxuryArt));await document.fonts?.ready;
-   if(!cancelled&&canvas.current)renderLuxuryPoster(canvas.current,rows,date,staff,readings.length,art,'إحصائيات يومية',totals);
-  })().catch(()=>{if(!cancelled&&canvas.current)renderLuxuryPoster(canvas.current,rows,date,staff,readings.length,[null,null,null,null,null,null],'إحصائيات يومية',totals);});
+   if(!cancelled&&canvas.current)renderLuxuryPoster(canvas.current,rows,label,staff,readings.length,art,title,totals);
+  })().catch(()=>{if(!cancelled&&canvas.current)renderLuxuryPoster(canvas.current,rows,label,staff,readings.length,[null,null,null,null,null,null],title,totals);});
   return ()=>{cancelled=true;};
- },[rows,date,staff,readings.length,totals]);
+ },[rows,label,staff,readings.length,title,totals,valid]);
  const download=()=>{
-  if(!canvas.current||review||!state||downloading)return;
+  if(!canvas.current||!state||review||downloading||!valid)return;
   setDownloading(true);setError('');
   canvas.current.toBlob(blob=>{
    setDownloading(false);
-   if(!blob){setError('تعذر إنشاء الصورة');return;}
+   if(!blob){setError('تعذّر إنشاء صورة التقرير');return;}
    const url=URL.createObjectURL(blob),link=document.createElement('a');
-   link.href=url;link.download='CHICO_Daily_Report_'+date+'.png';link.click();
+   link.href=url;link.download='CHICO_Report_'+from+'_'+to+'.png';link.click();
    setTimeout(()=>URL.revokeObjectURL(url),1500);
   },'image/png');
  };
+ const single=(date:string)=>{touched.current=true;setFrom(date);setTo(date);};
  return <section className="x-panel v9-poster-studio chico-daily-report">
   <header className="v9-poster-intro">
-   <div><small>CHICO / DAILY STATISTICS</small><h2>التقرير اليومي</h2>
-    <p>نفس تصميم CHICO الأسود والذهبي، بأسماء وأرقام تتغيّر حسب تاريخ التقرير المحفوظ، وأفضل 3 لكل مجموعة حسب Tickets.</p>
+   <div><small>CHICO / PREMIUM STATISTICS</small><h2>التقرير اليومي</h2>
+    <p>تقرير بصري متغيّر حسب البيانات المحفوظة. إذا كان الملف يغطي أكثر من يوم، تظهر فترة التغطية الكاملة من غير اختراع توزيع يومي.</p>
    </div>
-   <button type="button" className="v9-primary" disabled={!state||review||downloading} onClick={download}><Download size={18}/>{downloading?'تجهيز الصورة…':'تنزيل التقرير PNG'}</button>
+   <button className="v9-primary" type="button" disabled={review||!state||!valid||downloading} onClick={download}><Download size={18}/>{downloading?'جاري تجهيز الصورة…':'تنزيل التقرير PNG'}</button>
   </header>
   <div className="v9-poster-filters">
-   <label>تاريخ التقرير <input type="date" value={date} onChange={e=>{touched.current=true;setDate(e.target.value);}}/></label>
-   {latest&&<button className="v9-primary" type="button" onClick={()=>{touched.current=true;setDate(latest);}}><CalendarDays size={16}/>آخر تاريخ مسجّل</button>}
+   <label>من تاريخ<input type="date" value={from} onChange={e=>{touched.current=true;setFrom(e.target.value);}}/></label>
+   <label>إلى تاريخ<input type="date" value={to} onChange={e=>{touched.current=true;setTo(e.target.value);}}/></label>
+   <button type="button" className="v9-primary" onClick={()=>single(today)}>اليوم فقط</button>
+   {latestRecord&&<button type="button" className="v9-primary" onClick={()=>{touched.current=true;setFrom(latestRecord.from_date);setTo(latestRecord.to_date);}}><CalendarDays size={16}/>آخر تقرير مسجّل</button>}
   </div>
-  {partial>0&&<p className="v9-warning" role="status">يوجد {partial} قراءات مجمّعة تغطي اليوم ده ضمن عدة أيام. مش بنوزّعها على يوم واحد تلقائيًا، ولذلك مش داخلة في أرقامه.</p>}
-  {readings.length===0&&<p className="v9-warning" role="status">مفيش قراءات يومية محفوظة للتاريخ ده؛ العلامة — معناها بيانات غير متاحة، مش صفر.</p>}
+  {!valid&&<p className="v9-warning" role="alert">يجب اختيار فترة صحيحة داخل أسبوع واحد؛ Tickets يُصفّر يوم الإثنين.</p>}
+  {partial>0&&<p className="v9-warning" role="status">يوجد {partial} سجل يغطّي جزءًا من الفترة فقط، ولم تُوزّع قيمه على أيام غير محددة.</p>}
+  {valid&&readings.length===0&&<p className="v9-warning" role="status">مفيش قراءات محفوظة للفترة المختارة. اختر آخر تقرير مسجّل لعرض بيانات حقيقية.</p>}
   {error&&<p className="v9-warning" role="alert">{error}</p>}
-  <div className="v9-poster-preview"><canvas ref={canvas} role="img" aria-label={'تقرير CHICO اليومي بتاريخ '+date} style={{width:'100%',maxWidth:1100,height:'auto',aspectRatio:'auto'}}/></div>
-  <p className="v9-poster-note">Tickets وFlags هنا فروق القراءة الخاصة باليوم المختار وليست الأرصدة التراكمية. الترتيب لا يشمل الرتب القيادية، والـHelper والـSN.Helper معًا. لا توجد أرقام تجريبية داخل التقرير.</p>
+  <div className="v9-poster-preview"><canvas ref={canvas} role="img" aria-label={'تقرير CHICO '+label} style={{width:'100%',maxWidth:1100,height:'auto',aspectRatio:'auto'}}/></div>
+  <p className="v9-poster-note">General قائد الفريق يظهر في عدد الأعضاء، لكنه خارج التقييم والترتيب. الأسماء والبيانات مأخوذة من القراءات الفعلية. كل Top 3 مبني على Tickets فقط.</p>
  </section>;
 }
