@@ -8,7 +8,7 @@ import type {Rank} from '@/lib/types';
  * All icons are browser-rendered SVG, not cropped photos or emoji fonts.
  */
 export type CommandSymbol =
- |'dashboard'|'team'|'operations'|'updates'|'excel'|'server'|'reports'|'weeks'|'alerts'|'settings'
+ |'dashboard'|'team'|'operations'|'updates'|'excel'|'server'|'daily'|'reports'|'weeks'|'alerts'|'settings'
  |'tickets'|'flags'|'rating'|'coverage'|'members'|'rate'|'history'|'shift'|'export';
 type IconProps={name:CommandSymbol;compact?:boolean;className?:string};
 export const rankToken=(rank:Rank)=>rank==='SN.Helper'?'senior':rank==='Moderator'?'moderator':rank==='Administrator'?'administrator':rank==='Responsible'?'responsible':'helper';
@@ -20,6 +20,7 @@ export function CommandIcon({name,compact=false,className=''}:IconProps){
   updates:<><path d="M14 8h22v33H14Z"/><path d="M19 16h13M19 23h13M19 30h6"/><path d="M31 28v10M26 33h10" className="v8-icon-deco"/></>,
   excel:<><rect x="9" y="10" width="32" height="31" rx="3"/><path d="M9 20h32M9 31h32M22 20v21M32 20v21"/><path d="m14 14 5 4m0-4-5 4" className="v8-icon-deco"/></>,
   server:<><path d="M10 40h31M14 34V24h6v10M24 34V14h6v20M34 34V8h6v26"/><path d="m12 17 10-8 10 5 9-9" className="v8-icon-deco"/></>,
+  daily:<><path d="M11 9h28v32H11Z"/><path d="M18 17h14M18 34h14M18 26h14"/><path d="M22 20v12" strokeDasharray="3 4" className="v8-icon-deco"/></>,
   reports:<><path d="M14 7h15l8 8v28H14Z"/><path d="M29 7v9h8M19 23h13M19 29h13M19 35h8"/><circle cx="34" cy="35" r="3" className="v8-icon-fill"/></>,
   weeks:<><rect x="9" y="12" width="32" height="29" rx="3"/><path d="M16 8v8M34 8v8M9 21h32"/><path d="m18 29 5 5 11-10" className="v8-icon-deco"/></>,
   alerts:<><path d="m25 6 16 7v12c0 9-6 15-16 20C15 40 9 34 9 25V13Z"/><path d="M25 15v14M25 35v1" className="v8-icon-deco"/></>,
