@@ -12,8 +12,8 @@ import {applyLocalRosterChange,LOCAL_ROSTER_HISTORY_KEY,type LocalRosterAction,t
 export type OperationTab = 'updates'|'excel'|'server'|'daily'|'reports'|'weeks'|'alerts'|'settings';
 type Props = {tab:OperationTab;state:State|null;review:boolean;onRefresh:()=>Promise<void>;initialAdminId?:string|null};
 type ReadForm={admin_id:string;from_date:string;to_date:string;tickets_counter:number|null;flags_counter:number|null;flags_baseline:number|null;hours:number|null;rating:number|null;note:string};
-type Imported={row:number;name:string;admin_id:string|null;date:string|null;tickets_counter:number|null;flags_counter:number|null;hours:number|null;rating:number|null};
-type ImportView={preview_id:string;filename:string;rows:Imported[];warnings:string[];requiresConfirmation:boolean};
+type Imported={row:number;name:string;admin_id:string|null;roster_name:string|null;rank:string|null;admin_level:number|null;roster_action:string;from_date:string|null;to_date:string|null;report_entered_on:string|null;tickets_counter:number|null;tickets_baseline:number|null;flags_counter:number|null;flags_baseline:number|null;hours:number|null;rating:number|null;skip_reading:boolean};
+type ImportView={preview_id:string;filename:string;sheet:string;rows:Imported[];warnings:string[];notices:string[];requiresConfirmation:boolean;imported:number;leaders:number;rosterChanges:number};
 const cairoDate=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'Africa/Cairo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
 const emptyReading=():ReadForm=>({admin_id:'',from_date:cairoDate(),to_date:cairoDate(),tickets_counter:null,flags_counter:null,flags_baseline:null,hours:null,rating:null,note:''});
 const fmt=(n:number|null|undefined,places=2)=>n===null||n===undefined||!Number.isFinite(n)?'غير مسجّل':new Intl.NumberFormat('en-US',{maximumFractionDigits:places}).format(n);
@@ -109,6 +109,7 @@ export default function ExecutiveOperations({tab,state,review,onRefresh,initialA
  const [file,setFile]=useState<File|null>(null);
  const [importView,setImportView]=useState<ImportView|null>(null);
  const [acceptedImport,setAcceptedImport]=useState(false);
+ const [approvedRosterSync,setApprovedRosterSync]=useState(false);
  const [week,setWeek]=useState<string>('');
  const [closeNote,setCloseNote]=useState('');
  const [ack,setAck]=useState(false);
@@ -144,8 +145,8 @@ export default function ExecutiveOperations({tab,state,review,onRefresh,initialA
   catch(e){setError(e instanceof Error?e.message:'تعذّرت معاينة Excel');}
   finally{setBusy(false);}
  };
- const commitExcel=()=>{if(!importView||!acceptedImport||importView.warnings.length)return;
-  void perform(async()=>{await api('/api/import/commit','POST',{preview_id:importView.preview_id,confirm:'IMPORT REVIEWED'});setImportView(null);setFile(null);setAcceptedImport(false);},'تم الاستيراد بعد المراجعة');
+ const commitExcel=()=>{if(!importView||!acceptedImport||importView.warnings.length||(importView.rosterChanges>0&&!approvedRosterSync))return;
+  void perform(async()=>{await api('/api/import/commit','POST',{preview_id:importView.preview_id,confirm:'IMPORT REVIEWED',approve_roster_sync:approvedRosterSync});setImportView(null);setFile(null);setAcceptedImport(false);setApprovedRosterSync(false);},'تم الاستيراد بعد المراجعة');
  };
  const changeWeek=(status:'open'|'closed')=>{
   if(!ack||!activeWeek)return;
@@ -180,13 +181,43 @@ export default function ExecutiveOperations({tab,state,review,onRefresh,initialA
  const controls=<>{error&&<p role="alert" className="x-op-error"><AlertTriangle size={17}/>{error}</p>}{success&&<p role="status" className="x-op-success"><CheckCircle2 size={17}/>{success}</p>}</>;
  if(tab==='updates')return <ReadingEntryStudio state={state} review={review} onRefresh={onRefresh} initialAdminId={initialAdminId}/>;
   if(tab==='excel')return <>
-  <Head en="CHICO / XLSX REVIEW" title="استيراد Excel" description="الملف يُفحص وتُعرض صفوفه وتحذيراته قبل أي حفظ. لا إضافة أسماء تلقائية."/><Hint review={review}/>
+  <Head en="CHICO / XLSX REVIEW" title="استيراد Excel" description="معاينة جميع قراءات Excel والتواريخ وأرصدة Flags. لا تعديل أسماء أو رتب قبل موافقتك الصريحة."/><Hint review={review}/>
   <section className="x-panel x-op-card"><div className="x-op-cardhead"><FileSpreadsheet size={20}/><h2>مراجعة ملف اللعبة</h2></div>
-   <div className="x-op-form"><label className="x-op-full">ملف Excel بصيغة XLSX<input type="file" accept=".xlsx" disabled={review||busy} onChange={e=>{setFile(e.target.files?.[0]||null);setImportView(null);setAcceptedImport(false);}}/></label><button className="x-primary" type="button" onClick={()=>void previewExcel()} disabled={review||busy||!file}><Upload size={17}/>معاينة الملف</button></div>
-   {importView&&<><p className="x-op-footnote">الملف: {importView.filename} · {importView.rows.length} صف. المعاينة لا تعني الحفظ.</p>
-    <div className="x-op-table-wrap"><table className="x-op-table"><thead><tr><th>الاسم</th><th>التاريخ</th><th>Tickets</th><th>Flags</th><th>TIME</th><th>Rating</th></tr></thead><tbody>{importView.rows.map(r=><tr key={r.row}><td>{r.name}{!r.admin_id?' ⚠️':''}</td><td>{r.date||'غير صالح'}</td><td>{fmt(r.tickets_counter)}</td><td>{fmt(r.flags_counter)}</td><td>{fmt(r.hours)}</td><td>{fmt(r.rating)}</td></tr>)}</tbody></table></div>
-    {importView.warnings.length>0?<div className="x-op-error"><AlertTriangle size={18}/><div><b>لا يمكن اعتماد الملف مع تحذيرات لم تُصحّح</b>{importView.warnings.map((s,i)=><p key={i}>{s}</p>)}<small>خصوصًا TIME المحوّل تلقائيًا لتاريخ؛ صحّح الملف وأعد معاينته أولًا.</small></div></div>:<label className="x-op-check"><input type="checkbox" checked={acceptedImport} onChange={e=>setAcceptedImport(e.target.checked)}/>راجعت جميع الصفوف والأرقام وأوافق على الاستيراد</label>}
-    <button className="x-primary" disabled={busy||review||!acceptedImport||!!importView.warnings.length} onClick={commitExcel}>اعتماد الاستيراد بعد المراجعة</button>
+   <div className="x-op-form"><label className="x-op-full">ملف Excel بصيغة XLSX<input type="file" accept=".xlsx" disabled={review||busy} onChange={e=>{setFile(e.target.files?.[0]||null);setImportView(null);setAcceptedImport(false);setApprovedRosterSync(false);}}/></label><button className="x-primary" type="button" onClick={()=>void previewExcel()} disabled={review||busy||!file}><Upload size={17}/>معاينة الملف</button></div>
+   {importView&&<>
+    <div className="x-op-metrics">
+     <Metric label="القراءات المستوردة" value={String(importView.imported)}/>
+     <Metric label="قائد مستبعد من التقييم" value={String(importView.leaders)}/>
+     <Metric label="تغييرات الأسماء/الرتب" value={String(importView.rosterChanges)}/>
+    </div>
+    <p className="x-op-footnote">الملف: {importView.filename} · ورقة: {importView.sheet} · المعاينة لا تحفظ ولا تعدّل شيئًا.</p>
+    <div className="x-op-table-wrap"><table className="x-op-table">
+     <thead><tr><th>الاسم كما في Excel</th><th>المطابقة في الموقع</th><th>الرتبة</th><th>بداية الفترة</th><th>نهاية الفترة</th><th>Tickets</th><th>Flags الختامي</th><th>Flags البداية</th><th>TIME</th><th>Rate</th><th>الإجراء</th></tr></thead>
+     <tbody>{importView.rows.map(r=><tr key={r.row}>
+      <td dir="auto"><b>{r.name}</b></td>
+      <td dir="auto">{r.roster_name||'اسم جديد'}</td><td>{r.rank||'—'}</td>
+      <td>{r.skip_reading?'—':r.from_date||'⚠️'}</td><td>{r.skip_reading?'—':r.to_date||'⚠️'}</td>
+      <td>{r.skip_reading?'خارج الإحصائيات':fmt(r.tickets_counter,0)}</td>
+      <td>{r.skip_reading?'—':fmt(r.flags_counter,0)}</td>
+      <td>{r.skip_reading?'—':fmt(r.flags_baseline,0)}</td>
+      <td>{r.skip_reading?'—':fmt(r.hours,2)}</td>
+      <td>{r.skip_reading?'—':fmt(r.rating,2)}</td>
+      <td>{r.skip_reading?'قائد الفريق — بلا تقييم':r.roster_action==='create'?'إضافة اسم جديد':r.roster_action==='update'?'تحديث اسم/رتبة':'مطابق'}</td>
+     </tr>)}</tbody>
+    </table></div>
+    {!!importView.notices?.length&&<div className="v9-warning">{importView.notices.map((n,i)=><p key={i}>{n}</p>)}</div>}
+    {!!importView.warnings.length&&<div className="x-op-error"><AlertTriangle size={18}/><div><b>لا يمكن حفظ الملف قبل تصحيح الأخطاء التالية</b>{importView.warnings.map((w,i)=><p key={i}>{w}</p>)}</div></div>}
+    {!importView.warnings.length&&<>
+     {importView.rosterChanges>0&&<label className="x-op-check">
+      <input type="checkbox" checked={approvedRosterSync} onChange={e=>setApprovedRosterSync(e.target.checked)}/>
+      أوافق على إضافة/تصحيح الأسماء والرتب الموضحة في المعاينة، مع بقاء General قائدًا خارج التقييم
+     </label>}
+     <label className="x-op-check">
+      <input type="checkbox" checked={acceptedImport} onChange={e=>setAcceptedImport(e.target.checked)}/>
+      راجعت فترة كل قراءة وقيم Tickets وFlags Baseline وTIME والرتب، وأوافق على الحفظ
+     </label>
+    </>}
+    <button className="x-primary" disabled={busy||review||!acceptedImport||!!importView.warnings.length||(importView.rosterChanges>0&&!approvedRosterSync)} onClick={commitExcel}>حفظ كل القراءات بعد المراجعة</button>
    </>}
    {controls}
   </section>

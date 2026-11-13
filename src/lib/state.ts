@@ -28,6 +28,7 @@ export async function loadState():Promise<State>{
   const top=admins.filter(a=>isEligibleForTop(a.rank)&&sums.has(a.id)).sort((a,b)=>(sums.get(b.id)||0)-(sums.get(a.id)||0)).slice(0,3).map(a=>({id:a.id,name:a.name,rank:a.rank,tickets:sums.get(a.id)||0}));
   const alerts:Summary['alerts']=[];
   for(const admin of admins){
+    if(admin.rank==='Responsible'||admin.rank==='Administrator'||!admin.in_reporting)continue;
     const mine=current.filter(r=>r.admin_id===admin.id).sort((a,b)=>b.to_date.localeCompare(a.to_date));
     const latest=mine[0];
     const flags=mine.filter(r=>r.flags_delta!==null);
@@ -40,6 +41,6 @@ export async function loadState():Promise<State>{
       alerts.push({id:admin.id,name:admin.name,message:`Rating ${lastRating.rating.toFixed(2)}`,kind:'warning'});
     }
   }
-  const summary:Summary={week_start:monday,...metrics,members:admins.filter(a=>a.active).length,reported:new Set(current.map(r=>r.admin_id)).size,missing:admins.filter(a=>a.active&&!current.some(r=>r.admin_id===a.id)).length,top,alerts};
+  const summary:Summary={week_start:monday,...metrics,members:admins.filter(a=>a.active).length,reported:new Set(current.filter(r=>admins.some(a=>a.id===r.admin_id&&a.in_reporting&&a.rank!=='Responsible')).map(r=>r.admin_id)).size,missing:admins.filter(a=>a.active&&a.in_reporting&&a.rank!=='Responsible'&&!current.some(r=>r.admin_id===a.id)).length,top,alerts};
   return {admins,readings,weeks,summary,serverTime:new Date().toISOString()};
 }
