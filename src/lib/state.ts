@@ -3,7 +3,7 @@ import { weekStart, isEligibleForTop, summarizeReadings } from './rules';
 import type { Admin, Reading, State, Summary, Week } from './types';
 
 function mapAdmin(row:Record<string,unknown>):Admin{
-  return {id:String(row.id),name:String(row.name),rank:row.rank as Admin['rank'],active:!!row.active,in_reporting:!!row.in_reporting,sort_order:Number(row.sort_order),admin_level:row.admin_level===null?null:Number(row.admin_level),shift_label:row.shift_label?String(row.shift_label):null,joined_on:row.joined_on?String(row.joined_on).slice(0,10):null};
+  return {id:String(row.id),name:String(row.name),rank:row.rank as Admin['rank'],active:!!row.active,in_reporting:!!row.in_reporting,sort_order:Number(row.sort_order),admin_level:row.admin_level===null?null:Number(row.admin_level),shift_label:row.shift_label?String(row.shift_label):null,full_name:row.full_name?String(row.full_name):null,notes:row.notes?String(row.notes):'',timezone:row.timezone?String(row.timezone):'Africa/Cairo',supervisor_id:row.supervisor_id?String(row.supervisor_id):null,joined_on:row.joined_on?String(row.joined_on).slice(0,10):null};
 }
 function mapReading(row:Record<string,unknown>):Reading{
   const n=(x:unknown)=>x===null||x===undefined?null:Number(x);
@@ -12,7 +12,7 @@ function mapReading(row:Record<string,unknown>):Reading{
 export async function loadState():Promise<State>{
   const sql=db();
   // Shared Supabase transaction pooler: issue each read in sequence on the single connection.
-  const ar=await sql`SELECT id,name,rank,active,in_reporting,sort_order,admin_level,shift_label,joined_on FROM chico_next.admins ORDER BY sort_order ASC, name ASC`;
+  const ar=await sql`SELECT id,name,rank,active,in_reporting,sort_order,admin_level,shift_label,joined_on,full_name,notes,timezone,supervisor_id FROM chico_next.admins ORDER BY sort_order ASC, name ASC`;
   const rr=await sql`SELECT r.*,a.name AS admin_name,a.rank FROM chico_next.readings r JOIN chico_next.admins a ON a.id=r.admin_id ORDER BY r.to_date DESC,r.created_at DESC`;
   const wr=await sql`SELECT week_start,status,closed_at FROM chico_next.weekly_status ORDER BY week_start DESC LIMIT 52`;
   const admins=ar.map(r=>mapAdmin(r)); const readings=rr.map(r=>mapReading(r));
