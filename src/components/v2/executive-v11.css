@@ -77,3 +77,13 @@
  .chico-v2.v11-dialog-portal .v9-profile-overlay,
  .chico-v2.v11-dialog-portal .v7-editor-overlay{animation:none!important}
 }
+
+/* Premium report: a clear honest empty state rather than exporting fabricated zeros. */
+.chico-v2 .v9-report-empty{margin:8px 0 4px;padding:44px 24px 48px;text-align:center;display:grid;justify-items:center;gap:13px;border:1px solid rgba(214,160,77,.55);border-radius:17px;background:radial-gradient(ellipse at top,rgba(108,34,26,.35),transparent 68%),linear-gradient(130deg,#101015,#1b1013 48%,#0b0b0f);color:#f8e8c8;box-shadow:inset 0 0 0 1px rgba(255,213,131,.09),0 18px 36px rgba(0,0,0,.15)}
+.chico-v2 .v9-report-empty b{font-size:clamp(19px,2vw,27px);line-height:1.5;font-weight:900;color:#ffe0a1}
+.chico-v2 .v9-report-empty p{font-size:14px;line-height:1.85;max-width:630px;margin:0;color:#c9bdaf}
+.chico-v2 .v9-report-empty a{display:inline-flex;align-items:center;justify-content:center;padding:12px 26px;border:1px solid #e3b16e;border-radius:10px;background:linear-gradient(105deg,#724013,#a65c1c);color:#fff3d8;text-decoration:none;font-weight:800;transition:filter .2s,transform .2s}
+.chico-v2 .v9-report-empty a:hover{filter:brightness(1.13);transform:translateY(-2px)}
+.chico-v2 .v9-report-empty a:focus-visible{outline:3px solid #fff4bc;outline-offset:3px}
+.chico-v2.x-light .v9-report-empty{background:linear-gradient(135deg,#261417,#100f13);color:#fff3d8}
+@media(max-width:700px){.chico-v2 .v9-report-empty{padding:32px 16px}}

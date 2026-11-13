@@ -72,7 +72,7 @@ export default function DiscordReportStudio({state,review}:Props){
   return ()=>{cancelled=true;};
  },[rows,dateLabel,staff,matching.length,title,valid,totals]);
  const download=()=>{
-  if(!canvas.current||!valid||!state||review||downloading)return;
+  if(!canvas.current||!valid||!state||review||matching.length===0||downloading)return;
   setError('');setDownloading(true);
   canvas.current.toBlob(blob=>{
    setDownloading(false);
@@ -86,10 +86,10 @@ export default function DiscordReportStudio({state,review}:Props){
   <header className="v9-poster-intro">
    <div>
     <small>CHICO / PREMIUM REPORT STUDIO</small>
-    <h2>التقرير اليومي وصورة Discord</h2>
-    <p>تصميم CHICO الذهبي والأسود والأحمر. الجدول والترتيب والأرقام تتغير تلقائيًا حسب التاريخ والقراءات المحفوظة، وTickets فقط بدون رموز Calls.</p>
+    <h2>التقرير الجاهز للنشر على Discord</h2>
+    <p>تقرير متغيّر بالقراءات الحقيقية: Tickets وFlags وتوب 3 لكل من Helpers وModerators.</p>
    </div>
-   <button type="button" className="v9-primary" disabled={!valid||!state||review||downloading} onClick={download}>
+   <button type="button" className="v9-primary" disabled={!valid||!state||review||matching.length===0||downloading} onClick={download}>
     <Download size={18}/>{downloading?'جاري تجهيز الصورة…':'تنزيل التقرير PNG'}
    </button>
   </header>
@@ -113,9 +113,12 @@ export default function DiscordReportStudio({state,review}:Props){
   {partial>0&&<p className="v9-warning" role="status">{partial} قراءة مجمّعة تغطي جزءًا من الفترة المحددة. مش هنوزّع أرقامها على أيام افتراضيًا؛ اختار فترة تغطي القراءة كاملة.</p>}
   {valid&&matching.length===0&&<p className="v9-warning" role="status">لا توجد قراءات محفوظة للفترة المحددة؛ علامة — تعني عدم وجود بيانات، وليس صفر.</p>}
   {error&&<p className="v9-warning" role="alert">{error}</p>}
-  <div className="v9-poster-preview">
-   <canvas ref={canvas} role="img" aria-label={'تقرير CHICO الفاخر '+title+' للفترة '+dateLabel} style={{width:'100%',maxWidth:1100,height:'auto',aspectRatio:'auto'}}/>
-  </div>
+  <div className="v9-poster-preview" style={{display:matching.length>0?'flex':'none'}}><canvas ref={canvas} role="img" aria-label={'تقرير CHICO الفاخر '+title+' للفترة '+dateLabel} style={{width:'100%',maxWidth:1100,height:'auto'}}/></div>
+  {matching.length===0&&<div className="v9-report-empty" role="status">
+    <b>التقرير جاهز للعرض بمجرد حفظ القراءات</b>
+    <p>مفيش بيانات مسجلة للفترة المختارة، لذلك مش هنعرض تقرير مليان شرط أو نتائج وهمية.</p>
+    <a href="/v2?tab=excel">افتح استيراد Excel</a>
+   </div>}
   <p className="v9-poster-note"><Ticket size={15} style={{verticalAlign:'middle'}}/> Top 3 للـModerators منفصل عن Top 3 للـHelpers وSN.Helpers معًا، والترتيب حسب Tickets فقط. التقرير يستخدم الفروق المسجّلة ولا يختلق بيانات.</p>
  </section>;
 }

@@ -4,6 +4,7 @@ import {useEffect,useMemo,useRef,useState} from 'react';
 import {CalendarDays,Download} from 'lucide-react';
 import type {Admin,Reading,State} from '@/lib/types';
 import {summarizeReadings,weekStart} from '@/lib/rules';
+import {buildReportGroups} from '@/lib/report-groups';
 
 type Props={state:State|null;review:boolean};
 export type LuxuryPosterRow={id:string;name:string;rank:string;order:number;tickets:number|null;flags:number|null;rating:number|null;flagsIncomplete:boolean};
@@ -19,13 +20,6 @@ function dailyRow(admin:Admin,readings:Reading[]):LuxuryPosterRow{
   flags:flagsIncomplete?null:sum(own.map(r=>r.flags_delta)),
   rating:own.find(r=>r.rating!==null)?.rating??null,flagsIncomplete};
 }
-function orderRows(rows:LuxuryPosterRow[]):LuxuryPosterRow[]{
- return [...rows].sort((a,b)=>{
-  if((a.tickets===null)!==(b.tickets===null))return a.tickets===null?1:-1;
-  if(a.tickets!==null&&b.tickets!==null&&a.tickets!==b.tickets)return b.tickets-a.tickets;
-  return a.order-b.order||a.name.localeCompare(b.name,'en');
- });
-}
 export function loadLuxuryArt(path:string):Promise<HTMLImageElement|null>{
  return new Promise(resolve=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>resolve(null);img.src=path;});
 }
@@ -34,13 +28,10 @@ export function renderLuxuryPoster(
  canvas:HTMLCanvasElement,rows:LuxuryPosterRow[],date:string,staff:number,readingsCount:number,
  art:(HTMLImageElement|null)[],title='إحصائيات يومية',serverTotals?:PremiumTotals
 ){
- const groups=[
-  {name:'HELPERS + SN.HELPERS',rows:orderRows(rows.filter(r=>r.rank==='Helper'||r.rank==='SN.Helper')),x:45},
-  {name:'MODERATORS',rows:orderRows(rows.filter(r=>r.rank==='Moderator')),x:763}
- ];
+ const groups=buildReportGroups(rows).map((group,i)=>({...group,x:i===0?45:763}));
  const count=Math.max(16,...groups.map(g=>g.rows.length));
- const W=1500,tableY=632,rowH=47,tableH=count*rowH+240;
- const podiumY=tableY+tableH+37,H=podiumY+350;
+ const W=1500,tableY=632,rowH=50,tableH=count*rowH+240;
+ const podiumY=tableY+tableH+37,H=podiumY+410;
  canvas.width=W;canvas.height=H;
  const ctx=canvas.getContext('2d');if(!ctx)return;
  const g=ctx;
@@ -101,11 +92,6 @@ export function renderLuxuryPoster(
   g.fillStyle=grad;g.fill();g.lineWidth=3;g.strokeStyle='#693b0d';g.stroke();
   g.setLineDash([4,4]);line(0,-12,0,12,'#66330c',2);g.setLineDash([]);g.restore();
  };
- const star=(x:number,y:number,r:number,color:string)=>{
-  g.save();g.beginPath();for(let i=0;i<10;i++){const radius=i%2?r*.44:r,ang=Math.PI*i/5-Math.PI/2;
-   const xx=x+Math.cos(ang)*radius,yy=y+Math.sin(ang)*radius;if(i===0)g.moveTo(xx,yy);else g.lineTo(xx,yy);
-  }g.closePath();g.fillStyle=color;g.fill();g.restore();
- };
  // Dark marble with thin gold veins and dramatic red corners.
  const bg=g.createLinearGradient(0,0,W,H);bg.addColorStop(0,'#030508');bg.addColorStop(.35,'#141114');bg.addColorStop(.66,'#07080b');bg.addColorStop(1,'#0b0306');
  g.fillStyle=bg;g.fillRect(0,0,W,H);
@@ -139,28 +125,31 @@ export function renderLuxuryPoster(
  text(title,750,351,65,titleGrad as unknown as string,'center',890);
  panel(504,405,492,46,10);
  text('✦  CHICO ME  ✦  '+date+'  ✦',750,427,24,P.bright,'center',460);
- // Bigger KPI ribbon with meaningful color and ticket-only glyph.
- const rated=rows.filter(r=>r.rating!==null);
- const calculatedRate=rated.length?rated.reduce((n,r)=>n+(r.rating??0),0)/rated.length:null;
- const incompletes=rows.some(r=>r.flagsIncomplete);
+ // Only the two requested KPIs. Balanced, centered and genuinely derived from the selected report.
+ const incomplete=rows.some(r=>r.flagsIncomplete);
  const format=(v:number|null,dp=0)=>v===null?'—':v.toLocaleString('en-US',{minimumFractionDigits:dp,maximumFractionDigits:dp});
  const metrics=[
-  {label:'TOTAL STAFF',value:String(staff),icon:'staff'},
   {label:'TICKETS',value:format(serverTotals?serverTotals.tickets:sum(rows.map(r=>r.tickets))),icon:'ticket'},
-  {label:'FLAGS',value:format(serverTotals?serverTotals.flags:(incompletes?null:sum(rows.map(r=>r.flags)))),icon:'flag'},
-  {label:'AVG. RATE',value:format(serverTotals?serverTotals.rating:calculatedRate,2),icon:'rate'}
+  {label:'FLAGS',value:format(serverTotals?serverTotals.flags:(incomplete?null:sum(rows.map(r=>r.flags)))),icon:'flag'}
  ];
+ const metricWidth=455,metricGap=32,metricLeft=(W-(metrics.length*metricWidth+(metrics.length-1)*metricGap))/2;
  metrics.forEach((m,i)=>{
-  const x=45+i*358,y=468;panel(x,y,336,139,13);
-  text(m.label,x+190,y+33,25,P.bright,'center',262);
-  const vg=g.createLinearGradient(x,y+75,x+300,y+110);vg.addColorStop(0,'#6d0809');vg.addColorStop(.55,'#240408');vg.addColorStop(1,'#8b090b');
-  rect(x+122,y+74,195,49,15,vg,P.gold,2);
-  text(m.value,x+222,y+98,37,P.cream,'center',180);
-  if(m.icon==='ticket')ticket(x+73,y+99,68);
-  else if(m.icon==='rate')star(x+74,y+97,35,P.gold);
-  else if(m.icon==='flag'){line(x+56,y+127,x+56,y+69,P.bright,5);rect(x+58,y+67,47,27,2,P.gold);}
-  else {for(let j=0;j<3;j++)ellipse(x+57+j*21,y+97+(j===1?-8:3),13,15,P.gold);}
-  line(x+14,y+13,x+322,y+13,'rgba(255,214,127,.43)',1.4);
+  const x=metricLeft+i*(metricWidth+metricGap),y=462;
+  panel(x,y,metricWidth,145,14);
+  line(x+20,y+17,x+metricWidth-20,y+17,'rgba(255,214,127,.42)',1.5);
+  if(m.icon==='ticket')ticket(x+84,y+91,76);
+  else {
+   line(x+68,y+124,x+68,y+53,P.bright,6);
+   const cloth=g.createLinearGradient(x+70,y+50,x+135,y+92);
+   cloth.addColorStop(0,'#fff0b8');cloth.addColorStop(.55,'#f6b52e');cloth.addColorStop(1,'#9a5a10');
+   g.beginPath();g.moveTo(x+72,y+54);g.quadraticCurveTo(x+112,y+37,x+141,y+61);
+   g.lineTo(x+138,y+94);g.quadraticCurveTo(x+111,y+77,x+72,y+94);g.closePath();g.fillStyle=cloth;g.fill();
+  }
+  text(m.label,x+285,y+42,30,P.bright,'center',265);
+  const bg=g.createLinearGradient(x,y+75,x+metricWidth,y+125);
+  bg.addColorStop(0,'#74080c');bg.addColorStop(.48,'#2b070b');bg.addColorStop(1,'#81090e');
+  rect(x+172,y+76,251,54,14,bg,P.gold,2.5);
+  text(m.value,x+296,y+103,43,P.cream,'center',225);
  });
  // Tables emphasize readable type, aligned columns and colored rate/flag pills.
  const drawTable=(group:{name:string;rows:LuxuryPosterRow[];x:number})=>{
@@ -175,21 +164,24 @@ export function renderLuxuryPoster(
   text('TICKETS',col.ticket,hy+23,22,P.cream);
   text('FLAGS',col.flag,hy+23,21,P.cream);
   text('RATE',col.rate,hy+23,22,P.cream);
+  // Distribute each group vertically across the same table height; no giant empty moderator panel.
+  const rowSpace=tableH-236;
+  const itemHeight=rowSpace/Math.max(group.rows.length,1);
   for(let i=0;i<group.rows.length;i++){
-   const r=group.rows[i],y=hy+56+i*rowH;
-   rect(x+18,y,w-36,rowH-3,3,i%2===0?'rgba(14,16,21,.93)':'rgba(36,25,23,.93)');
-   text(String(i+1),col.num,y+22,22,P.gold);
-   const label=r.rank==='SN.Helper'?'◆ '+r.name:r.name;
-   text(fit(label,307,26),col.name,y+22,26,P.cream,'left',302);
+   const r=group.rows[i],y=hy+56+i*itemHeight,cy=y+itemHeight/2;
+   rect(x+18,y+2,w-36,itemHeight-4,4,i%2===0?'rgba(14,16,21,.93)':'rgba(36,25,23,.93)');
+   text(String(i+1),col.num,cy,25,P.gold);
+   text(fit(r.name,305,28),col.name,cy,28,P.cream,'left',303);
+   const pillY=cy-18;
    const tColor=r.tickets===null?P.dim:'#baffcc';
-   rect(col.ticket-55,y+8,110,31,10,r.tickets===null?'#1e191b':'#064627');
-   text(format(r.tickets),col.ticket,y+23,24,tColor);
+   rect(col.ticket-55,pillY,110,36,10,r.tickets===null?'#221d20':'#064627');
+   text(format(r.tickets),col.ticket,cy,25,tColor);
    const fc=r.flags===null?P.dim:r.flags>7?'#ff7f70':r.flags>5?'#ffdd7f':r.flags===0?P.green:P.cream;
-   rect(col.flag-40,y+8,80,31,9,r.flags===null?'#1e191b':r.flags>7?'#600f1a':'#242019');
-   text(format(r.flags),col.flag,y+23,22,fc);
+   rect(col.flag-40,pillY,80,36,9,r.flags===null?'#221d20':r.flags>7?'#600f1a':'#242019');
+   text(format(r.flags),col.flag,cy,23,fc);
    const rateCol=r.rating===null?P.dim:r.rating>=4.8?P.green:'#ff7d78';
-   rect(col.rate-40,y+8,80,31,9,r.rating===null?'#1e191b':r.rating>=4.8?'#063f27':'#68121a');
-   text(format(r.rating,2),col.rate,y+23,21,rateCol);
+   rect(col.rate-40,pillY,80,36,9,r.rating===null?'#221d20':r.rating>=4.8?'#063f27':'#68121a');
+   text(format(r.rating,2),col.rate,cy,22,rateCol);
   }
   if(!group.rows.length)text('لا يوجد إداريون في هذه الفئة',x+w/2,hy+93,24,P.dim);
   const fy=tableY+tableH-46;
@@ -200,10 +192,10 @@ export function renderLuxuryPoster(
  groups.forEach(drawTable);
  // Horizontal awards: only display populated awards; no empty podium winners.
  const medals=[P.bright,P.silver,P.bronze];
- const award=(group:{name:string;rows:LuxuryPosterRow[];x:number})=>{
+ const award=(group:{name:string;topTitle:string;rows:LuxuryPosterRow[];x:number})=>{
   const {x}=group,w=692;panel(x,podiumY,w,306,17);
   panel(x+18,podiumY+17,w-36,62,9);
-  text('TOP 3 — '+group.name,x+w/2,podiumY+49,31,P.bright,'center',w-70);
+  text(group.topTitle,x+w/2,podiumY+49,31,P.bright,'center',w-70);
   const winners=group.rows.filter(r=>r.tickets!==null).slice(0,3);
   if(winners.length===0){
    text('لا توجد نتائج مسجلة لهذه الفترة',x+w/2,podiumY+178,27,P.dim);
@@ -263,7 +255,7 @@ export default function DailyReportStudio({state,review}:Props){
   return ()=>{cancelled=true;};
  },[rows,label,staff,readings.length,title,totals,valid]);
  const download=()=>{
-  if(!canvas.current||!state||review||downloading||!valid)return;
+  if(!canvas.current||!state||review||readings.length===0||downloading||!valid)return;
   setDownloading(true);setError('');
   canvas.current.toBlob(blob=>{
    setDownloading(false);
@@ -279,7 +271,7 @@ export default function DailyReportStudio({state,review}:Props){
    <div><small>CHICO / PREMIUM STATISTICS</small><h2>التقرير اليومي</h2>
     <p>تقرير بصري متغيّر حسب البيانات المحفوظة. إذا كان الملف يغطي أكثر من يوم، تظهر فترة التغطية الكاملة من غير اختراع توزيع يومي.</p>
    </div>
-   <button className="v9-primary" type="button" disabled={review||!state||!valid||downloading} onClick={download}><Download size={18}/>{downloading?'جاري تجهيز الصورة…':'تنزيل التقرير PNG'}</button>
+   <button className="v9-primary" type="button" disabled={review||!state||!valid||readings.length===0||downloading} onClick={download}><Download size={18}/>{downloading?'جاري تجهيز الصورة…':'تنزيل التقرير PNG'}</button>
   </header>
   <div className="v9-poster-filters">
    <label>من تاريخ<input type="date" value={from} onChange={e=>{touched.current=true;setFrom(e.target.value);}}/></label>
@@ -291,7 +283,12 @@ export default function DailyReportStudio({state,review}:Props){
   {partial>0&&<p className="v9-warning" role="status">يوجد {partial} سجل يغطّي جزءًا من الفترة فقط، ولم تُوزّع قيمه على أيام غير محددة.</p>}
   {valid&&readings.length===0&&<p className="v9-warning" role="status">مفيش قراءات محفوظة للفترة المختارة. اختر آخر تقرير مسجّل لعرض بيانات حقيقية.</p>}
   {error&&<p className="v9-warning" role="alert">{error}</p>}
-  <div className="v9-poster-preview"><canvas ref={canvas} role="img" aria-label={'تقرير CHICO '+label} style={{width:'100%',maxWidth:1100,height:'auto',aspectRatio:'auto'}}/></div>
-  <p className="v9-poster-note">General قائد الفريق يظهر في عدد الأعضاء، لكنه خارج التقييم والترتيب. الأسماء والبيانات مأخوذة من القراءات الفعلية. كل Top 3 مبني على Tickets فقط.</p>
+  <div className="v9-poster-preview" style={{display:readings.length>0?'flex':'none'}}><canvas ref={canvas} role="img" aria-label={'تقرير CHICO '+label} style={{width:'100%',maxWidth:1100,height:'auto',aspectRatio:'auto'}}/></div>
+  {readings.length===0&&<div className="v9-report-empty" role="status">
+    <b>التقرير جاهز للعرض بمجرد حفظ القراءات</b>
+    <p>مفيش بيانات مسجلة للفترة المختارة، لذلك مش هنعرض تقرير مليان شرط أو نتائج وهمية.</p>
+    <a href="/v2?tab=excel">افتح استيراد Excel</a>
+   </div>}
+  <p className="v9-poster-note">General قائد الفريق خارج التقييم والترتيب. الأسماء والبيانات مأخوذة من القراءات الفعلية. كل Top 3 مبني على Tickets فقط.</p>
  </section>;
 }
