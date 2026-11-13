@@ -48,7 +48,7 @@ function drawPoster(
  const light=g.createRadialGradient(1640,70,15,1640,70,880);
  light.addColorStop(0,'rgba(193,57,34,.17)');light.addColorStop(1,'rgba(193,57,34,0)');
  g.fillStyle=light;g.fillRect(0,0,W,H);
- function rect(x:number,y:number,w:number,h:number,r=0,fill='#10131b',stroke?:string,sw=2){
+ function rect(x:number,y:number,w:number,h:number,r=0,fill:string|CanvasGradient='#10131b',stroke?:string,sw=2){
   g.beginPath();g.roundRect(x,y,w,h,r);g.fillStyle=fill;g.fill();
   if(stroke){g.strokeStyle=stroke;g.lineWidth=sw;g.stroke();}
  }
