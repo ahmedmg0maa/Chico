@@ -478,3 +478,13 @@
 .chico-v2 .x-profile-tabs{grid-template-columns:repeat(5,minmax(0,1fr))}
 .chico-v2 .x-profile-tabs button{font-size:11px}
 @media(max-width:480px){.chico-v2 .x-profile-tabs{gap:0;padding:0 5px}.chico-v2 .x-profile-tabs button{font-size:10px;padding:12px 2px}}
+
+/* Functional multi-format report exports */
+.chico-v2 .v7-report-tools{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;padding:14px 0}
+.chico-v2 .v7-report-tools>a{display:flex;align-items:center;justify-content:center;gap:10px;min-height:58px;min-width:0;text-align:center;padding:12px 10px;border:1px solid var(--v7-line);border-radius:10px;background:linear-gradient(140deg,rgba(212,172,109,.13),rgba(130,63,54,.08));color:var(--v7-ink);font-size:12px;font-weight:850;transition:background .22s,transform .22s,border-color .22s}
+.chico-v2 .v7-report-tools>a svg{color:var(--v7-gold);flex:none}
+.chico-v2 .v7-report-tools>a:hover{border-color:#d5b17a;transform:translateY(-2px);background:rgba(205,158,92,.24)}
+.chico-v2 .v7-report-tools>p{color:var(--v7-muted);font-size:12px;padding:10px}
+.chico-v2.x-light .v7-report-tools>a{background:#fff7ec;color:#6c4933;border-color:#d9bd9a}
+@media(max-width:900px){.chico-v2 .v7-report-tools{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:500px){.chico-v2 .v7-report-tools{grid-template-columns:1fr}}
