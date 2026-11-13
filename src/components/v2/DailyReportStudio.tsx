@@ -46,7 +46,7 @@ export function renderLuxuryPoster(
  const g=ctx;
  const P={gold:'#f2b94b',bright:'#ffe5a3',cream:'#fff4dc',red:'#b12121',green:'#54eb8a',dim:'#a99a86',silver:'#e2eaf1',bronze:'#f3ac6e'};
  const rgb=(color:string,alpha:number)=>color.startsWith('#')?('rgba('+parseInt(color.slice(1,3),16)+','+parseInt(color.slice(3,5),16)+','+parseInt(color.slice(5,7),16)+','+alpha+')'):color;
- const text=(value:string,x:number,y:number,size:number,color=P.cream,align:CanvasTextAlign='center',max?:number,weight='bold')=>{
+ const text=(value:string,x:number,y:number,size:number,color:string|CanvasGradient=P.cream,align:CanvasTextAlign='center',max?:number,weight='bold')=>{
   g.save();g.fillStyle=color;g.textAlign=align;g.textBaseline='middle';g.direction=/[\u0600-\u06ff]/.test(value)?'rtl':'ltr';
   g.font=weight+' '+size+'px '+(/[\u0600-\u06ff]/.test(value)?'Arial, sans-serif':'Georgia, Arial, sans-serif');
   g.shadowBlur=2;g.shadowColor='rgba(0,0,0,.85)';
@@ -56,7 +56,7 @@ export function renderLuxuryPoster(
  const line=(x:number,y:number,x2:number,y2:number,color:string=P.gold,width=2)=>{
   g.beginPath();g.moveTo(x,y);g.lineTo(x2,y2);g.strokeStyle=color;g.lineWidth=width;g.stroke();
  };
- const rect=(x:number,y:number,w:number,h:number,r=10,color='#0d0b10',stroke?:string,lw=2)=>{
+ const rect=(x:number,y:number,w:number,h:number,r=10,color:string|CanvasGradient='#0d0b10',stroke?:string|CanvasGradient,lw=2)=>{
   g.beginPath();g.roundRect(x,y,w,h,r);g.fillStyle=color;g.fill();
   if(stroke){g.strokeStyle=stroke;g.lineWidth=lw;g.stroke();}
  };
@@ -70,7 +70,7 @@ export function renderLuxuryPoster(
   rect(x,y,w,h,r,fill,metallic(x,y,w,h),5);g.restore();
   rect(x+8,y+8,w-16,h-16,Math.max(3,r-5),'rgba(0,0,0,.10)','rgba(255,208,128,.40)',1);
  };
- const ellipse=(x:number,y:number,rx:number,ry:number,color:string)=>{
+ const ellipse=(x:number,y:number,rx:number,ry:number,color:string|CanvasGradient)=>{
   g.beginPath();g.ellipse(x,y,rx,ry,0,0,Math.PI*2);g.fillStyle=color;g.fill();
  };
  const fit=(value:string,max:number,size:number)=>{
