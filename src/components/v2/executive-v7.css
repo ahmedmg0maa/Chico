@@ -437,3 +437,44 @@
  .chico-v2 .v7-app-content,.chico-v2 .v7-team-studio,.chico-v2 .v7-operations,.chico-v2 .v7-editor-overlay,.chico-v2 .v7-editor-panel,.chico-v2 .v7-chart-line{animation:none!important}
  .chico-v2 .x-nav-link,.chico-v2 .v7-btn,.chico-v2 .v7-row-actions button,.chico-v2 .x-kpi{transition:none!important;transform:none!important}
 }
+
+/* Light mode is a real complete application skin, including edit and profile dialogs. */
+.chico-v2.x-light .v7-editor-panel{background:linear-gradient(155deg,#fffaf2,#f1e6df 65%);color:#453133;border-right-color:#b9895d}
+.chico-v2.x-light .v7-editor-panel>header{color:#86522e;border-bottom-color:#d1b99e}
+.chico-v2.x-light .v7-editor-panel>header button{background:#f6e9de;color:#8b6045;border-color:#d4bda8}
+.chico-v2.x-light .v7-editor-form h3{color:#865a35;border-bottom-color:#e3cdb5}
+.chico-v2.x-light .v7-editor-form label{color:#57433e}
+.chico-v2.x-light .v7-editor-form input:not([type=checkbox]),.chico-v2.x-light .v7-editor-form select,.chico-v2.x-light .v7-editor-form textarea{background:#fffefa;color:#3d3232;border-color:#d4b79b}
+.chico-v2.x-light .v7-editor-form .v7-toggle-row{background:#fff8f0;border-color:#dbc4b0}
+.chico-v2.x-light .v7-toggle-row b{color:#574038}
+.chico-v2.x-light .v7-toggle-row small{color:#7e6c66}
+.chico-v2.x-light .v7-editor-footer{border-color:#e4d0be}
+.chico-v2.x-light .v7-btn-muted{background:#f6e8da;border-color:#d3b693;color:#593e33}
+.chico-v2.x-light .v7-btn-primary{background:linear-gradient(120deg,#d4a25e,#f4d39b);border-color:#bf8e4a;color:#3b281d}
+.chico-v2.x-light .v7-btn-danger{background:#8e2941;border-color:#b84155;color:#fff0eb}
+.chico-v2.x-light .x-detail-card.x-profile-v3{background:linear-gradient(145deg,#fffbf5,#f0e6df);color:#463333}
+.chico-v2.x-light .x-profile-heading{border-color:#dcc5af}
+.chico-v2.x-light .x-profile-heading>span{color:#8d6738}
+.chico-v2.x-light .x-profile-heading button{color:#72513b;border-color:#d3b494;background:#f8eee2}
+.chico-v2.x-light .x-profile-tabs{border-color:#dfc8ae}
+.chico-v2.x-light .x-profile-tabs button{color:#71615e}
+.chico-v2.x-light .x-profile-tabs button.active{color:#7f451c;border-color:#a57535}
+.chico-v2.x-light .x-profile-metrics>div{background:#fffdf8;border-color:#dec7a9}
+.chico-v2.x-light .x-profile-metrics small,.chico-v2.x-light .x-profile-facts span{color:#74695f}
+.chico-v2.x-light .x-profile-metrics strong,.chico-v2.x-light .x-profile-facts b{color:#62463b}
+.chico-v2.x-light .x-profile-facts p{border-color:#e6d6c7}
+.chico-v2.x-light .x-profile-section-heading{color:#8c5d31}
+.chico-v2.x-light .x-profile-event{background:#fffaf4;border-color:#d9c1a7;color:#49362e}
+.chico-v2.x-light .x-profile-event b{color:#4a3331}
+.chico-v2.x-light .x-profile-event span,.chico-v2.x-light .x-profile-event small{color:#7d6961}
+.chico-v2.x-light .x-profile-empty b,.chico-v2.x-light .x-profile-shift strong{color:#74503c}
+.chico-v2.x-light .x-profile-empty p,.chico-v2.x-light .x-profile-shift p{color:#796b61}
+.chico-v2.x-light .x-profile-shift{background:#fffaf4;border-color:#d6bda7}
+.chico-v2.x-light .x-profile-footer{border-color:#ddc5af;color:#7d6859}
+.chico-v2 .v7-profile-fullname{display:block;color:#dbc3ab;font-size:12px;margin-top:6px}
+.chico-v2 .v7-profile-notes{display:grid;gap:10px;margin:20px 0;padding:17px;border-radius:11px;border:1px solid var(--v7-line);background:rgba(205,160,100,.07)}
+.chico-v2 .v7-profile-notes>b{color:var(--v7-gold);font-size:13px}
+.chico-v2 .v7-profile-notes p{font-size:13px;white-space:pre-wrap;line-height:1.8;color:var(--v7-muted)}
+.chico-v2 .x-profile-tabs{grid-template-columns:repeat(5,minmax(0,1fr))}
+.chico-v2 .x-profile-tabs button{font-size:11px}
+@media(max-width:480px){.chico-v2 .x-profile-tabs{gap:0;padding:0 5px}.chico-v2 .x-profile-tabs button{font-size:10px;padding:12px 2px}}

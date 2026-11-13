@@ -12,6 +12,7 @@ type Tab='overview'|'readings'|'rank'|'shift'|'notes';
 const formatted=(v:number|null|undefined)=>v===null||v===undefined?'—':new Intl.NumberFormat('en-US',{maximumFractionDigits:2}).format(v);
 export default function ExecutiveProfile({member,readings,admins=[],review,mark,onClose,onEdit}:{member:Member;readings:Reading[];admins?:Admin[];review:boolean;mark:ReactNode;onClose:()=>void;onEdit:()=>void}){
  const [tab,setTab]=useState<Tab>('overview');
+ useEffect(()=>{const handler=(e:KeyboardEvent)=>{if(e.key==='Escape')onClose();};window.addEventListener('keydown',handler);return()=>window.removeEventListener('keydown',handler);},[onClose]);
  const [history,setHistory]=useState<RankEntry[]>([]);
  const [shiftHistory,setShiftHistory]=useState<ShiftEntry[]>([]);
  const [loading,setLoading]=useState(!review);
