@@ -3,7 +3,7 @@ import ExcelJS from 'exceljs';
 import {createHash} from 'node:crypto';
 import {db} from '@/lib/db';
 import {requireOwner,response,failure} from '@/lib/api';
-import {auditImport,canonicalName,cleanName,resolvePerson,strictDate,validInteger,validNumber,validRank,validateCoverage,type ExcelImportPerson,type ExcelImportRow} from '@/lib/excel-import';
+import {auditImport,canonicalName,cleanName,resolvePerson,strictDate,validInteger,validNumber,validRank,findImportColumn,inferLegacyPeriod,normalizedExcelHeader,type ExcelImportPerson,type ExcelImportRow} from '@/lib/excel-import';
 import type {Rank} from '@/lib/types';
 
 export const runtime='nodejs';
@@ -15,17 +15,7 @@ function value(v:unknown):unknown {
  }
  return v;
 }
-function key(v:unknown) {return String(value(v)??'').trim().toLowerCase().replace(/[_./-]/g,' ').replace(/\s+/g,' ');}
 function number(v:unknown,max:number){const x=value(v);return x instanceof Date?null:validNumber(x,max);}
-function oldRange(headers:string[]){
- const h=headers.find(x=>x.includes('total week')&&x.includes('from')&&x.includes('to'));
- const m=h?.match(/from\s+(\d{1,2})\s+(\d{1,2})\s+to\s+(\d{1,2})\s+(\d{1,2})/);
- if(!m)return null;
- const year=new Intl.DateTimeFormat('en-US',{timeZone:'Africa/Cairo',year:'numeric'}).format(new Date());
- const from=year+'-'+m[1].padStart(2,'0')+'-'+m[2].padStart(2,'0');
- const to=year+'-'+m[3].padStart(2,'0')+'-'+m[4].padStart(2,'0');
- return validateCoverage(from,to)?{from,to}:null;
-}
 export async function POST(req:NextRequest){
  const denied=await requireOwner(req);if(denied)return denied;
  try{
@@ -36,8 +26,8 @@ export async function POST(req:NextRequest){
   const sheet=book.getWorksheet('CHICO_IMPORT')||book.worksheets[0];
   if(!sheet)return response({ok:false,error:'EMPTY_XLSX'},400);
   if(sheet.rowCount>502)return response({ok:false,error:'XLSX_TOO_MANY_ROWS'},422);
-  const heads=(sheet.getRow(1).values as unknown[]).map(key);
-  const find=(...items:string[])=>{for(const item of items){const exact=heads.findIndex(h=>h===item);if(exact>=0)return exact;}for(const item of items){const partial=heads.findIndex(h=>h.includes(item));if(partial>=0)return partial;}return -1;};
+  const heads=(sheet.getRow(1).values as unknown[]).map(x=>normalizedExcelHeader(value(x)));
+  const find=(...items:string[])=>findImportColumn(heads,...items);
   const nameCol=find('name','admin','الاسم');
   const roleCol=find('rank','الرتبة');
   const levelCol=find('adminlevel','admin level');
@@ -54,7 +44,8 @@ export async function POST(req:NextRequest){
   const reportingCol=find('in reporting');
   const noteCol=find('notes','note');
   if(nameCol<0||ticketsCol<0&&flagsCol<0)return response({ok:false,error:'XLSX_UNRECOGNIZED_HEADERS',headers:heads.slice(1)},422);
-  const fallback=fromCol<0?oldRange(heads):null;
+  const cairoYear=Number(new Intl.DateTimeFormat('en-US',{timeZone:'Africa/Cairo',year:'numeric'}).format(new Date()));
+  const fallback=fromCol<0?inferLegacyPeriod(heads,cairoYear):null;
   const sql=db();
   const adminRows=await sql`SELECT id,name,rank,admin_level,in_reporting FROM chico_next.admins`;
   const admins:ExcelImportPerson[]=adminRows.map(r=>({id:String(r.id),name:String(r.name),rank:r.rank as Rank,admin_level:Number(r.admin_level||1),in_reporting:!!r.in_reporting}));
