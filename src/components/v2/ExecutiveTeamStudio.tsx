@@ -47,8 +47,19 @@ function CSVExport({items}:{items:DirectoryRow[]}){
  return <button type="button" className="v7-btn v7-btn-muted" onClick={download}><ArrowDownToLine size={17}/>تصدير CSV</button>;
 }
 function RoleSeal({rank}:{rank:Rank}){
- const style=rank==='Responsible'||rank==='Administrator'?'v7-seal-lead':rank==='Moderator'?'v7-seal-mod':rank==='SN.Helper'?'v7-seal-senior':'v7-seal-help';
- return <span className={'v7-role-seal '+style} aria-label={rank}><Shield size={21} strokeWidth={1.7}/><span>{rank==='Responsible'?'R':rank==='Administrator'?'A':rank==='Moderator'?'M':rank==='SN.Helper'?'S':'H'}</span></span>;
+ const chief=rank==='Responsible'||rank==='Administrator';
+ const style=chief?'v7-seal-lead':rank==='Moderator'?'v7-seal-mod':rank==='SN.Helper'?'v7-seal-senior':'v7-seal-help';
+ return <span className={'v7-role-seal v7-crest '+style} aria-label={rank}>
+  <svg viewBox="0 0 48 48" width="31" height="31" fill="none" role="img" aria-label={rank}>
+   <path d="M24 2 41 10v24L24 46 7 34V10Z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round"/>
+   <path d="M24 6 37 12v19L24 41 11 31V12Z" fill="currentColor" opacity=".10"/>
+   <path d="M24 8V40M12 14l12-6 12 6" stroke="currentColor" strokeWidth=".7" opacity=".42"/>
+   {chief?<><path d="M13 18 18 24 24 13 30 24 35 18l-3 14H16Z" fill="currentColor"/><path d="M16 35h16" stroke="currentColor" strokeWidth="1.8"/></>:
+     rank==='Moderator'?<><path d="M24 12 35 24 24 36 13 24Z" fill="currentColor" opacity=".9"/><path d="M24 18v12M18 24h12" stroke="#18151b" strokeWidth="2"/></>:
+     rank==='SN.Helper'?<><path d="M24 11 28 20l9 4-9 4-4 9-4-9-9-4 9-4Z" fill="currentColor"/><circle cx="24" cy="24" r="3.5" fill="#141820"/></>:
+     <><path d="m24 10 4.4 9.1 10 1.4-7.2 7 .8 10-8-4.7-8 4.7.8-10-7.2-7 10-1.4Z" fill="currentColor" opacity=".95"/></>}
+  </svg>
+ </span>;
 }
 function Stat({title,value,icon:Icon,tone}:{title:string;value:number;icon:typeof Users;tone?:string}){
  return <div className={'v7-directory-stat '+(tone||'')}><Icon size={20}/><span>{title}</span><b>{format(value)}</b></div>;
@@ -107,8 +118,9 @@ export default function ExecutiveTeamStudio({admins,rows,review,onRefresh,onPrev
    return true;
   }).sort((a,b)=>{
    const av=a[sort],bv=b[sort];
-   const diff=typeof av==='number'&&typeof bv==='number'?av-bv:
-     av==null&&bv!=null?1:av!=null&&bv==null?-1:String(av??'').localeCompare(String(bv??''),'en',{numeric:true});
+   if(av==null&&bv!=null)return 1;
+   if(av!=null&&bv==null)return -1;
+   const diff=sort==='rank'?RANKS.indexOf(a.rank)-RANKS.indexOf(b.rank):typeof av==='number'&&typeof bv==='number'?av-bv:String(av??'').localeCompare(String(bv??''),'en',{numeric:true});
    return descending?-diff:diff;
   });
  },[rows,search,rank,status,sort,descending]);
