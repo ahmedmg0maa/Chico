@@ -31,12 +31,12 @@ function personRow(admin:Admin,readings:Reading[]):Row{
   lastReading:mine[0]?.to_date||''};
 }
 function headers(scope:string){
- return scope==='readings'?['الإداري','الرتبة','من تاريخ','إلى تاريخ','Tickets الزيادة','Flags الزيادة','TIME ساعات عشرية','Rating','الملاحظات']:
+ return scope==='readings'?['الإداري','الرتبة','من تاريخ','إلى تاريخ','تاريخ تسجيل التقرير','وقت الحفظ الفعلي','Tickets الزيادة','Flags الزيادة','TIME ساعات عشرية','Rating','الملاحظات']:
  ['الإداري','الرتبة','المستوى','المناوبة','الحالة','ضمن التقارير','Tickets الأسبوع','Flags الأسبوع','التقييم الأخير','TIME الأسبوع','آخر قراءة'];
 }
 function cells(scope:string,rows:Row[],readings:Reading[]){
  return scope==='readings'?
- readings.map(r=>[r.admin_name,r.rank,r.from_date,r.to_date,r.tickets_delta,r.flags_delta,r.hours,r.rating,r.note]):
+ readings.map(r=>[r.admin_name,r.rank,r.from_date,r.to_date,r.report_entered_on,r.created_at,r.tickets_delta,r.flags_delta,r.hours,r.rating,r.note]):
  rows.map(r=>[r.name,r.rank,r.level,r.shift,r.status,r.reporting,r.tickets,r.flags,r.rating,r.hours,r.lastReading]);
 }
 export async function GET(req:NextRequest){
