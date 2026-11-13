@@ -364,3 +364,73 @@
 .chico-v2 .x-brand-wolf img{width:100%;height:100%;object-fit:cover;object-position:center;filter:none}
 .chico-v2 .x-auth-onestate-crest{display:block;width:clamp(65px,9vw,105px);height:auto;aspect-ratio:1;object-fit:cover;margin:14px auto 6px;border-radius:50%;border:1px solid rgba(228,192,124,.44);box-shadow:0 8px 20px rgba(0,0,0,.34)}
 @media(max-width:720px){.chico-v2 .x-auth-onestate-crest{width:68px}}
+
+/* Full original image-generated website banners, NEVER icon substitutes or photo crops.
+   Image aspect ratio is 3:1 and the full edges/crests remain visible on all screens.
+   Titles/real metrics are live HTML outside the artwork. */
+.chico-v2 .x-titleband.x-illustrated-head{
+  display:flex;flex-direction:column;align-items:stretch;justify-content:stretch;
+  min-height:0;padding:0;overflow:hidden;isolation:isolate;
+  border:1px solid rgba(209,166,98,.48);border-radius:12px;
+  background:#0a0b0e;background-image:none;
+  box-shadow:0 12px 30px rgba(0,0,0,.28);margin-bottom:16px;
+}
+.chico-v2 .x-titleband.x-illustrated-head:before,
+.chico-v2 .x-titleband.x-illustrated-head:after{display:none}
+.chico-v2 .x-titleband.x-illustrated-head .x-illustrated-banner{
+  display:block;position:static;z-index:auto;
+  width:100%;height:auto;aspect-ratio:3/1;object-fit:contain;
+  max-width:none;max-height:none;margin:0;padding:0;
+  background:#08080b;filter:none;
+}
+.chico-v2 .x-titleband.x-illustrated-head .x-illustrated-copy{
+  width:100%;max-width:none;position:static;z-index:auto;
+  display:flex;flex-direction:column;gap:6px;
+  padding:17px clamp(16px,2.5vw,32px) 20px;
+  border-top:1px solid rgba(205,160,92,.26);
+  background:linear-gradient(100deg,#151318,#0e1117);
+  text-align:right;
+}
+.chico-v2 .x-titleband.x-illustrated-head .x-illustrated-copy h1{
+  margin:0;color:#f4e2c7;font-size:clamp(22px,2.3vw,31px);line-height:1.3;
+}
+.chico-v2 .x-titleband.x-illustrated-head .x-illustrated-copy p{
+  margin:0;color:#c3b7a7;line-height:1.7;font-size:clamp(12px,1.05vw,14px);
+}
+.chico-v2 .x-auth-art{
+ display:flex;flex-direction:column;justify-content:center;align-items:stretch;
+ gap:14px;background:#0b0b0e;background-image:none;padding:24px;
+}
+.chico-v2 .x-auth-art:after{display:none}
+.chico-v2 .x-auth-art .x-auth-illustrated-banner{
+ position:relative;display:block;width:100%;height:auto;max-height:none;
+ aspect-ratio:3/1;object-fit:contain;border-radius:7px;
+ border:1px solid rgba(205,160,92,.37);filter:none;
+}
+.chico-v2 .x-auth-art .x-auth-art-inner{
+ background:rgba(13,13,17,.90);padding:18px;gap:7px;width:100%;border-radius:7px;
+}
+.chico-v2 .x-auth-art .x-auth-art-inner p{
+ font-weight:850;font-size:clamp(19px,2vw,27px);margin:0;color:#e5c68d;
+}
+.chico-v2 .x-auth-art .x-auth-art-inner span{
+ font-size:11px;color:#c7ad81;letter-spacing:.1em;
+}
+.chico-v2.x-light .x-titleband.x-illustrated-head .x-illustrated-copy{
+ background:#242026;
+}
+.chico-v2.x-light .x-titleband.x-illustrated-head .x-illustrated-copy h1{
+ color:#fff0d6;
+}
+.chico-v2.x-light .x-titleband.x-illustrated-head .x-illustrated-copy p{
+ color:#e3d0b5;
+}
+@media(max-width:720px){
+ .chico-v2 .x-titleband.x-illustrated-head{min-height:0;padding:0}
+ .chico-v2 .x-titleband.x-illustrated-head .x-illustrated-banner{
+  object-fit:contain;aspect-ratio:3/1;width:100%;height:auto;
+ }
+ .chico-v2 .x-titleband.x-illustrated-head .x-illustrated-copy{padding:14px 17px}
+ .chico-v2 .x-auth-art{padding:12px}
+ .chico-v2 .x-auth-art .x-auth-art-inner{padding:14px}
+}

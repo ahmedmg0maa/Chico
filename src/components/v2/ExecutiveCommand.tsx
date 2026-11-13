@@ -140,7 +140,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
  const isLogin=(auth!=='in')||previewLogin;
  if(isLogin)return <div className={'chico-v2 x-auth-scene '+(light?'x-light':'')} dir="rtl">
   {review&&<div className="x-review-ribbon">معاينة أسماء الفريق المعتمدة · بدون إحصائيات</div>}
-  <div className="x-auth-frame"><div className="x-auth-art"><div className="x-auth-art-inner"><div className="x-auth-crown">♛</div><Brand/><img className="x-auth-onestate-crest" src="/assets/chico-approved-onestate.avif" alt="OneState RP"/><p>ONE STATE RP · CHICO ME</p><span>ELITE ADMINISTRATION SYSTEM</span></div></div>
+  <div className="x-auth-frame"><div className="x-auth-art"><img className="x-auth-illustrated-banner" src="/assets/chico-illustrated-login.avif" alt="CHICO ME · بوابة قيادة الفريق" decoding="async"/><div className="x-auth-art-inner"><p>CHICO GENERAL TEAM</p><span>ONE STATE RP · ADMINISTRATION</span></div></div>
    <div className="x-auth-form">
     <div className="x-auth-mini"><span><span className="x-live-dot"/>PRIVATE ADMINISTRATION</span><button type="button" onClick={()=>setLight(!light)} aria-label="تغيير المظهر">{light?<Moon size={17}/>:<Sun size={17}/>}</button></div>
     <div className="x-auth-icon"><LockKeyhole size={27}/></div>
@@ -224,7 +224,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
       </section>
      </>}
      {tab==='team'&&<>
-      <section className="x-titleband x-art-team"><span className="x-kicker">CHICO / TEAM DIRECTORY</span><h1>قيادة الفريق والإداريين</h1><p>الأسماء والرتب والأداء في مكان واحد، مع الوصول المباشر لكل ملف إداري.</p></section>
+      <section className="x-titleband x-art-team x-illustrated-head"><img className="x-illustrated-banner" src="/assets/chico-illustrated-team.avif" alt="" loading="lazy" decoding="async"/><div className="x-illustrated-copy"><span className="x-kicker">CHICO / TEAM DIRECTORY</span><h1>قيادة الفريق والإداريين</h1><p>الأسماء والرتب والأداء في مكان واحد، مع الوصول المباشر لكل ملف إداري.</p></div></section>
       <div className="x-kpi-grid x-team-kpis">{[
        {name:'إجمالي الإداريين',val:rows.length,icon:Users},{name:'النشطون',val:active,icon:CheckCircle2},{name:'بلا تحديث هذا الأسبوع',val:rows.filter(r=>r.active&&!r.lastUpdate).length,icon:Clock3},{name:'حالات تحتاج متابعة',val:warnings.length,icon:AlertTriangle}
       ].map(x=><div className="x-kpi" key={x.name}><div className="x-kpi-title"><x.icon size={23}/><b>{x.name}</b></div><strong>{x.val}</strong></div>)}</div>
