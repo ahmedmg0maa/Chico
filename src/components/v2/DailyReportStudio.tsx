@@ -35,7 +35,7 @@ function drawDailyPoster(
  const helpers=orderRows(rows.filter(r=>r.rank==='Helper'||r.rank==='SN.Helper'));
  const mods=orderRows(rows.filter(r=>r.rank==='Moderator'));
  const W=1300,tableY=548,rowHeight=40,visibleRows=Math.max(14,helpers.length,mods.length);
- const tableH=150+visibleRows*rowHeight;
+ const tableH=205+visibleRows*rowHeight;
  const topY=tableY+tableH+34,H=topY+355;
  canvas.width=W;canvas.height=H;
  const g=canvas.getContext('2d');if(!g)return;
@@ -102,7 +102,8 @@ function drawDailyPoster(
   line(side,top,side+(side===0?205:-205),top+(top===0?215:-215),gold,11);
  }
  g.restore();
- panel(23,21,W-46,H-43,23);panel(34,32,W-68,H-65,17,false);
+ g.beginPath();g.roundRect(23,21,W-46,H-43,23);g.lineWidth=7;g.strokeStyle=metallic(23,21,W-46,H-43);g.stroke();
+ g.beginPath();g.roundRect(34,32,W-68,H-65,17);g.lineWidth=2;g.strokeStyle='rgba(255,213,130,.65)';g.stroke();
  // CHICO masthead with original approved insignias.
  panel(48,48,W-96,202,20);
  line(300,95,1000,95,gold,3);line(320,213,980,213,gold,2);
@@ -117,7 +118,7 @@ function drawDailyPoster(
  txt('CHICO   ✦   '+date+'   ✦',650,382,23,pale);
  // Dynamically calculated KPI row.
  const rated=rows.filter(r=>r.rating!==null),avg=rated.length?rated.reduce((v,r)=>v+(r.rating??0),0)/rated.length:null;
- const anyPartial=rows.some(r=>r.flagsIncomplete);
+ const anyPartial=rows.some(r=>r.flagsIncomplete||(r.tickets!==null&&r.flags===null));
  const metrics=[
   {label:'TOTAL STAFF',value:String(staff),kind:'staff'},
   {label:'TICKETS',value:fmt(sum(rows.map(r=>r.tickets))),kind:'tickets'},
@@ -211,7 +212,7 @@ export default function DailyReportStudio({state,review}:Props){
  const latest=dates[0]||null;
  useEffect(()=>{if(latest&&!touched.current)setDate(latest);},[latest]);
  const readings=useMemo(()=>state?.readings.filter(r=>r.from_date===date&&r.to_date===date)||[],[state,date]);
- const partial=useMemo(()=>state?.readings.filter(r=>r.from_date<date&&r.to_date>=date&&r.to_date!==r.from_date).length||0,[state,date]);
+ const partial=useMemo(()=>state?.readings.filter(r=>r.from_date<=date&&r.to_date>=date&&r.to_date!==r.from_date).length||0,[state,date]);
  const rows=useMemo(()=>state?.admins.filter(eligible).map(a=>dailyRow(a,readings))||[],[state,readings]);
  const staff=state?.admins.filter(a=>a.active).length||0;
  useEffect(()=>{
