@@ -218,17 +218,19 @@ export default function ExecutiveTeamStudio({admins,rows,review,onRefresh,onPrev
     <form onSubmit={save} className="v7-editor-form">
      <h3><UserRound size={18}/> المعلومات الأساسية</h3>
      <label>اسم اللعبة <em>*</em><input required maxLength={80} value={draft.name} onChange={e=>setDraft(s=>({...s,name:e.target.value}))} disabled={saving}/></label>
-     <label>الاسم الكامل (اختياري)<input maxLength={120} value={draft.full_name} onChange={e=>setDraft(s=>({...s,full_name:e.target.value}))} disabled={saving}/></label>
-     <div className="v7-field-pair"><label>الرتبة <select value={draft.rank} onChange={e=>setDraft(s=>({...s,rank:e.target.value as Rank}))} disabled={saving}>{RANKS.map(r=><option key={r} value={r}>{r}</option>)}</select></label>
-     <label>المستوى الإداري <select value={draft.admin_level} onChange={e=>setDraft(s=>({...s,admin_level:Number(e.target.value)}))} disabled={saving}><option value={1}>1</option><option value={2}>2</option><option value={3}>3</option></select></label></div>
-     <div className="v7-field-pair"><label>تاريخ الانضمام<input type="date" value={draft.joined_on} onChange={e=>setDraft(s=>({...s,joined_on:e.target.value}))} disabled={saving}/></label>
-     <label>المنطقة الزمنية <select value={draft.timezone} onChange={e=>setDraft(s=>({...s,timezone:e.target.value}))} disabled={saving}><option value="Africa/Cairo">القاهرة (GMT+2/3)</option><option value="Asia/Riyadh">السعودية (GMT+3)</option><option value="UTC">UTC</option></select></label></div>
+     <div className="v7-field-pair"><label>الرتبة<select value={draft.rank} onChange={e=>setDraft(s=>({...s,rank:e.target.value as Rank}))} disabled={saving}>{RANKS.map(r=><option key={r} value={r}>{r}</option>)}</select></label>
+     <label>المستوى الإداري<select value={draft.admin_level} onChange={e=>setDraft(s=>({...s,admin_level:Number(e.target.value)}))} disabled={saving}><option value={1}>1</option><option value={2}>2</option><option value={3}>3</option></select></label></div>
      <label>المناوبة الثابتة<input maxLength={120} value={draft.shift_label} onChange={e=>setDraft(s=>({...s,shift_label:e.target.value}))} disabled={saving} placeholder="مثال: السبت 20:00 إلى 22:00"/></label>
-     <label>المشرف (اختياري) <select value={draft.supervisor_id} onChange={e=>setDraft(s=>({...s,supervisor_id:e.target.value}))} disabled={saving}><option value="">غير محدد</option>{admins.filter(a=>a.id!==target).map(a=><option key={a.id} value={a.id}>{a.name}</option>)}</select></label>
      <h3><Shield size={18}/> الحالة والصلاحية في التقارير</h3>
      <label className="v7-toggle-row"><span><b>حالة الإداري</b><small>نشط أو غير نشط ضمن الفريق</small></span><input type="checkbox" checked={draft.active} onChange={e=>setDraft(s=>({...s,active:e.target.checked}))} disabled={saving}/></label>
      <label className="v7-toggle-row"><span><b>الظهور في التقارير</b><small>تضمين العضو عند عرض التقارير</small></span><input type="checkbox" checked={draft.in_reporting} onChange={e=>setDraft(s=>({...s,in_reporting:e.target.checked}))} disabled={saving}/></label>
-     <label>ملاحظات إدارية<textarea rows={4} maxLength={2000} value={draft.notes} onChange={e=>setDraft(s=>({...s,notes:e.target.value}))} disabled={saving} placeholder="ملاحظات داخلية اختيارية"/></label>
+     <details className="v9-editor-extras"><summary>بيانات وملاحظات إضافية (اختياري)</summary><div>
+       <label>الاسم الكامل<input maxLength={120} value={draft.full_name} onChange={e=>setDraft(s=>({...s,full_name:e.target.value}))} disabled={saving}/></label>
+       <div className="v7-field-pair"><label>تاريخ الانضمام<input type="date" value={draft.joined_on} onChange={e=>setDraft(s=>({...s,joined_on:e.target.value}))} disabled={saving}/></label>
+       <label>المنطقة الزمنية<select value={draft.timezone} onChange={e=>setDraft(s=>({...s,timezone:e.target.value}))} disabled={saving}><option value="Africa/Cairo">القاهرة</option><option value="Asia/Riyadh">السعودية</option><option value="UTC">UTC</option></select></label></div>
+       <label>المشرف<select value={draft.supervisor_id} onChange={e=>setDraft(s=>({...s,supervisor_id:e.target.value}))} disabled={saving}><option value="">غير محدد</option>{admins.filter(a=>a.id!==target).map(a=><option key={a.id} value={a.id}>{a.name}</option>)}</select></label>
+       <label>ملاحظات إدارية<textarea rows={3} maxLength={2000} value={draft.notes} onChange={e=>setDraft(s=>({...s,notes:e.target.value}))} disabled={saving}/></label>
+     </div></details>
      {failure&&<p className="v7-form-error" role="alert"><ShieldAlert size={17}/>{failure}</p>}
      {confirmDelete&&editorAdmin&&<div className="v7-delete-confirm"><strong><ShieldAlert size={19}/> حذف نهائي للإداري</strong><p>سيحذف سجلات الإداري أيضًا، وسيُحفظ Backup قبل الحذف. اكتب اسم الإداري <b>{editorAdmin.name}</b> للتأكيد.</p><input value={confirmName} onChange={e=>setConfirmName(e.target.value)} placeholder="اكتب اسم الإداري كما هو" disabled={saving}/><button type="button" className="v7-btn v7-btn-danger" onClick={destroy} disabled={saving||confirmName.trim()!==editorAdmin.name}><Trash2 size={16}/> تأكيد الحذف النهائي</button><button type="button" onClick={()=>setConfirmDelete(false)}>إلغاء الحذف</button></div>}
      <div className="v7-editor-footer">

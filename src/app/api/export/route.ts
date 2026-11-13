@@ -31,12 +31,12 @@ function personRow(admin:Admin,readings:Reading[]):Row{
   lastReading:mine[0]?.to_date||''};
 }
 function headers(scope:string){
- return scope==='readings'?['الإداري','الرتبة','من تاريخ','إلى تاريخ','Tickets الزيادة','Flags الزيادة','TIME ساعات عشرية','Rating','الملاحظات']:
+ return scope==='readings'?['الإداري','الرتبة','من تاريخ','إلى تاريخ','تاريخ تسجيل التقرير','وقت الحفظ الفعلي','Tickets الزيادة','Flags الزيادة','TIME ساعات عشرية','Rating','الملاحظات']:
  ['الإداري','الرتبة','المستوى','المناوبة','الحالة','ضمن التقارير','Tickets الأسبوع','Flags الأسبوع','التقييم الأخير','TIME الأسبوع','آخر قراءة'];
 }
 function cells(scope:string,rows:Row[],readings:Reading[]){
  return scope==='readings'?
- readings.map(r=>[r.admin_name,r.rank,r.from_date,r.to_date,r.tickets_delta,r.flags_delta,r.hours,r.rating,r.note]):
+ readings.map(r=>[r.admin_name,r.rank,r.from_date,r.to_date,r.report_entered_on,r.created_at,r.tickets_delta,r.flags_delta,r.hours,r.rating,r.note]):
  rows.map(r=>[r.name,r.rank,r.level,r.shift,r.status,r.reporting,r.tickets,r.flags,r.rating,r.hours,r.lastReading]);
 }
 export async function GET(req:NextRequest){
@@ -49,8 +49,9 @@ export async function GET(req:NextRequest){
   const period=state.summary.week_start;
   const relevant=state.readings.filter(r=>r.week_start===period);
   const rows=state.admins.map(a=>personRow(a,relevant));
-  const labels=headers(scope);const data=cells(scope,rows,relevant);
-  const base='CHICO_'+(scope==='team'?'Team':'Readings')+'_'+period;
+  const exportedReadings=scope==='readings'?state.readings:relevant;
+  const labels=headers(scope);const data=cells(scope,rows,exportedReadings);
+  const base=scope==='readings'?'CHICO_Readings_Full_History':'CHICO_Team_'+period;
   if(format==='csv'){
    const content='\uFEFF'+[labels,...data.map(a=>a.map(x=>numeral(x)))].map(row=>row.map(safeCell).join(',')).join('\r\n');
    return new Response(content,{headers:{'Content-Type':'text/csv; charset=utf-8','Content-Disposition':'attachment; filename="'+base+'.csv"','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
@@ -76,7 +77,7 @@ export async function GET(req:NextRequest){
    'Flag Rate: '+numeral(state.summary.rate??'—'),'Members: '+state.admins.length];
   const body='<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>'+escapeHTML(base)+'</title><style>'+
    'body{font:14px system-ui,sans-serif;margin:30px;background:#fff;color:#25232b}h1{color:#80602e}p{color:#62564d}button{padding:11px 20px;border:0;border-radius:7px;background:#302632;color:#fff;cursor:pointer}.top{display:flex;gap:12px;flex-wrap:wrap;margin:18px 0}.top b{border:1px solid #c9b69b;padding:10px 14px;border-radius:8px}table{border-collapse:collapse;width:100%;margin-top:20px}th,td{padding:8px;border:1px solid #d1cac1;font-size:11px;text-align:right;word-break:break-word}th{background:#f2e9da}tr:nth-child(even){background:#fcfaf7}img{width:100%;max-height:160px;object-fit:contain;background:#18151a}@media print{button{display:none}@page{size:landscape;margin:12mm}body{margin:0}thead{display:table-header-group}tr{break-inside:avoid}}'+
-   '</style></head><body><img src="/assets/chico-approved-hero.avif" alt="CHICO GENERAL TEAM"><h1>CHICO GENERAL TEAM — '+(scope==='team'?'كشف الفريق':'سجل القراءات')+'</h1><p>الأسبوع: '+escapeHTML(period)+' | لا تُستبدل القيم غير المسجلة بصفر</p><div class="top">'+summary.map(x=>'<b>'+escapeHTML(x)+'</b>').join('')+'</div><button onclick="window.print()">طباعة أو حفظ PDF</button><table><thead><tr>'+headerCells+'</tr></thead><tbody>'+rowHTML+'</tbody></table></body></html>';
+   '</style></head><body><img src="/assets/chico-approved-hero.avif" alt="CHICO GENERAL TEAM"><h1>CHICO GENERAL TEAM — '+(scope==='team'?'كشف الفريق':'سجل القراءات')+'</h1><p>'+(scope==='readings'?'السجل التاريخي الكامل':'الأسبوع: '+escapeHTML(period))+' | لا تُستبدل القيم غير المسجلة بصفر</p><div class="top">'+summary.map(x=>'<b>'+escapeHTML(x)+'</b>').join('')+'</div><button onclick="window.print()">طباعة أو حفظ PDF</button><table><thead><tr>'+headerCells+'</tr></thead><tbody>'+rowHTML+'</tbody></table></body></html>';
   return new Response(body,{headers:{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store','Content-Security-Policy':"default-src 'self'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src 'self' data:; base-uri 'none'; object-src 'none'"}});
  }catch(error){return failure(error);}
 }

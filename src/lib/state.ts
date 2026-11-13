@@ -7,7 +7,7 @@ function mapAdmin(row:Record<string,unknown>):Admin{
 }
 function mapReading(row:Record<string,unknown>):Reading{
   const n=(x:unknown)=>x===null||x===undefined?null:Number(x);
-  return {id:String(row.id),admin_id:String(row.admin_id),admin_name:String(row.admin_name),rank:row.rank as Reading['rank'],from_date:String(row.from_date).slice(0,10),to_date:String(row.to_date).slice(0,10),week_start:String(row.week_start).slice(0,10),tickets_counter:n(row.tickets_counter),tickets_delta:n(row.tickets_delta),flags_counter:n(row.flags_counter),flags_baseline:n(row.flags_baseline),flags_delta:n(row.flags_delta),hours:n(row.hours),rating:n(row.rating),note:String(row.note||''),created_at:String(row.created_at)};
+  return {id:String(row.id),admin_id:String(row.admin_id),admin_name:String(row.admin_name),rank:row.rank as Reading['rank'],from_date:String(row.from_date).slice(0,10),to_date:String(row.to_date).slice(0,10),week_start:String(row.week_start).slice(0,10),tickets_counter:n(row.tickets_counter),tickets_delta:n(row.tickets_delta),flags_counter:n(row.flags_counter),flags_baseline:n(row.flags_baseline),flags_delta:n(row.flags_delta),hours:n(row.hours),rating:n(row.rating),note:String(row.note||''),created_at:String(row.created_at),report_entered_on:row.report_entered_on?String(row.report_entered_on).slice(0,10):new Intl.DateTimeFormat('en-CA',{timeZone:'Africa/Cairo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(row.created_at as string))};
 }
 export async function loadState():Promise<State>{
   const sql=db();

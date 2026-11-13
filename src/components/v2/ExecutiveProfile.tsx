@@ -1,77 +1,103 @@
 'use client';
-
 import {useEffect,useMemo,useState,type ReactNode} from 'react';
-import {Activity,CalendarDays,CheckCircle2,Clock3,History,Pencil,Shield,Ticket,Flag,Star,X} from 'lucide-react';
-import type {Rank,Reading,Admin} from '@/lib/types';
-import {LOCAL_ROSTER_HISTORY_KEY,type LocalRosterEvent} from '@/lib/localRoster';
+import {Activity,CalendarDays,Clock3,History,Pencil,Plus,Shield,Ticket,Flag,Star,X} from 'lucide-react';
+import type {Admin,Rank,Reading} from '@/lib/types';
+import {RankLabel} from './ChicoVisualLanguage';
 
 type Member={id:string;name:string;rank:Rank;admin_level?:number|null;shift_label?:string|null;full_name?:string|null;notes?:string|null;timezone?:string|null;supervisor_id?:string|null;joined_on?:string|null;active:boolean;in_reporting:boolean;tickets:number|null;flags:number|null;hours:number|null;rating:number|null;lastUpdate:string|null;periodFrom?:string|null};
-type RankEntry={previous_rank:string|null;new_rank:string;changed_at:string};
-type ShiftEntry={previous_shift:string|null;new_shift:string|null;changed_at:string};
-type Tab='overview'|'readings'|'rank'|'shift'|'notes';
-const formatted=(v:number|null|undefined)=>v===null||v===undefined?'—':new Intl.NumberFormat('en-US',{maximumFractionDigits:2}).format(v);
-export default function ExecutiveProfile({member,readings,admins=[],review,mark,onClose,onEdit}:{member:Member;readings:Reading[];admins?:Admin[];review:boolean;mark:ReactNode;onClose:()=>void;onEdit:()=>void}){
- const [tab,setTab]=useState<Tab>('overview');
- useEffect(()=>{const handler=(e:KeyboardEvent)=>{if(e.key==='Escape')onClose();};window.addEventListener('keydown',handler);return()=>window.removeEventListener('keydown',handler);},[onClose]);
- const [history,setHistory]=useState<RankEntry[]>([]);
- const [shiftHistory,setShiftHistory]=useState<ShiftEntry[]>([]);
- const [loading,setLoading]=useState(!review);
- const [readingsLimit,setReadingsLimit]=useState(20);
- const supervisor=admins.find(a=>a.id===member.supervisor_id);
+type RankEvent={previous_rank:string|null;new_rank:string;changed_at:string};
+type ShiftEvent={previous_shift:string|null;new_shift:string|null;changed_at:string};
+type Tab='performance'|'readings'|'details';
+const n=(v:number|null|undefined,digits=0)=>v==null?'—':v.toLocaleString('en-US',{maximumFractionDigits:digits});
+const sum=(xs:(number|null)[])=>{const v=xs.filter((x):x is number=>x!==null);return v.length?v.reduce((a,b)=>a+b,0):null;};
+const when=(date:string)=>date?new Date(date).toLocaleDateString('ar-EG',{year:'numeric',month:'short',day:'numeric'}):'—';
+const coverage=(r:Reading)=>r.from_date===r.to_date?r.to_date:r.from_date+' — '+r.to_date;
+
+export default function ExecutiveProfile({member,readings,admins=[],review,mark,onClose,onEdit,onAddReading}:{member:Member;readings:Reading[];admins?:Admin[];review:boolean;mark:ReactNode;onClose:()=>void;onEdit:()=>void;onAddReading?:()=>void}){
+ const [tab,setTab]=useState<Tab>('performance');
+ const [page,setPage]=useState(20);
+ const [rankEvents,setRankEvents]=useState<RankEvent[]>([]);
+ const [shiftEvents,setShiftEvents]=useState<ShiftEvent[]>([]);
+ const [loading,setLoading]=useState(false);
  const [error,setError]=useState('');
- const memberReadings=useMemo(()=>readings.filter(r=>r.admin_id===member.id).sort((a,b)=>b.to_date.localeCompare(a.to_date)||b.created_at.localeCompare(a.created_at)),[readings,member.id]);
  useEffect(()=>{
-  if(review){
-    try{
-      const data=JSON.parse(localStorage.getItem(LOCAL_ROSTER_HISTORY_KEY)||'[]') as LocalRosterEvent[];
-      const valid=Array.isArray(data)?data.filter(e=>e.admin_id===member.id):[];
-      setHistory(valid.filter(e=>e.kind==='rank').map(e=>({previous_rank:e.previous,new_rank:e.next||'',changed_at:e.changed_at})).reverse());
-      setShiftHistory(valid.filter(e=>e.kind==='shift').map(e=>({previous_shift:e.previous,new_shift:e.next,changed_at:e.changed_at})).reverse());
-    }catch{setHistory([]);setShiftHistory([]);}
-    setLoading(false);
-    return;
-  }
-  let cancelled=false;setLoading(true);setError('');
-  void fetch('/api/admin-profile/'+encodeURIComponent(member.id),{credentials:'same-origin',cache:'no-store'}).then(async r=>{if(!r.ok)throw new Error('تعذّر قراءة سجل الرتب');return r.json();}).then(data=>{if(!cancelled){setHistory(data.rank_history||[]);setShiftHistory(data.shift_history||[]);}}).catch(e=>{if(!cancelled)setError(e instanceof Error?e.message:'تعذر تحميل السجل');}).finally(()=>{if(!cancelled)setLoading(false);});return()=>{cancelled=true;};
+  const handle=(event:KeyboardEvent)=>{if(event.key==='Escape')onClose();};
+  window.addEventListener('keydown',handle);
+  return()=>window.removeEventListener('keydown',handle);
+ },[onClose]);
+ useEffect(()=>{
+  if(review){setRankEvents([]);setShiftEvents([]);return;}
+  let mounted=true;setLoading(true);setError('');
+  fetch('/api/admin-profile/'+encodeURIComponent(member.id),{credentials:'same-origin',cache:'no-store'})
+   .then(async response=>{if(!response.ok)throw Error('تعذر تحميل سجل الرتبة والمناوبة');return response.json() as Promise<{rank_history:RankEvent[];shift_history:ShiftEvent[]}>;})
+   .then(data=>{if(mounted){setRankEvents(data.rank_history||[]);setShiftEvents(data.shift_history||[]);}})
+   .catch(err=>{if(mounted)setError(err instanceof Error?err.message:'تعذر تحميل السجل');})
+   .finally(()=>{if(mounted)setLoading(false);});
+  return ()=>{mounted=false;};
  },[member.id,review]);
- const tabs:{id:Tab;title:string}[]=[{id:'overview',title:'الملخص'},{id:'readings',title:'القراءات'},{id:'rank',title:'سجل الرتب'},{id:'shift',title:'المناوبة'},{id:'notes',title:'معلومات إضافية'}];
- return <div className="x-detail-scrim" onMouseDown={e=>{if(e.target===e.currentTarget)onClose();}}>
-  <aside className="x-detail-card x-profile-v3" role="dialog" aria-modal="true" aria-label={'ملف الإداري '+member.name}>
-   <div className="x-profile-heading"><span>CHICO / ADMIN DIRECTORY</span><button className="x-detail-close" onClick={onClose} aria-label="إغلاق ملف الإداري"><X size={21}/></button></div>
-   <div className="x-profile-identity"><div className="x-profile-seal">{mark}</div><div><span className="x-kicker">ADMINISTRATOR PROFILE</span><h2 dir="auto">{member.name}</h2><p>{member.rank} · المستوى {member.admin_level||'—'}</p>{member.full_name&&<small className="v7-profile-fullname">{member.full_name}</small>}<span className={member.active?'x-profile-active':'x-profile-inactive'}>{member.active?'نشط':'غير نشط'}</span></div></div>
-   <button type="button" className="x-profile-edit" onClick={onEdit}><Pencil size={16}/>تعديل بيانات الإداري أو حذفه</button>
-   <nav className="x-profile-tabs" aria-label="أقسام ملف الإداري">{tabs.map(t=><button type="button" key={t.id} className={tab===t.id?'active':''} onClick={()=>setTab(t.id)}>{t.title}</button>)}</nav>
-   {tab==='overview'&&<div className="x-profile-body">
-    <div className="x-profile-metrics">{[['Tickets',formatted(member.tickets)],['Flags',formatted(member.flags)],['Rating',formatted(member.rating)],['TIME',member.hours===null?'—':formatted(member.hours)+' h']].map(([label,value])=><div key={label}><small>{label}</small><strong>{value}</strong></div>)}</div>
-    <div className="x-profile-facts"><p><span>الاسم الكامل</span><b>{member.full_name||'غير مسجل'}</b></p><p><span>تاريخ الانضمام</span><b>{member.joined_on||'غير مسجل'}</b></p><p><span>المشرف المباشر</span><b>{supervisor?.name||'غير محدد'}</b></p><p><span>المنطقة الزمنية</span><b>{member.timezone||'Africa/Cairo'}</b></p><p><span>الرتبة الحالية</span><b>{member.rank}</b></p><p><span>المستوى الإداري</span><b>{member.admin_level||'غير مسجل'}</b></p><p><span>حالة المشاركة في التقارير</span><b>{member.in_reporting?'مشمول':'غير مشمول'}</b></p><p><span>المناوبة الثابتة</span><b>{member.shift_label||'لم يتم تعيين مناوبة'}</b></p><p><span>آخر قراءة</span><b>{member.lastUpdate||'لا توجد قراءات مسجلة'}</b></p></div>
-   </div>}
-   {tab==='readings'&&<div className="x-profile-body"><div className="x-profile-section-heading"><Ticket size={18}/>سجل القراءات الحقيقي</div>
-    {memberReadings.length?memberReadings.slice(0,readingsLimit).map(r=><div className="x-profile-event" key={r.id}><div><b>{r.from_date===r.to_date?r.to_date:r.from_date+' — '+r.to_date}</b><span>{r.note||'قراءة محفوظة'}</span></div><div><small>Tickets {formatted(r.tickets_delta)}</small><small>Flags {formatted(r.flags_delta)}</small><small>Rating {formatted(r.rating)}</small><small>TIME {r.hours===null?'—':formatted(r.hours)+' h'}</small></div></div>):<div className="x-profile-empty"><Activity size={26}/><b>لا توجد قراءات مسجلة لهذا الإداري</b><p>ستظهر هنا جميع فترات القراءات التي تحفظها لاحقًا، بدون تقديرات.</p></div>}
-   {memberReadings.length>readingsLimit&&<button type="button" className="v7-btn v7-btn-muted" onClick={()=>setReadingsLimit(v=>v+20)}>عرض المزيد من القراءات ({memberReadings.length-readingsLimit})</button>}
-   </div>}
-   {tab==='rank'&&<div className="x-profile-body"><div className="x-profile-section-heading"><History size={18}/>تاريخ الرتب</div>
-    {loading?<p className="x-profile-hint">جارٍ تحميل السجل…</p>:error?<p className="x-profile-hint">{error}</p>:history.length?history.map((r,i)=><div className="x-profile-event" key={i}><div><b>{r.previous_rank?r.previous_rank+' ← '+r.new_rank:r.new_rank}</b><span>{new Date(r.changed_at).toLocaleString('ar-EG',{dateStyle:'medium',timeStyle:'short'})}</span></div></div>):<div className="x-profile-empty"><History size={26}/><b>لم يُسجل تاريخ تغييرات الرتب</b><p>{review?'ملف Excel يحتوي على الرتبة الحالية فقط.':'أول تغيير رتبة يتم حفظه يظهر هنا تلقائيًا.'}</p></div>}
-   </div>}
-   {tab==='shift'&&<div className="x-profile-body"><div className="x-profile-section-heading"><Clock3 size={18}/>المناوبة الثابتة</div>
-    <div className="x-profile-shift"><CalendarDays size={24}/><strong>{member.shift_label||'لم تُحدد مناوبة بعد'}</strong><p>المناوبة إعداد مستمر للإداري ولا تُنشأ من جديد كل يوم. يتغير الجدول فقط عند تعديلك له.</p></div>
-    <div className="x-profile-section-heading" style={{marginTop:22}}><History size={18}/>تاريخ تعديل المناوبة</div>
-    {shiftHistory.length?shiftHistory.map((event,i)=><div className="x-profile-event" key={i}><div><b>{event.new_shift||'تم إلغاء المناوبة'}</b><span>{event.previous_shift?'بدلًا من '+event.previous_shift:'أول تعيين'}</span><span>{new Date(event.changed_at).toLocaleString('ar-EG',{dateStyle:'medium',timeStyle:'short'})}</span></div></div>):<p className="x-profile-hint">لا توجد تغييرات مناوبة مسجلة حتى الآن.</p>}
-   </div>}
-   {tab==='notes'&&<div className="x-profile-body">
-    <div className="x-profile-section-heading"><Shield size={18}/>معلومات العضو والملاحظات</div>
-    <div className="x-profile-facts">
-     <p><span>اسم الحساب</span><b>{member.name}</b></p>
-     <p><span>الاسم الكامل</span><b>{member.full_name||'غير مسجل'}</b></p>
-     <p><span>المنطقة الزمنية</span><b>{member.timezone||'Africa/Cairo'}</b></p>
-     <p><span>المشرف المباشر</span><b>{supervisor?.name||'غير محدد'}</b></p>
-     <p><span>تاريخ الانضمام</span><b>{member.joined_on||'غير مسجل'}</b></p>
-     <p><span>حالة الفريق</span><b>{member.active?'نشط':'غير نشط'}</b></p>
-     <p><span>يظهر في التقارير</span><b>{member.in_reporting?'نعم':'لا'}</b></p>
+ const memberReadings=useMemo(()=>readings.filter(r=>r.admin_id===member.id).sort((a,b)=>b.to_date.localeCompare(a.to_date)||b.created_at.localeCompare(a.created_at)),[readings,member.id]);
+ const tickets=sum(memberReadings.map(r=>r.tickets_delta));
+ const hours=sum(memberReadings.map(r=>r.hours));
+ const flags=memberReadings.some(r=>r.flags_counter!==null&&r.flags_delta===null)?null:sum(memberReadings.map(r=>r.flags_delta));
+ const lastRating=memberReadings.find(r=>r.rating!==null)?.rating??null;
+ const topChart=[...memberReadings].reverse().slice(-10);
+ const max=Math.max(1,...topChart.map(r=>r.tickets_delta??0));
+ const supervisor=admins.find(a=>a.id===member.supervisor_id)?.name||'غير محدد';
+ const lastRecord=memberReadings[0];
+ return <div className="v9-profile-overlay" onMouseDown={e=>{if(e.target===e.currentTarget)onClose();}}>
+  <section className="v9-profile-modal" role="dialog" aria-modal="true" aria-label={'الملف الإداري '+member.name}>
+   <div className="v9-profile-topbar"><span>CHICO / ADMIN PROFILE</span><button type="button" onClick={onClose} aria-label="إغلاق الملف"><X size={21}/></button></div>
+   <header className="v9-profile-header">
+    <div className="v9-profile-identity"><span className="v9-profile-mark">{mark}</span>
+     <div><small>الملف الإداري</small><h2>{member.name}</h2><div className="v9-profile-line"><RankLabel rank={member.rank}/><span>المستوى {member.admin_level??'—'}</span><span className={member.active?'v9-online':'v9-offline'}>{member.active?'نشط':'غير نشط'}</span></div></div>
     </div>
-    <div className="v7-profile-notes"><b>ملاحظات إدارية</b><p>{member.notes||'لم تُسجّل ملاحظات لهذا الإداري.'}</p></div>
-    <button type="button" className="v7-btn v7-btn-muted" onClick={onEdit}><Pencil size={16}/>تعديل الملف والملاحظات</button>
-   </div>}
-   <footer className="x-profile-footer"><Shield size={16}/>{review?'بيانات الأسماء من Excel المعتمد. الإحصائيات غير مسجلة.':'معلومات محمية · CHICO ME'}</footer>
-  </aside>
+    <div className="v9-profile-actions"><button type="button" className="v9-quiet-btn" onClick={onEdit}><Pencil size={18}/>تعديل البيانات</button>{onAddReading&&<button type="button" className="v9-primary" onClick={onAddReading}><Plus size={18}/>إضافة قراءة</button>}</div>
+   </header>
+   <div className="v9-profile-kpis">
+    <div><Ticket size={18}/><small>Tickets في السجل</small><b>{n(tickets)}</b></div>
+    <div><Flag size={18}/><small>Flags في السجل</small><b>{n(flags)}</b></div>
+    <div><Clock3 size={18}/><small>TIME المسجل</small><b>{n(hours,2)}{hours===null?'':' h'}</b></div>
+    <div><Star size={18}/><small>آخر Rating</small><b>{n(lastRating,2)}</b></div>
+   </div>
+   <nav className="v9-profile-tabs" aria-label="أقسام ملف الإداري">
+    <button type="button" className={tab==='performance'?'selected':''} onClick={()=>setTab('performance')}><Activity size={17}/>الأداء</button>
+    <button type="button" className={tab==='readings'?'selected':''} onClick={()=>setTab('readings')}><CalendarDays size={17}/>سجل الأيام ({memberReadings.length})</button>
+    <button type="button" className={tab==='details'?'selected':''} onClick={()=>setTab('details')}><Shield size={17}/>البيانات والسجل الإداري</button>
+   </nav>
+   <div className="v9-profile-content">
+    {tab==='performance'&&<>
+     <section className="v9-profile-section"><div className="v9-profile-section-heading"><h3>متابعة الأداء المحفوظ</h3><small>المقارنة بين فترات التقارير الفعلية</small></div>
+      {topChart.length?<div className="v9-performance-chart">{topChart.map(r=><div key={r.id} className="v9-performance-bar" title={'الفترة: '+coverage(r)+' | Tickets: '+n(r.tickets_delta)}>
+       <span>{n(r.tickets_delta)}</span><div className="v9-performance-track"><div style={{height:r.tickets_delta===null?3:Math.max(3,Math.round((r.tickets_delta/max)*100))+'%'}}/></div>
+       <small>{r.to_date.slice(5)}</small>
+      </div>)}</div>:<div className="v9-empty"><History size={26}/><b>لسه مفيش أداء محفوظ</b><span>أول ما تدخل قراءة، هتظهر هنا باليوم أو الفترة اللي غطتها.</span></div>}
+      <p className="v9-subtle-note">كل عمود يمثل قراءة مسجلة لفترة محددة. لو تقرير بيغطي 3 أيام مش بنقسم مجموعه على الأيام الثلاثة.</p>
+     </section>
+     <section className="v9-profile-section"><h3>آخر تقرير</h3>
+      {lastRecord?<div className="v9-last-report"><div><small>الفترة المغطاة</small><b>{coverage(lastRecord)}</b></div><div><small>تاريخ إضافة التقرير</small><b>{lastRecord.report_entered_on}</b></div><div><small>الحفظ الفعلي بالنظام</small><b>{when(lastRecord.created_at)}</b></div></div>:<p className="v9-subtle-note">لم يتم تسجيل تقرير بعد.</p>}
+     </section>
+    </>}
+    {tab==='readings'&&<section className="v9-profile-section"><div className="v9-profile-section-heading"><h3>كل الأيام والفترات المحفوظة</h3><small>مرتبة من الأحدث للأقدم</small></div>
+     {memberReadings.slice(0,page).map(r=><div className="v9-profile-reading" key={r.id}>
+      <div><b>{coverage(r)}</b><span>{r.from_date!==r.to_date?'قراءة مجمعة · ':''}أُضيفت بتاريخ {r.report_entered_on}</span><small title={'وقت الحفظ الفعلي: '+r.created_at}>{r.note||'لا توجد ملاحظات'}</small></div>
+      <div className="v9-reading-stats"><span>Tickets <b>{n(r.tickets_delta)}</b></span><span>Flags <b>{n(r.flags_delta)}</b></span><span>TIME <b>{n(r.hours,2)}</b></span><span>Rating <b>{n(r.rating,2)}</b></span></div>
+     </div>)}
+     {memberReadings.length>page&&<button type="button" className="v9-quiet-btn" onClick={()=>setPage(p=>p+20)}>عرض سجلات أقدم ({memberReadings.length-page})</button>}
+     {!memberReadings.length&&<div className="v9-empty">مفيش قراءات محفوظة للإداري ده.</div>}
+    </section>}
+    {tab==='details'&&<div className="v9-details-layout">
+     <section className="v9-profile-section"><h3>بيانات الإداري</h3><dl className="v9-admin-facts">
+       <div><dt>اسم الحساب</dt><dd>{member.name}</dd></div><div><dt>الاسم الكامل</dt><dd>{member.full_name||'غير مسجل'}</dd></div>
+       <div><dt>الرتبة</dt><dd><RankLabel rank={member.rank}/></dd></div><div><dt>المستوى</dt><dd>{member.admin_level??'—'}</dd></div>
+       <div><dt>المناوبة الثابتة</dt><dd>{member.shift_label||'غير محددة'}</dd></div><div><dt>المشرف</dt><dd>{supervisor}</dd></div>
+       <div><dt>الانضمام</dt><dd>{member.joined_on||'غير مسجل'}</dd></div><div><dt>التقارير</dt><dd>{member.in_reporting?'مشمول':'مستبعد'}</dd></div>
+      </dl><div className="v9-admin-notes"><b>ملاحظات</b><p>{member.notes||'مفيش ملاحظات مسجلة.'}</p></div></section>
+     <section className="v9-profile-section"><h3>تغييرات الرتب والمناوبات</h3>{loading?<p>جاري تحميل السجل…</p>:error?<p role="alert">{error}</p>:<>
+       <h4>تاريخ الرتب</h4>{rankEvents.length?rankEvents.slice(0,15).map((e,i)=><p key={i} className="v9-history-event">{e.previous_rank||'تعيين أولي'} ← {e.new_rank}<small>{when(e.changed_at)}</small></p>):<p className="v9-subtle-note">لا توجد تغييرات مسجلة.</p>}
+       <h4>المناوبات</h4>{shiftEvents.length?shiftEvents.slice(0,10).map((e,i)=><p key={i} className="v9-history-event">{e.new_shift||'إلغاء المناوبة'}<small>{when(e.changed_at)}</small></p>):<p className="v9-subtle-note">لا توجد تغييرات.</p>}
+      </>}</section>
+    </div>}
+   </div>
+  </section>
  </div>;
 }

@@ -3,6 +3,7 @@ import ExecutiveCommand from '@/components/v2/ExecutiveCommand';
 import '@/components/v2/executive.css';
 import '@/components/v2/executive-v7.css';
 import '@/components/v2/executive-v8.css';
+import '@/components/v2/executive-v9.css';
 
 export const metadata:Metadata={title:'CHICO GENERAL TEAM | مركز إدارة الفريق',description:'ONE STATE RP · CHICO ME — إدارة الفريق والقراءات والتقارير'};
 export const dynamic='force-dynamic';

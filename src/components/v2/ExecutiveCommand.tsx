@@ -22,16 +22,17 @@ type Row={id:string;name:string;rank:Rank;active:boolean;tickets:number|null;fla
 const links:{id:Tab;label:string;en:string;icon:typeof Home}[]=[
   {id:'dashboard',label:'مركز القيادة',en:'Command Center',icon:LayoutDashboard},
   {id:'team',label:'إدارة الفريق',en:'Team Management',icon:Users},
-  {id:'operations',label:'مساحة العمليات',en:'Operations Center',icon:Workflow},
-  {id:'updates',label:'تسجيل التحديثات',en:'Log Updates',icon:Plus},
+  {id:'operations',label:'أدوات الإدارة',en:'Management Tools',icon:Workflow},
+  {id:'updates',label:'تسجيل تقرير',en:'Log Reading',icon:Plus},
   {id:'excel',label:'استيراد Excel',en:'Excel Import',icon:FileSpreadsheet},
   {id:'server',label:'أداء السيرفر',en:'Server Performance',icon:BarChart3},
-  {id:'reports',label:'التقارير',en:'Reports & Exports',icon:Download},
+  {id:'reports',label:'صورة Discord',en:'Discord Report',icon:Download},
   {id:'weeks',label:'الأسابيع',en:'Weekly Cycles',icon:CalendarDays},
   {id:'alerts',label:'التنبيهات والمتابعة',en:'Tasks & Alerts',icon:ShieldAlert},
   {id:'settings',label:'الإعدادات',en:'Settings',icon:Settings2}
 ];
 
+const primaryLinks=links.filter(x=>!['excel','server','weeks'].includes(x.id));
 function pretty(v:number|null|undefined,kind?:'percent'|'rating'){
  if(v===null||v===undefined||!Number.isFinite(v))return '—';
  if(kind==='rating')return v.toFixed(2);
@@ -89,6 +90,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
  const [tab,setTab]=useState<Tab>(initialTab);
  const [light,setLight]=useState(false);
  const [editTarget,setEditTarget]=useState<string|null>(null);
+ const [readingTarget,setReadingTarget]=useState<string|null>(null);
  const switchAppearance=()=>setLight(current=>{const next=!current;try{localStorage.setItem('chico-ui-theme',next?'light':'dark');}catch{}return next;});
  useEffect(()=>{try{setLight(localStorage.getItem('chico-ui-theme')==='light');}catch{}},[]);
  useEffect(()=>{const valid=links.map(l=>l.id);const initial=new URLSearchParams(window.location.search).get('tab') as Tab|null;if(initial&&valid.includes(initial))setTab(initial);},[]);
@@ -170,7 +172,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
     <Brand small/>
     <div className="x-sidebar-caption">ONE STATE RP · CHICO ME</div>
     <div className="x-side-group">ADMINISTRATION <span> / لوحة الإدارة</span></div>
-    <nav>{links.map(({id,label,en,icon:Icon})=><button type="button" key={id} className={'x-nav-link '+(tab===id?'x-nav-active':'')} onClick={()=>open(id)}>
+    <nav>{primaryLinks.map(({id,label,en,icon:Icon})=><button type="button" key={id} className={'x-nav-link '+(tab===id?'x-nav-active':'')} onClick={()=>open(id)}>
       <NavGlyph tab={id}/><span><b>{label}</b><small>{en}</small></span>{tab===id?<i className="x-active-chevron"/>:null}
     </button>)}</nav>
     <div className="x-sidebar-footer"><span>ONE STATE RP</span><strong>CHICO ME</strong><small>PRIVATE MANAGEMENT</small></div>
@@ -246,19 +248,19 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
        <ExecutiveTeamStudio admins={review?reviewAdmins:state?.admins||[]} rows={rows} review={review} searchQuery={filter} onRefresh={refresh}
         onPreviewChange={updateReviewAdmins} onOpen={setFocused} editTarget={editTarget} onEditConsumed={()=>setEditTarget(null)}/>
        {focused&&<ExecutiveProfile member={focused} readings={review?[]:state?.readings||[]} admins={review?reviewAdmins:state?.admins||[]} review={review} mark={<RankMark rank={focused.rank}/>}
-        onClose={()=>setFocused(null)} onEdit={()=>{setEditTarget(focused.id);setFocused(null);}}/>}
+        onClose={()=>setFocused(null)} onEdit={()=>{setEditTarget(focused.id);setFocused(null);}} onAddReading={()=>{setReadingTarget(focused.id);setFocused(null);open('updates');}}/>}
       </>}
       {tab==='operations'&&<ExecutiveOperationsWorkspace state={state} review={review} onRefresh={refresh} onNavigate={open}/>}
-      {tab!=='dashboard'&&tab!=='team'&&tab!=='operations'&&<ExecutiveOperations tab={tab} state={state} review={review} onRefresh={refresh}/>}
+      {tab!=='dashboard'&&tab!=='team'&&tab!=='operations'&&<ExecutiveOperations tab={tab} state={state} review={review} onRefresh={refresh} initialAdminId={readingTarget}/>}
 
      <footer className="x-foot"><span>© CHICO GENERAL TEAM · ONE STATE RP</span><span>{review?'VISUAL REVIEW — NOT LIVE DATA':'PROTECTED ADMINISTRATION PLATFORM'}</span></footer>
     </div>
    </main>
    <nav className="v8-mobile-dock" aria-label="التنقل السريع على الهاتف">
-    {([{id:'dashboard',name:'القيادة'},{id:'team',name:'الفريق'},{id:'operations',name:'العمليات'},{id:'alerts',name:'التنبيهات'}] as const).map(item=>
+    {([{id:'dashboard',name:'القيادة'},{id:'team',name:'الفريق'},{id:'updates',name:'تسجيل'},{id:'reports',name:'Discord'}] as const).map(item=>
      <button type="button" key={item.id} className={tab===item.id?'active':''} onClick={()=>open(item.id)} aria-current={tab===item.id?'page':undefined}>
       <CommandIcon name={item.id} compact/><span>{item.name}</span>
-      {item.id==='alerts'&&warnings.length>0&&<i aria-label="توجد تنبيهات"/>}
+      
      </button>
     )}
    </nav>
