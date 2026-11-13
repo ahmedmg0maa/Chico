@@ -51,7 +51,7 @@ function CardTitle({icon:Icon,title,en,action}:{icon:typeof Home;title:string;en
  return <div className="x-card-title"><div className="x-section-heading"><Icon size={19}/><span>{title}</span><small>{en}</small></div>{action}</div>;
 }
 function Brand({small=false}:{small?:boolean}){return <div className={'x-brand '+(small?'x-brand-small':'')}>
- <div className="x-brand-wolf"><img src="/assets/chico-wolf-safe-512.png" alt="شعار الذئب الرسمي لفريق CHICO"/></div>
+ <div className="x-brand-wolf"><img src="/assets/chico-approved-wolf.avif" alt="شعار الذئب الرسمي لفريق CHICO"/></div>
  <div className="x-brand-words"><b>CHICO</b><small>G E N E R A L &nbsp; T E A M</small></div>
  </div>;}
 
@@ -140,7 +140,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
  const isLogin=(auth!=='in')||previewLogin;
  if(isLogin)return <div className={'chico-v2 x-auth-scene '+(light?'x-light':'')} dir="rtl">
   {review&&<div className="x-review-ribbon">معاينة أسماء الفريق المعتمدة · بدون إحصائيات</div>}
-  <div className="x-auth-frame"><div className="x-auth-art"><div className="x-auth-art-inner"><div className="x-auth-crown">♛</div><Brand/><p>ONE STATE RP · CHICO ME</p><span>ELITE ADMINISTRATION SYSTEM</span></div></div>
+  <div className="x-auth-frame"><div className="x-auth-art"><div className="x-auth-art-inner"><div className="x-auth-crown">♛</div><Brand/><img className="x-auth-onestate-crest" src="/assets/chico-approved-onestate.avif" alt="OneState RP"/><p>ONE STATE RP · CHICO ME</p><span>ELITE ADMINISTRATION SYSTEM</span></div></div>
    <div className="x-auth-form">
     <div className="x-auth-mini"><span><span className="x-live-dot"/>PRIVATE ADMINISTRATION</span><button type="button" onClick={()=>setLight(!light)} aria-label="تغيير المظهر">{light?<Moon size={17}/>:<Sun size={17}/>}</button></div>
     <div className="x-auth-icon"><LockKeyhole size={27}/></div>
@@ -182,14 +182,8 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
      {error&&<div className="x-error"><AlertTriangle size={17}/>{error}<button onClick={()=>void refresh()}>إعادة المحاولة</button></div>}
      {notice&&<div className="x-inline-notice"><Shield size={18}/>{notice}<button onClick={()=>setNotice('')}><X size={17}/></button></div>}
      {tab==='dashboard'&&<>
-      <section className="x-hero x-hero-v3">
-       <div className="x-hero-identity"><div className="x-hero-identity-frame"><img src="/assets/chico-wolf-safe-512.png" alt="CHICO General Team crest"/></div></div>
-       <div className="x-hero-editorial"><span className="x-hero-eyebrow">CHICO GENERAL TEAM <i/> ONE STATE RP</span>
-        <h1>مركز قيادة الفريق</h1>
-        <p>لوحة إدارة واضحة للرتب والقراءات والتقارير</p>
-        <div className="x-hero-pill"><Shield size={15}/>CHICO ME <span>•</span> نظام الإدارة الداخلي</div>
-       </div>
-       <div className="x-hero-quickstat"><small>قائمة الفريق</small><strong>{rows.length}</strong><span>إداري مسجل بالاسم والرتبة</span></div>
+      <section className="x-approved-masthead" aria-label="الهوية البصرية المعتمدة لفريق CHICO GENERAL TEAM">
+        <img src="/assets/chico-approved-hero.avif" alt="CHICO GENERAL TEAM — شعار OneState RP ذو الدرع 1S، وذئب هادئ داخل شارة ذهبية، على خلفية سوداء وذهبية وحمراء" decoding="async" fetchPriority="high"/>
       </section>
       <div className="x-kpi-grid">{kpis.map(({title,english,value,icon:Icon,tone})=><div className={'x-kpi x-tone-'+tone} key={title}><div className="x-kpi-title"><Icon size={25}/><div><b>{title}</b><small>{english}</small></div></div><strong>{value}</strong><span>{review?'لا توجد قراءات بعد': 'الأسبوع الحالي'}</span></div>)}</div>
       <section className="x-weekbanner"><div className="x-weeklabel"><CalendarDays size={26}/><div><small>WEEKLY OPERATIONS</small><strong>متابعة الأسبوع الحالي</strong></div></div><div className="x-week-center"><Star size={29}/><div><b>مؤشرات الأداء والمتابعة</b><span>{review?'الأسماء معتمدة · لا توجد إحصائيات':'المعلومات المستمدة من سجلات الفريق'}</span></div></div><div className="x-week-mini">ONE STATE · CHICO ME</div></section>
@@ -230,7 +224,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
       </section>
      </>}
      {tab==='team'&&<>
-      <section className="x-titleband"><span className="x-kicker">CHICO / TEAM DIRECTORY</span><h1>قيادة الفريق والإداريين</h1><p>الأسماء والرتب والأداء في مكان واحد، مع الوصول المباشر لكل ملف إداري.</p></section>
+      <section className="x-titleband x-art-team"><span className="x-kicker">CHICO / TEAM DIRECTORY</span><h1>قيادة الفريق والإداريين</h1><p>الأسماء والرتب والأداء في مكان واحد، مع الوصول المباشر لكل ملف إداري.</p></section>
       <div className="x-kpi-grid x-team-kpis">{[
        {name:'إجمالي الإداريين',val:rows.length,icon:Users},{name:'النشطون',val:active,icon:CheckCircle2},{name:'بلا تحديث هذا الأسبوع',val:rows.filter(r=>r.active&&!r.lastUpdate).length,icon:Clock3},{name:'حالات تحتاج متابعة',val:warnings.length,icon:AlertTriangle}
       ].map(x=><div className="x-kpi" key={x.name}><div className="x-kpi-title"><x.icon size={23}/><b>{x.name}</b></div><strong>{x.val}</strong></div>)}</div>
