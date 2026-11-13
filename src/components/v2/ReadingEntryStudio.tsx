@@ -36,7 +36,7 @@ export default function ReadingEntryStudio({state,review,onRefresh,initialAdminI
  const startNew=()=>{setDraft(blank());setEditing(null);setRange(false);setAdvanced(false);setError('');setNotice('');};
  const startEdit=(r:Reading)=>{
   setDraft({admin_id:r.admin_id,from_date:r.from_date,to_date:r.to_date,report_entered_on:r.report_entered_on||localDay(),tickets_counter:r.tickets_counter,flags_counter:r.flags_counter,flags_baseline:r.flags_baseline,hours:r.hours,rating:r.rating,note:r.note});
-  setEditing(r.id);setRange(r.from_date!==r.to_date);setAdvanced(r.flags_baseline!==null);setError('');setNotice('');
+  setEditing(r.id);setRange(r.from_date!==r.to_date);setAdvanced(r.flags_baseline!==null||Boolean(r.note));setError('');setNotice('');
   document.getElementById('chico-reading-entry')?.scrollIntoView({behavior:'smooth',block:'start'});
  };
  const setPreset=(kind:'today'|'yesterday'|'three')=>{
