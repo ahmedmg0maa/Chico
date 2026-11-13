@@ -18,7 +18,7 @@ import {CommandIcon,RankInsignia,RankLabel} from './ChicoVisualLanguage';
 
 export type Tab='dashboard'|'team'|'operations'|'updates'|'excel'|'server'|'reports'|'weeks'|'alerts'|'settings';
 type Auth='checking'|'out'|'in';
-type Row={id:string;name:string;rank:Rank;active:boolean;tickets:number|null;flags:number|null;rating:number|null;hours:number|null;lastUpdate:string|null;in_reporting:boolean;admin_level?:number|null;shift_label?:string|null;full_name?:string|null;notes?:string|null;timezone?:string|null;supervisor_id?:string|null;joined_on?:string|null;flagsIncomplete?:boolean;periodFrom?:string|null};
+type Row={id:string;name:string;rank:Rank;active:boolean;tickets:number|null;flags:number|null;rating:number|null;hours:number|null;lastUpdate:string|null;in_reporting:boolean;admin_level?:number|null;shift_label?:string|null;full_name?:string|null;notes?:string|null;timezone?:string|null;supervisor_id?:string|null;joined_on?:string|null;sort_order?:number;flagsIncomplete?:boolean;periodFrom?:string|null};
 const links:{id:Tab;label:string;en:string;icon:typeof Home}[]=[
   {id:'dashboard',label:'مركز القيادة',en:'Command Center',icon:LayoutDashboard},
   {id:'team',label:'إدارة الفريق',en:'Team Management',icon:Users},
@@ -44,7 +44,7 @@ function latestRows(state:State|null):Row[]{
  return state.admins.map((a:Admin)=>{
   const arr=state.readings.filter((r:Reading)=>r.admin_id===a.id&&r.week_start===state.summary.week_start).sort((x,y)=>y.to_date.localeCompare(x.to_date));
   const add=(f:(r:Reading)=>number|null)=>{const vals=arr.map(f).filter((n):n is number=>n!==null);return vals.length?vals.reduce((x,y)=>x+y,0):null;};
-  return {id:a.id,name:a.name,rank:a.rank,active:a.active,in_reporting:a.in_reporting,admin_level:a.admin_level,shift_label:a.shift_label,full_name:a.full_name,notes:a.notes,timezone:a.timezone,supervisor_id:a.supervisor_id,joined_on:a.joined_on,
+  return {id:a.id,name:a.name,rank:a.rank,active:a.active,in_reporting:a.in_reporting,admin_level:a.admin_level,shift_label:a.shift_label,full_name:a.full_name,notes:a.notes,timezone:a.timezone,supervisor_id:a.supervisor_id,joined_on:a.joined_on,sort_order:a.sort_order,
    tickets:add(r=>r.tickets_delta),flags:arr.some(r=>r.flags_counter!==null&&r.flags_delta===null)?null:add(r=>r.flags_delta),flagsIncomplete:arr.some(r=>r.flags_counter!==null&&r.flags_delta===null),periodFrom:arr[0]?.from_date??null,
    hours:add(r=>r.hours),rating:arr.find(r=>r.rating!==null)?.rating??null,lastUpdate:arr[0]?.to_date??null};
  });
@@ -97,6 +97,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
  const [menu,setMenu]=useState(false);
  useEffect(()=>{try{setMenu(window.matchMedia('(min-width: 1021px)').matches&&localStorage.getItem('chico-nav-open')==='1');}catch{}},[]);
  const toggleMenu=()=>setMenu(current=>{const next=!current;try{if(window.matchMedia('(min-width: 1021px)').matches)localStorage.setItem('chico-nav-open',next?'1':'0');}catch{}return next;});
+ const closeMenu=()=>{setMenu(false);try{if(window.matchMedia('(min-width: 1021px)').matches)localStorage.setItem('chico-nav-open','0');}catch{}};
  useEffect(()=>{if(!menu)return;const handler=(event:KeyboardEvent)=>{if(event.key==='Escape')setMenu(false);};window.addEventListener('keydown',handler);return()=>window.removeEventListener('keydown',handler);},[menu]);
  const [pass,setPass]=useState('');
  const [reveal,setReveal]=useState(false);
@@ -108,7 +109,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
  const [focused,setFocused]=useState<Row|null>(null);
  const [previewLogin,setPreviewLogin]=useState(false);
  const [searchOpen,setSearchOpen]=useState(false);
- const rows:Row[]=useMemo<Row[]>(()=>review?reviewAdmins.map(a=>({id:a.id,name:a.name,rank:a.rank,admin_level:a.admin_level,shift_label:a.shift_label,active:a.active,in_reporting:a.in_reporting,tickets:null,flags:null,rating:null,hours:null,lastUpdate:null})):latestRows(state),[review,reviewAdmins,state]);
+ const rows:Row[]=useMemo<Row[]>(()=>review?reviewAdmins.map(a=>({id:a.id,name:a.name,rank:a.rank,admin_level:a.admin_level,shift_label:a.shift_label,active:a.active,in_reporting:a.in_reporting,sort_order:a.sort_order,tickets:null,flags:null,rating:null,hours:null,lastUpdate:null})):latestRows(state),[review,reviewAdmins,state]);
  const visible=useMemo(()=>rows.filter(r=>(rank==='all'||r.rank===rank)&&(r.name.toLowerCase().includes(filter.toLowerCase()))),[rows,rank,filter]);
  const summary=state?.summary;
  const active=rows.filter(r=>r.active).length;
@@ -139,7 +140,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
   setPass('');setAuth('in');await refresh();
  }catch(e){setError(e instanceof Error?e.message:'خطأ في الدخول');}finally{setWorking(false);}}
  async function logout(){if(review){setPreviewLogin(true);return;}await fetch('/api/auth',{method:'DELETE'});setAuth('out');setState(null);setPass('');}
- const open=(id:Tab)=>{setTab(id);setFocused(null);setMenu(false);setNotice('');const u=new URL(window.location.href);u.searchParams.set('tab',id);window.history.replaceState(null,'',u.pathname+u.search);};
+ const open=(id:Tab)=>{setTab(id);setFocused(null);if(window.matchMedia('(max-width: 1020px)').matches)setMenu(false);setNotice('');const u=new URL(window.location.href);u.searchParams.set('tab',id);window.history.replaceState(null,'',u.pathname+u.search);};
  
 
  const intervalRows=(state?.readings??[]).filter(r=>r.week_start===summary?.week_start).sort((a,b)=>b.to_date.localeCompare(a.to_date)||b.created_at.localeCompare(a.created_at)).slice(0,8);
@@ -171,8 +172,8 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
  return <div className={'chico-v2 '+(light?'x-light':'')} dir="rtl">
   {review&&<div className="x-review-ribbon">قائمة الفريق من Excel المعتمد · لا توجد إحصائيات مسجلة · المعاينة غير متصلة بالحفظ</div>}
   <div className={"x-layout "+(menu?"v10-nav-open":"v10-nav-closed")}>
-   <aside id="chico-main-navigation" className={"x-sidebar "+(menu?"x-sidebar-open":"")} aria-label="القائمة الرئيسية">
-    <div className="v10-nav-head"><Brand small/><button type="button" className="v10-nav-close" onClick={()=>setMenu(false)} title="إغلاق القائمة" aria-label="إغلاق القائمة"><X size={19}/></button></div>
+   <aside id="chico-main-navigation" className={"x-sidebar "+(menu?"x-sidebar-open":"")} aria-label="القائمة الرئيسية" aria-hidden={!menu} inert={!menu}>
+    <div className="v10-nav-head"><Brand small/><button type="button" className="v10-nav-close" onClick={closeMenu} title="إغلاق القائمة" aria-label="إغلاق القائمة"><X size={19}/></button></div>
     <div className="x-sidebar-caption">ONE STATE RP · CHICO ME</div>
     <div className="x-side-group">ADMINISTRATION <span> / لوحة الإدارة</span></div>
     <nav>{primaryLinks.map(({id,label,en,icon:Icon})=><button type="button" key={id} className={'x-nav-link '+(tab===id?'x-nav-active':'')} onClick={()=>open(id)}>
@@ -180,7 +181,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
     </button>)}</nav>
     <div className="x-sidebar-footer"><span>ONE STATE RP</span><strong>CHICO ME</strong><small>PRIVATE MANAGEMENT</small></div>
    </aside>
-   {menu&&<button className="x-mobile-scrim" aria-label="إغلاق القائمة" onClick={()=>setMenu(false)}/>}
+   {menu&&<button className="x-mobile-scrim" aria-label="إغلاق القائمة" onClick={closeMenu}/>}
    <main className="x-body">
     <header className="x-topbar">
      <div className="x-top-group"><button type="button" className="x-icon x-burger v10-hamburger" onClick={toggleMenu} aria-label={menu?"إغلاق القائمة":"فتح القائمة"} aria-expanded={menu} aria-controls="chico-main-navigation" title={menu?"إغلاق القائمة":"فتح القائمة"}>{menu?<X size={22}/>:<Menu size={22}/>}<span>القائمة</span></button>

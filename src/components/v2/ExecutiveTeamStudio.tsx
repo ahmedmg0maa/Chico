@@ -14,7 +14,7 @@ import {applyLocalRosterChange,LOCAL_ROSTER_HISTORY_KEY,type LocalRosterEvent,ty
 
 export type DirectoryRow={
  id:string;name:string;rank:Rank;active:boolean;in_reporting:boolean;
- admin_level?:number|null;shift_label?:string|null;
+ admin_level?:number|null;shift_label?:string|null;sort_order?:number;
  tickets:number|null;flags:number|null;rating:number|null;hours:number|null;lastUpdate:string|null;
 };
 type AdminExtra=Admin&{full_name?:string|null;notes?:string|null;timezone?:string|null;supervisor_id?:string|null};
@@ -26,7 +26,7 @@ type Draft={
  name:string;full_name:string;rank:Rank;admin_level:number;shift_label:string;
  joined_on:string;timezone:string;supervisor_id:string;notes:string;active:boolean;in_reporting:boolean;
 };
-type SortKey='name'|'rank'|'tickets'|'flags'|'rating'|'lastUpdate';
+type SortKey='roster'|'name'|'rank'|'tickets'|'flags'|'rating'|'lastUpdate';
 const newDraft=():Draft=>({name:'',full_name:'',rank:'Helper',admin_level:1,shift_label:'',joined_on:'',
  timezone:'Africa/Cairo',supervisor_id:'',notes:'',active:true,in_reporting:true});
 const format=(v:number|null|undefined,digits=0)=>v==null?'—':v.toLocaleString('en-US',{maximumFractionDigits:digits});
@@ -58,7 +58,7 @@ export default function ExecutiveTeamStudio({admins,rows,review,onRefresh,onPrev
  useEffect(()=>{setSearch(searchQuery);setPage(1);},[searchQuery]);
  const [rank,setRank]=useState<'all'|Rank>('all');
  const [status,setStatus]=useState<'all'|'active'|'inactive'|'unreported'>('active');
- const [sort,setSort]=useState<SortKey>('name');
+ const [sort,setSort]=useState<SortKey>('roster');
  const [descending,setDescending]=useState(false);
  const [page,setPage]=useState(1);
  const [size,setSize]=useState(10);
@@ -106,7 +106,7 @@ export default function ExecutiveTeamStudio({admins,rows,review,onRefresh,onPrev
    if(q&&!([r.name,r.rank,String(r.admin_level||''),r.shift_label||''].some(x=>x.toLowerCase().includes(q))))return false;
    return true;
   }).sort((a,b)=>{
-   const av=a[sort],bv=b[sort];
+   const av=sort==='roster'?a.sort_order:a[sort],bv=sort==='roster'?b.sort_order:b[sort];
    if(av==null&&bv!=null)return 1;
    if(av!=null&&bv==null)return -1;
    const diff=sort==='rank'?RANKS.indexOf(a.rank)-RANKS.indexOf(b.rank):typeof av==='number'&&typeof bv==='number'?av-bv:String(av??'').localeCompare(String(bv??''),'en',{numeric:true});
@@ -176,7 +176,7 @@ export default function ExecutiveTeamStudio({admins,rows,review,onRefresh,onPrev
     <div className="v7-search"><Search size={20}/><input value={search} onChange={e=>{setSearch(e.target.value);setPage(1);}} placeholder="ابحث بالاسم أو الرتبة أو المناوبة" aria-label="البحث في الإداريين"/>{search&&<button type="button" onClick={()=>setSearch('')} aria-label="مسح البحث"><X size={15}/></button>}</div>
     <button type="button" className={'v7-btn v7-btn-muted '+(showAdvanced?'v7-active':'')} onClick={()=>setShowAdvanced(v=>!v)}><SlidersHorizontal size={18}/>فلاتر</button>
     <select aria-label="الترتيب" value={sort} onChange={e=>setOrder(e.target.value as SortKey)}>
-     <option value="name">ترتيب بالاسم</option><option value="rank">ترتيب بالرتبة</option><option value="tickets">أعلى Tickets</option><option value="flags">الفلاجات</option><option value="rating">التقييم</option><option value="lastUpdate">آخر تحديث</option>
+     <option value="roster">ترتيب كشف Excel</option><option value="name">ترتيب بالاسم</option><option value="rank">ترتيب بالرتبة</option><option value="tickets">أعلى Tickets</option><option value="flags">الفلاجات</option><option value="rating">التقييم</option><option value="lastUpdate">آخر تحديث</option>
     </select>
     <button type="button" className="v7-btn v7-btn-icon" aria-label="عكس الترتيب" title="عكس الترتيب" onClick={()=>setDescending(x=>!x)}><ArrowUpDown size={18}/></button>
     <div className="v7-layout-switch"><button type="button" className={layout==='table'?'selected':''} onClick={()=>setLayout('table')} aria-label="عرض الجدول"><List size={19}/></button><button type="button" className={layout==='cards'?'selected':''} onClick={()=>setLayout('cards')} aria-label="عرض البطاقات"><LayoutGrid size={19}/></button></div>
@@ -186,7 +186,7 @@ export default function ExecutiveTeamStudio({admins,rows,review,onRefresh,onPrev
    </div>
    {showAdvanced&&<div className="v7-advanced-filter">
     <label><Filter size={16}/>حالة الإداري <select value={status} onChange={e=>{setStatus(e.target.value as typeof status);setPage(1);}}><option value="all">الكل</option><option value="active">نشط</option><option value="inactive">غير نشط</option><option value="unreported">بلا قراءات مسجلة</option></select></label>
-    <button type="button" onClick={()=>{setSearch('');setRank('all');setStatus('all');setSort('name');setDescending(false);setPage(1);}}>إزالة كل الفلاتر</button>
+    <button type="button" onClick={()=>{setSearch('');setRank('all');setStatus('active');setSort('roster');setDescending(false);setPage(1);}}>إزالة كل الفلاتر</button>
    </div>}
    <div className="v7-list-heading"><h3><Users size={18}/>قائمة الإداريين</h3><span>عرض {filtered.length?((selectedPage-1)*size+1):0}–{Math.min(selectedPage*size,filtered.length)} من {filtered.length} إداري</span></div>
    {layout==='table'?<div className="v7-table-scroll"><table className="v7-directory-table">
