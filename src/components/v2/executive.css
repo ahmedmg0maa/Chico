@@ -311,3 +311,50 @@
 .chico-v2 .x-nav-iconbox>svg{display:block;width:21px;height:21px}
 .chico-v2 .x-nav-link.x-nav-active .x-nav-iconbox{color:#f0d6a5;border-color:rgba(214,167,99,.47);background:#382628}
 .chico-v2 .x-nav-link:hover .x-nav-iconbox{color:#f4d8ab}
+
+/* CHICO approved visual package: 13 Nov 2026. Approved original artwork stays untouched.
+   Production masthead contains all branding; do not duplicate logo or overlay headings. */
+.chico-v2 .x-approved-masthead{
+ display:block;overflow:hidden;position:relative;isolation:isolate;width:100%;margin:0 0 16px;
+ border-radius:12px;border:1px solid rgba(215,174,104,.55);background:#09090b;
+ aspect-ratio:3.25/1;min-height:185px;max-height:440px;
+ box-shadow:0 15px 38px rgba(0,0,0,.28);
+}
+.chico-v2 .x-approved-masthead img{
+ display:block;width:100%;height:100%;object-fit:cover;object-position:center 46%;
+ filter:none;
+}
+.chico-v2 .x-titleband.x-art-team,.chico-v2 .x-titleband.x-art-updates,
+.chico-v2 .x-titleband.x-art-excel,.chico-v2 .x-titleband.x-art-server,
+.chico-v2 .x-titleband.x-art-reports,.chico-v2 .x-titleband.x-art-weeks,
+.chico-v2 .x-titleband.x-art-alerts,.chico-v2 .x-titleband.x-art-settings{
+ position:relative;isolation:isolate;min-height:164px;display:flex;flex-direction:column;justify-content:center;
+ padding:22px clamp(20px,3vw,38px);border:1px solid rgba(210,171,109,.43);border-radius:12px;
+ background-color:#101115;background-position:left center;background-size:cover;background-repeat:no-repeat;
+ box-shadow:0 10px 30px rgba(0,0,0,.14);
+}
+.chico-v2 .x-titleband.x-art-team{background-image:linear-gradient(90deg,rgba(8,9,12,.02),rgba(9,10,14,.55) 55%,rgba(9,10,14,.25)),url('/assets/chico-team-art.svg')}
+.chico-v2 .x-titleband.x-art-updates{background-image:linear-gradient(90deg,rgba(8,9,12,.02),rgba(9,10,14,.55) 55%,rgba(9,10,14,.25)),url('/assets/chico-updates-art.svg')}
+.chico-v2 .x-titleband.x-art-excel{background-image:linear-gradient(90deg,rgba(8,9,12,.02),rgba(9,10,14,.55) 55%,rgba(9,10,14,.25)),url('/assets/chico-excel-art.svg')}
+.chico-v2 .x-titleband.x-art-server{background-image:linear-gradient(90deg,rgba(8,9,12,.02),rgba(9,10,14,.55) 55%,rgba(9,10,14,.25)),url('/assets/chico-server-art.svg')}
+.chico-v2 .x-titleband.x-art-reports{background-image:linear-gradient(90deg,rgba(8,9,12,.02),rgba(9,10,14,.55) 55%,rgba(9,10,14,.25)),url('/assets/chico-reports-art.svg')}
+.chico-v2 .x-titleband.x-art-weeks{background-image:linear-gradient(90deg,rgba(8,9,12,.02),rgba(9,10,14,.55) 55%,rgba(9,10,14,.25)),url('/assets/chico-weeks-art.svg')}
+.chico-v2 .x-titleband.x-art-alerts{background-image:linear-gradient(90deg,rgba(8,9,12,.02),rgba(9,10,14,.55) 55%,rgba(9,10,14,.25)),url('/assets/chico-alerts-art.svg')}
+.chico-v2 .x-titleband.x-art-settings{background-image:linear-gradient(90deg,rgba(8,9,12,.02),rgba(9,10,14,.55) 55%,rgba(9,10,14,.25)),url('/assets/chico-settings-art.svg')}
+.chico-v2 .x-titleband[class*="x-art-"]:before{display:none}
+.chico-v2 .x-titleband[class*="x-art-"]>*{z-index:1;position:relative;max-width:720px}
+.chico-v2 .x-titleband[class*="x-art-"] h1{color:#f3e7d7;font-size:clamp(23px,2.5vw,33px);text-shadow:none}
+.chico-v2 .x-titleband[class*="x-art-"] p{color:#d4c5b3;font-size:clamp(12px,1.2vw,15px);line-height:1.7}
+.chico-v2 .x-titleband[class*="x-art-"] .x-kicker{color:#e3bc7c}
+.chico-v2 .x-weekbanner{background-image:linear-gradient(90deg,rgba(12,12,17,.85),rgba(13,13,18,.80)),url('/assets/chico-weeks-art.svg');background-position:center;background-size:cover}
+.chico-v2 .x-auth-scene{background:#09090b url('/assets/chico-settings-art.svg') center/cover no-repeat}
+.chico-v2 .x-auth-art{background-image:linear-gradient(90deg,rgba(5,6,10,.58),rgba(8,8,12,.15)),url('/assets/chico-team-art.svg');background-position:center;background-size:cover}
+.chico-v2.x-light .x-approved-masthead,.chico-v2.x-light .x-titleband[class*="x-art-"]{border-color:rgba(134,93,43,.52)}
+@media(max-width:720px){
+ .chico-v2 .x-approved-masthead{aspect-ratio:auto;max-height:none;min-height:0;border-radius:8px}
+ .chico-v2 .x-approved-masthead img{height:auto;max-height:none;object-fit:contain}
+ .chico-v2 .x-titleband[class*="x-art-"]{min-height:145px;padding:20px 16px;background-position:30% center}
+ .chico-v2 .x-titleband[class*="x-art-"] h1{font-size:24px}
+ .chico-v2 .x-titleband[class*="x-art-"] p{font-size:12px}
+}
+@media(prefers-reduced-motion:reduce){.chico-v2 .x-approved-masthead,.chico-v2 .x-titleband[class*="x-art-"]{transition:none}}
