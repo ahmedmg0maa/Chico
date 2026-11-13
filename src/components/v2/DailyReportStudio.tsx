@@ -3,6 +3,7 @@
 import {useEffect,useMemo,useRef,useState} from 'react';
 import {CalendarDays,Download} from 'lucide-react';
 import type {Admin,Reading,State} from '@/lib/types';
+import {summarizeReadings} from '@/lib/rules';
 
 type Props={state:State|null;review:boolean};
 export type LuxuryPosterRow={id:string;name:string;rank:string;order:number;tickets:number|null;flags:number|null;rating:number|null;flagsIncomplete:boolean};
@@ -244,14 +245,15 @@ export default function DailyReportStudio({state,review}:Props){
  const partial=useMemo(()=>state?.readings.filter(r=>r.from_date<=date&&r.to_date>=date&&r.to_date!==r.from_date).length||0,[state,date]);
  const rows=useMemo(()=>state?.admins.filter(eligible).map(a=>dailyRow(a,readings))||[],[state,readings]);
  const staff=state?.admins.filter(a=>a.active).length||0;
+ const totals=useMemo(()=>{const allowed=new Set(state?.admins.filter(a=>a.rank!=='Responsible'&&a.in_reporting).map(a=>a.id)||[]);const summary=summarizeReadings(readings.filter(r=>allowed.has(r.admin_id)));return {tickets:summary.tickets,flags:summary.flags,rating:summary.rating};},[state,readings]);
  useEffect(()=>{
   let cancelled=false;
   const paths=['/assets/chico-approved-onestate.avif','/assets/chico-approved-wolf.avif','/assets/chico-banner-original.png','/assets/medal-gold.png','/assets/medal-silver.png','/assets/medal-bronze.png'];
   (async()=>{const art=await Promise.all(paths.map(loadLuxuryArt));await document.fonts?.ready;
-   if(!cancelled&&canvas.current)renderLuxuryPoster(canvas.current,rows,date,staff,readings.length,art);
-  })().catch(()=>{if(!cancelled&&canvas.current)renderLuxuryPoster(canvas.current,rows,date,staff,readings.length,[null,null]);});
+   if(!cancelled&&canvas.current)renderLuxuryPoster(canvas.current,rows,date,staff,readings.length,art,'إحصائيات يومية',totals);
+  })().catch(()=>{if(!cancelled&&canvas.current)renderLuxuryPoster(canvas.current,rows,date,staff,readings.length,[null,null,null,null,null,null],'إحصائيات يومية',totals);});
   return ()=>{cancelled=true;};
- },[rows,date,staff,readings.length]);
+ },[rows,date,staff,readings.length,totals]);
  const download=()=>{
   if(!canvas.current||review||!state||downloading)return;
   setDownloading(true);setError('');
