@@ -16,7 +16,7 @@ import ExecutiveWeeklyChart from './ExecutiveWeeklyChart';
 import ExecutiveProfile from './ExecutiveProfile';
 import {CommandIcon,RankInsignia,RankLabel} from './ChicoVisualLanguage';
 
-export type Tab='dashboard'|'team'|'operations'|'updates'|'excel'|'server'|'reports'|'weeks'|'alerts'|'settings';
+export type Tab='dashboard'|'team'|'operations'|'updates'|'excel'|'server'|'daily'|'reports'|'weeks'|'alerts'|'settings';
 type Auth='checking'|'out'|'in';
 type Row={id:string;name:string;rank:Rank;active:boolean;tickets:number|null;flags:number|null;rating:number|null;hours:number|null;lastUpdate:string|null;in_reporting:boolean;admin_level?:number|null;shift_label?:string|null;full_name?:string|null;notes?:string|null;timezone?:string|null;supervisor_id?:string|null;joined_on?:string|null;sort_order?:number;flagsIncomplete?:boolean;periodFrom?:string|null};
 const links:{id:Tab;label:string;en:string;icon:typeof Home}[]=[
@@ -26,6 +26,7 @@ const links:{id:Tab;label:string;en:string;icon:typeof Home}[]=[
   {id:'updates',label:'تسجيل تقرير',en:'Log Reading',icon:Plus},
   {id:'excel',label:'استيراد Excel',en:'Excel Import',icon:FileSpreadsheet},
   {id:'server',label:'أداء السيرفر',en:'Server Performance',icon:BarChart3},
+  {id:'daily',label:'التقرير اليومي',en:'Daily Report',icon:Ticket},
   {id:'reports',label:'صورة Discord',en:'Discord Report',icon:Download},
   {id:'weeks',label:'الأسابيع',en:'Weekly Cycles',icon:CalendarDays},
   {id:'alerts',label:'التنبيهات والمتابعة',en:'Tasks & Alerts',icon:ShieldAlert},
@@ -236,7 +237,8 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
         <div className="x-action-grid">{[
           {label:'تسجيل تحديث',icon:Plus,id:'updates' as Tab},{label:'مساحة العمليات',icon:Workflow,id:'operations' as Tab},
           {label:'إدارة الفريق',icon:Users,id:'team' as Tab},{label:'إغلاق الأسبوع',icon:CalendarDays,id:'weeks' as Tab},
-          {label:'تقرير Discord',icon:Download,id:'reports' as Tab}
+          {label:'التقرير اليومي',icon:Ticket,id:'daily' as Tab},
+           {label:'تقرير Discord',icon:Download,id:'reports' as Tab}
         ].map(({label,id})=><button key={id} onClick={()=>open(id)}><CommandIcon name={id}/><span>{label}</span></button>)}</div>
        </section>
        <section className="x-panel x-teamstatus"><CardTitle icon={Users} title="حالة الفريق" en="TEAM STATUS"/>
@@ -261,7 +263,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
     </div>
    </main>
    <nav className="v8-mobile-dock" aria-label="التنقل السريع على الهاتف">
-    {([{id:'dashboard',name:'القيادة'},{id:'team',name:'الفريق'},{id:'updates',name:'تسجيل'},{id:'reports',name:'Discord'}] as const).map(item=>
+    {([{id:'dashboard',name:'القيادة'},{id:'team',name:'الفريق'},{id:'updates',name:'تسجيل'},{id:'daily',name:'التقرير'}] as const).map(item=>
      <button type="button" key={item.id} className={tab===item.id?'active':''} onClick={()=>open(item.id)} aria-current={tab===item.id?'page':undefined}>
       <CommandIcon name={item.id} compact/><span>{item.name}</span>
       
