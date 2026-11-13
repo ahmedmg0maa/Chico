@@ -168,7 +168,7 @@ export default function ExecutiveOperations({tab,state,review,onRefresh}:Props){
   items.forEach(([label,value],i)=>{const x=86+(i%2)*720,y=290+Math.floor(i/2)*212;ctx.fillStyle='#171c27';ctx.fillRect(x,y,680,170);ctx.strokeStyle='#6b5739';ctx.strokeRect(x,y,680,170);ctx.fillStyle='#aab1bf';ctx.font='22px Arial';ctx.fillText(label,x+26,y+48);ctx.fillStyle='#ffe3a6';ctx.font='bold 53px Arial';ctx.fillText(value,x+26,y+122);});
   ctx.font='19px Arial';ctx.fillStyle='#c7a46d';ctx.fillText('Only recorded data · Missing values are not zero · CHICO ME',86,835);
   const save=()=>{canvas.toBlob(blob=>{if(!blob)return;const link=document.createElement('a');const url=URL.createObjectURL(blob);link.href=url;link.download='CHICO_'+reportType+'_'+summary.week_start+'.png';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);},'image/png');};
-  const logo=new Image();logo.onload=()=>{ctx.drawImage(logo,1330,30,180,158);save();};logo.onerror=save;logo.src='/assets/chico-wolf-safe-512.png';
+  const logo=new Image();logo.onload=()=>{ctx.drawImage(logo,1330,30,180,158);save();};logo.onerror=save;logo.src='/assets/chico-approved-wolf.avif';
  };
  const controls=<>{error&&<p role="alert" className="x-op-error"><AlertTriangle size={17}/>{error}</p>}{success&&<p role="status" className="x-op-success"><CheckCircle2 size={17}/>{success}</p>}</>;
  if(tab==='updates')return <>

@@ -51,7 +51,7 @@ function CardTitle({icon:Icon,title,en,action}:{icon:typeof Home;title:string;en
  return <div className="x-card-title"><div className="x-section-heading"><Icon size={19}/><span>{title}</span><small>{en}</small></div>{action}</div>;
 }
 function Brand({small=false}:{small?:boolean}){return <div className={'x-brand '+(small?'x-brand-small':'')}>
- <div className="x-brand-wolf"><img src="/assets/chico-wolf-safe-512.png" alt="شعار الذئب الرسمي لفريق CHICO"/></div>
+ <div className="x-brand-wolf"><img src="/assets/chico-approved-wolf.avif" alt="شعار الذئب الرسمي لفريق CHICO"/></div>
  <div className="x-brand-words"><b>CHICO</b><small>G E N E R A L &nbsp; T E A M</small></div>
  </div>;}
 
@@ -140,7 +140,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
  const isLogin=(auth!=='in')||previewLogin;
  if(isLogin)return <div className={'chico-v2 x-auth-scene '+(light?'x-light':'')} dir="rtl">
   {review&&<div className="x-review-ribbon">معاينة أسماء الفريق المعتمدة · بدون إحصائيات</div>}
-  <div className="x-auth-frame"><div className="x-auth-art"><div className="x-auth-art-inner"><div className="x-auth-crown">♛</div><Brand/><p>ONE STATE RP · CHICO ME</p><span>ELITE ADMINISTRATION SYSTEM</span></div></div>
+  <div className="x-auth-frame"><div className="x-auth-art"><div className="x-auth-art-inner"><div className="x-auth-crown">♛</div><Brand/><img className="x-auth-onestate-crest" src="/assets/chico-approved-onestate.avif" alt="OneState RP"/><p>ONE STATE RP · CHICO ME</p><span>ELITE ADMINISTRATION SYSTEM</span></div></div>
    <div className="x-auth-form">
     <div className="x-auth-mini"><span><span className="x-live-dot"/>PRIVATE ADMINISTRATION</span><button type="button" onClick={()=>setLight(!light)} aria-label="تغيير المظهر">{light?<Moon size={17}/>:<Sun size={17}/>}</button></div>
     <div className="x-auth-icon"><LockKeyhole size={27}/></div>

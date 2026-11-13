@@ -15,3 +15,6 @@ Approved by the project owner on 2026-11-13. No change to data, ranks or calcula
 All supporting SVGs are decorative originals, with no fake metrics, labels or brand-logo replicas. The approved header remains the only complete CHICO/OneState logo lockup displayed in dashboard hero.
 
 Browser QA still required for mobile scaling and authenticated screen views. The approved artwork in its original PNG form remains in the user's chat; the AVIF is the production optimization.
+
+- `public/assets/chico-approved-wolf.avif`: crop from the approved banner's calm wolf medallion; used in navigation and report export.
+- `public/assets/chico-approved-onestate.avif`: crop from the approved banner's correct OneState RP shield; used on the login art panel.
