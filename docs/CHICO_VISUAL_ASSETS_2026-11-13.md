@@ -18,3 +18,18 @@ Browser QA still required for mobile scaling and authenticated screen views. The
 
 - `public/assets/chico-approved-wolf.avif`: crop from the approved banner's calm wolf medallion; used in navigation and report export.
 - `public/assets/chico-approved-onestate.avif`: crop from the approved banner's correct OneState RP shield; used on the login art panel.
+
+## Full generated photo-style banner replacement (2026-11-13)
+
+The initial minimalist SVG backgrounds were rejected as cheap icons. The following eight **full-width AI-generated 3:1 compositions** are now used instead, each optimized as AVIF at 1800×600 without cropping. Their original source PNGs are preserved in the conversation artifacts.
+
+- `chico-illustrated-team.avif` — roster / administrators.
+- `chico-illustrated-login.avif` — secure access and settings.
+- `chico-illustrated-updates.avif` — readings.
+- `chico-illustrated-excel.avif` — Excel import.
+- `chico-illustrated-server.avif` — server statistics.
+- `chico-illustrated-reports.avif` — reports and exports.
+- `chico-illustrated-weeks.avif` — weekly closing.
+- `chico-illustrated-alerts.avif` — follow-up and warnings.
+
+The original approved dashboard CHICO hero remains untouched. Section banner images display fully, with their text labels underneath in real HTML rather than superimposed/cropped. No data, database schema, access control, or metrics change.

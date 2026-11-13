@@ -27,7 +27,11 @@ async function api<T>(url:string,method='GET',data?:Record<string,unknown>|FormD
 }
 function Head({en,title,description}:{en:string;title:string;description:string}){
  const art=en.includes('GAME READINGS')?'updates':en.includes('XLSX')?'excel':en.includes('SERVER PERFORMANCE')?'server':en.includes('DISCORD STUDIO')?'reports':en.includes('WEEKLY CONTROL')?'weeks':en.includes('LEADERSHIP WATCH')?'alerts':'settings';
- return <section className={'x-titleband x-art-'+art}><span className="x-kicker">{en}</span><h1>{title}</h1><p>{description}</p></section>;
+ const visual=art==='settings'?'login':art;
+ return <section className={'x-titleband x-art-'+art+' x-illustrated-head'}>
+   <img className="x-illustrated-banner" src={'/assets/chico-illustrated-'+visual+'.avif'} alt="" loading="lazy" decoding="async"/>
+   <div className="x-illustrated-copy"><span className="x-kicker">{en}</span><h1>{title}</h1><p>{description}</p></div>
+ </section>;
 }
 function Empty({text}:{text:string}){return <div className="x-empty"><Activity size={25}/><b>{text}</b></div>;}
 function Hint({review}:{review:boolean}){return review?<div className="x-op-hint"><Shield size={18}/>هذه معاينة بيانات الأسماء المعتمدة. عمليات القراءات والاستيراد لا تُحفظ قبل تجهيز قاعدة اختبار مستقلة.</div>:null;}
