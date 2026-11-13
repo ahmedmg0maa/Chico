@@ -33,8 +33,8 @@ export async function POST(req:NextRequest){const denied=await requireOwner(req)
       const week=weekStart(r.date);
       const closed=await tx`SELECT status FROM chico_next.weekly_status WHERE week_start=${week}`;
       if(closed[0]?.status==='closed')throw new Error('WEEK_CLOSED');
-      const exists=await tx`SELECT 1 FROM chico_next.readings WHERE admin_id=${r.admin_id} AND to_date=${r.date}`;
-      if(exists.length)throw new Error('DUPLICATE_READING');
+      const exists=await tx`SELECT 1 FROM chico_next.readings WHERE admin_id=${r.admin_id} AND from_date<=${r.date} AND to_date>=${r.date} LIMIT 1`;
+      if(exists.length)throw new Error('OVERLAPPING_PERIOD');
       await tx`INSERT INTO chico_next.readings(admin_id,from_date,to_date,week_start,tickets_counter,flags_counter,hours,rating,note) VALUES(${r.admin_id},${r.date},${r.date},${week},${r.tickets_counter},${r.flags_counter},${r.hours},${r.rating},'Excel import')`;
       total++;
     }

@@ -93,7 +93,7 @@ function drawPoster(canvas:HTMLCanvasElement,rows:PosterRow[],range:{start:strin
  const podium=rows.filter(r=>['Helper','SN.Helper'].includes(r.rank)&&r.tickets!==null).sort((a,b)=>(b.tickets??0)-(a.tickets??0)).slice(0,3);
  const names=[['المركز الأول',1],['المركز الثاني',2],['المركز الثالث',3]];
  names.forEach(([label,index],i)=>{
-  const xx=1288-i*531;const row=podium[i];
+  const xx=1203-i*541;const row=podium[i];
   box(xx,1603,479,117,10,'#171d28',i===0?'#d2a454':i===1?'#8893a9':'#a16c45');
   box(xx+17,1623,63,63,11,i===0?'#6b4924':i===1?'#333a4f':'#4c2a27');
   txt(String(index),xx+48,1656,'bold 31px Georgia',colors.ivory,'center');

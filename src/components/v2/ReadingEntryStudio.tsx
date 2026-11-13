@@ -40,7 +40,7 @@ export default function ReadingEntryStudio({state,review,onRefresh,initialAdminI
   document.getElementById('chico-reading-entry')?.scrollIntoView({behavior:'smooth',block:'start'});
  };
  const setPreset=(kind:'today'|'yesterday'|'three')=>{
-  const end=kind==='today'?localDay():offset(localDay(),-1);
+  const end=kind==='yesterday'?offset(localDay(),-1):localDay();
   const from=kind==='three'?offset(end,-2):end;
   setDraft(d=>({...d,from_date:from,to_date:end}));setRange(kind==='three');setError('');
  };
