@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import type {Admin,Rank} from '@/lib/types';
 import {RANKS} from '@/lib/types';
+import {CommandIcon,RankInsignia,RankLabel,rankToken} from './ChicoVisualLanguage';
 import {applyLocalRosterChange,LOCAL_ROSTER_HISTORY_KEY,type LocalRosterEvent,type LocalRosterAction} from '@/lib/localRoster';
 
 export type DirectoryRow={
@@ -19,7 +20,7 @@ export type DirectoryRow={
 type AdminExtra=Admin&{full_name?:string|null;notes?:string|null;timezone?:string|null;supervisor_id?:string|null};
 type Props={
  admins:Admin[];rows:DirectoryRow[];review:boolean;onRefresh:()=>Promise<void>;
- onPreviewChange:(admins:Admin[])=>void;onOpen:(row:DirectoryRow)=>void;editTarget?:string|null;onEditConsumed?:()=>void;
+ onPreviewChange:(admins:Admin[])=>void;onOpen:(row:DirectoryRow)=>void;editTarget?:string|null;onEditConsumed?:()=>void;searchQuery?:string;
 };
 type Draft={
  name:string;full_name:string;rank:Rank;admin_level:number;shift_label:string;
@@ -46,27 +47,15 @@ function CSVExport({items}:{items:DirectoryRow[]}){
  };
  return <button type="button" className="v7-btn v7-btn-muted" onClick={download}><ArrowDownToLine size={17}/>تصدير CSV</button>;
 }
-function RoleSeal({rank}:{rank:Rank}){
- const chief=rank==='Responsible'||rank==='Administrator';
- const style=chief?'v7-seal-lead':rank==='Moderator'?'v7-seal-mod':rank==='SN.Helper'?'v7-seal-senior':'v7-seal-help';
- return <span className={'v7-role-seal v7-crest '+style} aria-label={rank}>
-  <svg viewBox="0 0 48 48" width="31" height="31" fill="none" role="img" aria-label={rank}>
-   <path d="M24 2 41 10v24L24 46 7 34V10Z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round"/>
-   <path d="M24 6 37 12v19L24 41 11 31V12Z" fill="currentColor" opacity=".10"/>
-   <path d="M24 8V40M12 14l12-6 12 6" stroke="currentColor" strokeWidth=".7" opacity=".42"/>
-   {chief?<><path d="M13 18 18 24 24 13 30 24 35 18l-3 14H16Z" fill="currentColor"/><path d="M16 35h16" stroke="currentColor" strokeWidth="1.8"/></>:
-     rank==='Moderator'?<><path d="M24 12 35 24 24 36 13 24Z" fill="currentColor" opacity=".9"/><path d="M24 18v12M18 24h12" stroke="#18151b" strokeWidth="2"/></>:
-     rank==='SN.Helper'?<><path d="M24 11 28 20l9 4-9 4-4 9-4-9-9-4 9-4Z" fill="currentColor"/><circle cx="24" cy="24" r="3.5" fill="#141820"/></>:
-     <><path d="m24 10 4.4 9.1 10 1.4-7.2 7 .8 10-8-4.7-8 4.7.8-10-7.2-7 10-1.4Z" fill="currentColor" opacity=".95"/></>}
-  </svg>
- </span>;
-}
+function RoleSeal({rank}:{rank:Rank}){return <RankInsignia rank={rank} compact/>;}
 function Stat({title,value,icon:Icon,tone}:{title:string;value:number;icon:typeof Users;tone?:string}){
- return <div className={'v7-directory-stat '+(tone||'')}><Icon size={20}/><span>{title}</span><b>{format(value)}</b></div>;
+ const glyph=title.includes('إجمالي')?'members':title.includes('نشط حاليًا')?'coverage':title.includes('غير نشط')?'alerts':'updates';
+ return <div className={'v7-directory-stat '+(tone||'')}><CommandIcon name={glyph}/><span>{title}</span><b>{format(value)}</b></div>;
 }
 
-export default function ExecutiveTeamStudio({admins,rows,review,onRefresh,onPreviewChange,onOpen,editTarget,onEditConsumed}:Props){
+export default function ExecutiveTeamStudio({admins,rows,review,onRefresh,onPreviewChange,onOpen,editTarget,onEditConsumed,searchQuery=''}:Props){
  const [search,setSearch]=useState('');
+ useEffect(()=>{setSearch(searchQuery);setPage(1);},[searchQuery]);
  const [rank,setRank]=useState<'all'|Rank>('all');
  const [status,setStatus]=useState<'all'|'active'|'inactive'|'unreported'>('all');
  const [sort,setSort]=useState<SortKey>('name');
@@ -193,7 +182,7 @@ export default function ExecutiveTeamStudio({admins,rows,review,onRefresh,onPrev
     <div className="v7-layout-switch"><button type="button" className={layout==='table'?'selected':''} onClick={()=>setLayout('table')} aria-label="عرض الجدول"><List size={19}/></button><button type="button" className={layout==='cards'?'selected':''} onClick={()=>setLayout('cards')} aria-label="عرض البطاقات"><LayoutGrid size={19}/></button></div>
    </div>
    <div className="v7-role-filter" role="group" aria-label="فلترة حسب الرتب">
-    {[{id:'all',label:'الكل'},...RANKS.map(r=>({id:r,label:r}))].map(r=><button key={r.id} type="button" className={rank===r.id?'active':''} onClick={()=>setFilterRole(r.id as 'all'|Rank)}>{r.label}<b>{r.id==='all'?rows.length:rows.filter(a=>a.rank===r.id).length}</b></button>)}
+    {[{id:'all',label:'الكل'},...RANKS.map(r=>({id:r,label:r}))].map(r=><button key={r.id} type="button" className={(rank===r.id?'active ':'')+(r.id==='all'?'':'v8-rank-filter v8-rank--'+rankToken(r.id as Rank))} onClick={()=>setFilterRole(r.id as 'all'|Rank)}>{r.label}<b>{r.id==='all'?rows.length:rows.filter(a=>a.rank===r.id).length}</b></button>)}
    </div>
    {showAdvanced&&<div className="v7-advanced-filter">
     <label><Filter size={16}/>حالة الإداري <select value={status} onChange={e=>{setStatus(e.target.value as typeof status);setPage(1);}}><option value="all">الكل</option><option value="active">نشط</option><option value="inactive">غير نشط</option><option value="unreported">بلا قراءات مسجلة</option></select></label>
@@ -207,7 +196,7 @@ export default function ExecutiveTeamStudio({admins,rows,review,onRefresh,onPrev
      return <tr key={row.id}>
       <td className="v7-index">{String((selectedPage-1)*size+i+1).padStart(2,'0')}</td>
       <td><div className="v7-person-name"><RoleSeal rank={row.rank}/><div><b dir="auto">{row.name}</b><small>{(current as AdminExtra)?.full_name||'CHICO GENERAL TEAM'}</small></div></div></td>
-      <td><span className={'v7-rank-tag v7-rank-'+row.rank.replace('.','-').toLowerCase()}>{row.rank}</span></td>
+      <td><RankLabel rank={row.rank}/></td>
       <td>{row.admin_level??'—'}</td><td>{row.shift_label||'—'}</td>
       <td className="v7-figure">{format(row.tickets)}</td>
       <td><span className={'v7-number-chip '+(row.flags===null?'neutral':row.flags>7?'danger':row.flags>5?'warning':'success')}>{format(row.flags)}</span></td>
@@ -217,7 +206,7 @@ export default function ExecutiveTeamStudio({admins,rows,review,onRefresh,onPrev
       <td><div className="v7-row-actions"><button type="button" onClick={()=>onOpen(row)} aria-label={'ملف '+row.name} title="عرض الملف"><Eye size={17}/></button><button type="button" data-chico-edit-id={row.id} onClick={()=>current&&beginEdit(current)} aria-label={'تعديل '+row.name} title="تعديل"><Pencil size={17}/></button><button type="button" className="destructive" onClick={()=>{if(current){beginEdit(current);setConfirmDelete(true);}}} aria-label={'حذف '+row.name} title="حذف"><Trash2 size={17}/></button></div></td>
      </tr>;
     })}</tbody>
-   </table></div>:<div className="v7-team-cards">{shown.map(row=>{const a=admins.find(x=>x.id===row.id);return <article className="v7-person-card" key={row.id}><RoleSeal rank={row.rank}/><h3>{row.name}</h3><p>{row.rank} · المستوى {row.admin_level||'—'}</p><span className={'v7-state-chip '+(row.active?'on':'off')}>{row.active?'نشط':'غير نشط'}</span><div><span>Tickets: {format(row.tickets)}</span><span>Flags: {format(row.flags)}</span></div><footer><button onClick={()=>onOpen(row)}>فتح الملف</button><button onClick={()=>a&&beginEdit(a)}>تعديل</button></footer></article>;})}</div>}
+   </table></div>:<div className="v7-team-cards">{shown.map(row=>{const a=admins.find(x=>x.id===row.id);return <article className="v7-person-card" key={row.id}><RoleSeal rank={row.rank}/><h3>{row.name}</h3><p><RankLabel rank={row.rank}/> · المستوى {row.admin_level||'—'}</p><span className={'v7-state-chip '+(row.active?'on':'off')}>{row.active?'نشط':'غير نشط'}</span><div><span>Tickets: {format(row.tickets)}</span><span>Flags: {format(row.flags)}</span></div><footer><button onClick={()=>onOpen(row)}>فتح الملف</button><button onClick={()=>a&&beginEdit(a)}>تعديل</button></footer></article>;})}</div>}
    {!filtered.length&&<div className="v7-empty-people"><Users size={33}/><b>لا يوجد إداريون مطابقون</b><p>غيّر البحث أو أزل الفلاتر، أو أضف إداريًا جديدًا.</p></div>}
    <div className="v7-table-footer"><label>صفوف لكل صفحة<select value={size} onChange={e=>{setSize(Number(e.target.value));setPage(1);}}><option value={10}>10</option><option value={20}>20</option><option value={50}>50</option></select></label><div className="v7-paginator"><button disabled={selectedPage===1} onClick={()=>setPage(p=>Math.max(1,p-1))} aria-label="الصفحة السابقة"><ChevronRight size={17}/></button><b>{selectedPage} / {pages}</b><button disabled={selectedPage===pages} onClick={()=>setPage(p=>Math.min(pages,p+1))} aria-label="الصفحة التالية"><ChevronLeft size={17}/></button></div></div>
   </section>

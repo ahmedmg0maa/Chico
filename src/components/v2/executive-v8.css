@@ -1,0 +1,419 @@
+/* CHICO GENERAL TEAM · EXECUTIVE V8
+   Visual contract: real data / authentic artwork / independent rank heraldry.
+   Dark & light theme / no decorative fake metrics / reduced-motion support. */
+
+.chico-v2 {
+ --v8-bg:#0c101a;--v8-panel:#171c27;--v8-panel-deep:#101722;--v8-panel-elevated:#202633;
+ --v8-line:rgba(206,178,137,.25);--v8-line-strong:rgba(221,186,126,.53);
+ --v8-text:#f4eee7;--v8-text-soft:#b9c1cc;--v8-text-dim:#9faab7;
+ --v8-gold:#dfb76b;--v8-gold-bright:#f7dc9d;--v8-wine:#723747;
+ --v8-radius:16px;
+ --x-text:#f4eee7;--x-dim:#b9c1cc;
+ background:radial-gradient(ellipse 90% 52% at 65% -17%,#4d2f38 0%,transparent 67%),
+ radial-gradient(ellipse 60% 64% at -18% 42%,rgba(35,69,94,.3),transparent 70%),
+ linear-gradient(135deg,#101321,#0a0f18 46%,#15121e);
+ color:var(--v8-text);
+ font-family:'Tajawal','IBM Plex Sans Arabic',system-ui,sans-serif;
+}
+.chico-v2::before{background:
+ radial-gradient(circle at 11% 22%,rgba(225,180,100,.03) 1px,transparent 1.4px),
+ radial-gradient(circle at 85% 28%,rgba(255,255,255,.025) 1px,transparent 1.3px);
+ background-size:33px 33px,47px 47px;opacity:.95;z-index:-1}
+.chico-v2.x-light{
+ --v8-bg:#f4eee8;--v8-panel:#fffaf4;--v8-panel-deep:#fffdf9;--v8-panel-elevated:#f3e7db;
+ --v8-line:rgba(133,95,58,.23);--v8-line-strong:rgba(139,100,56,.45);
+ --v8-text:#382d32;--v8-text-soft:#73666b;--v8-text-dim:#746c70;
+ --v8-gold:#92632b;--v8-gold-bright:#80511e;--v8-wine:#922c48;
+ --x-text:#382d32;--x-dim:#71636a;
+ background:radial-gradient(ellipse at 85% -10%,rgba(218,176,144,.32),transparent 53%),
+ radial-gradient(ellipse at -8% 74%,rgba(181,195,205,.27),transparent 62%),
+ linear-gradient(136deg,#fffdf9,#f4ede6 48%,#eee8e6);
+}
+.chico-v2.x-light::before{background:
+ radial-gradient(circle at 15% 20%,rgba(117,84,58,.07) 1px,transparent 1.4px);
+ background-size:35px 35px;opacity:.58}
+
+/* Structural cadence, luminous but not theatrical. */
+.chico-v2 .x-layout{grid-template-columns:264px minmax(0,1fr)}
+.chico-v2 .x-sidebar{
+ background:linear-gradient(170deg,#141925 0%,#0d121c 53%,#191520 100%);
+ border-left:1px solid var(--v8-line);border-right:1px solid var(--v8-line);
+ padding:19px 12px;box-shadow:15px 0 44px rgba(5,7,13,.22);
+}
+.chico-v2.x-light .x-sidebar{background:linear-gradient(160deg,#fffcf7,#f2e8dd 60%,#f9f0e6);border-color:#dac9b6}
+.chico-v2 .x-brand-small .x-brand-wolf{width:74px;height:74px;box-shadow:0 8px 24px rgba(0,0,0,.2)}
+.chico-v2 .x-brand-small .x-brand-words b{font-size:32px;color:#f0ce92;letter-spacing:.065em}
+.chico-v2.x-light .x-brand-small .x-brand-words b{color:#875628}
+.chico-v2 .x-sidebar-caption{font-size:10px;color:#cbaf85;letter-spacing:.08em}
+.chico-v2.x-light .x-sidebar-caption{color:#8c684a}
+.chico-v2 .x-side-group{padding:0 11px;color:#c3ad9b}
+.chico-v2 .x-sidebar nav{gap:6px}
+.chico-v2 .x-nav-link{
+ display:flex;align-items:center;gap:13px;min-height:57px;padding:8px 10px;
+ border-radius:12px;border:1px solid transparent;
+ background:transparent;box-shadow:none;
+ transition:background .22s,border-color .22s,transform .22s,box-shadow .22s;
+}
+.chico-v2 .x-nav-link:hover{transform:translateX(0);background:rgba(218,181,117,.095);border-color:rgba(219,174,105,.19)}
+.chico-v2 .x-nav-link.x-nav-active{background:linear-gradient(100deg,rgba(105,49,58,.63),rgba(49,31,45,.9));border:1px solid rgba(229,184,119,.52);box-shadow:inset 3px 0 0 #efc780,0 8px 22px rgba(14,9,17,.2);color:#fff1da}
+.chico-v2 .x-nav-link b{font-size:13px;font-weight:850;line-height:1.35;letter-spacing:0}
+.chico-v2 .x-nav-link small{color:#aaaeb7;font-size:10px;margin-top:3px}
+.chico-v2.x-light .x-nav-link b{color:#43353a}
+.chico-v2.x-light .x-nav-link.x-nav-active b{color:#fff2dc}
+.chico-v2.x-light .x-nav-link.x-nav-active small{color:#edcdba}
+.chico-v2 .x-sidebar-footer{margin-top:19px;border-color:var(--v8-line);padding:17px}
+.chico-v2.x-light .x-sidebar-footer span{color:#956b3a}
+
+/* Bespoke faceted icon architecture. */
+.chico-v2 .v8-symbol{
+ width:43px;height:43px;display:inline-grid;place-items:center;flex:none;
+ position:relative;overflow:hidden;border-radius:12px;
+ color:var(--v8-gold-bright);
+ border:1px solid rgba(219,183,116,.37);
+ background:linear-gradient(155deg,rgba(213,171,105,.18) 0%,rgba(84,59,66,.2) 54%,rgba(7,12,23,.1) 100%);
+ box-shadow:inset 0 1px 0 rgba(255,235,194,.10),0 5px 13px rgba(5,5,12,.1);
+ transition:transform .22s,border-color .22s,background .22s,box-shadow .22s;
+}
+.chico-v2 .v8-symbol::after{content:"";position:absolute;top:5px;left:7px;width:18px;height:1px;transform:rotate(-23deg);background:rgba(255,232,190,.4);opacity:.65}
+.chico-v2 .v8-symbol svg{width:30px;height:30px;overflow:visible;stroke-width:2.3}
+.chico-v2 .v8-symbol .v8-icon-deco{stroke:#efcf8f}
+.chico-v2 .v8-symbol .v8-icon-fill{fill:currentColor;stroke:currentColor}
+.chico-v2 .v8-symbol .v8-symbol-corners{stroke:rgba(234,201,145,.35)}
+.chico-v2 .v8-symbol--compact{width:35px;height:35px;border-radius:10px}
+.chico-v2 .v8-symbol--compact svg{width:26px;height:26px}
+.chico-v2 .x-nav-link .v8-symbol{width:40px;height:40px;min-width:40px;border-color:rgba(213,182,125,.18);background:rgba(219,185,125,.045);color:#d2b485}
+.chico-v2 .x-nav-link .v8-symbol svg{width:28px;height:28px}
+.chico-v2 .x-nav-link:hover .v8-symbol,.chico-v2 .x-nav-link.x-nav-active .v8-symbol{transform:translateY(-1px);color:#ffdda0;border-color:rgba(237,188,107,.7);background:linear-gradient(140deg,rgba(208,140,71,.24),rgba(107,54,54,.2));box-shadow:0 3px 10px rgba(211,138,64,.1)}
+.chico-v2.x-light .v8-symbol{color:#a06c34;background:linear-gradient(145deg,rgba(176,119,60,.15),rgba(247,236,224,.85));border-color:rgba(160,116,71,.32);box-shadow:inset 0 1px 0 #fff9ec}
+.chico-v2.x-light .v8-symbol .v8-icon-deco{stroke:#c58f4d}
+.chico-v2.x-light .x-nav-link .v8-symbol{color:#9b6b3c}
+.chico-v2.x-light .x-nav-link.x-nav-active .v8-symbol{color:#ffdb99;background:rgba(78,26,39,.48);border-color:#d8ae75}
+
+/* Role heraldry: exact user-approved rank colors across ALL screens. */
+.chico-v2 .v8-rank--helper{--rank:#49d892;--rank-deep:#147a50;--rank-tint:rgba(47,187,116,.15);--rank-glow:rgba(61,218,139,.22)}
+.chico-v2 .v8-rank--senior{--rank:#69c6ff;--rank-deep:#216caa;--rank-tint:rgba(68,156,231,.16);--rank-glow:rgba(71,170,241,.22)}
+.chico-v2 .v8-rank--moderator{--rank:#b59aff;--rank-deep:#6650ad;--rank-tint:rgba(133,103,225,.17);--rank-glow:rgba(159,124,242,.22)}
+.chico-v2 .v8-rank--administrator{--rank:#ffd277;--rank-deep:#ab6422;--rank-tint:rgba(238,163,65,.17);--rank-glow:rgba(241,170,75,.23)}
+.chico-v2 .v8-rank--responsible{--rank:#f0b7bd;--rank-deep:#903d50;--rank-tint:rgba(217,110,130,.16);--rank-glow:rgba(217,110,130,.18)}
+.chico-v2 .v8-insignia{
+ width:47px;height:51px;min-width:47px;display:inline-flex;justify-content:center;align-items:center;
+ position:relative;overflow:visible;
+ filter:drop-shadow(0 3px 8px rgba(0,0,0,.23));
+ color:var(--rank);
+ transition:transform .25s ease,filter .25s ease;
+}
+.chico-v2 .v8-insignia svg{width:100%;height:100%;overflow:visible}
+.chico-v2 .v8-insignia--compact{width:38px;height:43px;min-width:38px}
+.chico-v2 .v8-insignia-shield-back{fill:#0a1320;stroke:var(--rank-deep);stroke-width:2.2}
+.chico-v2 .v8-insignia-metal{fill:var(--rank-tint);stroke:var(--rank);stroke-width:2;filter:drop-shadow(0 0 3px var(--rank-glow))}
+.chico-v2 .v8-insignia-inlay{fill:rgba(11,16,27,.85);stroke:var(--rank-deep);stroke-width:1}
+.chico-v2 .v8-insignia-flare{stroke:var(--rank);opacity:.28}
+.chico-v2 .v8-insignia-emblem{fill:var(--rank);stroke:var(--rank-deep);stroke-width:1.4}
+.chico-v2 .v8-insignia-jewel{fill:#fff9eb;stroke:var(--rank);stroke-width:1.5}
+.chico-v2 .v8-insignia-edge{stroke:var(--rank);stroke-width:1.4;opacity:.65}
+.chico-v2 .v8-insignia-bottom{stroke:var(--rank);stroke-width:2.2}
+.chico-v2 .v8-insignia:hover{transform:translateY(-2px) scale(1.025);filter:drop-shadow(0 4px 9px var(--rank-glow))}
+.chico-v2 .v8-rank-label{color:var(--rank);display:inline-flex;align-items:center;gap:7px;white-space:nowrap;
+ padding:7px 10px;font:800 11px Inter,system-ui,sans-serif;border-radius:9px;
+ background:var(--rank-tint);border:1px solid var(--rank-deep);box-shadow:inset 0 1px 0 rgba(255,255,255,.035)}
+.chico-v2 .v8-rank-label-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--rank);box-shadow:0 0 9px var(--rank-glow)}
+.chico-v2.x-light .v8-rank--helper{--rank:#0e8050;--rank-deep:#65b18c;--rank-tint:#e2f5e8}
+.chico-v2.x-light .v8-rank--senior{--rank:#1262a0;--rank-deep:#7caed1;--rank-tint:#e4f2fb}
+.chico-v2.x-light .v8-rank--moderator{--rank:#6946af;--rank-deep:#a88bd0;--rank-tint:#eee8f9}
+.chico-v2.x-light .v8-rank--administrator{--rank:#98520c;--rank-deep:#c79b62;--rank-tint:#fcefd7}
+.chico-v2.x-light .v8-rank--responsible{--rank:#a2314a;--rank-deep:#ca8492;--rank-tint:#fde9eb}
+.chico-v2.x-light .v8-insignia-inlay{fill:#fefbf5}
+.chico-v2.x-light .v8-insignia-shield-back{fill:#fffaf5}
+.chico-v2 .x-person-icon{display:grid;place-items:center;background:transparent;border:0;box-shadow:none}
+.chico-v2 .x-leader .x-person-icon{background:var(--v8-panel-deep)}
+.chico-v2 .v7-person-name .v8-insignia{margin-inline-end:1px}
+.chico-v2 .v7-role-filter .v8-rank-filter{color:var(--rank);background:var(--rank-tint);border-color:var(--rank-deep);transition:filter .2s,box-shadow .2s,transform .2s}
+.chico-v2 .v7-role-filter .v8-rank-filter.active{box-shadow:0 0 0 1px var(--rank),0 5px 16px var(--rank-glow);filter:saturate(1.2)}
+.chico-v2 .v7-role-filter .v8-rank-filter:hover{filter:brightness(1.12);transform:translateY(-1px)}
+
+/* Smaller full-art hero: preserve entire OneState/CHICO/peaceful-wolf lockup. */
+.chico-v2 .v8-command-hero{
+ display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.18fr);
+ min-height:283px;overflow:hidden;position:relative;isolation:isolate;
+ margin-bottom:14px;border:1px solid rgba(225,181,112,.55);border-radius:19px;
+ background:radial-gradient(ellipse at 84% 5%,rgba(153,64,55,.27),transparent 47%),
+ linear-gradient(113deg,#1c151e 0%,#0d121c 56%,#11121c 100%);
+ box-shadow:0 16px 42px rgba(0,0,0,.23),inset 0 1px 0 rgba(241,201,139,.13);
+}
+.chico-v2 .v8-command-hero:before{content:"";position:absolute;inset:0;pointer-events:none;
+ background:linear-gradient(127deg,transparent 0 54%,rgba(237,178,110,.11) 54.07%,transparent 54.2%),
+ linear-gradient(0deg,rgba(230,164,89,.10),transparent 30%);z-index:-1}
+.chico-v2 .v8-command-hero:after{content:"";position:absolute;inset:13px;border:1px solid rgba(217,170,113,.17);border-radius:11px;pointer-events:none;z-index:2}
+.chico-v2 .v8-command-hero-copy{padding:clamp(24px,2.5vw,46px);display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:14px;text-align:right;position:relative;z-index:1}
+.chico-v2 .v8-eyebrow{display:inline-flex;align-items:center;gap:9px;color:#e2be83;font:800 10px Inter,system-ui,sans-serif;letter-spacing:.11em}
+.chico-v2 .v8-live-pulse{display:inline-block;width:8px;height:8px;background:#45d69a;border-radius:50%;box-shadow:0 0 0 4px rgba(65,217,145,.1)}
+.chico-v2 .v8-command-hero h1{font-size:clamp(31px,3vw,46px);line-height:1.23;color:#fff2dc;font-weight:900;letter-spacing:-.035em;margin:0}
+.chico-v2 .v8-command-hero h1 span{color:#e7b66c}
+.chico-v2 .v8-command-hero p{color:#d4c9c8;font-size:clamp(12px,1.04vw,15px);line-height:1.9;max-width:450px}
+.chico-v2 .v8-command-meta{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+.chico-v2 .v8-command-meta>span{display:inline-flex;align-items:center;gap:8px;font-size:11px;color:#dfd6c7;border:1px solid rgba(208,171,110,.25);border-radius:30px;padding:5px 10px;background:rgba(7,10,19,.3)}
+.chico-v2 .v8-command-meta .v8-symbol{width:25px;height:25px;min-width:25px;border:0;background:transparent;box-shadow:none}
+.chico-v2 .v8-command-meta .v8-symbol svg{width:23px;height:23px}
+.chico-v2 .v8-hero-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:4px}
+.chico-v2 .v8-hero-actions button{display:inline-flex;gap:9px;align-items:center;justify-content:center;min-height:43px;border-radius:9px;font-weight:850;font-size:12px;padding:9px 16px;transition:transform .22s,box-shadow .22s,background .22s}
+.chico-v2 .v8-hero-primary{border:1px solid #f1cf91;background:linear-gradient(138deg,#f0d297,#c28b45);color:#302017;box-shadow:0 7px 20px rgba(214,162,77,.14)}
+.chico-v2 .v8-hero-secondary{border:1px solid rgba(235,195,127,.48);background:rgba(208,161,103,.08);color:#f4dbb2}
+.chico-v2 .v8-hero-actions button:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(214,162,77,.22)}
+.chico-v2 .v8-command-hero-art{display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;
+ padding:16px 23px;background:radial-gradient(ellipse at 50% 52%,rgba(154,67,56,.19),transparent 75%)}
+.chico-v2 .v8-command-hero-art::before{content:"";position:absolute;inset:17px;border:1px solid rgba(234,191,125,.15);border-radius:13px;pointer-events:none}
+.chico-v2 .v8-command-hero-art img{display:block;max-width:100%;width:100%;height:auto;max-height:284px;object-fit:contain;filter:drop-shadow(0 10px 18px rgba(0,0,0,.22))}
+
+/* Executive metrics: meaningful category differentiation and readable scale. */
+.chico-v2 .x-kpi-grid.v8-kpi-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:11px;margin-bottom:13px}
+.chico-v2 .x-kpi.v8-kpi{
+ --kpi-accent:#e1ba76;--kpi-glow:rgba(231,180,92,.16);
+ position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;
+ padding:17px 15px 16px;min-height:150px;border:1px solid var(--v8-line);border-radius:14px;
+ background:linear-gradient(152deg,rgba(36,39,54,.94),rgba(18,23,35,.97) 69%);
+ box-shadow:inset 0 1px 0 rgba(250,226,167,.055),0 8px 22px rgba(0,0,0,.1);
+ animation:v8-stagger .38s both;transition:transform .22s,border-color .22s,box-shadow .22s;
+}
+.chico-v2 .x-tone-copper{--kpi-accent:#e3b17c!important;--kpi-glow:rgba(219,153,86,.19)!important}
+.chico-v2 .x-tone-gold{--kpi-accent:#ffd788!important;--kpi-glow:rgba(233,184,86,.18)!important}
+.chico-v2 .x-tone-ruby{--kpi-accent:#f18a91!important;--kpi-glow:rgba(225,82,101,.18)!important}
+.chico-v2 .x-tone-violet{--kpi-accent:#bca0fc!important;--kpi-glow:rgba(165,121,232,.18)!important}
+.chico-v2 .x-tone-amber{--kpi-accent:#f1bf73!important;--kpi-glow:rgba(226,164,76,.18)!important}
+.chico-v2 .x-tone-emerald{--kpi-accent:#71dcaa!important;--kpi-glow:rgba(53,189,117,.16)!important}
+.chico-v2 .x-kpi.v8-kpi::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 9% 3%,var(--kpi-glow),transparent 64%);pointer-events:none}
+.chico-v2 .x-kpi.v8-kpi:hover{transform:translateY(-4px);border-color:var(--kpi-accent);box-shadow:0 15px 28px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,238,196,.12)}
+.chico-v2 .x-kpi.v8-kpi .x-kpi-title{display:flex;gap:9px;align-items:center;flex-wrap:nowrap;min-height:46px}
+.chico-v2 .x-kpi.v8-kpi .x-kpi-title .v8-symbol{color:var(--kpi-accent);width:41px;height:41px;min-width:41px;border-color:var(--kpi-glow);background:var(--kpi-glow)}
+.chico-v2 .x-kpi.v8-kpi .x-kpi-title .v8-symbol svg{width:29px;height:29px}
+.chico-v2 .x-kpi.v8-kpi .x-kpi-title .v8-icon-deco{stroke:var(--kpi-accent)}
+.chico-v2 .x-kpi.v8-kpi .x-kpi-title b{font-size:13px;color:var(--v8-text);line-height:1.3}
+.chico-v2 .x-kpi.v8-kpi .x-kpi-title small{font-size:9px;color:var(--v8-text-dim);line-height:1.3;letter-spacing:0}
+.chico-v2 .x-kpi.v8-kpi strong{font:800 clamp(26px,2.6vw,37px) Inter,system-ui,sans-serif;color:var(--v8-text);line-height:1.16;letter-spacing:-.025em;text-align:right;padding:9px 0 6px}
+.chico-v2 .x-kpi.v8-kpi>span{font-size:10px;color:var(--v8-text-dim)}
+.chico-v2 .x-kpi.v8-kpi .v8-kpi-line{position:absolute;bottom:0;right:0;width:75%;height:2px;background:linear-gradient(90deg,transparent,var(--kpi-accent));opacity:.74}
+.chico-v2 .x-kpi.v8-kpi:after{display:none}
+
+/* Dashboard layout: intentional asymmetry, not endless black boxes. */
+.chico-v2 .x-weekbanner{
+ min-height:78px;margin:0 0 13px;border:1px solid var(--v8-line-strong);border-radius:13px;
+ background:linear-gradient(100deg,rgba(82,38,50,.65),rgba(22,27,42,.94) 56%,rgba(43,35,42,.95));
+ box-shadow:0 8px 22px rgba(0,0,0,.12);padding:12px 20px
+}
+.chico-v2 .x-weekbanner .x-week-center{color:#e8c588}
+.chico-v2 .x-weekbanner .x-week-center b{font-size:14px}
+.chico-v2 .x-weekbanner .x-weeklabel strong{font-size:14px}
+.chico-v2 .x-weekbanner .x-week-mini{font-size:10px;letter-spacing:.06em;color:#d7bc8d}
+.chico-v2 .x-triple{gap:13px;grid-template-columns:minmax(0,.98fr) minmax(0,1.45fr) minmax(0,.98fr)}
+.chico-v2 .x-panel,.chico-v2 .v7-chart-card,.chico-v2 .v7-directory-board,.chico-v2 .v7-workspace-card{
+ background:linear-gradient(152deg,rgba(30,35,49,.95),rgba(18,24,37,.98));
+ border:1px solid var(--v8-line);border-radius:15px;
+ box-shadow:inset 0 1px 0 rgba(245,218,166,.04),0 9px 25px rgba(4,8,14,.13);
+}
+.chico-v2 .x-card-title{padding:15px 17px;border-bottom:1px solid var(--v8-line);background:linear-gradient(110deg,rgba(231,184,105,.07),transparent 70%)}
+.chico-v2 .x-section-heading{display:flex;align-items:center;gap:10px}
+.chico-v2 .x-section-heading .v8-symbol{width:34px;height:34px;min-width:34px;border:0;background:rgba(220,171,102,.07);color:var(--v8-gold);box-shadow:none}
+.chico-v2 .x-section-heading .v8-symbol svg{width:26px;height:26px}
+.chico-v2 .x-section-heading span{font-size:15px;font-weight:850;color:var(--v8-text)}
+.chico-v2 .x-section-heading small{font:700 9px Inter,sans-serif;color:var(--v8-text-dim)}
+.chico-v2 .x-text-action{font-size:12px;min-height:34px;padding:6px 9px;border-radius:8px;color:var(--v8-gold);transition:background .18s}
+.chico-v2 .x-text-action:hover{background:rgba(230,179,109,.11)}
+.chico-v2 .x-empty{min-height:195px;padding:25px;color:var(--v8-text-soft)}
+.chico-v2 .x-empty b{font-size:13px;color:var(--v8-text)}
+.chico-v2 .x-empty p{font-size:11px;color:var(--v8-text-dim);max-width:240px;line-height:1.9}
+.chico-v2 .x-period-list,.chico-v2 .x-leaders-panel,.chico-v2 .x-alerts-panel{min-width:0}
+.chico-v2 .x-period-row{padding:13px 16px;border-bottom:1px solid var(--v8-line)}
+.chico-v2 .x-period-row strong{font-size:11px;color:var(--v8-gold)}
+.chico-v2 .x-leader,.chico-v2 .x-alert{background:rgba(205,163,103,.04);border:1px solid rgba(199,164,116,.15);border-radius:10px;min-height:70px;transition:background .18s,transform .18s}
+.chico-v2 .x-leader:hover,.chico-v2 .x-alert:hover{background:rgba(223,181,107,.12);border-color:var(--v8-line-strong);transform:translateY(-2px)}
+.chico-v2 .x-leader-name b{font-size:13px}
+.chico-v2 .x-leader-name small{font-size:11px;color:var(--v8-text-dim)}
+.chico-v2 .v7-bottom-dashboard{grid-template-columns:minmax(0,1.4fr) minmax(0,1.1fr) minmax(0,1fr);gap:13px;margin:13px 0}
+.chico-v2 .v7-bottom-dashboard .x-action-grid>button{background:linear-gradient(130deg,rgba(206,169,107,.12),rgba(30,39,56,.45));min-height:82px;border-radius:11px;border:1px solid var(--v8-line);color:var(--v8-text);gap:7px}
+.chico-v2 .v7-bottom-dashboard .x-action-grid>button:hover{border-color:var(--v8-line-strong);background:rgba(217,165,98,.17)}
+.chico-v2 .v7-bottom-dashboard .x-action-grid>button .v8-symbol{width:36px;height:36px;min-width:36px;border:0;background:transparent;box-shadow:none}
+.chico-v2 .v7-bottom-dashboard .x-action-grid>button .v8-symbol svg{width:29px;height:29px}
+.chico-v2 .v7-bottom-dashboard .x-action-grid>button span{font-size:12px;color:var(--v8-text)}
+.chico-v2 .v7-chart-card,.chico-v2 .x-teamstatus{min-height:280px}
+.chico-v2 .v7-chart-head{padding:16px 17px}
+.chico-v2 .v7-chart-head b{font-size:14px}
+.chico-v2 .x-table-panel{margin-top:13px}
+.chico-v2 .x-table thead,.chico-v2 .v7-directory-table thead{background:rgba(213,172,112,.12)}
+.chico-v2 .x-table th,.chico-v2 .v7-directory-table th{color:var(--v8-text-soft);font-size:11px;font-weight:850}
+.chico-v2 .x-table td,.chico-v2 .v7-directory-table td{font-size:12px;line-height:1.6;border-bottom-color:rgba(192,167,133,.13)}
+.chico-v2 .x-table tr:hover td,.chico-v2 .v7-directory-table tbody tr:hover{background:rgba(210,161,93,.09)}
+.chico-v2 .x-table-name b{color:var(--v8-text)}
+.chico-v2 .x-status-label{font-size:11px}
+.chico-v2 .x-row-button{border-radius:9px;background:rgba(214,171,107,.13)}
+.chico-v2 .x-row-button:hover{background:rgba(216,175,112,.23)}
+.chico-v2 .x-foot{border-top:1px solid var(--v8-line);color:var(--v8-text-dim);font-size:10px}
+
+/* Directory: one continuous responsive control surface, no tiny generic icons. */
+.chico-v2 .v7-team-hero{min-height:160px;border-radius:16px;box-shadow:0 10px 26px rgba(0,0,0,.16)}
+.chico-v2 .v7-team-hero>img{opacity:.30;object-position:center}
+.chico-v2 .v7-team-hero>div{padding:26px clamp(20px,3vw,40px)}
+.chico-v2 .v7-team-hero h1{font-size:clamp(27px,2.8vw,36px)}
+.chico-v2 .v7-directory-summary{gap:13px}
+.chico-v2 .v7-directory-stat{border-radius:13px;min-height:92px;padding:16px;border:1px solid var(--v8-line);
+ background:linear-gradient(150deg,rgba(37,42,57,.94),rgba(17,23,35,.96));box-shadow:inset 0 1px 0 rgba(251,226,171,.04)}
+.chico-v2 .v7-directory-stat .v8-symbol{width:42px;height:42px;min-width:42px}
+.chico-v2 .v7-directory-stat span{font-size:12px;color:var(--v8-text-soft)}
+.chico-v2 .v7-directory-stat b{font:850 27px Inter,system-ui,sans-serif;color:var(--v8-text)}
+.chico-v2 .v7-directory-board{border-radius:16px}
+.chico-v2 .v7-board-heading{padding:22px 23px}
+.chico-v2 .v7-board-heading h2{font-size:22px;color:var(--v8-text)}
+.chico-v2 .v7-board-heading p{font-size:12px}
+.chico-v2 .v7-toolbar{padding:14px 22px;gap:9px;flex-wrap:wrap}
+.chico-v2 .v7-search,.chico-v2 .v7-toolbar select,.chico-v2 .v7-advanced-filter select{border:1px solid var(--v8-line);border-radius:10px;background:var(--v8-panel-deep);color:var(--v8-text)}
+.chico-v2 .v7-search:focus-within{border-color:var(--v8-gold);box-shadow:0 0 0 2px rgba(215,172,94,.14)}
+.chico-v2 .v7-role-filter{gap:8px}
+.chico-v2 .v7-role-filter button{font-size:12px;font-weight:850;border-radius:9px}
+.chico-v2 .v7-list-heading{background:rgba(222,171,95,.035)}
+.chico-v2 .v7-person-name b{font-size:13px}
+.chico-v2 .v7-person-name small{font-size:10px}
+.chico-v2 .v7-row-actions button{width:37px;height:37px;border-radius:9px;transition:transform .18s,background .18s,border-color .18s}
+.chico-v2 .v7-row-actions button:hover{transform:translateY(-2px);border-color:var(--v8-gold)}
+.chico-v2 .v7-row-actions button.destructive:hover{border-color:#e47c87}
+.chico-v2 .v7-person-card{border-radius:13px;background:linear-gradient(145deg,rgba(206,166,112,.07),rgba(25,31,46,.54));padding:18px}
+.chico-v2 .v7-person-card>p .v8-rank-label{margin-inline:4px}
+.chico-v2 .v7-person-card footer button{min-height:38px;border-radius:8px}
+.chico-v2 .v7-editor-panel{border-color:var(--v8-line-strong)}
+.chico-v2 .v7-editor-form{gap:17px}
+.chico-v2 .v7-editor-form label{font-size:13px}
+.chico-v2 .v7-editor-form input:not([type=checkbox]),.chico-v2 .v7-editor-form select,.chico-v2 .v7-editor-form textarea{min-height:45px;font-size:13px;line-height:1.55}
+.chico-v2 .v7-editor-art .v8-insignia{width:72px;height:81px;min-width:72px}
+.chico-v2 .v7-editor-art .v8-insignia svg{width:72px;height:81px}
+.chico-v2 .x-detail-card.x-profile-v3{border-radius:18px 0 0 18px}
+.chico-v2 .x-profile-seal .v8-insignia{width:75px;height:85px;min-width:75px}
+.chico-v2 .x-profile-seal .v8-insignia svg{width:75px;height:85px}
+.chico-v2 .x-profile-v3 .x-profile-tabs button{font-weight:850}
+.chico-v2 .v7-profile-notes{line-height:1.9}
+.chico-v2 .v7-workspace-card>header{background:linear-gradient(100deg,rgba(223,172,100,.06),transparent)}
+.chico-v2 .v7-workspace-tabs button{border-radius:12px;min-height:77px;background:linear-gradient(150deg,rgba(35,41,56,.96),rgba(16,23,34,.94))}
+.chico-v2 .v7-workspace-tabs .v8-symbol{width:44px;height:44px}
+.chico-v2 .v7-workspace-tabs .v8-symbol svg{width:31px;height:31px}
+.chico-v2 .v7-workspace-tabs button.active{background:linear-gradient(110deg,rgba(112,54,64,.28),rgba(220,175,103,.12))}
+.chico-v2 .v7-workspace-tabs button:hover{border-color:var(--v8-line-strong)}
+.chico-v2 .v7-workspace-hero{min-height:167px;border-radius:16px}
+.chico-v2 .v7-workspace-hero-image{opacity:.3}
+.chico-v2 .v7-workspace-editor{border-color:var(--v8-line);border-radius:15px}
+
+/* Light mode: full-contrast shell, never dark-on-dark leftover panels. */
+.chico-v2.x-light .v8-command-hero{background:radial-gradient(ellipse at 90% 10%,rgba(194,128,98,.12),transparent 60%),linear-gradient(123deg,#3b2c36,#1b2635 72%);border-color:#ad824f}
+.chico-v2.x-light .v8-command-hero-copy h1{color:#fff2dc}
+.chico-v2.x-light .v8-command-hero-copy p{color:#f3e7dd}
+.chico-v2.x-light .v8-command-meta>span{color:#f6e4d0}
+.chico-v2.x-light .x-kpi.v8-kpi{background:linear-gradient(140deg,#fffcf7,#f6eee7);border-color:var(--v8-line);box-shadow:0 6px 20px rgba(100,68,52,.065)}
+.chico-v2.x-light .x-kpi.v8-kpi strong,.chico-v2.x-light .x-kpi.v8-kpi .x-kpi-title b{color:#49363a}
+.chico-v2.x-light .x-kpi.v8-kpi .x-kpi-title small,.chico-v2.x-light .x-kpi.v8-kpi>span{color:#78696c}
+.chico-v2.x-light .x-weekbanner{background:linear-gradient(110deg,#f6eadb,#fdf9f3 58%,#f5e8dd);border-color:#c9ac87}
+.chico-v2.x-light .x-weekbanner .x-week-center,.chico-v2.x-light .x-weekbanner .x-week-center b,.chico-v2.x-light .x-weekbanner .x-weeklabel strong{color:#65452f}
+.chico-v2.x-light .x-panel,.chico-v2.x-light .v7-chart-card,.chico-v2.x-light .v7-directory-board,.chico-v2.x-light .v7-workspace-card{
+ background:linear-gradient(148deg,#fffefa,#faf4ed);border:1px solid var(--v8-line);box-shadow:0 9px 22px rgba(92,66,47,.065)}
+.chico-v2.x-light .x-card-title{background:linear-gradient(105deg,#f2e6d9,#fffaf5);border-bottom-color:#e0cbb6}
+.chico-v2.x-light .x-section-heading span,.chico-v2.x-light .x-empty b,.chico-v2.x-light .x-table-name b{color:var(--v8-text)}
+.chico-v2.x-light .x-empty p{color:var(--v8-text-soft)}
+.chico-v2.x-light .x-period-row{border-color:#e7d7c5}
+.chico-v2.x-light .x-leader,.chico-v2.x-light .x-alert{background:#fcf7ee;border-color:#dfcbb5}
+.chico-v2.x-light .x-leader:hover,.chico-v2.x-light .x-alert:hover{background:#f5e8d6}
+.chico-v2.x-light .v7-bottom-dashboard .x-action-grid>button{background:#fff8ef;color:#543c37;border-color:#e1ccb5}
+.chico-v2.x-light .v7-bottom-dashboard .x-action-grid>button span{color:#543c37}
+.chico-v2.x-light .v7-directory-stat{background:linear-gradient(145deg,#fffefa,#f2e8df);border-color:#d7c1a8}
+.chico-v2.x-light .v7-directory-stat b{color:#3b2f30}
+.chico-v2.x-light .v7-directory-board .v7-list-heading{background:#faf1e8}
+.chico-v2.x-light .v7-search,.chico-v2.x-light .v7-toolbar select,.chico-v2.x-light .v7-advanced-filter select{background:#fffcf7;color:#473938;border-color:#d6bda2}
+.chico-v2.x-light .v7-team-cards .v7-person-card{background:#fff9f0;color:#433532;border-color:#dfcab4}
+.chico-v2.x-light .v7-workspace-tabs button{background:#fffaf2;border-color:#dac6b1;color:#433634}
+.chico-v2.x-light .v7-workspace-tabs button.active{background:linear-gradient(105deg,#f1e3d2,#f9f0e7);border-color:#a77b4c}
+.chico-v2.x-light .v7-workspace-editor{background:#fffaf6}
+
+/* Interaction and responsive density */
+@keyframes v8-stagger{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.chico-v2 .v8-command-hero{animation:v8-stagger .45s both}
+.chico-v2 :is(.v8-hero-actions button,.v7-btn,.x-row-button,.v7-row-actions button):active{transform:translateY(0) scale(.985)}
+.chico-v2 :is(button,a,input,select,textarea):focus-visible{outline:2px solid #e9c17d;outline-offset:3px}
+.chico-v2 .v8-symbol,.chico-v2 .v8-insignia{pointer-events:none}
+@media(max-width:1750px){
+ .chico-v2 .x-kpi-grid.v8-kpi-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .chico-v2 .v8-command-hero{min-height:275px}
+ .chico-v2 .v7-bottom-dashboard{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr)}
+ .chico-v2 .v7-bottom-dashboard .x-teamstatus{grid-column:1/-1}
+ .chico-v2 .v7-bottom-dashboard .x-action-grid{grid-template-columns:repeat(5,minmax(0,1fr))}
+}
+@media(max-width:1300px){
+ .chico-v2 .x-layout{grid-template-columns:235px minmax(0,1fr)}
+ .chico-v2 .v8-command-hero{grid-template-columns:1fr 1fr}
+ .chico-v2 .x-triple{grid-template-columns:1fr 1.25fr}
+ .chico-v2 .x-leaders-panel{grid-column:1/-1}
+ .chico-v2 .v8-command-hero-copy{padding:23px}
+ .chico-v2 .v8-command-hero h1{font-size:34px}
+}
+@media(max-width:1050px){
+ .chico-v2 .x-layout{grid-template-columns:minmax(0,1fr)}
+ .chico-v2 .v8-command-hero{grid-template-columns:1fr;min-height:0}
+ .chico-v2 .v8-command-hero-copy{padding:28px}
+ .chico-v2 .v8-command-hero-art{padding:14px 22px 22px}
+ .chico-v2 .v8-command-hero-art img{max-height:310px}
+ .chico-v2 .v7-bottom-dashboard{grid-template-columns:1fr}
+ .chico-v2 .v7-bottom-dashboard .x-teamstatus{grid-column:auto}
+ .chico-v2 .x-triple{grid-template-columns:1fr}
+ .chico-v2 .x-leaders-panel{grid-column:auto}
+ .chico-v2 .v7-bottom-dashboard .x-action-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .chico-v2 .v7-workspace-tabs{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:680px){
+ .chico-v2 .x-main-content{padding:12px}
+ .chico-v2 .v8-command-hero{border-radius:12px}
+ .chico-v2 .v8-command-hero-copy{padding:21px 17px;gap:11px}
+ .chico-v2 .v8-command-hero h1{font-size:28px}
+ .chico-v2 .v8-command-hero p{font-size:12px}
+ .chico-v2 .v8-command-hero-art{padding:4px 12px 17px}
+ .chico-v2 .x-kpi-grid.v8-kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .chico-v2 .x-kpi.v8-kpi{padding:12px;min-height:137px}
+ .chico-v2 .x-kpi.v8-kpi .x-kpi-title{gap:6px}
+ .chico-v2 .x-kpi.v8-kpi .x-kpi-title .v8-symbol{width:33px;height:33px;min-width:33px}
+ .chico-v2 .x-kpi.v8-kpi .x-kpi-title .v8-symbol svg{width:24px;height:24px}
+ .chico-v2 .x-kpi.v8-kpi .x-kpi-title b{font-size:11px}
+ .chico-v2 .x-kpi.v8-kpi strong{font-size:26px}
+ .chico-v2 .x-weekbanner{padding:10px}
+ .chico-v2 .v7-bottom-dashboard .x-action-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .chico-v2 .v8-rank-label{font-size:10px}
+ .chico-v2 .v7-directory-stat{min-height:85px;padding:12px}
+ .chico-v2 .v7-workspace-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:410px){
+ .chico-v2 .x-kpi-grid.v8-kpi-grid{grid-template-columns:1fr 1fr;gap:6px}
+ .chico-v2 .x-kpi.v8-kpi .x-kpi-title small{display:none}
+ .chico-v2 .v8-command-meta{gap:5px}
+ .chico-v2 .v8-command-meta>span{font-size:10px}
+}
+@media(prefers-reduced-motion:reduce){
+ .chico-v2 .v8-command-hero,.chico-v2 .x-kpi.v8-kpi{animation:none!important}
+ .chico-v2 .v8-insignia,.chico-v2 .v8-symbol,.chico-v2 .v8-hero-actions button{transition:none!important;transform:none!important}
+}
+
+/* Four useful phone destinations; desktop keeps its complete sidebar. */
+.chico-v2 .v8-mobile-dock{display:none}
+@media(max-width:1050px){
+ .chico-v2 .v8-mobile-dock{position:fixed;z-index:90;bottom:max(12px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;align-items:center;width:min(480px,calc(100% - 24px));padding:7px;border:1px solid var(--v8-line-strong);border-radius:17px;background:rgba(18,22,32,.94);backdrop-filter:blur(20px) saturate(1.25);box-shadow:0 12px 38px rgba(0,0,0,.3)}
+ .chico-v2 .v8-mobile-dock>button{display:grid;place-items:center;gap:1px;min-height:57px;border:1px solid transparent;border-radius:10px;background:transparent;color:#c7c3c7;position:relative;font-size:10px;font-weight:800;padding:5px 0}
+ .chico-v2 .v8-mobile-dock>button .v8-symbol{width:28px;height:28px;min-width:28px;border:0;background:transparent;box-shadow:none;color:#e0bb7e}
+ .chico-v2 .v8-mobile-dock>button .v8-symbol svg{width:23px;height:23px}
+ .chico-v2 .v8-mobile-dock>button.active{border-color:rgba(228,188,129,.4);background:linear-gradient(130deg,rgba(165,105,71,.22),rgba(111,59,65,.19));color:#ffe7c2}
+ .chico-v2 .v8-mobile-dock>button i{position:absolute;top:5px;right:25%;width:6px;height:6px;border-radius:50%;background:#ee6d76}
+ .chico-v2 .x-foot{padding-bottom:96px}
+ .chico-v2 .x-main-content{padding-bottom:82px}
+ .chico-v2.x-light .v8-mobile-dock{background:rgba(255,251,245,.94);box-shadow:0 11px 29px rgba(99,67,50,.18)}
+ .chico-v2.x-light .v8-mobile-dock>button{color:#765f57}
+ .chico-v2.x-light .v8-mobile-dock>button.active{color:#6a3e2f;background:#f1dec8;border-color:#bd935c}
+ .chico-v2.x-light .v8-mobile-dock .v8-symbol{color:#9d682d}
+}
+.chico-v2 .x-op-cardhead{min-height:60px;gap:12px}
+.chico-v2 .x-op-cardhead>svg{width:37px;height:37px;flex:none;padding:8px;border-radius:11px;color:var(--v8-gold);border:1px solid var(--v8-line);background:rgba(217,169,108,.10)}
+.chico-v2 .x-op-cardhead h2{font-size:17px;line-height:1.4}
+.chico-v2 .x-op-card{border-radius:14px;overflow:hidden}
+.chico-v2 .x-op-form label{font-size:13px;font-weight:750}
+.chico-v2 .x-op-form input,.chico-v2 .x-op-form select,.chico-v2 .x-op-form textarea{border-radius:9px;min-height:44px;font-size:13px}
+.chico-v2 .x-op-table{font-size:12px}
+.chico-v2 .x-op-mini-list{gap:8px}
+.chico-v2 .x-op-mini-list>div{padding:12px;border-radius:10px;border:1px solid var(--v8-line)}
+.chico-v2 .x-op-hint{border-radius:10px;font-size:12px;line-height:1.8}

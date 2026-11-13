@@ -2,6 +2,7 @@ import type {Metadata} from 'next';
 import ExecutiveCommand,{type Tab} from '@/components/v2/ExecutiveCommand';
 import '@/components/v2/executive.css';
 import '@/components/v2/executive-v7.css';
+import '@/components/v2/executive-v8.css';
 
 export const metadata:Metadata={
  title:'CHICO GENERAL TEAM — إدارة الفريق',
