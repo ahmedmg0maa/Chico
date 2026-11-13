@@ -2,7 +2,7 @@
 
 import {useEffect,useMemo,useRef,useState} from 'react';
 import {CalendarDays,Download,Ticket} from 'lucide-react';
-import {weekStart} from '@/lib/rules';
+import {weekStart,summarizeReadings} from '@/lib/rules';
 import type {Admin,Reading,State} from '@/lib/types';
 import {renderLuxuryPoster,loadLuxuryArt,type LuxuryPosterRow} from './DailyReportStudio';
 
@@ -27,7 +27,8 @@ function reportRow(admin:Admin,readings:Reading[]):LuxuryPosterRow{
 }
 export default function DiscordReportStudio({state,review}:Props){
  const today=useMemo(cairoToday,[]);
- const latestDaily=useMemo(()=>[...new Set((state?.readings||[]).filter(r=>r.from_date===r.to_date).map(r=>r.to_date))].sort().at(-1)||null,[state]);
+ const latestRecord=useMemo(()=>[...(state?.readings||[])].sort((a,b)=>b.to_date.localeCompare(a.to_date)||b.created_at.localeCompare(a.created_at))[0]||null,[state]);
+ const latestDaily=latestRecord?.from_date===latestRecord?.to_date?latestRecord.to_date:null;
  const touched=useRef(false);
  const [mode,setMode]=useState<Mode>('day');
  const [start,setStart]=useState(today);
@@ -36,19 +37,20 @@ export default function DiscordReportStudio({state,review}:Props){
  const [downloading,setDownloading]=useState(false);
  const canvas=useRef<HTMLCanvasElement>(null);
  useEffect(()=>{
-  if(!touched.current&&latestDaily){setStart(latestDaily);setEnd(latestDaily);}
- },[latestDaily]);
+  if(!touched.current&&latestRecord){setStart(latestRecord.from_date);setEnd(latestRecord.to_date);setMode(latestRecord.from_date===latestRecord.to_date?'day':'range');}
+ },[latestRecord]);
  const valid=Boolean(start&&end)&&start<=end&&weekStart(start)===weekStart(end);
  const matching=useMemo(()=>state?.readings.filter(r=>valid&&contained(r,start,end))||[],[state,start,end,valid]);
  const partial=useMemo(()=>state?.readings.filter(r=>valid&&r.from_date<=end&&r.to_date>=start&&!contained(r,start,end)).length||0,[state,start,end,valid]);
  const rows=useMemo(()=>state?.admins.filter(a=>a.active&&a.in_reporting&&['Helper','SN.Helper','Moderator'].includes(a.rank)).map(a=>reportRow(a,matching))||[],[state,matching]);
  const staff=state?.admins.filter(a=>a.active).length||0;
+ const totals=useMemo(()=>{const allowed=new Set(state?.admins.filter(a=>a.rank!=='Responsible'&&a.in_reporting).map(a=>a.id)||[]);const summary=summarizeReadings(matching.filter(r=>allowed.has(r.admin_id)));return {tickets:summary.tickets,flags:summary.flags,rating:summary.rating};},[state,matching]);
  const title=mode==='day'?'إحصائيات يومية':mode==='week'?'إحصائيات أسبوعية':'إحصائيات الفترة المحددة';
  const dateLabel=start===end?start:start+'  —  '+end;
  const setPeriod=(next:Mode)=>{
   touched.current=true;setMode(next);setError('');
   if(next==='day'){const d=latestDaily||today;setStart(d);setEnd(d);}
-  else if(next==='week'){const d=latestDaily||today;setStart(weekStart(d));setEnd(d);}
+  else if(next==='week'){const d=latestRecord?.to_date||today;setStart(weekStart(d));setEnd(d);}
  };
  useEffect(()=>{
   if(!canvas.current||!valid)return;
@@ -56,15 +58,19 @@ export default function DiscordReportStudio({state,review}:Props){
   (async()=>{
    const art=await Promise.all([
     loadLuxuryArt('/assets/chico-approved-onestate.avif'),
-    loadLuxuryArt('/assets/chico-approved-wolf.avif')
+    loadLuxuryArt('/assets/chico-approved-wolf.avif'),
+    loadLuxuryArt('/assets/chico-banner-original.png'),
+    loadLuxuryArt('/assets/medal-gold.png'),
+    loadLuxuryArt('/assets/medal-silver.png'),
+    loadLuxuryArt('/assets/medal-bronze.png')
    ]);
    await document.fonts?.ready;
-   if(!cancelled&&canvas.current)renderLuxuryPoster(canvas.current,rows,dateLabel,staff,matching.length,art,title);
+   if(!cancelled&&canvas.current)renderLuxuryPoster(canvas.current,rows,dateLabel,staff,matching.length,art,title,totals);
   })().catch(()=>{
-   if(!cancelled&&canvas.current)renderLuxuryPoster(canvas.current,rows,dateLabel,staff,matching.length,[null,null],title);
+   if(!cancelled&&canvas.current)renderLuxuryPoster(canvas.current,rows,dateLabel,staff,matching.length,[null,null,null,null,null,null],title,totals);
   });
   return ()=>{cancelled=true;};
- },[rows,dateLabel,staff,matching.length,title,valid]);
+ },[rows,dateLabel,staff,matching.length,title,valid,totals]);
  const download=()=>{
   if(!canvas.current||!valid||!state||review||downloading)return;
   setError('');setDownloading(true);
