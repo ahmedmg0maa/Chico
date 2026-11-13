@@ -31,4 +31,5 @@ assert(!render.includes("label:'AVG. RATE'"), 'No average rate KPI');
 assert(render.includes("label:'TICKETS'")&&render.includes("label:'FLAGS'"),'Both remaining KPI labels exist');
 assert(!render.includes("TOP 3 — '+group.name"),'Use shortened Top 3 captions');
 assert(render.includes("const itemHeight=rowSpace/Math.max(group.rows.length,1)"),'Moderator rows occupy column height');
+assert(render.includes('H=podiumY+410'),'Footer remains outside podium area');
 console.log('CHICO report group, rank, visible KPI and layout checks passed');
