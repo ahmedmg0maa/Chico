@@ -19,6 +19,21 @@ assert.equal(x.validateCoverage('2026-11-09','2026-11-12'),true);
 assert.equal(x.validateCoverage('2026-11-08','2026-11-12'),false);
 assert.equal(x.validNumber(4.9,5),4.9);
 assert.equal(x.validNumber(5.5,5),null);
+const originalHeaders=[
+ 'Rank / AdminLevel','Name','First Week Tickets','First Week Flags',
+ 'Total Week Flags From 11/09 To 11/12','Total Week Tickets From 11/09 To 11/12',
+ 'Total Week Hours From 11/09 To 11/12','Total Week Rate From 11/09 To 11/12'
+].map(x.normalizedExcelHeader);
+assert.equal(x.findImportColumn(originalHeaders,'total week flags','flags'),4);
+assert.equal(x.findImportColumn(originalHeaders,'first week flags'),3);
+assert.equal(x.findImportColumn(originalHeaders,'total week tickets','tickets'),5);
+assert.equal(x.findImportColumn(originalHeaders,'first week tickets'),2);
+const legacy=x.inferLegacyPeriod(originalHeaders,2026);
+assert.equal(legacy.from,'2026-11-09');
+assert.equal(legacy.to,'2026-11-12');
+const newHeaders=['Name','From Date','To Date','Flags Counter','Flags Baseline'].map(x.normalizedExcelHeader);
+assert.equal(x.findImportColumn(newHeaders,'to date','date'),2);
+assert.equal(x.findImportColumn(newHeaders,'from date'),1);
 const row=(name,skip=false)=>({
  row:2,name,admin_id:null,roster_name:null,rank:skip?'Responsible':'Helper',
  admin_level:skip?3:1,roster_action:skip?'leader':'create',
