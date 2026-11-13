@@ -95,6 +95,9 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
  useEffect(()=>{try{setLight(localStorage.getItem('chico-ui-theme')==='light');}catch{}},[]);
  useEffect(()=>{const valid=links.map(l=>l.id);const initial=new URLSearchParams(window.location.search).get('tab') as Tab|null;if(initial&&valid.includes(initial))setTab(initial);},[]);
  const [menu,setMenu]=useState(false);
+ useEffect(()=>{try{setMenu(window.matchMedia('(min-width: 1021px)').matches&&localStorage.getItem('chico-nav-open')==='1');}catch{}},[]);
+ const toggleMenu=()=>setMenu(current=>{const next=!current;try{if(window.matchMedia('(min-width: 1021px)').matches)localStorage.setItem('chico-nav-open',next?'1':'0');}catch{}return next;});
+ useEffect(()=>{if(!menu)return;const handler=(event:KeyboardEvent)=>{if(event.key==='Escape')setMenu(false);};window.addEventListener('keydown',handler);return()=>window.removeEventListener('keydown',handler);},[menu]);
  const [pass,setPass]=useState('');
  const [reveal,setReveal]=useState(false);
  const [working,setWorking]=useState(false);
@@ -167,9 +170,9 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
 
  return <div className={'chico-v2 '+(light?'x-light':'')} dir="rtl">
   {review&&<div className="x-review-ribbon">قائمة الفريق من Excel المعتمد · لا توجد إحصائيات مسجلة · المعاينة غير متصلة بالحفظ</div>}
-  <div className="x-layout">
-   <aside className={'x-sidebar '+(menu?'x-sidebar-open':'')} aria-label="القائمة الرئيسية">
-    <Brand small/>
+  <div className={"x-layout "+(menu?"v10-nav-open":"v10-nav-closed")}>
+   <aside id="chico-main-navigation" className={"x-sidebar "+(menu?"x-sidebar-open":"")} aria-label="القائمة الرئيسية">
+    <div className="v10-nav-head"><Brand small/><button type="button" className="v10-nav-close" onClick={()=>setMenu(false)} title="إغلاق القائمة" aria-label="إغلاق القائمة"><X size={19}/></button></div>
     <div className="x-sidebar-caption">ONE STATE RP · CHICO ME</div>
     <div className="x-side-group">ADMINISTRATION <span> / لوحة الإدارة</span></div>
     <nav>{primaryLinks.map(({id,label,en,icon:Icon})=><button type="button" key={id} className={'x-nav-link '+(tab===id?'x-nav-active':'')} onClick={()=>open(id)}>
@@ -180,7 +183,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
    {menu&&<button className="x-mobile-scrim" aria-label="إغلاق القائمة" onClick={()=>setMenu(false)}/>}
    <main className="x-body">
     <header className="x-topbar">
-     <div className="x-top-group"><button className="x-icon x-burger" onClick={()=>setMenu(!menu)} aria-label="فتح القائمة"><Menu size={22}/></button>
+     <div className="x-top-group"><button type="button" className="x-icon x-burger v10-hamburger" onClick={toggleMenu} aria-label={menu?"إغلاق القائمة":"فتح القائمة"} aria-expanded={menu} aria-controls="chico-main-navigation" title={menu?"إغلاق القائمة":"فتح القائمة"}>{menu?<X size={22}/>:<Menu size={22}/>}<span>القائمة</span></button>
       <div className="x-status"><span className="x-live-dot"/>{review?'وضع المعاينة':'النظام متصل بقاعدة البيانات'}</div><div className="x-breadcrumb">CHICO ME <ChevronLeft size={14}/> <b>{links.find(l=>l.id===tab)?.label}</b></div></div>
      <div className="x-top-actions"><span className="x-date"><CalendarDays size={16}/>{timeLabel}</span>
       <button className="x-icon" onClick={()=>setSearchOpen(!searchOpen)} aria-label="البحث"><Search size={20}/></button>

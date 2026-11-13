@@ -42,25 +42,24 @@ export function CommandIcon({name,compact=false,className=''}:IconProps){
  </span>;
 }
 
+/**
+ * Quiet contemporary grade marks: simple outline, one emblem per rank.
+ * The accent token, not dense ornamental details, communicates the hierarchy.
+ */
 export function RankInsignia({rank,compact=false}:{rank:Rank;compact?:boolean}){
  const token=rankToken(rank);
- return <span className={'v8-insignia v8-rank--'+token+' '+(compact?'v8-insignia--compact':'')} title={rank} role="img" aria-label={'شارة '+rank}>
-  <svg viewBox="0 0 64 72" fill="none">
-   <path className="v8-insignia-shield-back" d="M32 3 57 13v30c0 12-10 20-25 27C17 63 7 55 7 43V13Z"/>
-   <path className="v8-insignia-metal" d="M32 7 53 16v27c0 9-9 17-21 23C20 60 11 52 11 43V16Z"/>
-   <path className="v8-insignia-inlay" d="M32 12 48 19v22c0 8-6 14-16 19C22 55 16 49 16 41V19Z"/>
-   <path className="v8-insignia-flare" d="M32 14V57M18 22l14-6 14 6" strokeWidth="1"/>
-   {token==='helper'&&<><path className="v8-insignia-emblem" d="m32 19 4.2 10 10.8 1-8.1 7.2 2.5 10.8L32 42.4l-9.4 5.6 2.5-10.8-8.1-7.2 10.8-1Z"/><circle className="v8-insignia-jewel" cx="32" cy="34" r="3"/></>}
-   {token==='senior'&&<><path className="v8-insignia-emblem" d="M32 17 37 27l11 7-11 6-5 11-5-11-11-6 11-7Z"/><path className="v8-insignia-jewel" d="m32 27 7 7-7 7-7-7Z"/></>}
-   {token==='moderator'&&<><path className="v8-insignia-emblem" d="m32 17 14 12-5 16-9 7-9-7-5-16Z"/><path className="v8-insignia-jewel" d="m32 23 8 8-8 13-8-13Z"/></>}
-   {token==='administrator'&&<><path className="v8-insignia-emblem" d="m19 29 5 6 8-15 8 15 5-6-3 18H22Z"/><path className="v8-insignia-jewel" d="M24 49h16M27 27l5-8 5 8"/></>}
-   {token==='responsible'&&<><path className="v8-insignia-emblem" d="m16 31 8 7 8-20 8 20 8-7-4 20H20Z"/><circle className="v8-insignia-jewel" cx="32" cy="38" r="5"/><path className="v8-insignia-jewel" d="M22 53h20"/></>}
-   <path className="v8-insignia-edge" d="m5 24-3-3v21l5 5M59 24l3-3v21l-5 5"/>
-   <path className="v8-insignia-bottom" d="M22 65 32 70 42 65"/>
+ return <span className={'v8-insignia v10-insignia v8-rank--'+token+' '+(compact?'v8-insignia--compact':'')} role="img" aria-label={'رتبة '+rank} title={rank}>
+  <svg viewBox="0 0 48 54" fill="none" aria-hidden="true">
+   <path className="v10-crest-outline" d="M24 3 42 10v22c0 8-8 14-18 19C14 46 6 40 6 32V10Z"/>
+   <path className="v10-crest-soft" d="M24 8 37 13v18c0 6-6 11-13 15-7-4-13-9-13-15V13Z"/>
+   {token==='helper'&&<path className="v10-crest-symbol" d="m24 16 3.5 8.4L36 28l-8.5 3.2L24 40l-3.5-8.8L12 28l8.5-3.6Z"/>}
+   {token==='senior'&&<><path className="v10-crest-symbol" d="m15 24 9-9 9 9M15 34l9-9 9 9"/><path className="v10-crest-fine" d="M18 41h12"/></>}
+   {token==='moderator'&&<><path className="v10-crest-symbol" d="M24 15 34 25 24 39 14 25Z"/><path className="v10-crest-fine" d="m19 26 5-5 5 5-5 7Z"/></>}
+   {token==='administrator'&&<><path className="v10-crest-symbol" d="m13 25 6 6 5-13 5 13 6-6-3 13H16Z"/><path className="v10-crest-fine" d="M17 42h14"/></>}
+   {token==='responsible'&&<><path className="v10-crest-symbol" d="m12 25 7 7 5-15 5 15 7-7-4 14H16Z"/><path className="v10-crest-fine" d="M24 10v5m-8 28h16"/></>}
   </svg>
  </span>;
 }
-
 export function RankLabel({rank}:{rank:Rank}){
  return <span className={'v8-rank-label v8-rank--'+rankToken(rank)}><span className="v8-rank-label-dot"/>{rank}</span>;
 }
