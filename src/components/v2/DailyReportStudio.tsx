@@ -264,7 +264,7 @@ export default function DailyReportStudio({state,review}:Props){
   return ()=>{cancelled=true;};
  },[rows,label,staff,readings.length,title,totals,valid]);
  const download=()=>{
-  if(!canvas.current||!state||review||downloading||!valid)return;
+  if(!canvas.current||!state||review||readings.length===0||downloading||!valid)return;
   setDownloading(true);setError('');
   canvas.current.toBlob(blob=>{
    setDownloading(false);
@@ -280,7 +280,7 @@ export default function DailyReportStudio({state,review}:Props){
    <div><small>CHICO / PREMIUM STATISTICS</small><h2>التقرير اليومي</h2>
     <p>تقرير بصري متغيّر حسب البيانات المحفوظة. إذا كان الملف يغطي أكثر من يوم، تظهر فترة التغطية الكاملة من غير اختراع توزيع يومي.</p>
    </div>
-   <button className="v9-primary" type="button" disabled={review||!state||!valid||downloading} onClick={download}><Download size={18}/>{downloading?'جاري تجهيز الصورة…':'تنزيل التقرير PNG'}</button>
+   <button className="v9-primary" type="button" disabled={review||!state||!valid||readings.length===0||downloading} onClick={download}><Download size={18}/>{downloading?'جاري تجهيز الصورة…':'تنزيل التقرير PNG'}</button>
   </header>
   <div className="v9-poster-filters">
    <label>من تاريخ<input type="date" value={from} onChange={e=>{touched.current=true;setFrom(e.target.value);}}/></label>
@@ -292,7 +292,12 @@ export default function DailyReportStudio({state,review}:Props){
   {partial>0&&<p className="v9-warning" role="status">يوجد {partial} سجل يغطّي جزءًا من الفترة فقط، ولم تُوزّع قيمه على أيام غير محددة.</p>}
   {valid&&readings.length===0&&<p className="v9-warning" role="status">مفيش قراءات محفوظة للفترة المختارة. اختر آخر تقرير مسجّل لعرض بيانات حقيقية.</p>}
   {error&&<p className="v9-warning" role="alert">{error}</p>}
-  <div className="v9-poster-preview"><canvas ref={canvas} role="img" aria-label={'تقرير CHICO '+label} style={{width:'100%',maxWidth:1100,height:'auto',aspectRatio:'auto'}}/></div>
-  <p className="v9-poster-note">General قائد الفريق يظهر في عدد الأعضاء، لكنه خارج التقييم والترتيب. الأسماء والبيانات مأخوذة من القراءات الفعلية. كل Top 3 مبني على Tickets فقط.</p>
+  <div className="v9-poster-preview" style={{display:readings.length>0?'flex':'none'}}><canvas ref={canvas} role="img" aria-label={'تقرير CHICO '+label} style={{width:'100%',maxWidth:1100,height:'auto',aspectRatio:'auto'}}/></div>
+  {readings.length===0&&<div className="v9-report-empty" role="status">
+    <b>التقرير جاهز للعرض بمجرد حفظ القراءات</b>
+    <p>مفيش بيانات مسجلة للفترة المختارة، لذلك مش هنعرض تقرير مليان شرط أو نتائج وهمية.</p>
+    <a href="/v2?tab=excel">افتح استيراد Excel</a>
+   </div>}
+  <p className="v9-poster-note">General قائد الفريق خارج التقييم والترتيب. الأسماء والبيانات مأخوذة من القراءات الفعلية. كل Top 3 مبني على Tickets فقط.</p>
  </section>;
 }
