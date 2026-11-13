@@ -14,6 +14,7 @@ import ExecutiveTeamStudio from './ExecutiveTeamStudio';
 import ExecutiveOperationsWorkspace from './ExecutiveOperationsWorkspace';
 import ExecutiveWeeklyChart from './ExecutiveWeeklyChart';
 import ExecutiveProfile from './ExecutiveProfile';
+import {CommandIcon,RankInsignia,RankLabel} from './ChicoVisualLanguage';
 
 export type Tab='dashboard'|'team'|'operations'|'updates'|'excel'|'server'|'reports'|'weeks'|'alerts'|'settings';
 type Auth='checking'|'out'|'in';
@@ -48,11 +49,12 @@ function latestRows(state:State|null):Row[]{
  });
 }
 function normalizedGraph(series:number[],max:number){return series.map((n,i)=>(36+i*88)+','+(174-Math.max(0,n)/Math.max(1,max)*126)).join(' ');}
-function NavGlyph({tab}:{tab:Tab}){const attrs={stroke:'currentColor',strokeWidth:1.8,strokeLinecap:'round' as const,strokeLinejoin:'round' as const,fill:'none'};return <span className="x-nav-iconbox"><svg viewBox="0 0 32 32" width="21" height="21" aria-hidden="true" {...attrs}>{tab==='dashboard'?<><rect x="4" y="5" width="10" height="10" rx="1.5"/><rect x="18" y="5" width="10" height="5" rx="1.5"/><rect x="18" y="14" width="10" height="13" rx="1.5"/><rect x="4" y="19" width="10" height="8" rx="1.5"/></>:tab==='operations'?<><path d="M16 3 28 9v14L16 29 4 23V9Z"/><path d="m16 3 0 26M4 9l12 7 12-7M16 16v13"/></>:tab==='team'?<><circle cx="13" cy="11" r="4"/><path d="M4 26v-3c0-4 4-6 9-6s9 2 9 6v3"/><circle cx="24" cy="12" r="3"/><path d="M23 19c4 0 6 2 6 5v2"/></>:tab==='updates'?<><rect x="7" y="4" width="18" height="24" rx="3"/><path d="M13 11h6M16 15v10M11 20h10"/></>:tab==='excel'?<><rect x="5" y="4" width="22" height="24" rx="2"/><path d="M5 12h22M5 20h22M16 12v16M9 8h9"/></>:tab==='server'?<><path d="M5 26h22"/><path d="M8 23V15h4v8M15 23V9h4v14M22 23V5h4v18"/></>:tab==='reports'?<><path d="M9 4h11l5 5v18H9z"/><path d="M20 4v6h5M13 16h8M13 21h8"/></>:tab==='weeks'?<><rect x="5" y="7" width="22" height="20" rx="2"/><path d="M10 3v8M22 3v8M5 13h22M11 19h4M19 19h4"/></>:tab==='alerts'?<><path d="m16 3 12 5v8c0 7-5 11-12 13C9 27 4 23 4 16V8z"/><path d="M16 10v8M16 23v.2"/></>:<><path d="M5 9h22M5 16h22M5 23h22"/><circle cx="12" cy="9" r="3" fill="#151820"/><circle cx="21" cy="16" r="3" fill="#151820"/><circle cx="14" cy="23" r="3" fill="#151820"/></>}</svg></span>}
-function RankMark({rank}:{rank:Rank}){const leader=rank==='Responsible'||rank==='Administrator';return <svg viewBox="0 0 48 48" width="30" height="30" fill="none" role="img" aria-label={rank}><path d="M24 2 42 12v24L24 46 6 36V12Z" stroke="currentColor" strokeWidth="1.8"/><path d="M12 15 24 8l12 7v18l-12 7-12-7Z" stroke="currentColor" opacity=".38"/>{leader?<path d="m11 20 6 6 7-12 7 12 6-6-3 14H14Z" fill="currentColor"/>:rank==='Moderator'?<path d="M24 11 34 22l-10 15-10-15Z" fill="currentColor"/>:rank==='SN.Helper'?<path d="m24 10 4 10 10 4-10 4-4 10-4-10-10-4 10-4Z" fill="currentColor"/>:<path d="m24 10 4.5 9.5 10.5 1.5-7.5 8 2 11-9.5-5-9.5 5 2-11-7.5-8 10.5-1.5Z" fill="currentColor"/>}</svg>}
+function NavGlyph({tab}:{tab:Tab}){return <CommandIcon name={tab}/>;}
+function RankMark({rank}:{rank:Rank}){return <RankInsignia rank={rank} compact/>;}
 function statusFor(r:Row){return !r.active?'غير نشط':(r.rating!==null&&r.rating<4.8)||(r.flags!==null&&r.flags>7)?'متابعة':r.flagsIncomplete?'رصيد Flags غير مكتمل':!r.lastUpdate?'بلا تحديث':'نشط';}
 function CardTitle({icon:Icon,title,en,action}:{icon:typeof Home;title:string;en:string;action?:React.ReactNode}){
- return <div className="x-card-title"><div className="x-section-heading"><Icon size={19}/><span>{title}</span><small>{en}</small></div>{action}</div>;
+ const symbol=en.includes('ALERT')?'alerts':en.includes('PERIOD')?'updates':en.includes('PERFORMER')?'team':en.includes('TEAM')?'team':en.includes('STATUS')?'members':'operations';
+ return <div className="x-card-title"><div className="x-section-heading"><CommandIcon compact name={symbol}/><span>{title}</span><small>{en}</small></div>{action}</div>;
 }
 function Brand({small=false}:{small?:boolean}){return <div className={'x-brand '+(small?'x-brand-small':'')}>
  <div className="x-brand-wolf"><img src="/assets/chico-approved-wolf.avif" alt="شعار الذئب الرسمي لفريق CHICO"/></div>
@@ -106,7 +108,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
  const summary=state?.summary;
  const active=rows.filter(r=>r.active).length;
  const covered=rows.filter(r=>r.active&&r.lastUpdate!==null).length;
- const totals={tickets:review?null:summary?.tickets??null,flags:review?null:summary?.flags??null,rate:review?null:summary?.rate??null,rating:review?null:summary?.rating??null,members:rows.length,coverage:active?Math.round(100*covered/active):null};
+ const totals={tickets:review?null:summary?.tickets??null,flags:review?null:summary?.flags??null,rate:review?null:summary?.rate??null,rating:review?null:summary?.rating??null,members:rows.length,coverage:!review&&state?.readings.some(r=>r.week_start===state?.summary.week_start)&&active?Math.round(100*covered/active):null};
  const top=rows.filter(r=>(r.rank==='Helper'||r.rank==='SN.Helper')&&r.tickets!==null).sort((a,b)=>(b.tickets??0)-(a.tickets??0)).slice(0,3);
  const hasRegisteredWeek=!!state?.readings.some(r=>r.week_start===summary?.week_start);
  const warnings=rows.filter(r=>r.flagsIncomplete||(r.flags!==null&&r.flags>7)||(r.rating!==null&&r.rating<4.8)||(!r.lastUpdate&&r.active&&hasRegisteredWeek));
@@ -138,19 +140,19 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
  const intervalRows=(state?.readings??[]).filter(r=>r.week_start===summary?.week_start).sort((a,b)=>b.to_date.localeCompare(a.to_date)||b.created_at.localeCompare(a.created_at)).slice(0,8);
  const alerts=review?[]:warnings.filter(r=>r.lastUpdate!==null||r.flagsIncomplete).slice(0,3).map(r=>({label:r.name,desc:r.flagsIncomplete?'رصيد Flags السابق غير معروف':r.flags!==null&&r.flags>7?'Flags مرتفعة — '+r.flags:r.rating!==null&&r.rating<4.8?'التقييم '+pretty(r.rating,'rating'):'تحتاج مراجعة',severity:'warning'}));
  const kpis=[
-  {title:'إجمالي الفريق',english:'Total Staff',value:pretty(totals.members),icon:Users,tone:'gold'},
-  {title:'تذاكر الأسبوع',english:'Weekly Tickets',value:pretty(totals.tickets),icon:Ticket,tone:'gold'},
-  {title:'الفلاجات',english:'Total Flags',value:pretty(totals.flags),icon:Flag,tone:'red'},
-  {title:'متوسط التقييم',english:'Average Rating',value:pretty(totals.rating,'rating'),icon:Star,tone:'gold'},
-  {title:'معدل الفلاجات',english:'Flag Rate',value:pretty(totals.rate,'percent'),icon:Shield,tone:'gold'},
-  {title:'تغطية الفريق',english:'Team Coverage',value:pretty(totals.coverage,'percent'),icon:TrendingUp,tone:'green'}
+  {title:'إجمالي الفريق',english:'Total Staff',value:pretty(totals.members),glyph:'members' as const,tone:'copper'},
+  {title:'تذاكر الأسبوع',english:'Weekly Tickets',value:pretty(totals.tickets),glyph:'tickets' as const,tone:'gold'},
+  {title:'الفلاجات',english:'Total Flags',value:pretty(totals.flags),glyph:'flags' as const,tone:'ruby'},
+  {title:'متوسط التقييم',english:'Average Rating',value:pretty(totals.rating,'rating'),glyph:'rating' as const,tone:'violet'},
+  {title:'معدل الفلاجات',english:'Flag Rate',value:pretty(totals.rate,'percent'),glyph:'rate' as const,tone:'amber'},
+  {title:'تغطية الفريق',english:'Team Coverage',value:pretty(totals.coverage,'percent'),glyph:'coverage' as const,tone:'emerald'}
  ];
  const isLogin=(auth!=='in')||previewLogin;
  if(isLogin)return <div className={'chico-v2 x-auth-scene '+(light?'x-light':'')} dir="rtl">
   {review&&<div className="x-review-ribbon">معاينة أسماء الفريق المعتمدة · بدون إحصائيات</div>}
   <div className="x-auth-frame"><div className="x-auth-art"><img className="x-auth-illustrated-banner" src="/assets/chico-illustrated-login.avif" alt="CHICO ME · بوابة قيادة الفريق" decoding="async"/><div className="x-auth-art-inner"><p>CHICO GENERAL TEAM</p><span>ONE STATE RP · ADMINISTRATION</span></div></div>
    <div className="x-auth-form">
-    <div className="x-auth-mini"><span><span className="x-live-dot"/>PRIVATE ADMINISTRATION</span><button type="button" onClick={switchAppearance} aria-label="تغيير المظهر">{light?<Moon size={17}/>:<Sun size={17}/>}</button></div>
+    <div className="x-auth-mini"><span><span className="x-live-dot"/>PRIVATE ADMINISTRATION</span><button type="button" onClick={switchAppearance} aria-label={light?'تفعيل الوضع الداكن':'تفعيل الوضع الفاتح'} aria-pressed={light}>{light?<Moon size={17}/>:<Sun size={17}/>}</button></div>
     <div className="x-auth-icon"><LockKeyhole size={27}/></div>
     <p className="x-kicker">SECURE ACCESS / CHICO</p><h1>بوابة القيادة</h1><p className="x-muted">لوحة الإدارة الرسمية لفريق CHICO General Team</p>
     {review?<div className="x-review-login"><p>معاينة شاشة الدخول — لا تُستخدم كلمات مرور في الوضع التجريبي.</p><button className="x-primary" onClick={()=>setPreviewLogin(false)}>الانتقال إلى مركز القيادة <ArrowLeft size={17}/></button></div>:
@@ -181,7 +183,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
      <div className="x-top-actions"><span className="x-date"><CalendarDays size={16}/>{timeLabel}</span>
       <button className="x-icon" onClick={()=>setSearchOpen(!searchOpen)} aria-label="البحث"><Search size={20}/></button>
       <button className="x-icon" onClick={()=>open('alerts')} aria-label="التنبيهات"><Bell size={19}/>{warnings.length>0&&<i className="x-notif-dot"/>}</button>
-      <button className="x-icon" onClick={switchAppearance} aria-label="تبديل الوضع">{light?<Moon size={19}/>:<Sun size={19}/>}</button>
+      <button className="x-icon" onClick={switchAppearance} aria-label={light?'تفعيل الوضع الداكن':'تفعيل الوضع الفاتح'} aria-pressed={light}>{light?<Moon size={19}/>:<Sun size={19}/>}</button>
       <button className="x-icon" onClick={()=>void refresh()} aria-label="تحديث البيانات"><RefreshCw size={18}/></button>
       <button className="x-user-button" onClick={()=>void logout()} title="الخروج"><div className="x-user-avatar"><Shield size={20}/></div><span>CHICO Leader <small>Team Director</small></span><LogOut size={16}/></button></div>
     </header>
@@ -190,10 +192,17 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
      {error&&<div className="x-error"><AlertTriangle size={17}/>{error}<button onClick={()=>void refresh()}>إعادة المحاولة</button></div>}
      {notice&&<div className="x-inline-notice"><Shield size={18}/>{notice}<button onClick={()=>setNotice('')}><X size={17}/></button></div>}
      {tab==='dashboard'&&<>
-      <section className="x-approved-masthead" aria-label="الهوية البصرية المعتمدة لفريق CHICO GENERAL TEAM">
-        <img src="/assets/chico-approved-hero.avif" alt="CHICO GENERAL TEAM — شعار OneState RP ذو الدرع 1S، وذئب هادئ داخل شارة ذهبية، على خلفية سوداء وذهبية وحمراء" decoding="async" fetchPriority="high"/>
+      <section className="v8-command-hero" aria-label="لوحة القيادة الرسمية لفريق CHICO">
+       <div className="v8-command-hero-copy">
+        <span className="v8-eyebrow"><span className="v8-live-pulse"/> ONE STATE RP / CHICO ME / COMMAND</span>
+        <h1>مركز القيادة <span>الاحترافي</span></h1>
+        <p>لوحة إدارة الفريق، متابعة الأداء الحقيقي، واتخاذ قرارات دقيقة من مكان واحد.</p>
+        <div className="v8-command-meta"><span><CommandIcon compact name="members"/> {rows.length} إداري مسجل</span><span><CommandIcon compact name="weeks"/> {timeLabel}</span></div>
+        <div className="v8-hero-actions"><button type="button" className="v8-hero-primary" onClick={()=>open('team')}>إدارة الإداريين <ArrowLeft size={18}/></button><button type="button" className="v8-hero-secondary" onClick={()=>open('updates')}>تسجيل قراءة <Plus size={17}/></button></div>
+       </div>
+       <div className="v8-command-hero-art"><img src="/assets/chico-approved-hero.avif" alt="الشعار المعتمد لفريق CHICO وشعار OneState RP والذئب الهادئ" decoding="async" fetchPriority="high"/></div>
       </section>
-      <div className="x-kpi-grid">{kpis.map(({title,english,value,icon:Icon,tone})=><div className={'x-kpi x-tone-'+tone} key={title}><div className="x-kpi-title"><Icon size={25}/><div><b>{title}</b><small>{english}</small></div></div><strong>{value}</strong><span>{review?'لا توجد قراءات بعد': 'الأسبوع الحالي'}</span></div>)}</div>
+      <div className="x-kpi-grid v8-kpi-grid">{kpis.map(({title,english,value,glyph,tone},index)=><div className={'x-kpi v8-kpi x-tone-'+tone} key={title} style={{animationDelay:(index*45)+'ms'}}><div className="x-kpi-title"><CommandIcon name={glyph}/><div><b>{title}</b><small>{english}</small></div></div><strong>{value}</strong><span>{review?'لا توجد قراءات بعد': 'الأسبوع الحالي'}</span><i className="v8-kpi-line"/></div>)}</div>
       <section className="x-weekbanner"><div className="x-weeklabel"><CalendarDays size={26}/><div><small>WEEKLY OPERATIONS</small><strong>متابعة الأسبوع الحالي</strong></div></div><div className="x-week-center"><Star size={29}/><div><b>مؤشرات الأداء والمتابعة</b><span>{review?'الأسماء معتمدة · لا توجد إحصائيات':'المعلومات المستمدة من سجلات الفريق'}</span></div></div><div className="x-week-mini">ONE STATE · CHICO ME</div></section>
       <div className="x-triple">
        <section className="x-panel x-alerts-panel"><CardTitle icon={Bell} title="تنبيهات القيادة" en="LEADERSHIP ALERTS" action={<button className="x-text-action" onClick={()=>open('alerts')}>عرض الكل <ArrowLeft size={14}/></button>}/>
@@ -222,7 +231,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
           {label:'تسجيل تحديث',icon:Plus,id:'updates' as Tab},{label:'مساحة العمليات',icon:Workflow,id:'operations' as Tab},
           {label:'إدارة الفريق',icon:Users,id:'team' as Tab},{label:'إغلاق الأسبوع',icon:CalendarDays,id:'weeks' as Tab},
           {label:'تقرير Discord',icon:Download,id:'reports' as Tab}
-        ].map(({label,icon:Icon,id})=><button key={id} onClick={()=>open(id)}><Icon size={24}/><span>{label}</span></button>)}</div>
+        ].map(({label,id})=><button key={id} onClick={()=>open(id)}><CommandIcon name={id}/><span>{label}</span></button>)}</div>
        </section>
        <section className="x-panel x-teamstatus"><CardTitle icon={Users} title="حالة الفريق" en="TEAM STATUS"/>
         <div className="x-donut-wrap"><div className="x-donut" style={{background:'conic-gradient(#2bcc76 0 '+((rows.length)?active/(rows.length)*100:0)+'%, #c43e47 0 100%)'}}><div><strong>{rows.length}</strong><span>إداري</span></div></div><div className="x-donut-list"><p><i className="x-dot-green"/>نشط <b>{active}</b></p><p><i className="x-dot-red"/>غير نشط <b>{(rows.length)-active}</b></p><p><i className="x-dot-gold"/>بتحديثات <b>{covered}</b></p></div></div>
@@ -251,5 +260,5 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
 
 function TeamTable({rows,onFocus}:{rows:Row[];onFocus:(r:Row)=>void}){
  if(!rows.length)return <div className="x-empty"><Users size={30}/><b>لا توجد أسماء مطابقة</b><p>لا نعرض أسماء أو إحصائيات وهمية في الوضع الحقيقي.</p></div>;
- return <div className="x-table-scroll"><table className="x-table"><thead><tr><th>#</th><th>الإداري</th><th>الرتبة</th><th>Tickets</th><th>Flags</th><th>Rating</th><th>TIME</th><th>الحالة</th><th>الملف</th></tr></thead><tbody>{rows.map((r,i)=><tr key={r.id}><td className="x-num"> {String(i+1).padStart(2,'0')} </td><td><div className="x-table-name"><span className="x-person-icon"><RankMark rank={r.rank}/></span><b dir="auto">{r.name}</b></div></td><td><span className="x-ranktag">{r.rank}</span></td><td className="x-num">{pretty(r.tickets)}</td><td><span className={'x-cell-badge '+(r.flags===null?'x-neutral':r.flags>7?'x-critical':r.flags>5?'x-warning':'x-good')}>{pretty(r.flags)}</span></td><td><span className={'x-cell-badge '+(r.rating===null?'x-neutral':r.rating<4.8?'x-critical':'x-good')}>{pretty(r.rating,'rating')}</span></td><td className="x-num">{pretty(r.hours)}</td><td><span className={'x-status-label '+(!r.active?'x-inactive':statusFor(r)==='متابعة'||r.flagsIncomplete?'x-needs-attention':'')}>{statusFor(r)}</span></td><td><button className="x-row-button" onClick={()=>onFocus(r)} aria-label={'فتح ملف '+r.name}><ArrowUpRight size={17}/></button></td></tr>)}</tbody></table></div>;
+ return <div className="x-table-scroll"><table className="x-table"><thead><tr><th>#</th><th>الإداري</th><th>الرتبة</th><th>Tickets</th><th>Flags</th><th>Rating</th><th>TIME</th><th>الحالة</th><th>الملف</th></tr></thead><tbody>{rows.map((r,i)=><tr key={r.id}><td className="x-num"> {String(i+1).padStart(2,'0')} </td><td><div className="x-table-name"><span className="x-person-icon"><RankMark rank={r.rank}/></span><b dir="auto">{r.name}</b></div></td><td><RankLabel rank={r.rank}/></td><td className="x-num">{pretty(r.tickets)}</td><td><span className={'x-cell-badge '+(r.flags===null?'x-neutral':r.flags>7?'x-critical':r.flags>5?'x-warning':'x-good')}>{pretty(r.flags)}</span></td><td><span className={'x-cell-badge '+(r.rating===null?'x-neutral':r.rating<4.8?'x-critical':'x-good')}>{pretty(r.rating,'rating')}</span></td><td className="x-num">{pretty(r.hours)}</td><td><span className={'x-status-label '+(!r.active?'x-inactive':statusFor(r)==='متابعة'||r.flagsIncomplete?'x-needs-attention':'')}>{statusFor(r)}</span></td><td><button className="x-row-button" onClick={()=>onFocus(r)} aria-label={'فتح ملف '+r.name}><ArrowUpRight size={17}/></button></td></tr>)}</tbody></table></div>;
 }

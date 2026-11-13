@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import type {State} from '@/lib/types';
 import ExecutiveOperations,{type OperationTab} from './ExecutiveOperations';
+import {CommandIcon} from './ChicoVisualLanguage';
 
 type Props={state:State|null;review:boolean;onRefresh:()=>Promise<void>;onNavigate:(tab:'dashboard'|'team'|'updates'|'excel'|'server'|'reports'|'weeks'|'alerts'|'settings')=>void};
 type Event={id:string;action:string;summary:string;created_at:string};
@@ -51,7 +52,7 @@ export default function ExecutiveOperationsWorkspace({state,review,onRefresh,onN
    <img src="/assets/chico-approved-hero.avif" alt="" className="v7-workspace-hero-image"/>
    <div className="v7-workspace-hero-copy"><small>CHICO GENERAL TEAM / OPERATIONS WORKSPACE</small><h1>مساحة إدارة العمليات</h1><p>البيانات والتحديثات والتقارير والضبط الأسبوعي — في مركز واحد</p></div>
   </header>
-  <nav className="v7-workspace-tabs" aria-label="الانتقال بين أدوات العمليات">{actions.map(a=><button key={a.id} type="button" className={selected===a.id?'active':''} onClick={()=>switchOp(a.id)}><a.icon size={21}/><span>{a.label}<small>{a.en}</small></span></button>)}</nav>
+  <nav className="v7-workspace-tabs" aria-label="الانتقال بين أدوات العمليات">{actions.map(a=><button key={a.id} type="button" className={selected===a.id?'active':''} onClick={()=>switchOp(a.id)}><CommandIcon name={a.id}/><span>{a.label}<small>{a.en}</small></span></button>)}</nav>
   <div className="v7-workspace-cards">
    <section className="v7-workspace-card v7-server-card">
     <header><span><Server size={21}/> أداء السيرفر</span><span className="v7-live-tag"><i/>بيانات السجلات</span></header>
