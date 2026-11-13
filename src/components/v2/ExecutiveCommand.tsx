@@ -113,7 +113,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
  const summary=state?.summary;
  const active=rows.filter(r=>r.active).length;
  const covered=rows.filter(r=>r.active&&r.lastUpdate!==null).length;
- const totals={tickets:review?null:summary?.tickets??null,flags:review?null:summary?.flags??null,rate:review?null:summary?.rate??null,rating:review?null:summary?.rating??null,members:rows.length,coverage:!review&&state?.readings.some(r=>r.week_start===state?.summary.week_start)&&active?Math.round(100*covered/active):null};
+ const totals={tickets:review?null:summary?.tickets??null,flags:review?null:summary?.flags??null,rate:review?null:summary?.rate??null,rating:review?null:summary?.rating??null,members:active,coverage:!review&&state?.readings.some(r=>r.week_start===state?.summary.week_start)&&active?Math.round(100*covered/active):null};
  const top=rows.filter(r=>(r.rank==='Helper'||r.rank==='SN.Helper')&&r.tickets!==null).sort((a,b)=>(b.tickets??0)-(a.tickets??0)).slice(0,3);
  const hasRegisteredWeek=!!state?.readings.some(r=>r.week_start===summary?.week_start);
  const warnings=rows.filter(r=>r.flagsIncomplete||(r.flags!==null&&r.flags>7)||(r.rating!==null&&r.rating<4.8)||(!r.lastUpdate&&r.active&&hasRegisteredWeek));
@@ -202,7 +202,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
         <span className="v8-eyebrow"><span className="v8-live-pulse"/> ONE STATE RP / CHICO ME / COMMAND</span>
         <h1>مركز القيادة <span>الاحترافي</span></h1>
         <p>لوحة إدارة الفريق، متابعة الأداء الحقيقي، واتخاذ قرارات دقيقة من مكان واحد.</p>
-        <div className="v8-command-meta"><span><CommandIcon compact name="members"/> {rows.length} إداري مسجل</span><span><CommandIcon compact name="weeks"/> {timeLabel}</span></div>
+        <div className="v8-command-meta"><span><CommandIcon compact name="members"/> {active} إداري نشط</span><span><CommandIcon compact name="weeks"/> {timeLabel}</span></div>
         <div className="v8-hero-actions"><button type="button" className="v8-hero-primary" onClick={()=>open('team')}>إدارة الإداريين <ArrowLeft size={18}/></button><button type="button" className="v8-hero-secondary" onClick={()=>open('updates')}>تسجيل قراءة <Plus size={17}/></button></div>
        </div>
        <div className="v8-command-hero-art"><img src="/assets/chico-approved-hero.avif" alt="الشعار المعتمد لفريق CHICO وشعار OneState RP والذئب الهادئ" decoding="async" fetchPriority="high"/></div>

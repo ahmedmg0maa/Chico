@@ -57,7 +57,7 @@ export default function ExecutiveTeamStudio({admins,rows,review,onRefresh,onPrev
  const [search,setSearch]=useState('');
  useEffect(()=>{setSearch(searchQuery);setPage(1);},[searchQuery]);
  const [rank,setRank]=useState<'all'|Rank>('all');
- const [status,setStatus]=useState<'all'|'active'|'inactive'|'unreported'>('all');
+ const [status,setStatus]=useState<'all'|'active'|'inactive'|'unreported'>('active');
  const [sort,setSort]=useState<SortKey>('name');
  const [descending,setDescending]=useState(false);
  const [page,setPage]=useState(1);
