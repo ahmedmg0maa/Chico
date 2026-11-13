@@ -37,7 +37,7 @@ export async function POST(req:NextRequest){
   if(!sheet)return response({ok:false,error:'EMPTY_XLSX'},400);
   if(sheet.rowCount>502)return response({ok:false,error:'XLSX_TOO_MANY_ROWS'},422);
   const heads=(sheet.getRow(1).values as unknown[]).map(key);
-  const find=(...items:string[])=>heads.findIndex(h=>items.some(x=>h===x||h.includes(x)));
+  const find=(...items:string[])=>{for(const item of items){const exact=heads.findIndex(h=>h===item);if(exact>=0)return exact;}for(const item of items){const partial=heads.findIndex(h=>h.includes(item));if(partial>=0)return partial;}return -1;};
   const nameCol=find('name','admin','الاسم');
   const roleCol=find('rank','الرتبة');
   const levelCol=find('adminlevel','admin level');
