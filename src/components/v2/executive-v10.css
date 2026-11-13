@@ -1,0 +1,74 @@
+/* CHICO V10 — calm rank insignias and space-first collapsible navigation.
+   This layer intentionally overrides legacy fixed sidebar declarations.
+   A single hamburger remains visible at all desktop and mobile sizes. */
+.chico-v2 .x-burger.v10-hamburger{
+ display:inline-flex!important;align-items:center;justify-content:center;
+ gap:8px;width:auto;min-width:48px;min-height:43px;padding:8px 13px;
+ border-radius:11px;border:1px solid var(--v8-line);
+ background:linear-gradient(135deg,rgba(216,164,94,.10),rgba(44,45,61,.15));
+ color:var(--v8-gold-bright);
+ box-shadow:inset 0 1px 0 rgba(246,216,164,.06);
+ transition:background .18s ease,border-color .18s ease,transform .18s ease;
+}
+.chico-v2 .v10-hamburger span{font-size:12px;font-weight:850;line-height:1}
+.chico-v2 .v10-hamburger:hover{border-color:#dfb676;background:rgba(212,162,96,.18);transform:translateY(-1px)}
+.chico-v2 .v10-hamburger[aria-expanded=true]{border-color:#d5a968;background:rgba(123,70,57,.26)}
+.chico-v2 .v10-nav-head{position:relative;display:flex;align-items:flex-start;justify-content:center;padding-top:7px}
+.chico-v2 .v10-nav-head .x-brand{padding-inline:27px;min-width:0}
+.chico-v2 .v10-nav-close{
+ position:absolute;top:3px;left:3px;display:grid;place-items:center;
+ width:35px;height:35px;border-radius:9px;border:1px solid rgba(227,188,121,.3);
+ color:#eac384;background:rgba(215,173,103,.07);
+ transition:background .18s ease,transform .18s ease;
+}
+.chico-v2 .v10-nav-close:hover{background:rgba(213,166,101,.20);transform:translateY(-1px)}
+.chico-v2 .v10-nav-close:focus-visible,.chico-v2 .v10-hamburger:focus-visible{outline:2px solid #f1cb8e;outline-offset:3px}
+.chico-v2.x-light .v10-hamburger{color:#85592b;background:#f8eee1;border-color:#d7b98f}
+.chico-v2.x-light .v10-nav-close{color:#865a2d;background:#f9efdf;border-color:#d9bb99}
+.chico-v2 .v10-insignia{
+ display:inline-flex;flex:none;align-items:center;justify-content:center;
+ width:40px;height:44px;min-width:40px;
+ color:var(--rank);filter:none!important;
+ transition:transform .18s ease;
+}
+.chico-v2 .v10-insignia--compact,.chico-v2 .v10-insignia.v8-insignia--compact{
+ width:32px;height:36px;min-width:32px;
+}
+.chico-v2 .v10-insignia svg{display:block;width:100%!important;height:100%!important;overflow:visible}
+.chico-v2 .v10-crest-outline{stroke:currentColor;stroke-width:1.7;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.chico-v2 .v10-crest-soft{fill:var(--rank-tint);stroke:currentColor;stroke-width:.6;opacity:.65}
+.chico-v2 .v10-crest-symbol{stroke:currentColor;stroke-width:2.3;stroke-linecap:round;stroke-linejoin:round;fill:none}
+.chico-v2 .v10-crest-fine{stroke:currentColor;stroke-width:1.2;stroke-linecap:round;opacity:.7}
+.chico-v2 .v10-insignia:hover{transform:translateY(-2px);filter:none!important}
+.chico-v2 .v7-person-name .v10-insignia{margin-inline-end:4px}
+.chico-v2 .v10-insignia .v8-insignia-emblem{display:none}
+.chico-v2.x-light .v10-crest-soft{fill:var(--rank-tint);opacity:.95}
+/* Full-width command view when navigation is closed. */
+@media(min-width:1021px){
+ .chico-v2 .x-layout.v10-nav-closed{grid-template-columns:minmax(0,1fr)!important}
+ .chico-v2 .x-layout.v10-nav-closed>.x-sidebar{display:none!important}
+ .chico-v2 .x-layout.v10-nav-open{grid-template-columns:246px minmax(0,1fr)!important}
+ .chico-v2 .x-layout.v10-nav-open>.x-sidebar{
+  display:flex!important;position:sticky;top:0;transform:none;
+  width:auto;height:100vh;min-width:0;
+ }
+ .chico-v2 .x-layout .x-body{min-width:0;width:100%}
+ .chico-v2 .x-mobile-scrim{display:none!important}
+ .chico-v2 .x-main-content{max-width:2040px;margin-inline:auto}
+}
+@media(max-width:1020px){
+ .chico-v2 .x-layout.v10-nav-closed,.chico-v2 .x-layout.v10-nav-open{display:block;grid-template-columns:none}
+ .chico-v2 .x-layout .x-sidebar{position:fixed;left:0;top:0;width:min(312px,87vw);height:100dvh;z-index:75;transition:transform .23s cubic-bezier(.22,.61,.36,1);box-shadow:17px 0 55px rgba(0,0,0,.4)}
+ .chico-v2 .x-layout.v10-nav-closed>.x-sidebar{transform:translateX(-102%)}
+ .chico-v2 .x-layout.v10-nav-open>.x-sidebar{transform:translateX(0)}
+ .chico-v2 .x-layout.v10-nav-open>.x-mobile-scrim{display:block;position:fixed;inset:0;z-index:65;background:rgba(3,5,12,.58);backdrop-filter:blur(3px)}
+ .chico-v2 .v10-nav-close{min-width:38px;min-height:38px}
+}
+@media(max-width:520px){
+ .chico-v2 .v10-hamburger span{display:none}
+ .chico-v2 .x-burger.v10-hamburger{min-width:42px;width:42px;padding:8px}
+ .chico-v2 .v10-nav-head .x-brand{padding-inline:17px}
+}
+@media(prefers-reduced-motion:reduce){
+ .chico-v2 .x-layout .x-sidebar,.chico-v2 .v10-insignia,.chico-v2 .v10-hamburger{transition:none!important;animation:none!important}
+}
