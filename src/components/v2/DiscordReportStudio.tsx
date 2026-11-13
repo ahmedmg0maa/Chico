@@ -140,7 +140,7 @@ function drawPoster(
  const rated=groupRows.filter(r=>r.rating!==null);
  const average=rated.length?rated.reduce((acc,r)=>acc+(r.rating??0),0)/rated.length:null;
  const stats=[
-  {name:'ACTIVE STAFF',value:String(staff),kind:'staff'},
+  {name:'IN REPORT',value:String(staff),kind:'staff'},
   {name:'TICKETS',value:round(tickets),kind:'tickets'},
   {name:'FLAGS',value:round(flags),kind:'flags'},
   {name:'AVG. RATING',value:round(average,2),kind:'rating'}
@@ -186,16 +186,16 @@ function drawPoster(
   text('TICKETS',col.tickets,headY+27,'bold 18px Arial',C.goldPale,'center');
   text('FLAGS',col.flags,headY+27,'bold 18px Arial',C.goldPale,'center');
   text('RATING',col.rating,headY+27,'bold 18px Arial',C.goldPale,'center');
-  const yStart=headY+61,rowH=38;
+  const yStart=headY+61,rowH=33;
   list.slice(0,max).forEach((r,i)=>{
    const ry=yStart+i*rowH;
    rect(x+14,ry,w-28,rowH-3,4,i%2===0?'#1d2028':'#101720');
    rect(x+17,ry+8,4,21,1,rankAccent(r.rank));
    text(String(i+1),col.number,ry+19,'bold 18px Georgia',C.goldPale,'center');
-   const maxName=col.tickets-col.name-100;
+   const maxName=col.tickets-col.name-76;
    text(limit(r.name,maxName,'bold 21px Arial'),col.name,ry+19,'bold 21px Arial',C.cream);
    if(r.rank==='SN.Helper')rect(col.tickets-72,ry+10,4,16,1,C.blue);
-   const ticketColor=r.tickets===null?C.muted:r.tickets===0?C.red:C.green;
+   const ticketColor=r.tickets===null?C.muted:r.tickets===0?C.goldPale:C.green;
    text(round(r.tickets),col.tickets,ry+19,'bold 22px Arial',ticketColor,'center');
    const flagColor=r.flags===null?C.muted:r.flags>7?C.red:r.flags>5?C.goldPale:C.green;
    text(round(r.flags),col.flags,ry+19,'bold 21px Arial',flagColor,'center');
