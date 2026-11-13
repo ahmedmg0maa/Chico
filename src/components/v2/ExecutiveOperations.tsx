@@ -3,12 +3,13 @@
 import {useState, type FormEvent} from 'react';
 import ReadingEntryStudio from './ReadingEntryStudio';
 import DiscordReportStudio from './DiscordReportStudio';
+import DailyReportStudio from './DailyReportStudio';
 import {Activity, AlertTriangle, Archive, BarChart3, CalendarDays, CheckCircle2, Download, FileSpreadsheet, Flag, Pencil, Plus, Save, Shield, Ticket, Trash2, Upload, Users} from 'lucide-react';
 import type {Admin, Reading, State, Rank} from '@/lib/types';
 import {RANKS} from '@/lib/types';
 import {applyLocalRosterChange,LOCAL_ROSTER_HISTORY_KEY,type LocalRosterAction,type LocalRosterEvent} from '@/lib/localRoster';
 
-export type OperationTab = 'updates'|'excel'|'server'|'reports'|'weeks'|'alerts'|'settings';
+export type OperationTab = 'updates'|'excel'|'server'|'daily'|'reports'|'weeks'|'alerts'|'settings';
 type Props = {tab:OperationTab;state:State|null;review:boolean;onRefresh:()=>Promise<void>;initialAdminId?:string|null};
 type ReadForm={admin_id:string;from_date:string;to_date:string;tickets_counter:number|null;flags_counter:number|null;flags_baseline:number|null;hours:number|null;rating:number|null;note:string};
 type Imported={row:number;name:string;admin_id:string|null;date:string|null;tickets_counter:number|null;flags_counter:number|null;hours:number|null;rating:number|null};
@@ -195,6 +196,7 @@ export default function ExecutiveOperations({tab,state,review,onRefresh,initialA
   <div className="x-op-metrics"><Metric label="إجمالي Tickets" value={fmt(summary?.tickets)}/><Metric label="Flags الأسبوع" value={fmt(summary?.flags)}/><Metric label="Server Flag Rate" value={summary?.rate===null||summary?.rate===undefined?'غير متاح':fmt(summary.rate)+'%'}/><Metric label="TIME المسجل" value={summary?.hours===null||summary?.hours===undefined?'—':fmt(summary.hours)+' h'}/><Metric label="متوسط التقييمات المسجلة" value={fmt(summary?.rating)}/><Metric label="إداريون لهم قراءة" value={fmt(summary?.reported,0)}/></div>
   <section className="x-panel x-op-card"><div className="x-op-cardhead"><BarChart3 size={20}/><h2>أفضل الإداريين حسب Tickets</h2></div>{summary?.top.length?<div className="x-op-mini-list">{summary.top.map((r,i)=><div key={r.id}><b>{i+1}. {r.name}</b><span>{r.rank} · {fmt(r.tickets)} Tickets</span></div>)}</div>:<Empty text="لا يوجد ترتيب موثّق لهذا الأسبوع"/>}<p className="x-op-footnote">الترتيب يستبعد Moderator والرتب القيادية.</p></section>
  </>;
+ if(tab==='daily')return <DailyReportStudio state={state} review={review}/>;
  if(tab==='reports')return <><DiscordReportStudio state={state} review={review}/>
     <section className="x-panel v9-export-extras"><h3>ملفات بيانات إضافية</h3><p>للمراجعة خارج Discord، تقدر تطلع Excel أو CSV من نفس البيانات المحفوظة.</p>
       <div className="v9-export-links">{review?<span>التصدير يحتاج الدخول الحقيقي</span>:<>
