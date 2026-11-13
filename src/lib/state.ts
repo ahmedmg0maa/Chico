@@ -1,13 +1,14 @@
 import { db } from './db';
+import {dateOnly,timestamp} from './date-serialization';
 import { weekStart, isEligibleForTop, summarizeReadings } from './rules';
 import type { Admin, Reading, State, Summary, Week } from './types';
 
 function mapAdmin(row:Record<string,unknown>):Admin{
-  return {id:String(row.id),name:String(row.name),rank:row.rank as Admin['rank'],active:!!row.active,in_reporting:!!row.in_reporting,sort_order:Number(row.sort_order),admin_level:row.admin_level===null?null:Number(row.admin_level),shift_label:row.shift_label?String(row.shift_label):null,full_name:row.full_name?String(row.full_name):null,notes:row.notes?String(row.notes):'',timezone:row.timezone?String(row.timezone):'Africa/Cairo',supervisor_id:row.supervisor_id?String(row.supervisor_id):null,joined_on:row.joined_on?String(row.joined_on).slice(0,10):null};
+  return {id:String(row.id),name:String(row.name),rank:row.rank as Admin['rank'],active:!!row.active,in_reporting:!!row.in_reporting,sort_order:Number(row.sort_order),admin_level:row.admin_level===null?null:Number(row.admin_level),shift_label:row.shift_label?String(row.shift_label):null,full_name:row.full_name?String(row.full_name):null,notes:row.notes?String(row.notes):'',timezone:row.timezone?String(row.timezone):'Africa/Cairo',supervisor_id:row.supervisor_id?String(row.supervisor_id):null,joined_on:row.joined_on?dateOnly(row.joined_on):null};
 }
 function mapReading(row:Record<string,unknown>):Reading{
   const n=(x:unknown)=>x===null||x===undefined?null:Number(x);
-  return {id:String(row.id),admin_id:String(row.admin_id),admin_name:String(row.admin_name),rank:row.rank as Reading['rank'],from_date:String(row.from_date).slice(0,10),to_date:String(row.to_date).slice(0,10),week_start:String(row.week_start).slice(0,10),tickets_counter:n(row.tickets_counter),tickets_delta:n(row.tickets_delta),flags_counter:n(row.flags_counter),flags_baseline:n(row.flags_baseline),flags_delta:n(row.flags_delta),hours:n(row.hours),rating:n(row.rating),note:String(row.note||''),created_at:String(row.created_at),report_entered_on:row.report_entered_on?String(row.report_entered_on).slice(0,10):new Intl.DateTimeFormat('en-CA',{timeZone:'Africa/Cairo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(row.created_at as string))};
+  return {id:String(row.id),admin_id:String(row.admin_id),admin_name:String(row.admin_name),rank:row.rank as Reading['rank'],from_date:dateOnly(row.from_date),to_date:dateOnly(row.to_date),week_start:dateOnly(row.week_start),tickets_counter:n(row.tickets_counter),tickets_delta:n(row.tickets_delta),flags_counter:n(row.flags_counter),flags_baseline:n(row.flags_baseline),flags_delta:n(row.flags_delta),hours:n(row.hours),rating:n(row.rating),note:String(row.note||''),created_at:timestamp(row.created_at),report_entered_on:row.report_entered_on?dateOnly(row.report_entered_on):new Intl.DateTimeFormat('en-CA',{timeZone:'Africa/Cairo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(timestamp(row.created_at)))};
 }
 export async function loadState():Promise<State>{
   const sql=db();
@@ -16,7 +17,7 @@ export async function loadState():Promise<State>{
   const rr=await sql`SELECT r.*,a.name AS admin_name,a.rank FROM chico_next.readings r JOIN chico_next.admins a ON a.id=r.admin_id ORDER BY r.to_date DESC,r.created_at DESC`;
   const wr=await sql`SELECT week_start,status,closed_at FROM chico_next.weekly_status ORDER BY week_start DESC LIMIT 52`;
   const admins=ar.map(r=>mapAdmin(r)); const readings=rr.map(r=>mapReading(r));
-  const weeks=wr.map(r=>({week_start:String(r.week_start).slice(0,10),status:r.status as Week['status'],closed_at:r.closed_at?String(r.closed_at):null}));
+  const weeks=wr.map(r=>({week_start:dateOnly(r.week_start),status:r.status as Week['status'],closed_at:r.closed_at?timestamp(r.closed_at):null}));
   // Business date: Egypt's date, not UTC calendar day.
   const cairoDate=new Intl.DateTimeFormat('en-CA',{timeZone:'Africa/Cairo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
   const monday=weekStart(cairoDate);
