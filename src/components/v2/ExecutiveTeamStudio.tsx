@@ -20,7 +20,7 @@ export type DirectoryRow={
 type AdminExtra=Admin&{full_name?:string|null;notes?:string|null;timezone?:string|null;supervisor_id?:string|null};
 type Props={
  admins:Admin[];rows:DirectoryRow[];review:boolean;onRefresh:()=>Promise<void>;
- onPreviewChange:(admins:Admin[])=>void;onOpen:(row:DirectoryRow)=>void;editTarget?:string|null;onEditConsumed?:()=>void;
+ onPreviewChange:(admins:Admin[])=>void;onOpen:(row:DirectoryRow)=>void;editTarget?:string|null;onEditConsumed?:()=>void;searchQuery?:string;
 };
 type Draft={
  name:string;full_name:string;rank:Rank;admin_level:number;shift_label:string;
@@ -53,8 +53,9 @@ function Stat({title,value,icon:Icon,tone}:{title:string;value:number;icon:typeo
  return <div className={'v7-directory-stat '+(tone||'')}><CommandIcon name={glyph}/><span>{title}</span><b>{format(value)}</b></div>;
 }
 
-export default function ExecutiveTeamStudio({admins,rows,review,onRefresh,onPreviewChange,onOpen,editTarget,onEditConsumed}:Props){
+export default function ExecutiveTeamStudio({admins,rows,review,onRefresh,onPreviewChange,onOpen,editTarget,onEditConsumed,searchQuery=''}:Props){
  const [search,setSearch]=useState('');
+ useEffect(()=>{setSearch(searchQuery);setPage(1);},[searchQuery]);
  const [rank,setRank]=useState<'all'|Rank>('all');
  const [status,setStatus]=useState<'all'|'active'|'inactive'|'unreported'>('all');
  const [sort,setSort]=useState<SortKey>('name');
