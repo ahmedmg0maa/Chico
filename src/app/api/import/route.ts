@@ -3,7 +3,7 @@ import ExcelJS from 'exceljs';
 import {createHash} from 'node:crypto';
 import {db} from '@/lib/db';
 import {requireOwner,response,failure} from '@/lib/api';
-import {auditImport,canonicalName,cleanName,resolvePerson,strictDate,validInteger,validNumber,validRank,findImportColumn,inferLegacyPeriod,normalizedExcelHeader,type ExcelImportPerson,type ExcelImportRow} from '@/lib/excel-import';
+import {auditImport,canonicalName,cleanName,resolvePerson,strictDate,validInteger,validNumber,validRank,validateCoverage,findImportColumn,inferLegacyPeriod,normalizedExcelHeader,type ExcelImportPerson,type ExcelImportRow} from '@/lib/excel-import';
 import type {Rank} from '@/lib/types';
 
 export const runtime='nodejs';
