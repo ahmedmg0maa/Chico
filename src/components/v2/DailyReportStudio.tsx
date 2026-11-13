@@ -4,6 +4,7 @@ import {useEffect,useMemo,useRef,useState} from 'react';
 import {CalendarDays,Download} from 'lucide-react';
 import type {Admin,Reading,State} from '@/lib/types';
 import {summarizeReadings,weekStart} from '@/lib/rules';
+import {buildReportGroups} from '@/lib/report-groups';
 
 type Props={state:State|null;review:boolean};
 export type LuxuryPosterRow={id:string;name:string;rank:string;order:number;tickets:number|null;flags:number|null;rating:number|null;flagsIncomplete:boolean};
@@ -19,13 +20,6 @@ function dailyRow(admin:Admin,readings:Reading[]):LuxuryPosterRow{
   flags:flagsIncomplete?null:sum(own.map(r=>r.flags_delta)),
   rating:own.find(r=>r.rating!==null)?.rating??null,flagsIncomplete};
 }
-function orderRows(rows:LuxuryPosterRow[]):LuxuryPosterRow[]{
- return [...rows].sort((a,b)=>{
-  if((a.tickets===null)!==(b.tickets===null))return a.tickets===null?1:-1;
-  if(a.tickets!==null&&b.tickets!==null&&a.tickets!==b.tickets)return b.tickets-a.tickets;
-  return a.order-b.order||a.name.localeCompare(b.name,'en');
- });
-}
 export function loadLuxuryArt(path:string):Promise<HTMLImageElement|null>{
  return new Promise(resolve=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>resolve(null);img.src=path;});
 }
@@ -34,10 +28,7 @@ export function renderLuxuryPoster(
  canvas:HTMLCanvasElement,rows:LuxuryPosterRow[],date:string,staff:number,readingsCount:number,
  art:(HTMLImageElement|null)[],title='إحصائيات يومية',serverTotals?:PremiumTotals
 ){
- const groups=[
-  {name:'HELPERS + SN.HELPERS',rows:orderRows(rows.filter(r=>r.rank==='Helper'||r.rank==='SN.Helper')),x:45},
-  {name:'MODERATORS',rows:orderRows(rows.filter(r=>r.rank==='Moderator')),x:763}
- ];
+ const groups=buildReportGroups(rows).map((group,i)=>({...group,x:i===0?45:763}));
  const count=Math.max(16,...groups.map(g=>g.rows.length));
  const W=1500,tableY=632,rowH=50,tableH=count*rowH+240;
  const podiumY=tableY+tableH+37,H=podiumY+350;
@@ -201,10 +192,10 @@ export function renderLuxuryPoster(
  groups.forEach(drawTable);
  // Horizontal awards: only display populated awards; no empty podium winners.
  const medals=[P.bright,P.silver,P.bronze];
- const award=(group:{name:string;rows:LuxuryPosterRow[];x:number})=>{
+ const award=(group:{name:string;topTitle:string;rows:LuxuryPosterRow[];x:number})=>{
   const {x}=group,w=692;panel(x,podiumY,w,306,17);
   panel(x+18,podiumY+17,w-36,62,9);
-  text(group.name==='MODERATORS'?'TOP 3 — MODERATORS':'TOP 3 — HELPERS',x+w/2,podiumY+49,31,P.bright,'center',w-70);
+  text(group.topTitle,x+w/2,podiumY+49,31,P.bright,'center',w-70);
   const winners=group.rows.filter(r=>r.tickets!==null).slice(0,3);
   if(winners.length===0){
    text('لا توجد نتائج مسجلة لهذه الفترة',x+w/2,podiumY+178,27,P.dim);
