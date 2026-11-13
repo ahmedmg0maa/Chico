@@ -38,7 +38,7 @@ export function renderLuxuryPoster(
   {name:'MODERATORS',rows:orderRows(rows.filter(r=>r.rank==='Moderator')),x:763}
  ];
  const count=Math.max(16,...groups.map(g=>g.rows.length));
- const W=1500,tableY=632,rowH=47,tableH=count*rowH+163;
+ const W=1500,tableY=632,rowH=47,tableH=count*rowH+240;
  const podiumY=tableY+tableH+37,H=podiumY+350;
  canvas.width=W;canvas.height=H;
  const ctx=canvas.getContext('2d');if(!ctx)return;
@@ -145,9 +145,9 @@ export function renderLuxuryPoster(
  const format=(v:number|null,dp=0)=>v===null?'—':v.toLocaleString('en-US',{minimumFractionDigits:dp,maximumFractionDigits:dp});
  const metrics=[
   {label:'TOTAL STAFF',value:String(staff),icon:'staff'},
-  {label:'TICKETS',value:format(serverTotals?.tickets??sum(rows.map(r=>r.tickets))),icon:'ticket'},
-  {label:'FLAGS',value:format(serverTotals?.flags??(incompletes?null:sum(rows.map(r=>r.flags)))),icon:'flag'},
-  {label:'AVG. RATE',value:format(serverTotals?.rating??calculatedRate,2),icon:'rate'}
+  {label:'TICKETS',value:format(serverTotals?serverTotals.tickets:sum(rows.map(r=>r.tickets))),icon:'ticket'},
+  {label:'FLAGS',value:format(serverTotals?serverTotals.flags:(incompletes?null:sum(rows.map(r=>r.flags)))),icon:'flag'},
+  {label:'AVG. RATE',value:format(serverTotals?serverTotals.rating:calculatedRate,2),icon:'rate'}
  ];
  metrics.forEach((m,i)=>{
   const x=45+i*358,y=468;panel(x,y,336,139,13);
