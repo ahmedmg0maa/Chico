@@ -9,15 +9,19 @@ import {
   Ticket,TrendingUp,Trophy,Users,UserRound,Workflow,X
 } from 'lucide-react';
 import type {Admin,Reading,State,Rank} from '@/lib/types';
-import ExecutiveOperations,{ExecutiveTeamManager} from './ExecutiveOperations';
+import ExecutiveOperations from './ExecutiveOperations';
+import ExecutiveTeamStudio from './ExecutiveTeamStudio';
+import ExecutiveOperationsWorkspace from './ExecutiveOperationsWorkspace';
+import ExecutiveWeeklyChart from './ExecutiveWeeklyChart';
 import ExecutiveProfile from './ExecutiveProfile';
 
-export type Tab='dashboard'|'team'|'updates'|'excel'|'server'|'reports'|'weeks'|'alerts'|'settings';
+export type Tab='dashboard'|'team'|'operations'|'updates'|'excel'|'server'|'reports'|'weeks'|'alerts'|'settings';
 type Auth='checking'|'out'|'in';
 type Row={id:string;name:string;rank:Rank;active:boolean;tickets:number|null;flags:number|null;rating:number|null;hours:number|null;lastUpdate:string|null;in_reporting:boolean;admin_level?:number|null;shift_label?:string|null;flagsIncomplete?:boolean;periodFrom?:string|null};
 const links:{id:Tab;label:string;en:string;icon:typeof Home}[]=[
   {id:'dashboard',label:'مركز القيادة',en:'Command Center',icon:LayoutDashboard},
-  {id:'team',label:'الفريق',en:'Team Management',icon:Users},
+  {id:'team',label:'إدارة الفريق',en:'Team Management',icon:Users},
+  {id:'operations',label:'مساحة العمليات',en:'Operations Center',icon:Workflow},
   {id:'updates',label:'تسجيل التحديثات',en:'Log Updates',icon:Plus},
   {id:'excel',label:'استيراد Excel',en:'Excel Import',icon:FileSpreadsheet},
   {id:'server',label:'أداء السيرفر',en:'Server Performance',icon:BarChart3},
@@ -44,7 +48,7 @@ function latestRows(state:State|null):Row[]{
  });
 }
 function normalizedGraph(series:number[],max:number){return series.map((n,i)=>(36+i*88)+','+(174-Math.max(0,n)/Math.max(1,max)*126)).join(' ');}
-function NavGlyph({tab}:{tab:Tab}){const attrs={stroke:'currentColor',strokeWidth:1.8,strokeLinecap:'round' as const,strokeLinejoin:'round' as const,fill:'none'};return <span className="x-nav-iconbox"><svg viewBox="0 0 32 32" width="21" height="21" aria-hidden="true" {...attrs}>{tab==='dashboard'?<><rect x="4" y="5" width="10" height="10" rx="1.5"/><rect x="18" y="5" width="10" height="5" rx="1.5"/><rect x="18" y="14" width="10" height="13" rx="1.5"/><rect x="4" y="19" width="10" height="8" rx="1.5"/></>:tab==='team'?<><circle cx="13" cy="11" r="4"/><path d="M4 26v-3c0-4 4-6 9-6s9 2 9 6v3"/><circle cx="24" cy="12" r="3"/><path d="M23 19c4 0 6 2 6 5v2"/></>:tab==='updates'?<><rect x="7" y="4" width="18" height="24" rx="3"/><path d="M13 11h6M16 15v10M11 20h10"/></>:tab==='excel'?<><rect x="5" y="4" width="22" height="24" rx="2"/><path d="M5 12h22M5 20h22M16 12v16M9 8h9"/></>:tab==='server'?<><path d="M5 26h22"/><path d="M8 23V15h4v8M15 23V9h4v14M22 23V5h4v18"/></>:tab==='reports'?<><path d="M9 4h11l5 5v18H9z"/><path d="M20 4v6h5M13 16h8M13 21h8"/></>:tab==='weeks'?<><rect x="5" y="7" width="22" height="20" rx="2"/><path d="M10 3v8M22 3v8M5 13h22M11 19h4M19 19h4"/></>:tab==='alerts'?<><path d="m16 3 12 5v8c0 7-5 11-12 13C9 27 4 23 4 16V8z"/><path d="M16 10v8M16 23v.2"/></>:<><path d="M5 9h22M5 16h22M5 23h22"/><circle cx="12" cy="9" r="3" fill="#151820"/><circle cx="21" cy="16" r="3" fill="#151820"/><circle cx="14" cy="23" r="3" fill="#151820"/></>}</svg></span>}
+function NavGlyph({tab}:{tab:Tab}){const attrs={stroke:'currentColor',strokeWidth:1.8,strokeLinecap:'round' as const,strokeLinejoin:'round' as const,fill:'none'};return <span className="x-nav-iconbox"><svg viewBox="0 0 32 32" width="21" height="21" aria-hidden="true" {...attrs}>{tab==='dashboard'?<><rect x="4" y="5" width="10" height="10" rx="1.5"/><rect x="18" y="5" width="10" height="5" rx="1.5"/><rect x="18" y="14" width="10" height="13" rx="1.5"/><rect x="4" y="19" width="10" height="8" rx="1.5"/></>:tab==='operations'?<><path d="M16 3 28 9v14L16 29 4 23V9Z"/><path d="m16 3 0 26M4 9l12 7 12-7M16 16v13"/></>:tab==='team'?<><circle cx="13" cy="11" r="4"/><path d="M4 26v-3c0-4 4-6 9-6s9 2 9 6v3"/><circle cx="24" cy="12" r="3"/><path d="M23 19c4 0 6 2 6 5v2"/></>:tab==='updates'?<><rect x="7" y="4" width="18" height="24" rx="3"/><path d="M13 11h6M16 15v10M11 20h10"/></>:tab==='excel'?<><rect x="5" y="4" width="22" height="24" rx="2"/><path d="M5 12h22M5 20h22M16 12v16M9 8h9"/></>:tab==='server'?<><path d="M5 26h22"/><path d="M8 23V15h4v8M15 23V9h4v14M22 23V5h4v18"/></>:tab==='reports'?<><path d="M9 4h11l5 5v18H9z"/><path d="M20 4v6h5M13 16h8M13 21h8"/></>:tab==='weeks'?<><rect x="5" y="7" width="22" height="20" rx="2"/><path d="M10 3v8M22 3v8M5 13h22M11 19h4M19 19h4"/></>:tab==='alerts'?<><path d="m16 3 12 5v8c0 7-5 11-12 13C9 27 4 23 4 16V8z"/><path d="M16 10v8M16 23v.2"/></>:<><path d="M5 9h22M5 16h22M5 23h22"/><circle cx="12" cy="9" r="3" fill="#151820"/><circle cx="21" cy="16" r="3" fill="#151820"/><circle cx="14" cy="23" r="3" fill="#151820"/></>}</svg></span>}
 function RankMark({rank}:{rank:Rank}){const leader=rank==='Responsible'||rank==='Administrator';return <svg viewBox="0 0 48 48" width="30" height="30" fill="none" role="img" aria-label={rank}><path d="M24 2 42 12v24L24 46 6 36V12Z" stroke="currentColor" strokeWidth="1.8"/><path d="M12 15 24 8l12 7v18l-12 7-12-7Z" stroke="currentColor" opacity=".38"/>{leader?<path d="m11 20 6 6 7-12 7 12 6-6-3 14H14Z" fill="currentColor"/>:rank==='Moderator'?<path d="M24 11 34 22l-10 15-10-15Z" fill="currentColor"/>:rank==='SN.Helper'?<path d="m24 10 4 10 10 4-10 4-4 10-4-10-10-4 10-4Z" fill="currentColor"/>:<path d="m24 10 4.5 9.5 10.5 1.5-7.5 8 2 11-9.5-5-9.5 5 2-11-7.5-8 10.5-1.5Z" fill="currentColor"/>}</svg>}
 function statusFor(r:Row){return !r.active?'غير نشط':(r.rating!==null&&r.rating<4.8)||(r.flags!==null&&r.flags>7)?'متابعة':r.flagsIncomplete?'رصيد Flags غير مكتمل':!r.lastUpdate?'بلا تحديث':'نشط';}
 function CardTitle({icon:Icon,title,en,action}:{icon:typeof Home;title:string;en:string;action?:React.ReactNode}){
@@ -82,6 +86,10 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
  const updateReviewAdmins=(next:Admin[])=>{setReviewAdmins(next);setFocused(null);try{localStorage.setItem('chico-approved-roster-local-v1',JSON.stringify(next));}catch{}};
  const [tab,setTab]=useState<Tab>(initialTab);
  const [light,setLight]=useState(false);
+ const [editTarget,setEditTarget]=useState<string|null>(null);
+ const switchAppearance=()=>setLight(current=>{const next=!current;try{localStorage.setItem('chico-ui-theme',next?'light':'dark');}catch{}return next;});
+ useEffect(()=>{try{setLight(localStorage.getItem('chico-ui-theme')==='light');}catch{}},[]);
+ useEffect(()=>{const valid=links.map(l=>l.id);const initial=new URLSearchParams(window.location.search).get('tab') as Tab|null;if(initial&&valid.includes(initial))setTab(initial);},[]);
  const [menu,setMenu]=useState(false);
  const [pass,setPass]=useState('');
  const [reveal,setReveal]=useState(false);
@@ -142,7 +150,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
   {review&&<div className="x-review-ribbon">معاينة أسماء الفريق المعتمدة · بدون إحصائيات</div>}
   <div className="x-auth-frame"><div className="x-auth-art"><img className="x-auth-illustrated-banner" src="/assets/chico-illustrated-login.avif" alt="CHICO ME · بوابة قيادة الفريق" decoding="async"/><div className="x-auth-art-inner"><p>CHICO GENERAL TEAM</p><span>ONE STATE RP · ADMINISTRATION</span></div></div>
    <div className="x-auth-form">
-    <div className="x-auth-mini"><span><span className="x-live-dot"/>PRIVATE ADMINISTRATION</span><button type="button" onClick={()=>setLight(!light)} aria-label="تغيير المظهر">{light?<Moon size={17}/>:<Sun size={17}/>}</button></div>
+    <div className="x-auth-mini"><span><span className="x-live-dot"/>PRIVATE ADMINISTRATION</span><button type="button" onClick={switchAppearance} aria-label="تغيير المظهر">{light?<Moon size={17}/>:<Sun size={17}/>}</button></div>
     <div className="x-auth-icon"><LockKeyhole size={27}/></div>
     <p className="x-kicker">SECURE ACCESS / CHICO</p><h1>بوابة القيادة</h1><p className="x-muted">لوحة الإدارة الرسمية لفريق CHICO General Team</p>
     {review?<div className="x-review-login"><p>معاينة شاشة الدخول — لا تُستخدم كلمات مرور في الوضع التجريبي.</p><button className="x-primary" onClick={()=>setPreviewLogin(false)}>الانتقال إلى مركز القيادة <ArrowLeft size={17}/></button></div>:
@@ -173,12 +181,12 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
      <div className="x-top-actions"><span className="x-date"><CalendarDays size={16}/>{timeLabel}</span>
       <button className="x-icon" onClick={()=>setSearchOpen(!searchOpen)} aria-label="البحث"><Search size={20}/></button>
       <button className="x-icon" onClick={()=>open('alerts')} aria-label="التنبيهات"><Bell size={19}/>{warnings.length>0&&<i className="x-notif-dot"/>}</button>
-      <button className="x-icon" onClick={()=>setLight(!light)} aria-label="تبديل الوضع">{light?<Moon size={19}/>:<Sun size={19}/>}</button>
+      <button className="x-icon" onClick={switchAppearance} aria-label="تبديل الوضع">{light?<Moon size={19}/>:<Sun size={19}/>}</button>
       <button className="x-icon" onClick={()=>void refresh()} aria-label="تحديث البيانات"><RefreshCw size={18}/></button>
       <button className="x-user-button" onClick={()=>void logout()} title="الخروج"><div className="x-user-avatar"><Shield size={20}/></div><span>CHICO Leader <small>Team Director</small></span><LogOut size={16}/></button></div>
     </header>
     {searchOpen&&<div className="x-command-search"><Search size={18}/><input autoFocus placeholder="ابحث عن إداري…" value={filter} onChange={e=>{setFilter(e.target.value);setTab('team');}}/><button onClick={()=>setSearchOpen(false)} aria-label="إغلاق البحث"><X size={17}/></button></div>}
-    <div className="x-main-content">
+    <div className="x-main-content v7-app-content" key={tab}>
      {error&&<div className="x-error"><AlertTriangle size={17}/>{error}<button onClick={()=>void refresh()}>إعادة المحاولة</button></div>}
      {notice&&<div className="x-inline-notice"><Shield size={18}/>{notice}<button onClick={()=>setNotice('')}><X size={17}/></button></div>}
      {tab==='dashboard'&&<>
@@ -207,10 +215,11 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
         <p className="x-panel-footnote">الترتيب يستبعد رتبة Moderator والرتب القيادية</p>
        </section>
       </div>
-      <div className="x-bottom-grid">
+      <div className="v7-bottom-dashboard">
+        <ExecutiveWeeklyChart readings={review?[]:state?.readings||[]}/>
        <section className="x-panel x-quick"><CardTitle icon={Workflow} title="إجراءات سريعة" en="QUICK ACTIONS"/>
         <div className="x-action-grid">{[
-          {label:'تسجيل تحديث',icon:Plus,id:'updates' as Tab},{label:'استيراد Excel',icon:FileSpreadsheet,id:'excel' as Tab},
+          {label:'تسجيل تحديث',icon:Plus,id:'updates' as Tab},{label:'مساحة العمليات',icon:Workflow,id:'operations' as Tab},
           {label:'إدارة الفريق',icon:Users,id:'team' as Tab},{label:'إغلاق الأسبوع',icon:CalendarDays,id:'weeks' as Tab},
           {label:'تقرير Discord',icon:Download,id:'reports' as Tab}
         ].map(({label,icon:Icon,id})=><button key={id} onClick={()=>open(id)}><Icon size={24}/><span>{label}</span></button>)}</div>
@@ -224,18 +233,14 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
       </section>
      </>}
      {tab==='team'&&<>
-      <section className="x-titleband x-art-team x-illustrated-head"><img className="x-illustrated-banner" src="/assets/chico-illustrated-team.avif" alt="" loading="lazy" decoding="async"/><div className="x-illustrated-copy"><span className="x-kicker">CHICO / TEAM DIRECTORY</span><h1>قيادة الفريق والإداريين</h1><p>الأسماء والرتب والأداء في مكان واحد، مع الوصول المباشر لكل ملف إداري.</p></div></section>
-      <div className="x-kpi-grid x-team-kpis">{[
-       {name:'إجمالي الإداريين',val:rows.length,icon:Users},{name:'النشطون',val:active,icon:CheckCircle2},{name:'بلا تحديث هذا الأسبوع',val:rows.filter(r=>r.active&&!r.lastUpdate).length,icon:Clock3},{name:'حالات تحتاج متابعة',val:warnings.length,icon:AlertTriangle}
-      ].map(x=><div className="x-kpi" key={x.name}><div className="x-kpi-title"><x.icon size={23}/><b>{x.name}</b></div><strong>{x.val}</strong></div>)}</div>
-      <ExecutiveTeamManager state={state} review={review} onRefresh={refresh} previewAdmins={reviewAdmins} onPreviewAdminsChange={updateReviewAdmins}/>
-      <section className="x-panel x-directory"><CardTitle icon={Users} title="سجل الإداريين" en="TEAM DIRECTORY"/>
-       <div className="x-filterbar"><div className="x-filtersearch"><Search size={18}/><input placeholder="ابحث بالاسم…" value={filter} onChange={e=>setFilter(e.target.value)}/></div><select value={rank} onChange={e=>setRank(e.target.value)} aria-label="تصفية حسب الرتبة"><option value="all">جميع الرتب</option><option value="Administrator">Administrator</option><option value="Moderator">Moderator</option><option value="SN.Helper">SN.Helper</option><option value="Helper">Helper</option></select><span className="x-table-count">{visible.length} إداري</span></div>
-       <TeamTable rows={visible} onFocus={setFocused}/>
-      </section>
-      {focused&&<ExecutiveProfile member={focused} readings={review?[]:state?.readings||[]} review={review} mark={<RankMark rank={focused.rank}/>} onClose={()=>setFocused(null)} onEdit={()=>{const target=focused.id;setFocused(null);setTab('team');requestAnimationFrame(()=>{document.querySelector<HTMLButtonElement>('[data-chico-edit-id="'+target+'"]')?.click();document.getElementById('chico-team-editor')?.scrollIntoView({behavior:'smooth',block:'start'});});}}/>}
-     </>}
-     {tab!=='dashboard'&&tab!=='team'&&<ExecutiveOperations tab={tab} state={state} review={review} onRefresh={refresh}/>}
+       <section className="v7-team-hero"><img src="/assets/chico-illustrated-team.avif" alt=""/><div><small>CHICO / EXECUTIVE TEAM MANAGEMENT</small><h1>إدارة الفريق والإداريين</h1><p>تحكم كامل في بيانات الفريق، رتب الإداريين، المناوبات، وسجلاتهم</p></div></section>
+       <ExecutiveTeamStudio admins={review?reviewAdmins:state?.admins||[]} rows={rows} review={review} onRefresh={refresh}
+        onPreviewChange={updateReviewAdmins} onOpen={setFocused} editTarget={editTarget} onEditConsumed={()=>setEditTarget(null)}/>
+       {focused&&<ExecutiveProfile member={focused} readings={review?[]:state?.readings||[]} review={review} mark={<RankMark rank={focused.rank}/>}
+        onClose={()=>setFocused(null)} onEdit={()=>{setEditTarget(focused.id);setFocused(null);}}/>}
+      </>}
+      {tab==='operations'&&<ExecutiveOperationsWorkspace state={state} review={review} onRefresh={refresh} onNavigate={open}/>}
+      {tab!=='dashboard'&&tab!=='team'&&tab!=='operations'&&<ExecutiveOperations tab={tab} state={state} review={review} onRefresh={refresh}/>}
 
      <footer className="x-foot"><span>© CHICO GENERAL TEAM · ONE STATE RP</span><span>{review?'VISUAL REVIEW — NOT LIVE DATA':'PROTECTED ADMINISTRATION PLATFORM'}</span></footer>
     </div>
