@@ -3,6 +3,7 @@ import {useEffect,useMemo,useState,type ReactNode} from 'react';
 import {Activity,CalendarDays,Clock3,History,Pencil,Plus,Shield,Ticket,Flag,Star,X} from 'lucide-react';
 import type {Admin,Rank,Reading} from '@/lib/types';
 import {RankLabel} from './ChicoVisualLanguage';
+import ModalPortal from './ModalPortal';
 
 type Member={id:string;name:string;rank:Rank;admin_level?:number|null;shift_label?:string|null;full_name?:string|null;notes?:string|null;timezone?:string|null;supervisor_id?:string|null;joined_on?:string|null;active:boolean;in_reporting:boolean;tickets:number|null;flags:number|null;hours:number|null;rating:number|null;lastUpdate:string|null;periodFrom?:string|null};
 type RankEvent={previous_rank:string|null;new_rank:string;changed_at:string};
@@ -13,18 +14,13 @@ const sum=(xs:(number|null)[])=>{const v=xs.filter((x):x is number=>x!==null);re
 const when=(date:string)=>date?new Date(date).toLocaleDateString('ar-EG',{year:'numeric',month:'short',day:'numeric'}):'—';
 const coverage=(r:Reading)=>r.from_date===r.to_date?r.to_date:r.from_date+' — '+r.to_date;
 
-export default function ExecutiveProfile({member,readings,admins=[],review,mark,onClose,onEdit,onAddReading}:{member:Member;readings:Reading[];admins?:Admin[];review:boolean;mark:ReactNode;onClose:()=>void;onEdit:()=>void;onAddReading?:()=>void}){
+export default function ExecutiveProfile({member,readings,admins=[],review,mark,onClose,onEdit,onAddReading,light=false}:{member:Member;readings:Reading[];admins?:Admin[];review:boolean;mark:ReactNode;onClose:()=>void;onEdit:()=>void;onAddReading?:()=>void;light?:boolean}){
  const [tab,setTab]=useState<Tab>('performance');
  const [page,setPage]=useState(20);
  const [rankEvents,setRankEvents]=useState<RankEvent[]>([]);
  const [shiftEvents,setShiftEvents]=useState<ShiftEvent[]>([]);
  const [loading,setLoading]=useState(false);
  const [error,setError]=useState('');
- useEffect(()=>{
-  const handle=(event:KeyboardEvent)=>{if(event.key==='Escape')onClose();};
-  window.addEventListener('keydown',handle);
-  return()=>window.removeEventListener('keydown',handle);
- },[onClose]);
  useEffect(()=>{
   if(review){setRankEvents([]);setShiftEvents([]);return;}
   let mounted=true;setLoading(true);setError('');
@@ -44,7 +40,7 @@ export default function ExecutiveProfile({member,readings,admins=[],review,mark,
  const max=Math.max(1,...topChart.map(r=>r.tickets_delta??0));
  const supervisor=admins.find(a=>a.id===member.supervisor_id)?.name||'غير محدد';
  const lastRecord=memberReadings[0];
- return <div className="v9-profile-overlay" onMouseDown={e=>{if(e.target===e.currentTarget)onClose();}}>
+ return <ModalPortal light={light} onEscape={onClose}><div className="v9-profile-overlay" onMouseDown={e=>{if(e.target===e.currentTarget)onClose();}}>
   <section className="v9-profile-modal" role="dialog" aria-modal="true" aria-label={'الملف الإداري '+member.name}>
    <div className="v9-profile-topbar"><span>CHICO / ADMIN PROFILE</span><button type="button" onClick={onClose} aria-label="إغلاق الملف"><X size={21}/></button></div>
    <header className="v9-profile-header">
@@ -71,11 +67,11 @@ export default function ExecutiveProfile({member,readings,admins=[],review,mark,
        <span>{n(r.tickets_delta)}</span><div className="v9-performance-track"><div style={{height:r.tickets_delta===null?3:Math.max(3,Math.round((r.tickets_delta/max)*100))+'%'}}/></div>
        <small>{r.to_date.slice(5)}</small>
       </div>)}</div>:<div className="v9-empty"><History size={26}/><b>لسه مفيش أداء محفوظ</b><span>أول ما تدخل قراءة، هتظهر هنا باليوم أو الفترة اللي غطتها.</span></div>}
-      <p className="v9-subtle-note">كل عمود يمثل قراءة مسجلة لفترة محددة. لو تقرير بيغطي 3 أيام مش بنقسم مجموعه على الأيام الثلاثة.</p>
+      {topChart.length>0&&<p className="v9-subtle-note">كل عمود يمثل قراءة مسجلة لفترة محددة. لو تقرير بيغطي 3 أيام مش بنقسم مجموعه على الأيام الثلاثة.</p>}
      </section>
-     <section className="v9-profile-section"><h3>آخر تقرير</h3>
+     {lastRecord&&<section className="v9-profile-section"><h3>آخر تقرير</h3>
       {lastRecord?<div className="v9-last-report"><div><small>الفترة المغطاة</small><b>{coverage(lastRecord)}</b></div><div><small>تاريخ إضافة التقرير</small><b>{lastRecord.report_entered_on}</b></div><div><small>الحفظ الفعلي بالنظام</small><b>{when(lastRecord.created_at)}</b></div></div>:<p className="v9-subtle-note">لم يتم تسجيل تقرير بعد.</p>}
-     </section>
+     </section>}
     </>}
     {tab==='readings'&&<section className="v9-profile-section"><div className="v9-profile-section-heading"><h3>كل الأيام والفترات المحفوظة</h3><small>مرتبة من الأحدث للأقدم</small></div>
      {memberReadings.slice(0,page).map(r=><div className="v9-profile-reading" key={r.id}>
@@ -99,5 +95,5 @@ export default function ExecutiveProfile({member,readings,admins=[],review,mark,
     </div>}
    </div>
   </section>
- </div>;
+ </div></ModalPortal>;
 }

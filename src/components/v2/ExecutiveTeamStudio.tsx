@@ -10,6 +10,7 @@ import {
 import type {Admin,Rank} from '@/lib/types';
 import {RANKS} from '@/lib/types';
 import {CommandIcon,RankInsignia,RankLabel,rankToken} from './ChicoVisualLanguage';
+import ModalPortal from './ModalPortal';
 import {applyLocalRosterChange,LOCAL_ROSTER_HISTORY_KEY,type LocalRosterEvent,type LocalRosterAction} from '@/lib/localRoster';
 
 export type DirectoryRow={
@@ -20,7 +21,7 @@ export type DirectoryRow={
 type AdminExtra=Admin&{full_name?:string|null;notes?:string|null;timezone?:string|null;supervisor_id?:string|null};
 type Props={
  admins:Admin[];rows:DirectoryRow[];review:boolean;onRefresh:()=>Promise<void>;
- onPreviewChange:(admins:Admin[])=>void;onOpen:(row:DirectoryRow)=>void;editTarget?:string|null;onEditConsumed?:()=>void;searchQuery?:string;
+ onPreviewChange:(admins:Admin[])=>void;onOpen:(row:DirectoryRow)=>void;editTarget?:string|null;onEditConsumed?:()=>void;searchQuery?:string;light?:boolean;
 };
 type Draft={
  name:string;full_name:string;rank:Rank;admin_level:number;shift_label:string;
@@ -53,7 +54,7 @@ function Stat({title,value,icon:Icon,tone}:{title:string;value:number;icon:typeo
  return <div className={'v7-directory-stat '+(tone||'')}><CommandIcon name={glyph}/><span>{title}</span><b>{format(value)}</b></div>;
 }
 
-export default function ExecutiveTeamStudio({admins,rows,review,onRefresh,onPreviewChange,onOpen,editTarget,onEditConsumed,searchQuery=''}:Props){
+export default function ExecutiveTeamStudio({admins,rows,review,onRefresh,onPreviewChange,onOpen,editTarget,onEditConsumed,searchQuery='',light=false}:Props){
  const [search,setSearch]=useState('');
  useEffect(()=>{setSearch(searchQuery);setPage(1);},[searchQuery]);
  const [rank,setRank]=useState<'all'|Rank>('all');
@@ -211,7 +212,7 @@ export default function ExecutiveTeamStudio({admins,rows,review,onRefresh,onPrev
    <div className="v7-table-footer"><label>صفوف لكل صفحة<select value={size} onChange={e=>{setSize(Number(e.target.value));setPage(1);}}><option value={10}>10</option><option value={20}>20</option><option value={50}>50</option></select></label><div className="v7-paginator"><button disabled={selectedPage===1} onClick={()=>setPage(p=>Math.max(1,p-1))} aria-label="الصفحة السابقة"><ChevronRight size={17}/></button><b>{selectedPage} / {pages}</b><button disabled={selectedPage===pages} onClick={()=>setPage(p=>Math.min(pages,p+1))} aria-label="الصفحة التالية"><ChevronLeft size={17}/></button></div></div>
   </section>
   {feedback&&<div className="v7-toast" role="status"><CheckCircle2 size={20}/>{feedback}<button type="button" onClick={()=>setFeedback('')} aria-label="إغلاق"><X size={17}/></button></div>}
-  {showEditor&&<div className="v7-editor-overlay" onMouseDown={e=>{if(e.target===e.currentTarget&&!saving)setShowEditor(false);}}>
+  {showEditor&&<ModalPortal light={light} onEscape={()=>{if(!saving)setShowEditor(false);}}><div className="v7-editor-overlay" onMouseDown={e=>{if(e.target===e.currentTarget&&!saving)setShowEditor(false);}}>
    <aside className="v7-editor-panel" role="dialog" aria-modal="true" aria-label={isEditing?'تعديل الإداري':'إضافة إداري'}>
     <header><span>CHICO / TEAM CONTROL</span><button onClick={()=>setShowEditor(false)} disabled={saving} aria-label="إغلاق"><X size={21}/></button></header>
     <div className="v7-editor-art"><img src="/assets/chico-illustrated-team.avif" alt="" /><div><RoleSeal rank={draft.rank}/><h2>{isEditing?'تعديل بيانات الإداري':'إضافة إداري جديد'}</h2><p>{draft.name||'CHICO GENERAL TEAM'}</p></div></div>
@@ -240,6 +241,6 @@ export default function ExecutiveTeamStudio({admins,rows,review,onRefresh,onPrev
      </div>
     </form>
    </aside>
-  </div>}
+  </div></ModalPortal>}
  </div>;
 }

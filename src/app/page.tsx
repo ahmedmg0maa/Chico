@@ -5,6 +5,7 @@ import '@/components/v2/executive-v7.css';
 import '@/components/v2/executive-v8.css';
 import '@/components/v2/executive-v9.css';
 import '@/components/v2/executive-v10.css';
+import '@/components/v2/executive-v11.css';
 
 export const metadata:Metadata={title:'CHICO GENERAL TEAM | مركز إدارة الفريق',description:'ONE STATE RP · CHICO ME — إدارة الفريق والقراءات والتقارير'};
 export const dynamic='force-dynamic';
