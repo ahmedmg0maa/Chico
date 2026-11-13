@@ -254,6 +254,14 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
      <footer className="x-foot"><span>© CHICO GENERAL TEAM · ONE STATE RP</span><span>{review?'VISUAL REVIEW — NOT LIVE DATA':'PROTECTED ADMINISTRATION PLATFORM'}</span></footer>
     </div>
    </main>
+   <nav className="v8-mobile-dock" aria-label="التنقل السريع على الهاتف">
+    {([{id:'dashboard',name:'القيادة'},{id:'team',name:'الفريق'},{id:'operations',name:'العمليات'},{id:'alerts',name:'التنبيهات'}] as const).map(item=>
+     <button type="button" key={item.id} className={tab===item.id?'active':''} onClick={()=>open(item.id)} aria-current={tab===item.id?'page':undefined}>
+      <CommandIcon name={item.id} compact/><span>{item.name}</span>
+      {item.id==='alerts'&&warnings.length>0&&<i aria-label="توجد تنبيهات"/>}
+     </button>
+    )}
+   </nav>
   </div>
  </div>;
 }

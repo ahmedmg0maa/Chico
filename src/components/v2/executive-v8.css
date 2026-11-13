@@ -390,3 +390,30 @@
  .chico-v2 .v8-command-hero,.chico-v2 .x-kpi.v8-kpi{animation:none!important}
  .chico-v2 .v8-insignia,.chico-v2 .v8-symbol,.chico-v2 .v8-hero-actions button{transition:none!important;transform:none!important}
 }
+
+/* Four useful phone destinations; desktop keeps its complete sidebar. */
+.chico-v2 .v8-mobile-dock{display:none}
+@media(max-width:1050px){
+ .chico-v2 .v8-mobile-dock{position:fixed;z-index:90;bottom:max(12px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;align-items:center;width:min(480px,calc(100% - 24px));padding:7px;border:1px solid var(--v8-line-strong);border-radius:17px;background:rgba(18,22,32,.94);backdrop-filter:blur(20px) saturate(1.25);box-shadow:0 12px 38px rgba(0,0,0,.3)}
+ .chico-v2 .v8-mobile-dock>button{display:grid;place-items:center;gap:1px;min-height:57px;border:1px solid transparent;border-radius:10px;background:transparent;color:#c7c3c7;position:relative;font-size:10px;font-weight:800;padding:5px 0}
+ .chico-v2 .v8-mobile-dock>button .v8-symbol{width:28px;height:28px;min-width:28px;border:0;background:transparent;box-shadow:none;color:#e0bb7e}
+ .chico-v2 .v8-mobile-dock>button .v8-symbol svg{width:23px;height:23px}
+ .chico-v2 .v8-mobile-dock>button.active{border-color:rgba(228,188,129,.4);background:linear-gradient(130deg,rgba(165,105,71,.22),rgba(111,59,65,.19));color:#ffe7c2}
+ .chico-v2 .v8-mobile-dock>button i{position:absolute;top:5px;right:25%;width:6px;height:6px;border-radius:50%;background:#ee6d76}
+ .chico-v2 .x-foot{padding-bottom:96px}
+ .chico-v2 .x-main-content{padding-bottom:82px}
+ .chico-v2.x-light .v8-mobile-dock{background:rgba(255,251,245,.94);box-shadow:0 11px 29px rgba(99,67,50,.18)}
+ .chico-v2.x-light .v8-mobile-dock>button{color:#765f57}
+ .chico-v2.x-light .v8-mobile-dock>button.active{color:#6a3e2f;background:#f1dec8;border-color:#bd935c}
+ .chico-v2.x-light .v8-mobile-dock .v8-symbol{color:#9d682d}
+}
+.chico-v2 .x-op-cardhead{min-height:60px;gap:12px}
+.chico-v2 .x-op-cardhead>svg{width:37px;height:37px;flex:none;padding:8px;border-radius:11px;color:var(--v8-gold);border:1px solid var(--v8-line);background:rgba(217,169,108,.10)}
+.chico-v2 .x-op-cardhead h2{font-size:17px;line-height:1.4}
+.chico-v2 .x-op-card{border-radius:14px;overflow:hidden}
+.chico-v2 .x-op-form label{font-size:13px;font-weight:750}
+.chico-v2 .x-op-form input,.chico-v2 .x-op-form select,.chico-v2 .x-op-form textarea{border-radius:9px;min-height:44px;font-size:13px}
+.chico-v2 .x-op-table{font-size:12px}
+.chico-v2 .x-op-mini-list{gap:8px}
+.chico-v2 .x-op-mini-list>div{padding:12px;border-radius:10px;border:1px solid var(--v8-line)}
+.chico-v2 .x-op-hint{border-radius:10px;font-size:12px;line-height:1.8}
