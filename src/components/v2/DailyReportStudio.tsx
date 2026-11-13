@@ -5,12 +5,12 @@ import {CalendarDays,Download} from 'lucide-react';
 import type {Admin,Reading,State} from '@/lib/types';
 
 type Props={state:State|null;review:boolean};
-type DailyRow={id:string;name:string;rank:string;order:number;tickets:number|null;flags:number|null;rating:number|null;flagsIncomplete:boolean};
+export type LuxuryPosterRow={id:string;name:string;rank:string;order:number;tickets:number|null;flags:number|null;rating:number|null;flagsIncomplete:boolean};
 const cairoToday=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'Africa/Cairo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
 const fmt=(n:number|null,dec=0)=>n===null?'—':n.toLocaleString('en-US',{minimumFractionDigits:dec,maximumFractionDigits:dec});
 const sum=(values:(number|null)[])=>{const present=values.filter((n):n is number=>n!==null);return present.length?present.reduce((a,b)=>a+b,0):null;};
 const eligible=(a:Admin)=>a.active&&a.in_reporting&&['Helper','SN.Helper','Moderator'].includes(a.rank);
-function dailyRow(admin:Admin,readings:Reading[]):DailyRow{
+function dailyRow(admin:Admin,readings:Reading[]):LuxuryPosterRow{
  const own=readings.filter(r=>r.admin_id===admin.id).sort((a,b)=>b.created_at.localeCompare(a.created_at));
  const flagsIncomplete=own.some(r=>r.flags_counter!==null&&r.flags_delta===null);
  return {id:admin.id,name:admin.name,rank:admin.rank,order:admin.sort_order,
@@ -18,19 +18,19 @@ function dailyRow(admin:Admin,readings:Reading[]):DailyRow{
   flags:flagsIncomplete?null:sum(own.map(r=>r.flags_delta)),
   rating:own.find(r=>r.rating!==null)?.rating??null,flagsIncomplete};
 }
-function orderRows(rows:DailyRow[]):DailyRow[]{
+function orderRows(rows:LuxuryPosterRow[]):LuxuryPosterRow[]{
  return [...rows].sort((a,b)=>{
   if((a.tickets===null)!==(b.tickets===null))return a.tickets===null?1:-1;
   if(a.tickets!==null&&b.tickets!==null&&a.tickets!==b.tickets)return b.tickets-a.tickets;
   return a.order-b.order||a.name.localeCompare(b.name,'en');
  });
 }
-function loadArt(path:string):Promise<HTMLImageElement|null>{
+export function loadLuxuryArt(path:string):Promise<HTMLImageElement|null>{
  return new Promise(resolve=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>resolve(null);img.src=path;});
 }
-function drawDailyPoster(
- canvas:HTMLCanvasElement,rows:DailyRow[],date:string,staff:number,readingsCount:number,
- art:(HTMLImageElement|null)[]
+export function renderLuxuryPoster(
+ canvas:HTMLCanvasElement,rows:LuxuryPosterRow[],date:string,staff:number,readingsCount:number,
+ art:(HTMLImageElement|null)[],title='إحصائيات يومية'
 ){
  const helpers=orderRows(rows.filter(r=>r.rank==='Helper'||r.rank==='SN.Helper'));
  const mods=orderRows(rows.filter(r=>r.rank==='Moderator'));
@@ -113,7 +113,7 @@ function drawDailyPoster(
  txt('G E N E R A L   T E A M',650,209,24,gold);
  // Daily heading, not a screenshot with fixed weekly numbers.
  panel(241,265,818,95,15);
- txt('إحصائيات يومية',650,311,60,gold);
+ txt(title,650,311,60,gold);
  panel(418,360,464,43,10);
  txt('CHICO   ✦   '+date+'   ✦',650,382,23,pale);
  // Dynamically calculated KPI row.
@@ -136,7 +136,7 @@ function drawDailyPoster(
   else txt(m.kind==='rating'?'★':'♟',x+70,y+77,59,gold);
   glow(x+10,y+10,38);
  });
- const drawTable=(title:string,arr:DailyRow[],x:number,w:number)=>{
+ const drawTable=(title:string,arr:LuxuryPosterRow[],x:number,w:number)=>{
   panel(x,tableY,w,tableH,17);
   const hy=tableY+17;
   panel(x+12,hy,w-24,60,9,false);txt(title,x+w/2,hy+30,28,gold,'center',w-42);
@@ -172,7 +172,7 @@ function drawDailyPoster(
  drawTable('HELPERS + SN.HELPERS',helpers,32,605);
  drawTable('MODERATORS',mods,663,605);
  // Two separate ticket-only podiums, including the combined senior/helper category.
- const podium=(title:string,rs:DailyRow[],x:number,w:number)=>{
+ const podium=(title:string,rs:LuxuryPosterRow[],x:number,w:number)=>{
   panel(x,topY,w,278,14);
   panel(x+15,topY+14,w-30,52,8,false);
   txt(title,x+w/2,topY+40,27,gold,'center',w-45);
@@ -218,9 +218,9 @@ export default function DailyReportStudio({state,review}:Props){
  useEffect(()=>{
   let cancelled=false;
   const paths=['/assets/chico-approved-onestate.avif','/assets/chico-approved-wolf.avif'];
-  (async()=>{const art=await Promise.all(paths.map(loadArt));await document.fonts?.ready;
-   if(!cancelled&&canvas.current)drawDailyPoster(canvas.current,rows,date,staff,readings.length,art);
-  })().catch(()=>{if(!cancelled&&canvas.current)drawDailyPoster(canvas.current,rows,date,staff,readings.length,[null,null]);});
+  (async()=>{const art=await Promise.all(paths.map(loadLuxuryArt));await document.fonts?.ready;
+   if(!cancelled&&canvas.current)renderLuxuryPoster(canvas.current,rows,date,staff,readings.length,art);
+  })().catch(()=>{if(!cancelled&&canvas.current)renderLuxuryPoster(canvas.current,rows,date,staff,readings.length,[null,null]);});
   return ()=>{cancelled=true;};
  },[rows,date,staff,readings.length]);
  const download=()=>{
