@@ -17,7 +17,7 @@ import ExecutiveProfile from './ExecutiveProfile';
 
 export type Tab='dashboard'|'team'|'operations'|'updates'|'excel'|'server'|'reports'|'weeks'|'alerts'|'settings';
 type Auth='checking'|'out'|'in';
-type Row={id:string;name:string;rank:Rank;active:boolean;tickets:number|null;flags:number|null;rating:number|null;hours:number|null;lastUpdate:string|null;in_reporting:boolean;admin_level?:number|null;shift_label?:string|null;flagsIncomplete?:boolean;periodFrom?:string|null};
+type Row={id:string;name:string;rank:Rank;active:boolean;tickets:number|null;flags:number|null;rating:number|null;hours:number|null;lastUpdate:string|null;in_reporting:boolean;admin_level?:number|null;shift_label?:string|null;full_name?:string|null;notes?:string|null;timezone?:string|null;supervisor_id?:string|null;joined_on?:string|null;flagsIncomplete?:boolean;periodFrom?:string|null};
 const links:{id:Tab;label:string;en:string;icon:typeof Home}[]=[
   {id:'dashboard',label:'مركز القيادة',en:'Command Center',icon:LayoutDashboard},
   {id:'team',label:'إدارة الفريق',en:'Team Management',icon:Users},
@@ -42,7 +42,7 @@ function latestRows(state:State|null):Row[]{
  return state.admins.map((a:Admin)=>{
   const arr=state.readings.filter((r:Reading)=>r.admin_id===a.id&&r.week_start===state.summary.week_start).sort((x,y)=>y.to_date.localeCompare(x.to_date));
   const add=(f:(r:Reading)=>number|null)=>{const vals=arr.map(f).filter((n):n is number=>n!==null);return vals.length?vals.reduce((x,y)=>x+y,0):null;};
-  return {id:a.id,name:a.name,rank:a.rank,active:a.active,in_reporting:a.in_reporting,admin_level:a.admin_level,shift_label:a.shift_label,
+  return {id:a.id,name:a.name,rank:a.rank,active:a.active,in_reporting:a.in_reporting,admin_level:a.admin_level,shift_label:a.shift_label,full_name:a.full_name,notes:a.notes,timezone:a.timezone,supervisor_id:a.supervisor_id,joined_on:a.joined_on,
    tickets:add(r=>r.tickets_delta),flags:arr.some(r=>r.flags_counter!==null&&r.flags_delta===null)?null:add(r=>r.flags_delta),flagsIncomplete:arr.some(r=>r.flags_counter!==null&&r.flags_delta===null),periodFrom:arr[0]?.from_date??null,
    hours:add(r=>r.hours),rating:arr.find(r=>r.rating!==null)?.rating??null,lastUpdate:arr[0]?.to_date??null};
  });
@@ -236,7 +236,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
        <section className="v7-team-hero"><img src="/assets/chico-illustrated-team.avif" alt=""/><div><small>CHICO / EXECUTIVE TEAM MANAGEMENT</small><h1>إدارة الفريق والإداريين</h1><p>تحكم كامل في بيانات الفريق، رتب الإداريين، المناوبات، وسجلاتهم</p></div></section>
        <ExecutiveTeamStudio admins={review?reviewAdmins:state?.admins||[]} rows={rows} review={review} onRefresh={refresh}
         onPreviewChange={updateReviewAdmins} onOpen={setFocused} editTarget={editTarget} onEditConsumed={()=>setEditTarget(null)}/>
-       {focused&&<ExecutiveProfile member={focused} readings={review?[]:state?.readings||[]} review={review} mark={<RankMark rank={focused.rank}/>}
+       {focused&&<ExecutiveProfile member={focused} readings={review?[]:state?.readings||[]} admins={review?reviewAdmins:state?.admins||[]} review={review} mark={<RankMark rank={focused.rank}/>}
         onClose={()=>setFocused(null)} onEdit={()=>{setEditTarget(focused.id);setFocused(null);}}/>}
       </>}
       {tab==='operations'&&<ExecutiveOperationsWorkspace state={state} review={review} onRefresh={refresh} onNavigate={open}/>}
