@@ -216,7 +216,15 @@ export default function ExecutiveOperations({tab,state,review,onRefresh}:Props){
    <div className="x-op-form"><label>نوع التقرير<select value={reportType} onChange={e=>setReportType(e.target.value as 'summary'|'watchlist')}><option value="summary">ملخص أداء السيرفر</option><option value="watchlist">متابعة الفريق</option></select></label>
     <button className="x-primary" type="button" onClick={exportReport} disabled={review||!summary||busy}><Download size={17}/>تصدير صورة PNG</button></div>
    <div className="x-op-metrics"><Metric label="Tickets" value={fmt(summary?.tickets)}/><Metric label="Flags" value={fmt(summary?.flags)}/><Metric label="Flag Rate" value={summary?.rate===null||summary?.rate===undefined?'غير متاح':fmt(summary.rate)+'%'}/></div>
-   <p className="x-op-footnote">هذا ملخص قابل للتنزيل، لا تقرير تفصيلي لكل إداري. لا نُخرج تقريرًا رقميًا من المعاينة التجريبية.</p>
+   <div className="v7-report-tools">
+    {review?<p>تنزيل التقارير غير متاح في المعاينة؛ يتطلب الدخول للنظام الفعلي.</p>:<>
+     <a href="/api/export?scope=team&format=xlsx" download><FileSpreadsheet size={18}/> كشف الفريق Excel</a>
+     <a href="/api/export?scope=team&format=csv" download><Download size={18}/> كشف الفريق CSV</a>
+     <a href="/api/export?scope=readings&format=xlsx" download><FileSpreadsheet size={18}/> سجل القراءات Excel</a>
+     <a href="/api/export?scope=team&format=print" target="_blank" rel="noopener noreferrer"><Download size={18}/> طباعة / حفظ PDF</a>
+    </>}
+   </div>
+   <p className="x-op-footnote">ملف PNG ملخص بصري، أما Excel وCSV والطباعة فتحتوي على بيانات الفريق المحفوظة للأسبوع. البيانات غير المسجلة تظل فارغة.</p>
   </section>
  </>;
  if(tab==='weeks')return <>
