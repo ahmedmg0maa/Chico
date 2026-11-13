@@ -31,7 +31,7 @@ export function renderLuxuryPoster(
  const groups=buildReportGroups(rows).map((group,i)=>({...group,x:i===0?45:763}));
  const count=Math.max(16,...groups.map(g=>g.rows.length));
  const W=1500,tableY=632,rowH=50,tableH=count*rowH+240;
- const podiumY=tableY+tableH+37,H=podiumY+350;
+ const podiumY=tableY+tableH+37,H=podiumY+410;
  canvas.width=W;canvas.height=H;
  const ctx=canvas.getContext('2d');if(!ctx)return;
  const g=ctx;
