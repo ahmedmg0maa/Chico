@@ -13,6 +13,22 @@ export type ExcelImportRow={
  hours:number|null;rating:number|null;note:string;skip_reading:boolean;
  time_was_date:boolean;year_inferred:boolean;
 };
+export function normalizedExcelHeader(value:unknown){
+ return String(value??'').trim().toLowerCase().replace(/[_./-]/g,' ').replace(/\s+/g,' ');
+}
+export function findImportColumn(headers:string[],...items:string[]){
+ for(const item of items){const index=headers.findIndex(h=>h===item);if(index>=0)return index;}
+ for(const item of items){const index=headers.findIndex(h=>h.includes(item));if(index>=0)return index;}
+ return -1;
+}
+export function inferLegacyPeriod(headers:string[],year:number){
+ const h=headers.find(x=>x.includes('total week')&&x.includes('from')&&x.includes('to'));
+ const match=h?.match(/from\s+(\d{1,2})\s+(\d{1,2})\s+to\s+(\d{1,2})\s+(\d{1,2})/);
+ if(!match||!Number.isInteger(year)||year<2000||year>2200)return null;
+ const from=year+'-'+match[1].padStart(2,'0')+'-'+match[2].padStart(2,'0');
+ const to=year+'-'+match[3].padStart(2,'0')+'-'+match[4].padStart(2,'0');
+ return validateCoverage(from,to)?{from,to}:null;
+}
 export const validRanks:Rank[]=['Responsible','Administrator','Moderator','SN.Helper','Helper'];
 export function cleanName(name:string){return name.trim().replace(/\s+/g,' ');}
 export function canonicalName(name:string){
