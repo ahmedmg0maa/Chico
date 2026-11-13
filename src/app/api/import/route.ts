@@ -84,6 +84,8 @@ export async function POST(req:NextRequest){
     if(at(ratingCol)!==null&&at(ratingCol)!==''&&rating===null)warnings.push('Row '+i+': Rating must be between 0 and 5');
     if(flags!==null&&baseline===null)notices.push('Row '+i+': Flags baseline missing; the first delta cannot be assumed zero');
     if(rank===null)warnings.push('Row '+i+': Rank required for new administrator');
+    if(validInteger(at(ticketsBaseCol))!==null&&validInteger(at(ticketsBaseCol))!==0)warnings.push('Row '+i+': nonzero Tickets opening balance is not supported safely; split the period or adjust the file');
+    if(rawHours!==null&&rawHours!==''&&rawHours!==undefined&&!dateHours&&number(rawHours,10000)===null)warnings.push('Row '+i+': invalid decimal TIME');
    }
    const mismatch=!!existing&&(sourceRank!==null&&sourceRank!==existing.rank||name!==existing.name||leader&&existing.in_reporting);
    rows.push({row:i,name,admin_id:existing?.id||null,roster_name:existing?.name||null,
@@ -100,7 +102,7 @@ export async function POST(req:NextRequest){
   if(!rows.length)return response({ok:false,error:'EMPTY_XLSX'},400);
   const audit=auditImport(rows);warnings.push(...audit.issues);
   const hash=createHash('sha256').update(buf).digest('hex');
-  const stage=await sql`INSERT INTO chico_next.import_staging(source_hash,payload) VALUES(${hash},${JSON.stringify(rows)}::jsonb) RETURNING id`;
+  const stage=await sql`INSERT INTO chico_next.import_staging(source_hash,payload) VALUES(${hash},${JSON.stringify({rows,warnings:[...new Set(warnings)]})}::jsonb) RETURNING id`;
   await sql`DELETE FROM chico_next.import_staging WHERE created_at < now()-interval '24 hours'`;
   return response({ok:true,preview_id:String(stage[0].id),filename:file.name,sheet:sheet.name,rows,
    imported:audit.imported,leaders:audit.leaders,
