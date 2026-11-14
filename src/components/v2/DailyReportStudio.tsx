@@ -81,6 +81,7 @@ export default function DailyReportStudio({state,review}:Props){
     <p>مفيش بيانات مسجلة للفترة المختارة، لذلك مش هنعرض تقرير مليان شرط أو نتائج وهمية.</p>
     <a href="/v2?tab=excel">افتح استيراد Excel</a>
    </div>}
+  {period.canExport&&<p className="v9-poster-mobile-help">اسحب الصورة يمين وشمال لقراءة الأسماء والأرقام بحجم واضح. زر PNG ينزّل الصورة كاملة بالدقة الأصلية.</p>}
   <p className="v9-poster-note">الصورة تضم الإداريين اللي عندهم قراءات محفوظة في الفترة فقط، بترتيبهم الأصلي من Excel عند توفره. {missingCount>0&&<>هناك {missingCount} من أعضاء التقييم بلا قراءة خلال الفترة؛ ما اتشالوش من قائمة الفريق.</>} General وAdministrator خارج التقييم، وترتيب Top 3 حسب Tickets.</p>
  </section>;
 }
