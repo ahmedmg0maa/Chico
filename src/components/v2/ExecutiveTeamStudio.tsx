@@ -140,7 +140,7 @@ export default function ExecutiveTeamStudio({admins,rows,review,onRefresh,onPrev
     if(!response.ok||body.ok===false)throw new Error(String(body.error||'تعذر حفظ التغييرات'));
     await onRefresh();
    }
-   setFeedback(method==='DELETE'?'تم حذف الإداري وحفظ نسخة احتياطية':'تم حفظ بيانات الإداري بنجاح');
+   setFeedback(review?(method==='DELETE'?'تم حذف الاسم من المعاينة المحلية فقط':'تم تعديل قائمة المعاينة على هذا الجهاز فقط'):(method==='DELETE'?'تم حذف الإداري وحفظ نسخة احتياطية':'تم حفظ بيانات الإداري بنجاح'));
    setShowEditor(false);setConfirmDelete(false);setConfirmName('');setTarget(null);
   }catch(e){setFailure(e instanceof Error?e.message:'تعذر تنفيذ العملية');}
   finally{setSaving(false);}
