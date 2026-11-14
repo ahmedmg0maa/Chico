@@ -215,7 +215,7 @@ export default function ExecutiveTeamStudio({admins,rows,review,onRefresh,onPrev
   {showEditor&&<ModalPortal light={light} onEscape={()=>{if(!saving)setShowEditor(false);}}><div className="v7-editor-overlay" onMouseDown={e=>{if(e.target===e.currentTarget&&!saving)setShowEditor(false);}}>
    <aside className="v7-editor-panel" role="dialog" aria-modal="true" aria-label={isEditing?'تعديل الإداري':'إضافة إداري'}>
     <header><span>CHICO / TEAM CONTROL</span><button onClick={()=>setShowEditor(false)} disabled={saving} aria-label="إغلاق"><X size={21}/></button></header>
-    <div className="v7-editor-art"><img src="/assets/chico-illustrated-team.avif" alt="" /><div><RoleSeal rank={draft.rank}/><h2>{isEditing?'تعديل بيانات الإداري':'إضافة إداري جديد'}</h2><p>{draft.name||'CHICO GENERAL TEAM'}</p></div></div>
+    <div className="v7-editor-art"><img src="/assets/chico-illustrated-team.avif" alt="" /><div><RoleSeal rank={draft.rank}/><h2>{isEditing?'تعديل بيانات الإداري':'إضافة إداري جديد'}</h2><p>{draft.name||'إداري جديد'}</p></div></div>
     <form onSubmit={save} className="v7-editor-form">
      <h3><UserRound size={18}/> المعلومات الأساسية</h3>
      <label>اسم اللعبة <em>*</em><input required maxLength={80} value={draft.name} onChange={e=>setDraft(s=>({...s,name:e.target.value}))} disabled={saving}/></label>
