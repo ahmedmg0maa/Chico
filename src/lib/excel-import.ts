@@ -5,7 +5,7 @@ export type ExcelImportPerson={
  id:string;name:string;rank:Rank;admin_level:number;in_reporting:boolean
 };
 export type ExcelImportRow={
- row:number;name:string;admin_id:string|null;roster_name:string|null;
+ row:number;name:string;admin_id:string|null;roster_name:string|null;source_rank?:Rank|null;
  rank:Rank|null;admin_level:number|null;roster_action:'match'|'create'|'update'|'leader';
  from_date:string|null;to_date:string|null;report_entered_on:string|null;
  tickets_counter:number|null;tickets_baseline:number|null;
@@ -18,7 +18,7 @@ export function normalizedExcelHeader(value:unknown){
 }
 export function findImportColumn(headers:string[],...items:string[]){
  for(const item of items){const index=headers.findIndex(h=>h===item);if(index>=0)return index;}
- for(const item of items){const index=headers.findIndex(h=>h.includes(item));if(index>=0)return index;}
+ for(const item of items){const index=headers.findIndex(h=>typeof h==='string'&&h.includes(item));if(index>=0)return index;}
  return -1;
 }
 export function inferLegacyPeriod(headers:string[],year:number){
@@ -37,7 +37,8 @@ export function canonicalName(name:string){
 export function resolvePerson(name:string,rank:Rank|null,existing:ExcelImportPerson[]){
  const exact=existing.find(p=>p.name.toLowerCase()===cleanName(name).toLowerCase());
  if(exact)return {person:exact,ambiguous:false};
- const matches=existing.filter(p=>canonicalName(p.name)===canonicalName(name)&&(!rank||p.rank===rank));
+ // Source ranks may be stale, so identity matching cannot depend on spreadsheet rank.
+ const matches=existing.filter(p=>canonicalName(p.name)===canonicalName(name));
  return {person:matches.length===1?matches[0]:null,ambiguous:matches.length>1};
 }
 export function strictDate(value:unknown):string|null{
@@ -57,6 +58,26 @@ export function validInteger(value:unknown):number|null{
  if(value===null||value===undefined||String(value).trim()==='')return null;
  const n=Number(value);return Number.isSafeInteger(n)&&n>=0?n:null;
 }
+/**
+ * Excel sometimes stores 1.5 decimal TIME as a date serial.
+ * Only near-1900 date serials can be converted to numeric hours.
+ * Real calendar dates must never be silently treated as hours.
+ */
+export function readDecimalHours(value:unknown):{hours:number|null;converted:boolean;invalid:boolean}{
+ if(Object.prototype.toString.call(value)==='[object Date]'){
+  const date=value as Date;
+  if(Number.isNaN(date.getTime()))return {hours:null,converted:false,invalid:true};
+  const serial=(date.getTime()-Date.UTC(1899,11,30))/86400000;
+  if(serial>=0&&serial<=500&&date.getUTCFullYear()<=1901){
+   return {hours:Math.round(serial*100)/100,converted:true,invalid:false};
+  }
+  return {hours:null,converted:false,invalid:true};
+ }
+ if(value===null||value===undefined||String(value).trim()==='')return {hours:null,converted:false,invalid:false};
+ const h=validNumber(value,500);
+ return {hours:h,converted:false,invalid:h===null};
+}
+export function isMissingCell(value:unknown){return value===null||value===undefined||String(value).trim()==='';}
 export function validNumber(value:unknown,max:number):number|null{
  if(value===null||value===undefined||String(value).trim()==='')return null;
  const n=Number(value);return Number.isFinite(n)&&n>=0&&n<=max?n:null;
@@ -77,7 +98,7 @@ export function auditImport(rows:ExcelImportRow[]){
   if(!r.from_date&&!r.to_date&&r.skip_reading){leaders++;continue;}
   if(r.skip_reading){leaders++;continue;}
   if(!validateCoverage(r.from_date,r.to_date))issues.push('Row '+r.row+': invalid period or week crossing');
-  if(r.time_was_date)issues.push('Row '+r.row+': TIME was formatted as date, correct the source cell');
+  if(r.time_was_date&&r.hours===null)issues.push('Row '+r.row+': TIME date value could not be safely converted');
   if(r.rank===null&&r.admin_id===null)issues.push('Row '+r.row+': new administrator requires a valid Rank');
   if(r.tickets_counter===null&&r.flags_counter===null&&r.hours===null&&r.rating===null)issues.push('Row '+r.row+': no statistics');
   if(r.tickets_counter!==null&&r.tickets_baseline!==null&&r.tickets_counter<r.tickets_baseline)issues.push('Row '+r.row+': Tickets lower than opening balance');

@@ -15,6 +15,7 @@ import ExecutiveOperationsWorkspace from './ExecutiveOperationsWorkspace';
 import ExecutiveWeeklyChart from './ExecutiveWeeklyChart';
 import ExecutiveProfile from './ExecutiveProfile';
 import {CommandIcon,RankInsignia,RankLabel} from './ChicoVisualLanguage';
+import {isEvaluatedRank,isEvaluatedAdmin,eligibleReadings} from '@/lib/rules';
 
 export type Tab='dashboard'|'team'|'operations'|'updates'|'excel'|'server'|'daily'|'reports'|'weeks'|'alerts'|'settings';
 type Auth='checking'|'out'|'in';
@@ -114,11 +115,12 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
  const visible=useMemo(()=>rows.filter(r=>(rank==='all'||r.rank===rank)&&(r.name.toLowerCase().includes(filter.toLowerCase()))),[rows,rank,filter]);
  const summary=state?.summary;
  const active=rows.filter(r=>r.active).length;
- const covered=rows.filter(r=>r.active&&r.lastUpdate!==null).length;
- const totals={tickets:review?null:summary?.tickets??null,flags:review?null:summary?.flags??null,rate:review?null:summary?.rate??null,rating:review?null:summary?.rating??null,members:active,coverage:!review&&state?.readings.some(r=>r.week_start===state?.summary.week_start)&&active?Math.round(100*covered/active):null};
- const top=rows.filter(r=>(r.rank==='Helper'||r.rank==='SN.Helper')&&r.tickets!==null).sort((a,b)=>(b.tickets??0)-(a.tickets??0)).slice(0,3);
+ const evaluated=rows.filter(r=>isEvaluatedAdmin(r));
+ const covered=evaluated.filter(r=>r.lastUpdate!==null).length;
+ const totals={tickets:review?null:summary?.tickets??null,flags:review?null:summary?.flags??null,rate:review?null:summary?.rate??null,rating:review?null:summary?.rating??null,members:active,coverage:!review&&state?.readings.some(r=>r.week_start===state?.summary.week_start)&&evaluated.length?Math.round(100*covered/evaluated.length):null};
+ const top=rows.filter(r=>isEvaluatedAdmin(r)&&(r.rank==='Helper'||r.rank==='SN.Helper')&&r.tickets!==null).sort((a,b)=>(b.tickets??0)-(a.tickets??0)).slice(0,3);
  const hasRegisteredWeek=!!state?.readings.some(r=>r.week_start===summary?.week_start);
- const warnings=rows.filter(r=>r.flagsIncomplete||(r.flags!==null&&r.flags>7)||(r.rating!==null&&r.rating<4.8)||(!r.lastUpdate&&r.active&&hasRegisteredWeek));
+ const warnings=rows.filter(r=>isEvaluatedAdmin(r)&&(r.flagsIncomplete||(r.flags!==null&&r.flags>7)||(r.rating!==null&&r.rating<4.8)||(!r.lastUpdate&&r.active&&hasRegisteredWeek)));
  const timeLabel=review?'القائمة المعتمدة':summary?.week_start||'الأسبوع الحالي';
  async function refresh(){
   if(review)return;
@@ -232,7 +234,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
        </section>
       </div>
       <div className="v7-bottom-dashboard">
-        <ExecutiveWeeklyChart readings={review?[]:state?.readings||[]}/>
+        <ExecutiveWeeklyChart readings={review?[]:state?eligibleReadings(state.readings,state.admins):[]}/>
        <section className="x-panel x-quick"><CardTitle icon={Workflow} title="إجراءات سريعة" en="QUICK ACTIONS"/>
         <div className="x-action-grid">{[
           {label:'تسجيل تحديث',icon:Plus,id:'updates' as Tab},{label:'مساحة العمليات',icon:Workflow,id:'operations' as Tab},

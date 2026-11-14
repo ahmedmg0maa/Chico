@@ -2,7 +2,7 @@
 
 import {useEffect,useMemo,useRef,useState} from 'react';
 import {CalendarDays,Download,Ticket} from 'lucide-react';
-import {weekStart,summarizeReadings} from '@/lib/rules';
+import {weekStart,summarizeReadings,isEvaluatedAdmin,eligibleReadings} from '@/lib/rules';
 import type {Admin,Reading,State} from '@/lib/types';
 import {renderLuxuryPoster,loadLuxuryArt,type LuxuryPosterRow} from './DailyReportStudio';
 
@@ -42,9 +42,9 @@ export default function DiscordReportStudio({state,review}:Props){
  const valid=Boolean(start&&end)&&start<=end&&weekStart(start)===weekStart(end);
  const matching=useMemo(()=>state?.readings.filter(r=>valid&&contained(r,start,end))||[],[state,start,end,valid]);
  const partial=useMemo(()=>state?.readings.filter(r=>valid&&r.from_date<=end&&r.to_date>=start&&!contained(r,start,end)).length||0,[state,start,end,valid]);
- const rows=useMemo(()=>state?.admins.filter(a=>a.active&&a.in_reporting&&['Helper','SN.Helper','Moderator'].includes(a.rank)).map(a=>reportRow(a,matching))||[],[state,matching]);
+ const rows=useMemo(()=>state?.admins.filter(isEvaluatedAdmin).map(a=>reportRow(a,matching))||[],[state,matching]);
  const staff=state?.admins.filter(a=>a.active).length||0;
- const totals=useMemo(()=>{const allowed=new Set(state?.admins.filter(a=>a.rank!=='Responsible'&&a.in_reporting).map(a=>a.id)||[]);const summary=summarizeReadings(matching.filter(r=>allowed.has(r.admin_id)));return {tickets:summary.tickets,flags:summary.flags,rating:summary.rating};},[state,matching]);
+ const totals=useMemo(()=>{const summary=summarizeReadings(eligibleReadings(matching,state?.admins||[]));return {tickets:summary.tickets,flags:summary.flags,rating:summary.rating};},[state,matching]);
  const title=mode==='day'?'إحصائيات يومية':mode==='week'?'إحصائيات أسبوعية':'إحصائيات الفترة المحددة';
  const dateLabel=start===end?start:start+'  —  '+end;
  const setPeriod=(next:Mode)=>{

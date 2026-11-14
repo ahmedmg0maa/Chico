@@ -21,8 +21,10 @@ const groups=build([
 assert.equal(groups.length,2);
 assert.equal(groups[0].topTitle,'TOP 3 — HELPERS');
 assert.equal(groups[1].topTitle,'TOP 3 — MODERATORS');
-assert.deepEqual(Array.from(groups[0].rows.map(r=>r.name)),['SN.Gaby','Rare','Kararr','Bieso']);
+assert.deepEqual(Array.from(groups[0].rows.map(r=>r.name)),['Kararr','SN.Gaby','Rare','Bieso']);
+assert.deepEqual(Array.from(groups[0].topRows.map(r=>r.name)),['SN.Gaby','Rare','Kararr']);
 assert.deepEqual(Array.from(groups[1].rows.map(r=>r.name)),['M.Alhassan']);
+assert.deepEqual(Array.from(groups[1].topRows.map(r=>r.name)),['M.Alhassan']);
 assert(!groups.flatMap(g=>g.rows).some(r=>['A. Marwan','General'].includes(r.name)));
 const render=fs.readFileSync(path.resolve(__dirname,'../src/components/v2/DailyReportStudio.tsx'),'utf8');
 assert(!render.includes("◆ "), 'No diamond prefix beside SN.Helpers');

@@ -13,7 +13,7 @@ const num=(v:number|null,digits=0)=>v===null?'—':v.toLocaleString('en-US',{max
 const parse=(s:string)=>s===''?null:Number(s);
 const dateText=(r:Reading)=>r.from_date===r.to_date?r.to_date:r.from_date+' ← '+r.to_date;
 const errorName=(message:string)=>{
- const known:Record<string,string>={WEEK_CLOSED:'الأسبوع ده مقفول. افتحه من قسم الأسابيع قبل تعديل قراءاته.',OVERLAPPING_PERIOD:'في قراءة محفوظة بتغطي جزءًا من نفس الفترة لهذا الإداري. عدّل القراءة القديمة بدل تكرارها.',DUPLICATE_READING:'تقرير هذا اليوم مسجّل بالفعل.',CROSS_WEEK_NOT_ALLOWED:'الفترة بتعدي يوم الإثنين. سجّل كل أسبوع لوحده لأن Tickets بيتصفّر.',TICKETS_COUNTER_DECREASE_WITHIN_WEEK:'عداد Tickets أقل من آخر قراءة في نفس الأسبوع. راجع التاريخ والقيمة.',FLAGS_COUNTER_DECREASE:'رصيد Flags أقل من آخر قراءة. راجع الرصيد والتاريخ.'};
+ const known:Record<string,string>={WEEK_CLOSED:'الأسبوع ده مقفول. افتحه من قسم الأسابيع قبل تعديل قراءاته.',OVERLAPPING_PERIOD:'في قراءة محفوظة بتغطي جزءًا من نفس الفترة لهذا الإداري. عدّل القراءة القديمة بدل تكرارها.',DUPLICATE_READING:'تقرير هذا اليوم مسجّل بالفعل.',READING_NOT_ALLOWED_FOR_RANK:'الإداري ده خارج تسجيل الإحصائيات. راجع رتبته وحالة التقارير.',FIRST_TICKETS_READING_MUST_COVER_WEEK_START:'أول رصيد Tickets هذا الأسبوع يغطي الفترة من يوم الإثنين. اختار الاثنين كبداية الفترة بدل نسبته ليوم واحد.',CROSS_WEEK_NOT_ALLOWED:'الفترة بتعدي يوم الإثنين. سجّل كل أسبوع لوحده لأن Tickets بيتصفّر.',TICKETS_COUNTER_DECREASE_WITHIN_WEEK:'عداد Tickets أقل من آخر قراءة في نفس الأسبوع. راجع التاريخ والقيمة.',FLAGS_COUNTER_DECREASE:'رصيد Flags أقل من آخر قراءة. راجع الرصيد والتاريخ.'};
  return known[message]||message;
 };
 export default function ReadingEntryStudio({state,review,onRefresh,initialAdminId}:Props){
@@ -55,6 +55,8 @@ export default function ReadingEntryStudio({state,review,onRefresh,initialAdminI
   if(!draft.from_date||!draft.to_date||!draft.report_entered_on)return setError('حدد التاريخ');
   if(draft.from_date>draft.to_date)return setError('تاريخ البداية لازم يكون قبل النهاية');
   if(weekStart(draft.from_date)!==weekStart(draft.to_date))return setError('الفترة بتعدّي يوم الإثنين؛ احفظ كل أسبوع لوحده بسبب تصفير Tickets.');
+  if(draft.tickets_counter!==null&&draft.tickets_counter>0&&draft.from_date!==weekStart(draft.from_date)&&!ordered.some(r=>r.admin_id===draft.admin_id&&r.id!==editing&&r.week_start===weekStart(draft.from_date)&&r.tickets_counter!==null&&r.to_date<draft.from_date))
+   return setError('أول رصيد Tickets في الأسبوع يغطي الأيام من الاثنين، مش اليوم المختار فقط. ابدأ الفترة من الاثنين.');
   if([draft.tickets_counter,draft.flags_counter,draft.hours,draft.rating].every(x=>x===null))return setError('اكتب قيمة واحدة على الأقل أو ألغِ الإدخال');
   setBusy(true);
   void (async()=>{
@@ -80,7 +82,7 @@ export default function ReadingEntryStudio({state,review,onRefresh,initialAdminI
     <label className="v9-wide">الإداري
      <select required disabled={review||busy} value={draft.admin_id} onChange={e=>update('admin_id',e.target.value)}>
       <option value="">اختار إداريًا من الفريق</option>
-      {state?.admins.filter(a=>a.active).map(a=><option key={a.id} value={a.id}>{a.name} — {a.rank}</option>)}
+      {state?.admins.filter(a=>a.active&&a.in_reporting&&a.rank!=='Responsible').map(a=><option key={a.id} value={a.id}>{a.name} — {a.rank}</option>)}
      </select>
     </label>
     {currentMember&&<div className="v9-last-reading"><History size={19}/><div><b>{currentMember.name}</b><span>{previous?'آخر قراءة قبل الفترة: '+dateText(previous)+' • Tickets '+num(previous.tickets_counter)+' • Flags '+num(previous.flags_counter):'لا توجد قراءة سابقة قبل الفترة. أول عداد Tickets في الأسبوع يُحسب كبداية الأسبوع، وFlags يحتاج رصيدًا سابقًا معروفًا.'}</span></div></div>}

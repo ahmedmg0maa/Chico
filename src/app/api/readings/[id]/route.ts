@@ -9,12 +9,16 @@ export async function PATCH(req:NextRequest,ctx:P){
   const denied=await requireOwner(req);if(denied)return denied;
   try{const {id}=await ctx.params;const data=readingSchema.parse(await req.json());const week=assertOneWeek(data.from_date,data.to_date);const sql=db();
     const old=await sql`SELECT admin_id,week_start::text AS week_start FROM chico_next.readings WHERE id=${id}`;if(!old.length)return response({ok:false,error:'NOT_FOUND'},404);
+    const member=await sql`SELECT rank,active,in_reporting FROM chico_next.admins WHERE id=${data.admin_id}`;
+    if(!member.length||member[0].rank==='Responsible'||!member[0].active||!member[0].in_reporting)return response({ok:false,error:'READING_NOT_ALLOWED_FOR_RANK'},422);
     const w=await sql`SELECT week_start FROM chico_next.weekly_status WHERE status='closed' AND week_start IN (${String(old[0].week_start)},${week})`;
     if(w.length)return response({ok:false,error:'WEEK_CLOSED'},409);
     const overlaps=await sql`SELECT id FROM chico_next.readings WHERE admin_id=${data.admin_id} AND id<>${id} AND from_date<=${data.to_date} AND to_date>=${data.from_date} LIMIT 1`;
     if(overlaps.length)return response({ok:false,error:'OVERLAPPING_PERIOD'},409);
     await snapshot(sql,`Before updating reading ${id}`);
     await sql.begin(async tx=>{
+      const locked=await tx`SELECT rank,active,in_reporting FROM chico_next.admins WHERE id=${data.admin_id} FOR SHARE`;
+      if(!locked.length||locked[0].rank==='Responsible'||!locked[0].active||!locked[0].in_reporting)throw new Error('READING_NOT_ALLOWED_FOR_RANK');
       await tx`UPDATE chico_next.readings SET admin_id=${data.admin_id},from_date=${data.from_date},to_date=${data.to_date},week_start=${week},tickets_counter=${data.tickets_counter},flags_counter=${data.flags_counter},flags_baseline=${data.flags_baseline},hours=${data.hours},rating=${data.rating},note=${data.note},report_entered_on=COALESCE(${data.report_entered_on??null}::date,report_entered_on),updated_at=now() WHERE id=${id}`;
       await recompute(data.admin_id,tx as unknown as ReturnType<typeof db>);
       if(String(old[0].admin_id)!==data.admin_id)await recompute(String(old[0].admin_id),tx as unknown as ReturnType<typeof db>);

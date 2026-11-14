@@ -1,6 +1,6 @@
 import { db } from './db';
 import {dateOnly,timestamp} from './date-serialization';
-import { weekStart, isEligibleForTop, summarizeReadings } from './rules';
+import { weekStart, isEligibleForTop, isEvaluatedAdmin, eligibleReadings, summarizeReadings } from './rules';
 import type { Admin, Reading, State, Summary, Week } from './types';
 
 function mapAdmin(row:Record<string,unknown>):Admin{
@@ -21,26 +21,27 @@ export async function loadState():Promise<State>{
   // Business date: Egypt's date, not UTC calendar day.
   const cairoDate=new Intl.DateTimeFormat('en-CA',{timeZone:'Africa/Cairo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
   const monday=weekStart(cairoDate);
-  const current=readings.filter(r=>r.week_start===monday);
+  const current=eligibleReadings(readings.filter(r=>r.week_start===monday),admins);
   const metrics=summarizeReadings(current);
   const sums=new Map<string,number>();
   current.forEach(r=>{if(r.tickets_delta!==null)sums.set(r.admin_id,(sums.get(r.admin_id)||0)+r.tickets_delta);});
-  const top=admins.filter(a=>isEligibleForTop(a.rank)&&sums.has(a.id)).sort((a,b)=>(sums.get(b.id)||0)-(sums.get(a.id)||0)).slice(0,3).map(a=>({id:a.id,name:a.name,rank:a.rank,tickets:sums.get(a.id)||0}));
+  const top=admins.filter(a=>isEvaluatedAdmin(a)&&isEligibleForTop(a.rank)&&sums.has(a.id)).sort((a,b)=>(sums.get(b.id)||0)-(sums.get(a.id)||0)).slice(0,3).map(a=>({id:a.id,name:a.name,rank:a.rank,tickets:sums.get(a.id)||0}));
   const alerts:Summary['alerts']=[];
   for(const admin of admins){
-    if(admin.rank==='Responsible'||admin.rank==='Administrator'||!admin.in_reporting)continue;
+    if(!isEvaluatedAdmin(admin))continue;
     const mine=current.filter(r=>r.admin_id===admin.id).sort((a,b)=>b.to_date.localeCompare(a.to_date));
     const latest=mine[0];
     const flags=mine.filter(r=>r.flags_delta!==null);
     if(flags.length&&flags.length===mine.filter(r=>r.flags_counter!==null).length){
       const weekFlags=flags.reduce((n,r)=>n+(r.flags_delta||0),0);
-      if(weekFlags>10)alerts.push({id:admin.id,name:admin.name,message:`${weekFlags} weekly Flags`,kind:'danger'});
+      if(weekFlags>7)alerts.push({id:admin.id,name:admin.name,message:`${weekFlags} weekly Flags`,kind:'danger'});
+      else if(weekFlags>5)alerts.push({id:admin.id,name:admin.name,message:`${weekFlags} weekly Flags`,kind:'warning'});
     }
     const lastRating=mine.find(r=>r.rating!==null);
     if(lastRating?.rating!==null&&lastRating?.rating!==undefined&&lastRating.rating<4.8){
       alerts.push({id:admin.id,name:admin.name,message:`Rating ${lastRating.rating.toFixed(2)}`,kind:'warning'});
     }
   }
-  const summary:Summary={week_start:monday,...metrics,members:admins.filter(a=>a.active).length,reported:new Set(current.filter(r=>admins.some(a=>a.id===r.admin_id&&a.in_reporting&&a.rank!=='Responsible')).map(r=>r.admin_id)).size,missing:admins.filter(a=>a.active&&a.in_reporting&&a.rank!=='Responsible'&&!current.some(r=>r.admin_id===a.id)).length,top,alerts};
+  const summary:Summary={week_start:monday,...metrics,members:admins.filter(a=>a.active).length,reported:new Set(current.map(r=>r.admin_id)).size,missing:admins.filter(a=>isEvaluatedAdmin(a)&&!current.some(r=>r.admin_id===a.id)).length,top,alerts};
   return {admins,readings,weeks,summary,serverTime:new Date().toISOString()};
 }

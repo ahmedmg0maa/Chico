@@ -10,6 +10,8 @@ const rules=load('rules'),x=load('excel-import',{'./rules':rules});
 const person=(id,name,rank)=>({id,name,rank,admin_level:rank==='Responsible'?3:rank==='Moderator'?2:1,in_reporting:rank!=='Responsible'});
 const admins=[person('1','Gaby','SN.Helper'),person('2','Bnammoo','Moderator'),person('3','General','Responsible')];
 assert.equal(x.resolvePerson('SN.Gaby','SN.Helper',admins).person?.id,'1');
+assert.equal(x.resolvePerson('SN.Gaby','Helper',admins).person?.id,'1'); // stale file rank must not produce duplicate
+assert.equal(x.resolvePerson('Gaby','Helper',admins).person?.id,'1');
 assert.equal(x.resolvePerson('M.Bnammoo','Moderator',admins).person?.id,'2');
 assert.equal(x.resolvePerson('General','Responsible',admins).person?.id,'3');
 assert.equal(x.strictDate('2026-11-12'),'2026-11-12');
@@ -19,6 +21,12 @@ assert.equal(x.validateCoverage('2026-11-09','2026-11-12'),true);
 assert.equal(x.validateCoverage('2026-11-08','2026-11-12'),false);
 assert.equal(x.validNumber(4.9,5),4.9);
 assert.equal(x.validNumber(5.5,5),null);
+assert.equal(x.readDecimalHours(1.5).hours,1.5);
+assert.equal(x.readDecimalHours(new Date('1899-12-31T12:00:00.000Z')).hours,1.5);
+assert.equal(x.readDecimalHours(new Date('1899-12-31T12:00:00.000Z')).converted,true);
+assert.equal(x.readDecimalHours(new Date('2026-11-12T12:00:00.000Z')).invalid,true);
+assert.equal(x.readDecimalHours('not a number').invalid,true);
+
 const originalHeaders=[
  'Rank / AdminLevel','Name','First Week Tickets','First Week Flags',
  'Total Week Flags From 11/09 To 11/12','Total Week Tickets From 11/09 To 11/12',
