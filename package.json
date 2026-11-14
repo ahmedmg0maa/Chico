@@ -8,7 +8,7 @@
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "test:rules": "node scripts/test-rules.cjs",
-    "prebuild": "npm run build:executive-css && npm run test:rules && npm run test:excel && npm run test:phase1 && npm run test:import-route && npm run test:import-commit && npm run test:report && npm run test:roster && npm run test:local-roster && npm run test:preview-db && npm run typecheck && npm run test:phase2 && npm run test:poster",
+    "prebuild": "npm run build:executive-css && npm run test:rules && npm run test:excel && npm run test:phase1 && npm run test:import-route && npm run test:import-commit && npm run test:report && npm run test:roster && npm run test:local-roster && npm run test:preview-db && npm run typecheck && npm run test:phase2 && npm run test:poster && npm run test:report-period",
     "test:roster": "node scripts/test-roster.cjs",
     "test:preview-db": "node scripts/test-preview-db.cjs",
     "test:local-roster": "node scripts/test-local-roster.cjs",
@@ -20,7 +20,8 @@
     "test:phase2": "node scripts/test-phase2-shell.cjs",
     "build:executive-css": "node scripts/build-executive-css.cjs",
     "predev": "npm run build:executive-css",
-    "test:poster": "node scripts/test-poster.cjs"
+    "test:poster": "node scripts/test-poster.cjs",
+    "test:report-period": "node scripts/test-report-period.cjs"
   },
   "dependencies": {
     "next": "^16.0.0",
