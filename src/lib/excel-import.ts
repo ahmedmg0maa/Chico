@@ -63,10 +63,11 @@ export function validInteger(value:unknown):number|null{
  * Real calendar dates must never be silently treated as hours.
  */
 export function readDecimalHours(value:unknown):{hours:number|null;converted:boolean;invalid:boolean}{
- if(value instanceof Date){
-  if(Number.isNaN(value.getTime()))return {hours:null,converted:false,invalid:true};
-  const serial=(value.getTime()-Date.UTC(1899,11,30))/86400000;
-  if(serial>=0&&serial<=500&&value.getUTCFullYear()<=1901){
+ if(Object.prototype.toString.call(value)==='[object Date]'){
+  const date=value as Date;
+  if(Number.isNaN(date.getTime()))return {hours:null,converted:false,invalid:true};
+  const serial=(date.getTime()-Date.UTC(1899,11,30))/86400000;
+  if(serial>=0&&serial<=500&&date.getUTCFullYear()<=1901){
    return {hours:Math.round(serial*100)/100,converted:true,invalid:false};
   }
   return {hours:null,converted:false,invalid:true};
