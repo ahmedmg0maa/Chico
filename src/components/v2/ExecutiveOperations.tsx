@@ -205,13 +205,30 @@ export default function ExecutiveOperations({tab,state,review,onRefresh,initialA
   if(tab==='excel')return <>
   <Head compact={compactHead} en="CHICO / XLSX REVIEW" title="استيراد Excel" description="معاينة جميع قراءات Excel والتواريخ وأرصدة Flags. لا تعديل أسماء أو رتب قبل موافقتك الصريحة."/><Hint review={review}/>
   <section className="x-panel x-op-card"><div className="x-op-cardhead"><FileSpreadsheet size={20}/><h2>مراجعة ملف اللعبة</h2></div>
-   <div className="x-op-form"><label className="x-op-full">ملف Excel بصيغة XLSX<input type="file" accept=".xlsx" disabled={review||busy} onChange={e=>{setFile(e.target.files?.[0]||null);setImportView(null);setAcceptedImport(false);setApprovedRosterSync(false);}}/></label><button className="x-primary" type="button" onClick={()=>void previewExcel()} disabled={review||busy||!file}><Upload size={17}/>معاينة الملف</button></div>
+   {review&&<p className="v9-warning" role="status">دي معاينة تصميم فقط؛ رفع Excel وتنزيل التقارير متعطلين عمدًا هنا. للبيانات الحقيقية افتح <a href="https://chicoteam.vercel.app/v2?tab=excel">الموقع الرسمي بعد تسجيل الدخول</a>.</p>}
+   <div className="x-op-form">
+    <label className="x-op-full">ملف Excel بصيغة XLSX
+     <input type="file" accept=".xlsx" disabled={review||busy} onChange={e=>{setFile(e.target.files?.[0]||null);setImportView(null);setAcceptedImport(false);setApprovedRosterSync(false);}}/>
+    </label>
+    <label>سنة التقرير (للملفات بدون سنة)
+     <input type="number" min="2000" max="2099" step="1" value={periodYear} disabled={review||busy} onChange={e=>{setPeriodYear(e.target.value);setImportView(null);setAcceptedImport(false);}}/>
+    </label>
+    <p className="x-op-footnote x-op-full">لا نعتمد سنة الرفع تلقائيًا. اختار السنة الخاصة بتاريخ بيانات اللعبة قبل معاينة الملف.</p>
+    <button className="x-primary" type="button" onClick={()=>void previewExcel()} disabled={review||busy||!file}><Upload size={17}/>معاينة الملف</button>
+   </div>
    {importView&&<>
     <div className="x-op-metrics">
-     <Metric label="القراءات المستوردة" value={String(importView.imported)}/>
-     <Metric label="قائد مستبعد من التقييم" value={String(importView.leaders)}/>
+     <Metric label="القراءات التي سيتم حفظها" value={String(importView.imported)}/>
+     <Metric label="General خارج التقييم" value={String(importView.leaders)}/>
      <Metric label="أسماء جديدة تحتاج الموافقة" value={String(importView.rosterChanges)}/>
+     {importView.sourceTotals&&<>
+      <Metric label="الأعضاء المؤهلون للتقييم" value={String(importView.sourceTotals.people)}/>
+      <Metric label="Tickets المصدر للمؤهلين" value={fmt(importView.sourceTotals.tickets,0)}/>
+      <Metric label="Flags الجديدة من أرصدة البداية" value={fmt(importView.sourceTotals.flags,0)}/>
+      <Metric label="TIME بالساعات العشرية" value={fmt(importView.sourceTotals.hours,2)}/>
+     </>}
     </div>
+    {importView.sourceTotals&&<p className="x-op-footnote" role="status">الفترة: {importView.sourceTotals.from||'—'} إلى {importView.sourceTotals.to||'—'} · الإجماليات دي من ملف Excel قبل الحفظ، ولا تشمل General وAdministrator في التقييم. غير المسجل لا يساوي صفر.</p>}
     <p className="x-op-footnote">الملف: {importView.filename} · ورقة: {importView.sheet} · المعاينة لا تحفظ ولا تعدّل شيئًا.</p>
     <div className="x-op-table-wrap"><table className="x-op-table">
      <thead><tr><th>الاسم كما في Excel</th><th>المطابقة في الموقع</th><th>رتبة Excel</th><th>الرتبة المعتمدة</th><th>بداية الفترة</th><th>نهاية الفترة</th><th>Tickets</th><th>Flags الختامي</th><th>Flags البداية</th><th>TIME</th><th>Rate</th><th>الإجراء</th></tr></thead>
