@@ -12,7 +12,7 @@ import {applyLocalRosterChange,LOCAL_ROSTER_HISTORY_KEY,type LocalRosterAction,t
 export type OperationTab = 'updates'|'excel'|'server'|'daily'|'reports'|'weeks'|'alerts'|'settings';
 type Props = {tab:OperationTab;state:State|null;review:boolean;onRefresh:()=>Promise<void>;initialAdminId?:string|null};
 type ReadForm={admin_id:string;from_date:string;to_date:string;tickets_counter:number|null;flags_counter:number|null;flags_baseline:number|null;hours:number|null;rating:number|null;note:string};
-type Imported={row:number;name:string;admin_id:string|null;roster_name:string|null;rank:string|null;admin_level:number|null;roster_action:string;from_date:string|null;to_date:string|null;report_entered_on:string|null;tickets_counter:number|null;tickets_baseline:number|null;flags_counter:number|null;flags_baseline:number|null;hours:number|null;rating:number|null;skip_reading:boolean};
+type Imported={row:number;name:string;admin_id:string|null;roster_name:string|null;source_rank?:string|null;rank:string|null;admin_level:number|null;roster_action:string;from_date:string|null;to_date:string|null;report_entered_on:string|null;tickets_counter:number|null;tickets_baseline:number|null;flags_counter:number|null;flags_baseline:number|null;hours:number|null;rating:number|null;skip_reading:boolean};
 type ImportView={preview_id:string;filename:string;sheet:string;rows:Imported[];warnings:string[];notices:string[];requiresConfirmation:boolean;imported:number;leaders:number;rosterChanges:number};
 const cairoDate=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'Africa/Cairo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
 const emptyReading=():ReadForm=>({admin_id:'',from_date:cairoDate(),to_date:cairoDate(),tickets_counter:null,flags_counter:null,flags_baseline:null,hours:null,rating:null,note:''});
@@ -188,21 +188,21 @@ export default function ExecutiveOperations({tab,state,review,onRefresh,initialA
     <div className="x-op-metrics">
      <Metric label="القراءات المستوردة" value={String(importView.imported)}/>
      <Metric label="قائد مستبعد من التقييم" value={String(importView.leaders)}/>
-     <Metric label="تغييرات الأسماء/الرتب" value={String(importView.rosterChanges)}/>
+     <Metric label="أسماء جديدة تحتاج الموافقة" value={String(importView.rosterChanges)}/>
     </div>
     <p className="x-op-footnote">الملف: {importView.filename} · ورقة: {importView.sheet} · المعاينة لا تحفظ ولا تعدّل شيئًا.</p>
     <div className="x-op-table-wrap"><table className="x-op-table">
-     <thead><tr><th>الاسم كما في Excel</th><th>المطابقة في الموقع</th><th>الرتبة</th><th>بداية الفترة</th><th>نهاية الفترة</th><th>Tickets</th><th>Flags الختامي</th><th>Flags البداية</th><th>TIME</th><th>Rate</th><th>الإجراء</th></tr></thead>
+     <thead><tr><th>الاسم كما في Excel</th><th>المطابقة في الموقع</th><th>رتبة Excel</th><th>الرتبة المعتمدة</th><th>بداية الفترة</th><th>نهاية الفترة</th><th>Tickets</th><th>Flags الختامي</th><th>Flags البداية</th><th>TIME</th><th>Rate</th><th>الإجراء</th></tr></thead>
      <tbody>{importView.rows.map(r=><tr key={r.row}>
       <td dir="auto"><b>{r.name}</b></td>
-      <td dir="auto">{r.roster_name||'اسم جديد'}</td><td>{r.rank||'—'}</td>
+      <td dir="auto">{r.roster_name||'اسم جديد'}</td><td>{r.source_rank||'—'}</td><td>{r.rank||'—'}</td>
       <td>{r.skip_reading?'—':r.from_date||'⚠️'}</td><td>{r.skip_reading?'—':r.to_date||'⚠️'}</td>
       <td>{r.skip_reading?'خارج الإحصائيات':fmt(r.tickets_counter,0)}</td>
       <td>{r.skip_reading?'—':fmt(r.flags_counter,0)}</td>
       <td>{r.skip_reading?'—':fmt(r.flags_baseline,0)}</td>
       <td>{r.skip_reading?'—':fmt(r.hours,2)}</td>
       <td>{r.skip_reading?'—':fmt(r.rating,2)}</td>
-      <td>{r.skip_reading?'قائد الفريق — بلا تقييم':r.roster_action==='create'?'إضافة اسم جديد':r.roster_action==='update'?'تحديث اسم/رتبة':'مطابق'}</td>
+      <td>{r.skip_reading?'قائد الفريق — بلا تقييم':r.roster_action==='create'?'إضافة اسم جديد':'مطابق — بدون تغيير الرتبة'}</td>
      </tr>)}</tbody>
     </table></div>
     {!!importView.notices?.length&&<div className="v9-warning">{importView.notices.map((n,i)=><p key={i}>{n}</p>)}</div>}
@@ -210,11 +210,11 @@ export default function ExecutiveOperations({tab,state,review,onRefresh,initialA
     {!importView.warnings.length&&<>
      {importView.rosterChanges>0&&<label className="x-op-check">
       <input type="checkbox" checked={approvedRosterSync} onChange={e=>setApprovedRosterSync(e.target.checked)}/>
-      أوافق على إضافة/تصحيح الأسماء والرتب الموضحة في المعاينة، مع بقاء General قائدًا خارج التقييم
+      أوافق فقط على إضافة الأسماء الجديدة الظاهرة في المعاينة، دون تعديل أسماء أو رتب الإداريين الحاليين
      </label>}
      <label className="x-op-check">
       <input type="checkbox" checked={acceptedImport} onChange={e=>setAcceptedImport(e.target.checked)}/>
-      راجعت فترة كل قراءة وقيم Tickets وFlags Baseline وTIME والرتب، وأوافق على الحفظ
+      راجعت الفترة وتاريخ الإضافة وTickets وFlags Baseline وTIME وأي تحويلات أو اختلافات في الرتب، وأوافق على الحفظ
      </label>
     </>}
     <button className="x-primary" disabled={busy||review||!acceptedImport||!!importView.warnings.length||(importView.rosterChanges>0&&!approvedRosterSync)} onClick={commitExcel}>حفظ كل القراءات بعد المراجعة</button>
