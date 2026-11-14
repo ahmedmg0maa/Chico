@@ -18,7 +18,12 @@ for(const needed of ['Weekly Tickets','Weekly Flags','Flag Rate','Team Coverage'
 assert(!dashboardKpis.includes('Total Staff'),'Staff count belongs to hero, not duplicated in KPI');
 assert(!dashboardKpis.includes('Average Rating'),'Per-member rating belongs to team dashboard');
 assert(!main.includes('<section className="x-weekbanner">'),'Remove redundant ornamental weekly section');
-assert(route.includes("executive-v12.css"),'Stage 2 design tokens must be imported on /v2');
+assert(route.includes("executive-unified.css"),'Stage 2 CSS must be loaded from one canonical entrypoint');
+assert(!route.includes("executive-v12.css"),'No stacked versioned CSS imports on /v2');
+const bundler=source('scripts/build-executive-css.cjs');
+assert(bundler.includes('removedDeclarations')&&bundler.includes('combined.walkRules'),'CSS generator removes earlier exact-context declarations');
+const unified=source('src/components/v2/executive-unified.css');
+assert(unified.includes('.chico-v2')&&unified.includes('v12-nav'),'Combined CSS contains the full app and new design system');
 for(const key of ['--ch-bg:','--ch-surface:','--ch-muted:','--ch-gold:','--ch-line:','prefers-reduced-motion','focus-visible','max-width:720px'])
  assert(css.includes(key),'Missing design system contract '+key);
 assert(!css.includes('.v9-poster-preview canvas'),'Poster design belongs to Phase 3 and must stay unchanged');
