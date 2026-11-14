@@ -42,12 +42,12 @@ const userFacingErrors:Record<string,string>={
 };
 /** Import validation remains machine-readable on the API; translate known issues at the UI boundary. */
 function explainExcelIssue(message:string){
- const match=message.match(/^Row (\\d+): (.*)$/);
+ const match=message.match(/^Row (\d+): (.*)$/);
  if(!match)return message;
  const prefix='الصف '+match[1]+': ',detail=match[2];
  if(detail.startsWith('missing administrator Name'))return prefix+'الاسم فارغ لكن الصف يحتوي على إحصائيات؛ اكتب اسم الإداري أو احذف بيانات الصف.';
  if(detail.startsWith('already saved reading overlaps')){
-  const span=detail.match(/overlaps (\\d{4}-\\d{2}-\\d{2}) to (\\d{4}-\\d{2}-\\d{2}) for (.+)$/);
+  const span=detail.match(/overlaps (\d{4}-\d{2}-\d{2}) to (\d{4}-\d{2}-\d{2}) for (.+)$/);
   return span?prefix+'توجد قراءة محفوظة بالفعل للإداري '+span[3]+' تتداخل مع الفترة '+span[1]+' إلى '+span[2]+'؛ افتح التقرير بدل استيرادها مرة ثانية.':prefix+'توجد قراءة محفوظة تتداخل مع هذه الفترة.';
  }
  if(detail.startsWith('invalid or missing report period'))return prefix+'تاريخ بداية أو نهاية التقرير غير صالح أو غير موجود.';
