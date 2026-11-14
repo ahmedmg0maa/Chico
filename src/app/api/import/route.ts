@@ -91,7 +91,7 @@ export async function POST(req:NextRequest){
      if(col>=0&&!isMissingCell(at(col))&&validInteger(at(col))===null)warnings.push('Row '+i+': invalid '+label+' — requires a nonnegative whole number');
     }
    }
-   rows.push({row:i,name:existing?.name||name,source_rank:sourceRank,admin_id:existing?.id||null,roster_name:existing?.name||null,
+   rows.push({row:i,name:existing?.name||name,source_name:name,source_rank:sourceRank,admin_id:existing?.id||null,roster_name:existing?.name||null,
     rank:leader?'Responsible':rank,admin_level:leader?3:existing?.admin_level||sourceLevel||1,
     roster_action:existing?'match':leader?'leader':'create',
     from_date:from,to_date:to,report_entered_on:entered,
