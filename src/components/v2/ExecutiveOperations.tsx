@@ -19,13 +19,28 @@ const emptyReading=():ReadForm=>({admin_id:'',from_date:cairoDate(),to_date:cair
 const fmt=(n:number|null|undefined,places=2)=>n===null||n===undefined||!Number.isFinite(n)?'غير مسجّل':new Intl.NumberFormat('en-US',{maximumFractionDigits:places}).format(n);
 const fieldValue=(n:number|null)=>n===null?'':String(n);
 const asNumber=(v:string)=>v===''?null:Number(v);
+const userFacingErrors:Record<string,string>={
+ FILE_ALREADY_IMPORTED:'الملف ده اتحفظ بالفعل. مش هيتضاف مرة تانية.',
+ PREVIEW_EXPIRED_OR_USED:'المعاينة انتهت صلاحيتها أو اتعتمدت قبل كده. راجع الملف من جديد.',
+ ROSTER_CHANGED_REVIEW_AGAIN:'حصل تغيير في أسماء الفريق أو الرتب أثناء المراجعة. ارفع الملف وراجعه من جديد.',
+ ROSTER_SYNC_CONFIRMATION_REQUIRED:'في أسماء جديدة تحتاج موافقتك قبل الحفظ.',
+ OVERLAPPING_PERIOD:'في إداري له قراءة محفوظة بالفعل بتغطي الفترة دي. راجع سجل القراءات بدل تكرارها.',
+ WEEK_CLOSED:'الأسبوع المختار مقفول. لازم تراجعه من صفحة الأسابيع قبل أي تعديل.',
+ FIRST_TICKETS_READING_MUST_COVER_WEEK_START:'أول رصيد Tickets للأسبوع لازم يغطي الفترة من يوم الاثنين، أو يكون فيه قراءة أقدم في نفس الأسبوع.',
+ GENERAL_READING_FORBIDDEN:'General قائد الفريق خارج تسجيل الإحصائيات.',
+ READING_NOT_ALLOWED_FOR_RANK:'الإداري ده خارج الإحصائيات. راجع حالة الفريق والرتبة.',
+ IMPORT_REVIEW_ERRORS:'فيه أخطاء في معاينة Excel لازم تتصحح قبل الحفظ.',
+ INVALID_IMPORT_ROW:'واحد أو أكثر من الصفوف ناقص أو غير صالح للاستيراد.',
+ LEADER_RANK_CONFLICT:'بيانات قائد الفريق مختلفة عن الرتبة المعتمدة. صححها في إدارة الفريق أولًا.',
+ MISSING_RANK:'في إداري جديد بدون رتبة صالحة.',
+};
 async function api<T>(url:string,method='GET',data?:Record<string,unknown>|FormData):Promise<T>{
  const multipart=data instanceof FormData;
  const response=await fetch(url,{method,credentials:'same-origin',cache:'no-store',headers:multipart?undefined:{'Content-Type':'application/json'},body:data===undefined?undefined:multipart?data:JSON.stringify(data)});
  const contentType=response.headers.get('content-type')||'';
  if(!contentType.includes('application/json'))throw new Error('الخادم لم يُرجع استجابة صحيحة');
  const payload=await response.json();
- if(!response.ok||payload.ok===false)throw new Error(String(payload.error||'تعذّر تنفيذ العملية'));
+ if(!response.ok||payload.ok===false){const code=String(payload.error||'تعذّر تنفيذ العملية');throw new Error(userFacingErrors[code]||code);}
  return payload as T;
 }
 function Head({en,title,description}:{en:string;title:string;description:string}){
