@@ -19,6 +19,12 @@ assert.equal(x.validateCoverage('2026-11-09','2026-11-12'),true);
 assert.equal(x.validateCoverage('2026-11-08','2026-11-12'),false);
 assert.equal(x.validNumber(4.9,5),4.9);
 assert.equal(x.validNumber(5.5,5),null);
+assert.equal(x.readDecimalHours(1.5).hours,1.5);
+assert.equal(x.readDecimalHours(new Date('1899-12-31T12:00:00.000Z')).hours,1.5);
+assert.equal(x.readDecimalHours(new Date('1899-12-31T12:00:00.000Z')).converted,true);
+assert.equal(x.readDecimalHours(new Date('2026-11-12T12:00:00.000Z')).invalid,true);
+assert.equal(x.readDecimalHours('not a number').invalid,true);
+
 const originalHeaders=[
  'Rank / AdminLevel','Name','First Week Tickets','First Week Flags',
  'Total Week Flags From 11/09 To 11/12','Total Week Tickets From 11/09 To 11/12',
