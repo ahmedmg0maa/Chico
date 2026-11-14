@@ -112,6 +112,7 @@ export default function DiscordReportStudio({state,review}:Props){
     <p>مفيش بيانات مسجلة للفترة المختارة، لذلك مش هنعرض تقرير مليان شرط أو نتائج وهمية.</p>
     <a href="/v2?tab=excel">افتح استيراد Excel</a>
    </div>}
+  {period.canExport&&<p className="v9-poster-mobile-help">اسحب الصورة يمين وشمال لقراءة الأسماء والأرقام بحجم واضح. زر PNG ينزّل الصورة كاملة بالدقة الأصلية.</p>}
   <p className="v9-poster-note"><Ticket size={15} style={{verticalAlign:'middle'}}/> الصورة بتعرض أصحاب القراءات فقط، بنفس ترتيب الملف الأصلي عند توافره؛ {missingCount>0?`${missingCount} إداريين بدون قراءات مش ظاهرين بالصورة لكن موجودين في الفريق. `:''}Top 3 للـModerators منفصل عن Helpers وSN.Helpers، بالـTickets المسجّلة فقط.</p>
  </section>;
 }
