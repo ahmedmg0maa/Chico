@@ -4,7 +4,7 @@ import {useEffect,useMemo,useRef,useState} from 'react';
 import {CalendarDays,Download} from 'lucide-react';
 import type {State} from '@/lib/types';
 import {latestPeriod,selectPeriod,reportRows,reportTotals} from '@/lib/report-period';
-import {eligibleReadings} from '@/lib/rules';
+import {eligibleReadings,isEvaluatedAdmin} from '@/lib/rules';
 import {renderLuxuryPoster,loadLuxuryArt,type LuxuryPosterRow} from './PremiumPosterRenderer';
 export {renderLuxuryPoster,loadLuxuryArt};
 export type {LuxuryPosterRow,PremiumTotals} from './PremiumPosterRenderer';
@@ -26,6 +26,7 @@ export default function DailyReportStudio({state,review}:Props){
  const {valid,matching:readings}=period;
  const partial=period.partial.length;
  const rows=useMemo(()=>reportRows(state?.admins||[],readings),[state,readings]);
+ const missingCount=Math.max(0,(state?.admins.filter(isEvaluatedAdmin).length||0)-rows.length);
  const staff=state?.admins.filter(a=>a.active).length||0;
  const totals=useMemo(()=>reportTotals(readings,state?.admins||[]),[state,readings]);
  const label=from===to?from:from+'  —  '+to;
@@ -76,6 +77,6 @@ export default function DailyReportStudio({state,review}:Props){
     <p>مفيش بيانات مسجلة للفترة المختارة، لذلك مش هنعرض تقرير مليان شرط أو نتائج وهمية.</p>
     <a href="/v2?tab=excel">افتح استيراد Excel</a>
    </div>}
-  <p className="v9-poster-note">General قائد الفريق خارج التقييم والترتيب. الأسماء والبيانات مأخوذة من القراءات الفعلية. كل Top 3 مبني على Tickets فقط.</p>
+  <p className="v9-poster-note">الصورة تضم الإداريين اللي عندهم قراءات محفوظة في الفترة فقط، بترتيبهم الأصلي من Excel عند توفره. {missingCount>0&&<>هناك {missingCount} من أعضاء التقييم بلا قراءة خلال الفترة؛ ما اتشالوش من قائمة الفريق.</>} General وAdministrator خارج التقييم، وترتيب Top 3 حسب Tickets.</p>
  </section>;
 }
