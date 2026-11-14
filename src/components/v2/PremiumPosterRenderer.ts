@@ -158,23 +158,24 @@ export function renderLuxuryPoster(
   if(data.rows.length===0){
    type('لا توجد بيانات مسجلة',x+w/2,rY+ROW*2,28,C.muted,{align:'center',maxWidth:w-80});
   }
+  const itemHeight=rowsH/Math.max(data.rows.length,1);
   data.rows.forEach((row,i)=>{
-   const itemY=rY+i*ROW;
+   const itemY=rY+i*itemHeight;
    const alt=i%2===0?'rgba(255,255,255,.026)':'rgba(255,255,255,.008)';
-   box(x+20,itemY+2,w-40,ROW-4,7,alt);
-   box(x+21,itemY+10,3,ROW-20,2,
+   box(x+20,itemY+2,w-40,itemHeight-4,7,alt);
+   box(x+21,itemY+10,3,itemHeight-20,2,
     row.rank==='SN.Helper'?C.blue:row.rank==='Moderator'?C.purple:C.green);
-   type(String(i+1).padStart(2,'0'),x+39,itemY+ROW/2,18,C.quiet);
-   type(nameFit(row.name,218,24),x+86,itemY+ROW/2,24,C.ivory,{weight:700,maxWidth:218});
+   type(String(i+1).padStart(2,'0'),x+39,itemY+itemHeight/2,18,C.quiet);
+   type(nameFit(row.name,218,24),x+86,itemY+itemHeight/2,24,C.ivory,{weight:700,maxWidth:218});
    const tag=row.rank==='SN.Helper'?'SN':row.rank==='Moderator'?'M':'H';
    const color=row.rank==='SN.Helper'?C.blue:row.rank==='Moderator'?C.purple:C.green;
-   box(x+319,itemY+ROW/2-15,38,30,8,rgba(color,.14),rgba(color,.45));
-   type(tag,x+338,itemY+ROW/2,17,color,{align:'center',weight:800});
-   type(num(row.tickets),x+443,itemY+ROW/2,23,row.tickets===null?C.quiet:C.ivory,{align:'center',weight:800,maxWidth:94});
+   box(x+319,itemY+itemHeight/2-15,38,30,8,rgba(color,.14),rgba(color,.45));
+   type(tag,x+338,itemY+itemHeight/2,17,color,{align:'center',weight:800});
+   type(num(row.tickets),x+443,itemY+itemHeight/2,23,row.tickets===null?C.quiet:C.ivory,{align:'center',weight:800,maxWidth:94});
    const flagColor=row.flags===null?C.quiet:row.flags>7?C.red:row.flags>5?C.amber:row.flags===0?C.green:C.ivory;
-   type(num(row.flags),x+544,itemY+ROW/2,23,flagColor,{align:'center',weight:800,maxWidth:91});
+   type(num(row.flags),x+544,itemY+itemHeight/2,23,flagColor,{align:'center',weight:800,maxWidth:91});
    const rateColor=row.rating===null?C.quiet:row.rating>=4.8?C.green:C.red;
-   type(num(row.rating,2),x+642,itemY+ROW/2,21,rateColor,{align:'center',weight:800,maxWidth:93});
+   type(num(row.rating,2),x+642,itemY+itemHeight/2,21,rateColor,{align:'center',weight:800,maxWidth:93});
   });
   const bottom=tableY+thead+cols+rowsH+12;
   rule(x+24,bottom,x+w-24,bottom,rgba(C.gold,.24),1);
