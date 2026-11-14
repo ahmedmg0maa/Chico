@@ -41,6 +41,18 @@ async function parse(options={}){
  const formData=new FormData();formData.set('file',file);
  return route.POST({formData:async()=>formData});
 }
+async function parseLegacy(periodYear=null){
+ const wb=new ExcelJS.Workbook(),ws=wb.addWorksheet('Sheet1');
+ ws.addRow(['Rank / AdminLevel','Name','First Week Tickets','First Week Flags',
+  'Total Week Flags From 11/09 To 11/12','Total Week Tickets From 11/09 To 11/12',
+  'Total Week Hours From 11/09 To 11/12','Total Week Rate From 11/09 To 11/12']);
+ for(const r of fixture)ws.addRow([r[0]+' '+rankLevel[r[0]],r[1],r[2],r[3],r[4],r[5],r[6],r[7]]);
+ const bytes=Buffer.from(await wb.xlsx.writeBuffer());
+ const file=new File([bytes],'CHICO_legacy_original.xlsx',{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+ const formData=new FormData();formData.set('file',file);
+ if(periodYear!==null)formData.set('period_year',periodYear);
+ return route.POST({formData:async()=>formData});
+}
 (async()=>{
  const {body,status}=await parse();
  assert.equal(status,200);
@@ -70,6 +82,26 @@ async function parse(options={}){
  const dated=await parse({dateTime:true});
  assert.equal(dated.body.rows.find(r=>r.name==='Bieso').hours,1.5);
  assert(dated.body.notices.some(x=>x.includes('TIME date-formatted cell converted to 1.5')));
+ const blocked=await parseLegacy();
+ assert.equal(blocked.status,422);
+ assert.equal(blocked.body.error,'LEGACY_YEAR_REQUIRED');
+ const year=await parseLegacy('2026');
+ assert.equal(year.status,200);
+ assert.equal(year.body.imported,29);
+ assert.equal(year.body.leaders,1);
+ assert.equal(year.body.sourceTotals.people,26);
+ assert.equal(year.body.sourceTotals.tickets,3222);
+ assert.equal(year.body.sourceTotals.flags,50);
+ assert.equal(year.body.sourceTotals.hours,259);
+ assert.equal(year.body.sourceTotals.from,'2026-11-09');
+ assert.equal(year.body.sourceTotals.to,'2026-11-12');
+ assert.equal(year.body.warnings.length,0);
+ assert(year.body.notices.some(x=>x.includes('explicitly selected')));
+ const old=await parseLegacy('2025');
+ assert.equal(old.status,200);
+ assert(old.body.warnings.some(x=>x.includes('invalid or missing report period')),
+  'a selected year that makes the legacy date interval cross weeks must be blocked at commit');
+ console.log('PASS original 30-row legacy headers: explicit year required, 26 evaluated / 3222 Tickets / 50 Flags / 259h, unsafe date spans blocked');
  console.log('PASS CHICO 30-row XLSX source fixture => 29 readings + 1 General, exact totals and stable roster');
  console.log('PASS CHICO stale rank protection and date-formatted TIME review');
 })().catch(e=>{console.error(e);process.exit(1)});
