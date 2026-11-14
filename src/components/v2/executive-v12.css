@@ -1,0 +1,193 @@
+/* CHICO Phase 2 / Executive System 12
+   New shared visual tokens. Scoped to the admin application; the approved
+   Discord/canvas poster renderer is intentionally NOT changed in this stage. */
+.chico-v2{
+ --ch-bg:#0b0e15;
+ --ch-surface:#141a24;
+ --ch-surface-alt:#19212e;
+ --ch-surface-elevated:#202938;
+ --ch-text:#f7f1e8;
+ --ch-muted:#b2bac6;
+ --ch-subtle:#91a0b3;
+ --ch-line:rgba(211,183,137,.22);
+ --ch-line-strong:rgba(231,195,137,.4);
+ --ch-gold:#dfb776;
+ --ch-gold-bright:#f5d69b;
+ --ch-danger:#e8797f;
+ --ch-positive:#58c69a;
+ --ch-blue:#75abe9;
+ --ch-purple:#b996ec;
+ --ch-radius-sm:10px;
+ --ch-radius:16px;
+ --ch-radius-lg:21px;
+ --ch-shadow:0 14px 38px rgba(0,0,0,.21);
+ --ch-focus:0 0 0 3px rgba(245,214,155,.22);
+ --v7-ink:var(--ch-text);--v8-text:var(--ch-text);
+ --v8-text-soft:var(--ch-muted);--v8-text-dim:var(--ch-subtle);
+ --v8-line:var(--ch-line);--v9-ink:var(--ch-text);
+ --v9-muted:var(--ch-muted);--v9-panel:var(--ch-surface);
+ --v9-panel2:var(--ch-surface-alt);--v9-stroke:var(--ch-line);
+ color:var(--ch-text);
+ background:
+  radial-gradient(ellipse 80% 48% at 85% -15%,rgba(122,63,48,.14),transparent 74%),
+  linear-gradient(155deg,#10141e 0%,var(--ch-bg) 56%,#12151c 100%);
+}
+.chico-v2::before{
+ background:linear-gradient(90deg,transparent,rgba(233,192,119,.014) 50%,transparent);
+ opacity:.55;
+}
+.chico-v2.x-light{
+ --ch-bg:#f2f1ed;
+ --ch-surface:#fffdfa;
+ --ch-surface-alt:#f6f2eb;
+ --ch-surface-elevated:#efe8df;
+ --ch-text:#262c37;
+ --ch-muted:#4f5968;
+ --ch-subtle:#687383;
+ --ch-line:rgba(79,74,68,.17);
+ --ch-line-strong:rgba(139,100,62,.34);
+ --ch-gold:#8b622e;
+ --ch-gold-bright:#9a703d;
+ --ch-danger:#ad3444;
+ --ch-positive:#167b55;
+ --ch-blue:#2c67a7;
+ --ch-purple:#7046a1;
+ --ch-shadow:0 12px 32px rgba(38,36,32,.09);
+ --v8-text:var(--ch-text);--v8-text-soft:var(--ch-muted);
+ --v9-ink:var(--ch-text);--v9-muted:var(--ch-muted);
+ color:var(--ch-text);
+ background:linear-gradient(150deg,#f8f6f1 0%,var(--ch-bg) 60%,#ecebe7 100%);
+}
+.chico-v2 .x-sidebar{
+ background:linear-gradient(180deg,#10141d 0%,#10151e 62%,#171419 100%);
+ border-right:1px solid var(--ch-line);
+ box-shadow:8px 0 34px rgba(0,0,0,.18);
+ padding:17px 14px 18px;
+}
+.chico-v2 .x-sidebar:before,.chico-v2 .x-sidebar:after{
+ height:1px;opacity:.5;background:linear-gradient(90deg,transparent,var(--ch-gold),transparent);
+}
+.chico-v2 .v12-nav{display:grid;align-content:start;gap:9px;min-height:0;padding:11px 2px 22px}
+.chico-v2 .v12-nav-group{display:flex;flex-direction:column;gap:4px;min-width:0;padding-bottom:10px}
+.chico-v2 .v12-nav-group:not(:last-child){border-bottom:1px solid rgba(211,183,137,.10)}
+.chico-v2 .v12-nav-label{
+ display:flex;align-items:center;justify-content:space-between;gap:8px;
+ color:#b7af9e;font-weight:900;font-size:11px;letter-spacing:.01em;
+ padding:10px 11px 7px;line-height:1.3;
+}
+.chico-v2 .v12-nav-label small{
+ color:#827f81;font:700 9px/1.4 Inter,system-ui,sans-serif;letter-spacing:.10em;
+}
+.chico-v2 .v12-nav .x-nav-link{
+ min-height:49px;margin:0;border:1px solid transparent;border-radius:11px;
+ padding:8px 11px;background:transparent;
+ transition:background .16s,border-color .16s,transform .16s;
+}
+.chico-v2 .v12-nav .x-nav-link:hover{
+ background:rgba(223,183,118,.085);border-color:rgba(223,183,118,.17);transform:none;
+}
+.chico-v2 .v12-nav .x-nav-link.x-nav-active{
+ background:linear-gradient(100deg,rgba(218,163,99,.15),rgba(218,163,99,.055));
+ border-color:rgba(241,200,136,.38);
+ box-shadow:inset -3px 0 0 var(--ch-gold);
+}
+.chico-v2 .v12-nav .x-nav-link span b{font-size:13px;line-height:1.3}
+.chico-v2 .v12-nav .x-nav-link span small{font-size:10px;opacity:.8}
+.chico-v2 .v12-nav button:focus-visible,.chico-v2 .x-topbar button:focus-visible{
+ outline:2px solid var(--ch-gold-bright);outline-offset:2px;box-shadow:var(--ch-focus);
+}
+.chico-v2 .x-topbar{
+ min-height:76px;
+ background:color-mix(in srgb,var(--ch-surface) 92%,transparent);
+ backdrop-filter:blur(16px);
+ border-bottom:1px solid var(--ch-line);
+ box-shadow:none;
+}
+.chico-v2 .x-status,.chico-v2 .x-date{
+ color:var(--ch-muted);border-color:var(--ch-line);background:var(--ch-surface-alt);
+}
+.chico-v2 .x-breadcrumb{color:var(--ch-muted)}
+.chico-v2 .x-breadcrumb b{color:var(--ch-text)}
+.chico-v2 .x-main-content{max-width:1640px;min-width:0;padding:clamp(18px,2.15vw,36px);margin-inline:auto}
+.chico-v2 .v8-command-hero{
+ border:1px solid var(--ch-line-strong);
+ border-radius:var(--ch-radius-lg);
+ background:linear-gradient(118deg,rgba(24,31,43,.99),rgba(21,24,32,.95));
+ box-shadow:var(--ch-shadow);
+ overflow:hidden;isolation:isolate;
+}
+.chico-v2 .v8-command-hero-copy h1{
+ color:var(--ch-text);font-size:clamp(30px,3.2vw,46px);line-height:1.2;letter-spacing:-.015em;
+}
+.chico-v2 .v8-command-hero-copy p{color:var(--ch-muted);line-height:1.75;max-width:570px}
+.chico-v2 .x-kpi-grid.v8-kpi-grid{
+ display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;
+}
+.chico-v2 .x-kpi.v8-kpi{
+ min-width:0;min-height:150px;border-radius:var(--ch-radius);padding:19px 22px;
+ border:1px solid var(--ch-line);box-shadow:var(--ch-shadow);
+ background:linear-gradient(150deg,var(--ch-surface),var(--ch-surface-alt));
+}
+.chico-v2 .x-kpi.v8-kpi:hover{transform:translateY(-2px);border-color:var(--ch-line-strong)}
+.chico-v2 .x-kpi.v8-kpi strong{color:var(--ch-text);font-size:clamp(28px,2.3vw,37px);font-variant-numeric:tabular-nums}
+.chico-v2 .x-kpi.v8-kpi .x-kpi-title b{color:var(--ch-text)}
+.chico-v2 .x-kpi.v8-kpi .x-kpi-title small{color:var(--ch-muted)}
+.chico-v2 .x-panel{
+ background:linear-gradient(160deg,var(--ch-surface),var(--ch-surface-alt));
+ border:1px solid var(--ch-line);border-radius:var(--ch-radius);
+ box-shadow:var(--ch-shadow);
+}
+.chico-v2 .x-weekbanner{
+ background:var(--ch-surface);border:1px solid var(--ch-line);
+ border-radius:var(--ch-radius);box-shadow:none;
+}
+.chico-v2 .x-triple{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:17px}
+.chico-v2 .x-triple .x-leaders-panel{grid-column:1/-1}
+.chico-v2 .v7-bottom-dashboard{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:17px}
+.chico-v2 .v7-bottom-dashboard>.v7-chart-card{grid-column:1/-1}
+.chico-v2 .x-card-title{border-bottom:1px solid var(--ch-line)}
+.chico-v2 .x-empty{color:var(--ch-muted)}
+.chico-v2 .x-table-scroll,.chico-v2 .v7-table-scroll{max-width:100%;overflow-x:auto}
+.chico-v2 table{font-variant-numeric:tabular-nums}
+.chico-v2 .x-table tbody tr:hover,.chico-v2 .v7-directory-table tbody tr:hover{
+ background:rgba(223,183,118,.065);
+}
+.chico-v2 .x-table td,.chico-v2 .x-table th{border-color:var(--ch-line)}
+.chico-v2 .x-table-name b{overflow-wrap:anywhere}
+.chico-v2 .x-foot{border-top:1px solid var(--ch-line);color:var(--ch-muted)}
+.chico-v2.x-light .x-sidebar{
+ background:linear-gradient(180deg,#19202a,#121820);
+ border-right-color:rgba(200,163,116,.28);
+}
+.chico-v2.x-light .v12-nav-label{color:#cebfa9}
+.chico-v2.x-light .v12-nav-label small{color:#9f9588}
+.chico-v2.x-light .v12-nav .x-nav-link{color:#eee4d8}
+.chico-v2.x-light .v12-nav .x-nav-link.x-nav-active{color:#fff4df}
+.chico-v2.x-light .v8-command-hero{background:linear-gradient(118deg,#202734,#151a24)}
+.chico-v2.x-light .v8-command-hero-copy h1{color:#f6eee1}
+.chico-v2.x-light .v8-command-hero-copy p{color:#ddd2c1}
+@media(min-width:1680px){
+ .chico-v2 .x-kpi-grid.v8-kpi-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:1150px){
+ .chico-v2 .x-kpi-grid.v8-kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .chico-v2 .x-triple{grid-template-columns:1fr}
+ .chico-v2 .x-triple .x-leaders-panel{grid-column:auto}
+}
+@media(max-width:720px){
+ .chico-v2 .x-main-content{padding:14px 12px 90px}
+ .chico-v2 .x-topbar{min-height:66px}
+ .chico-v2 .x-kpi-grid.v8-kpi-grid{grid-template-columns:1fr 1fr;gap:10px}
+ .chico-v2 .x-kpi.v8-kpi{min-height:130px;padding:15px 13px}
+ .chico-v2 .x-kpi.v8-kpi strong{font-size:27px}
+ .chico-v2 .v7-bottom-dashboard{grid-template-columns:1fr}
+ .chico-v2 .v7-bottom-dashboard>.v7-chart-card{grid-column:auto}
+ .chico-v2 .v12-nav-group{gap:3px}
+}
+@media(max-width:410px){
+ .chico-v2 .x-kpi-grid.v8-kpi-grid{grid-template-columns:1fr}
+}
+@media(prefers-reduced-motion:reduce){
+ .chico-v2 .v12-nav .x-nav-link,.chico-v2 .x-kpi.v8-kpi{transition:none;animation:none}
+ .chico-v2 .v12-nav .x-nav-link:hover,.chico-v2 .x-kpi.v8-kpi:hover{transform:none}
+}
