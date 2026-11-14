@@ -66,9 +66,11 @@ export async function GET(req:NextRequest){
    const workbook=new ExcelJS.Workbook();
    workbook.creator='CHICO GENERAL TEAM';workbook.created=new Date();
    const sheet=workbook.addWorksheet(scope==='team'?'الفريق':'القراءات',{views:[{state:'frozen',ySplit:1}]});
+   // ExcelJS rewrites cell values if column definitions are assigned after rows.
+   // Define columns first, then populate header and data to keep actual workbook cells.
+   sheet.columns=labels.map((name,i)=>({key:'c'+i,width:Math.max(16,Math.min(30,name.length+8))}));
    sheet.addRow(labels);
    for(const row of data)sheet.addRow(row);
-   sheet.columns=labels.map((name,i)=>({key:'c'+i,width:Math.max(16,Math.min(30,name.length+8))}));
    const header=sheet.getRow(1);header.font={bold:true,color:{argb:'FFFCE7BA'},size:12};
    header.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FF24242E'}};
    header.height=29;
