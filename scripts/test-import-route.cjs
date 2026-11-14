@@ -40,6 +40,7 @@ async function parse(options={}){
   const time=options.dateTime&&r[1]==='Bieso'?new Date('1899-12-31T12:00:00.000Z'):r[6];
   ws.addRow([r[1],role,level,'2026-11-09','2026-11-12','2026-11-13',r[5],r[2],r[4],r[3],time,r[7]]);
  });
+ if(options.unnamed)ws.addRow(['','Helper',1,'2026-11-09','2026-11-12','2026-11-13',25,0,2,0,1.5,4.9]);
  const buffer=Buffer.from(await wb.xlsx.writeBuffer());
  const file=new File([buffer],'CHICO_IMPORT.xlsx',{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
  const formData=new FormData();formData.set('file',file);
@@ -101,6 +102,9 @@ async function parseLegacy(periodYear=null){
  assert.equal(year.body.sourceTotals.to,'2026-11-12');
  assert.equal(year.body.warnings.length,0);
  assert(year.body.notices.some(x=>x.includes('explicitly selected')));
+ const noName=await parse({unnamed:true});
+ assert.equal(noName.status,200);
+ assert(noName.body.warnings.some(w=>w.includes('missing administrator Name')),'populated unnamed XLSX row must block saving');
  duplicateSavedFile=true;
  const duplicate=await parse();
  assert.equal(duplicate.status,409);
