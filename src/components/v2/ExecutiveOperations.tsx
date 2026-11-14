@@ -1,6 +1,6 @@
 'use client';
 
-import {useState, type FormEvent} from 'react';
+import {useRef,useState, type FormEvent} from 'react';
 import ReadingEntryStudio from './ReadingEntryStudio';
 import DiscordReportStudio from './DiscordReportStudio';
 import DailyReportStudio from './DailyReportStudio';
@@ -128,6 +128,7 @@ export default function ExecutiveOperations({tab,state,review,onRefresh,initialA
  const [reading,setReading]=useState<ReadForm>(emptyReading);
  const [editing,setEditing]=useState<string|null>(null);
  const [file,setFile]=useState<File|null>(null);
+ const fileInputRef=useRef<HTMLInputElement>(null);
  const [periodYear,setPeriodYear]=useState(cairoYear);
  const [importView,setImportView]=useState<ImportView|null>(null);
  const [acceptedImport,setAcceptedImport]=useState(false);
@@ -168,7 +169,7 @@ export default function ExecutiveOperations({tab,state,review,onRefresh,initialA
   finally{setBusy(false);}
  };
  const commitExcel=()=>{if(!importView||!acceptedImport||importView.warnings.length||(importView.rosterChanges>0&&!approvedRosterSync))return;
-  void perform(async()=>{await api('/api/import/commit','POST',{preview_id:importView.preview_id,confirm:'IMPORT REVIEWED',approve_roster_sync:approvedRosterSync});setImportView(null);setFile(null);setAcceptedImport(false);setApprovedRosterSync(false);},'تم الاستيراد بعد المراجعة');
+  void perform(async()=>{await api('/api/import/commit','POST',{preview_id:importView.preview_id,confirm:'IMPORT REVIEWED',approve_roster_sync:approvedRosterSync});setImportView(null);setFile(null);if(fileInputRef.current)fileInputRef.current.value='';setAcceptedImport(false);setApprovedRosterSync(false);},'تم الاستيراد بعد المراجعة');
  };
  const changeWeek=(status:'open'|'closed')=>{
   if(!ack||!activeWeek)return;
@@ -208,7 +209,7 @@ export default function ExecutiveOperations({tab,state,review,onRefresh,initialA
    {review&&<p className="v9-warning" role="status">دي معاينة تصميم فقط؛ رفع Excel وتنزيل التقارير متعطلين عمدًا هنا. للبيانات الحقيقية افتح <a href="https://chicoteam.vercel.app/v2?tab=excel">الموقع الرسمي بعد تسجيل الدخول</a>.</p>}
    <div className="x-op-form">
     <label className="x-op-full">ملف Excel بصيغة XLSX
-     <input type="file" accept=".xlsx" disabled={review||busy} onChange={e=>{setFile(e.target.files?.[0]||null);setImportView(null);setAcceptedImport(false);setApprovedRosterSync(false);}}/>
+     <input ref={fileInputRef} type="file" accept=".xlsx" disabled={review||busy} onChange={e=>{setFile(e.target.files?.[0]||null);setImportView(null);setAcceptedImport(false);setApprovedRosterSync(false);}}/>
     </label>
     <label>سنة التقرير (للملفات بدون سنة)
      <input type="number" min="2000" max="2099" step="1" value={periodYear} disabled={review||busy} onChange={e=>{setPeriodYear(e.target.value);setImportView(null);setAcceptedImport(false);}}/>
