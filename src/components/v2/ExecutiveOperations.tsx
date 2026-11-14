@@ -40,6 +40,27 @@ const userFacingErrors:Record<string,string>={
  XLSX_UNRECOGNIZED_HEADERS:'عناوين أعمدة Excel غير معروفة؛ راجع ورقة البيانات.',
  XLSX_TOO_MANY_ROWS:'الحد الأقصى 500 صف بيانات.',
 };
+/** Import validation remains machine-readable on the API; translate known issues at the UI boundary. */
+function explainExcelIssue(message:string){
+ const match=message.match(/^Row (\\d+): (.*)$/);
+ if(!match)return message;
+ const prefix='الصف '+match[1]+': ',detail=match[2];
+ if(detail.startsWith('missing administrator Name'))return prefix+'الاسم فارغ لكن الصف يحتوي على إحصائيات؛ اكتب اسم الإداري أو احذف بيانات الصف.';
+ if(detail.startsWith('already saved reading overlaps')){
+  const span=detail.match(/overlaps (\\d{4}-\\d{2}-\\d{2}) to (\\d{4}-\\d{2}-\\d{2}) for (.+)$/);
+  return span?prefix+'توجد قراءة محفوظة بالفعل للإداري '+span[3]+' تتداخل مع الفترة '+span[1]+' إلى '+span[2]+'؛ افتح التقرير بدل استيرادها مرة ثانية.':prefix+'توجد قراءة محفوظة تتداخل مع هذه الفترة.';
+ }
+ if(detail.startsWith('invalid or missing report period'))return prefix+'تاريخ بداية أو نهاية التقرير غير صالح أو غير موجود.';
+ if(detail.startsWith('ambiguous roster match'))return prefix+'الاسم يطابق أكثر من إداري في القائمة؛ راجع الأسماء أولًا.';
+ if(detail.startsWith('invalid TIME'))return prefix+'قيمة TIME غير صالحة؛ راجعها كساعات عشرية.';
+ if(detail.startsWith('Rating must be'))return prefix+'التقييم يجب أن يكون بين صفر و5.';
+ if(detail.startsWith('invalid Tickets'))return prefix+'قيمة Tickets غير صالحة؛ يجب أن تكون عددًا صحيحًا غير سالب.';
+ if(detail.startsWith('invalid Flags'))return prefix+'قيمة Flags غير صالحة؛ يجب أن تكون عددًا صحيحًا غير سالب.';
+ if(detail.startsWith('nonzero Tickets opening'))return prefix+'رصيد Tickets عند بداية الفترة ليس صفرًا؛ يلزم فصل الفترات أو تصحيح الملف.';
+ if(detail.startsWith('Rank required'))return prefix+'الرتبة مطلوبة للإداري الجديد.';
+ if(detail.startsWith('General rank conflict'))return prefix+'رتبة قائد الفريق General غير مطابقة للقائمة المعتمدة.';
+ return prefix+detail;
+}
 async function api<T>(url:string,method='GET',data?:Record<string,unknown>|FormData):Promise<T>{
  const multipart=data instanceof FormData;
  const response=await fetch(url,{method,credentials:'same-origin',cache:'no-store',headers:multipart?undefined:{'Content-Type':'application/json'},body:data===undefined?undefined:multipart?data:JSON.stringify(data)});
@@ -215,7 +236,7 @@ export default function ExecutiveOperations({tab,state,review,onRefresh,initialA
      <input type="number" min="2000" max="2099" step="1" value={periodYear} disabled={review||busy} onChange={e=>{setPeriodYear(e.target.value);setImportView(null);setAcceptedImport(false);}}/>
     </label>
     <p className="x-op-footnote x-op-full">لا نعتمد سنة الرفع تلقائيًا. اختار السنة الخاصة بتاريخ بيانات اللعبة قبل معاينة الملف.</p>
-    <button className="x-primary" type="button" onClick={()=>void previewExcel()} disabled={review||busy||!file}><Upload size={17}/>معاينة الملف</button>
+    <button className="x-primary" type="button" onClick={()=>void previewExcel()} disabled={review||busy||!file}><Upload size={17}/>{busy?'جاري فحص الملف ومطابقة البيانات…':'معاينة الملف'}</button>
    </div>
    {importView&&<>
     <div className="x-op-metrics">
@@ -251,8 +272,8 @@ export default function ExecutiveOperations({tab,state,review,onRefresh,initialA
      <p>بالموافقة، الأسماء دي هتتضاف فقط. مش هنحذف الموجودين اللي مش في Excel، ولا هنغيّر رتبهم.</p>
      {state&&<p>عدد الأسماء الحالي {state.admins.length}، وبعد الإضافة هيصبح {state.admins.length+importView.rosterChanges} حتى لو بعضهم ملوش إحصائيات في الملف.</p>}
     </div>}
-    {!!importView.notices?.length&&<div className="v9-warning">{importView.notices.map((n,i)=><p key={i}>{n}</p>)}</div>}
-    {!!importView.warnings.length&&<div className="x-op-error"><AlertTriangle size={18}/><div><b>لا يمكن حفظ الملف قبل تصحيح الأخطاء التالية</b>{importView.warnings.map((w,i)=><p key={i}>{w}</p>)}</div></div>}
+    {!!importView.notices?.length&&<div className="v9-warning">{importView.notices.map((n,i)=><p key={i}>{explainExcelIssue(n)}</p>)}</div>}
+    {!!importView.warnings.length&&<div className="x-op-error"><AlertTriangle size={18}/><div><b>لا يمكن حفظ الملف قبل تصحيح الأخطاء التالية</b>{importView.warnings.map((w,i)=><p key={i}>{explainExcelIssue(w)}</p>)}</div></div>}
     {!importView.warnings.length&&<>
      {importView.rosterChanges>0&&<label className="x-op-check">
       <input type="checkbox" checked={approvedRosterSync} onChange={e=>setApprovedRosterSync(e.target.checked)}/>
