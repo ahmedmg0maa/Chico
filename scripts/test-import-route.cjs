@@ -13,8 +13,12 @@ const rules=compile('src/lib/rules.ts',{});
 const excel=compile('src/lib/excel-import.ts',{'./rules':rules});
 const roster=fixture.map((r,i)=>({id:'00000000-0000-4000-8000-'+String(i+1).padStart(12,'0'),name:r[1],rank:r[0],admin_level:rankLevel[r[0]],in_reporting:r[0]!=='Responsible'}));
 let staged=null;
+let duplicateSavedFile=false;
+let storedOverlap=null;
 const sql=async(parts,...values)=>{
  const q=parts.join('?');
+ if(q.includes('FROM chico_next.import_staging')&&q.includes('committed_at IS NOT NULL'))return duplicateSavedFile?[{one:1}]:[];
+ if(q.includes('FROM chico_next.readings'))return storedOverlap?[storedOverlap]:[];
  if(q.includes('FROM chico_next.admins'))return roster;
  if(q.includes('INSERT INTO chico_next.import_staging')){staged=values[1];return [{id:'11111111-1111-4111-8111-111111111111'}];}
  if(q.includes('DELETE FROM chico_next.import_staging'))return [];
@@ -97,6 +101,16 @@ async function parseLegacy(periodYear=null){
  assert.equal(year.body.sourceTotals.to,'2026-11-12');
  assert.equal(year.body.warnings.length,0);
  assert(year.body.notices.some(x=>x.includes('explicitly selected')));
+ duplicateSavedFile=true;
+ const duplicate=await parse();
+ assert.equal(duplicate.status,409);
+ assert.equal(duplicate.body.error,'FILE_ALREADY_IMPORTED');
+ duplicateSavedFile=false;
+ storedOverlap={admin_id:roster.find(r=>r.name==='Bieso').id,from_date:'2026-11-09',to_date:'2026-11-12'};
+ const conflicting=await parse();
+ assert.equal(conflicting.status,200);
+ assert(conflicting.body.warnings.some(w=>w.includes('Bieso')&&w.includes('already saved reading overlaps')),'overlap should be blocked in preview');
+ storedOverlap=null;
  const old=await parseLegacy('2025');
  assert.equal(old.status,200);
  assert(old.body.warnings.some(x=>x.includes('invalid or missing report period')),
