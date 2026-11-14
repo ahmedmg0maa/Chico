@@ -36,14 +36,14 @@ export default function DailyReportStudio({state,review}:Props){
  const renderKey=useMemo(()=>JSON.stringify({from,to,title,rows,totals}),[from,to,title,rows,totals]);
  const imageReady=Boolean(state&&!review&&period.canExport&&renderedKey===renderKey);
  useEffect(()=>{
-  if(!canvas.current||!valid)return;
+  if(!canvas.current||!period.canExport)return;
   let cancelled=false;
   const paths=['/assets/chico-approved-onestate.avif','/assets/chico-approved-wolf.avif','/assets/chico-banner-original.png','/assets/medal-gold.png','/assets/medal-silver.png','/assets/medal-bronze.png'];
   (async()=>{const art=await Promise.all(paths.map(loadLuxuryArt));await document.fonts?.ready;
    if(!cancelled&&canvas.current){renderLuxuryPoster(canvas.current,rows,label,staff,readings.length,art,title,totals);setRenderedKey(renderKey);}
   })().catch(()=>{if(!cancelled&&canvas.current){try{renderLuxuryPoster(canvas.current,rows,label,staff,readings.length,[null,null,null,null,null,null],title,totals);setRenderedKey(renderKey);}catch{setError('تعذّر رسم التقرير');}}});
   return ()=>{cancelled=true;};
- },[rows,label,staff,readings.length,title,totals,valid,renderKey]);
+ },[rows,label,staff,readings.length,title,totals,valid,renderKey,period.canExport]);
  const download=()=>{
   if(!canvas.current||!imageReady||downloading)return;
   setDownloading(true);setError('');
@@ -75,7 +75,7 @@ export default function DailyReportStudio({state,review}:Props){
   {valid&&readings.length===0&&partial===0&&<p className="v9-warning" role="status">مفيش قراءات محفوظة للفترة المختارة. اختر آخر تقرير مسجّل لعرض بيانات حقيقية.</p>}
   {review&&<p className="v9-warning" role="status">دي معاينة التصميم فقط، بدون بيانات حية أو تصدير. رفع Excel واستخدام التقارير الفعلية من <a href="https://chicoteam.vercel.app/v2?tab=excel">الموقع الرسمي بعد تسجيل الدخول</a>.</p>}
   {error&&<p className="v9-warning" role="alert">{error}</p>}
-  <div className="v9-poster-preview" style={{display:readings.length>0?'flex':'none'}}><canvas ref={canvas} role="img" aria-label={'تقرير CHICO '+label} style={{width:'100%',maxWidth:1100,height:'auto',aspectRatio:'auto'}}/></div>
+  <div className="v9-poster-preview" style={{display:period.canExport?'flex':'none'}}><canvas ref={canvas} role="img" aria-label={'تقرير CHICO '+label} style={{width:'100%',maxWidth:1100,height:'auto',aspectRatio:'auto'}}/></div>
   {readings.length===0&&partial===0&&<div className="v9-report-empty" role="status">
     <b>التقرير جاهز للعرض بمجرد حفظ القراءات</b>
     <p>مفيش بيانات مسجلة للفترة المختارة، لذلك مش هنعرض تقرير مليان شرط أو نتائج وهمية.</p>
