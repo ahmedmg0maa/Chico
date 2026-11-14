@@ -2,7 +2,7 @@
 
 import {useEffect,useMemo,useRef,useState} from 'react';
 import {CalendarDays,Download,Ticket} from 'lucide-react';
-import {weekStart,eligibleReadings} from '@/lib/rules';
+import {weekStart,eligibleReadings,isEvaluatedAdmin} from '@/lib/rules';
 import {latestPeriod,latestSingleDay,selectPeriod,reportRows,reportTotals} from '@/lib/report-period';
 import type {State} from '@/lib/types';
 import {renderLuxuryPoster,loadLuxuryArt,type LuxuryPosterRow} from './DailyReportStudio';
@@ -29,6 +29,7 @@ export default function DiscordReportStudio({state,review}:Props){
  const {valid,matching}=period;
  const partial=period.partial.length;
  const rows=useMemo(()=>reportRows(state?.admins||[],matching),[state,matching]);
+ const missingCount=Math.max(0,(state?.admins.filter(isEvaluatedAdmin).length||0)-rows.length);
  const staff=state?.admins.filter(a=>a.active).length||0;
  const totals=useMemo(()=>reportTotals(matching,state?.admins||[]),[state,matching]);
  const title=mode==='day'?'إحصائيات يومية':mode==='week'?'ملخص الأسبوع حتى آخر قراءة':'إحصائيات الفترة المحددة';
@@ -107,6 +108,6 @@ export default function DiscordReportStudio({state,review}:Props){
     <p>مفيش بيانات مسجلة للفترة المختارة، لذلك مش هنعرض تقرير مليان شرط أو نتائج وهمية.</p>
     <a href="/v2?tab=excel">افتح استيراد Excel</a>
    </div>}
-  <p className="v9-poster-note"><Ticket size={15} style={{verticalAlign:'middle'}}/> Top 3 للـModerators منفصل عن Top 3 للـHelpers وSN.Helpers معًا، والترتيب حسب Tickets فقط. التقرير يستخدم الفروق المسجّلة ولا يختلق بيانات.</p>
+  <p className="v9-poster-note"><Ticket size={15} style={{verticalAlign:'middle'}}/> الصورة بتعرض أصحاب القراءات فقط، بنفس ترتيب الملف الأصلي عند توافره؛ {missingCount>0?`${missingCount} إداريين بدون قراءات مش ظاهرين بالصورة لكن موجودين في الفريق. `:''}Top 3 للـModerators منفصل عن Helpers وSN.Helpers، بالـTickets المسجّلة فقط.</p>
  </section>;
 }
