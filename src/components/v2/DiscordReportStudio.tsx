@@ -45,7 +45,7 @@ export default function DiscordReportStudio({state,review}:Props){
   else if(next==='week'){const d=latestRecord?.to_date||today;setStart(weekStart(d));setEnd(d);}
  };
  useEffect(()=>{
-  if(!canvas.current||!valid)return;
+  if(!canvas.current||!period.canExport)return;
   let cancelled=false;
   (async()=>{
    const art=await Promise.all([
@@ -62,7 +62,7 @@ export default function DiscordReportStudio({state,review}:Props){
    if(!cancelled&&canvas.current){try{renderLuxuryPoster(canvas.current,rows,dateLabel,staff,matching.length,[null,null,null,null,null,null],title,totals);setRenderedKey(renderKey);}catch{setError('تعذّر رسم تقرير Discord');}}
   });
   return ()=>{cancelled=true;};
- },[rows,dateLabel,staff,matching.length,title,valid,totals,renderKey]);
+ },[rows,dateLabel,staff,matching.length,title,valid,totals,renderKey,period.canExport]);
  const download=()=>{
   if(!canvas.current||!imageReady||downloading)return;
   setError('');setDownloading(true);
@@ -106,7 +106,7 @@ export default function DiscordReportStudio({state,review}:Props){
   {valid&&matching.length===0&&partial===0&&<p className="v9-warning" role="status">لا توجد قراءات محفوظة للفترة المحددة؛ علامة — تعني عدم وجود بيانات، وليس صفر.</p>}
   {error&&<p className="v9-warning" role="alert">{error}</p>}
   {review&&<p className="v9-warning" role="status">دي معاينة التصميم فقط؛ مفيش فيها قراءات محفوظة أو تنزيل حقيقي. للاستيراد والتقارير الفعلية افتح <a href="https://chicoteam.vercel.app/v2?tab=excel">الموقع الرسمي بعد تسجيل الدخول</a>.</p>}
-  <div className="v9-poster-preview" style={{display:matching.length>0?'flex':'none'}}><canvas ref={canvas} role="img" aria-label={'تقرير CHICO الفاخر '+title+' للفترة '+dateLabel} style={{width:'100%',maxWidth:1100,height:'auto',aspectRatio:'auto'}}/></div>
+  <div className="v9-poster-preview" style={{display:period.canExport?'flex':'none'}}><canvas ref={canvas} role="img" aria-label={'تقرير CHICO الفاخر '+title+' للفترة '+dateLabel} style={{width:'100%',maxWidth:1100,height:'auto',aspectRatio:'auto'}}/></div>
   {matching.length===0&&partial===0&&<div className="v9-report-empty" role="status">
     <b>التقرير جاهز للعرض بمجرد حفظ القراءات</b>
     <p>مفيش بيانات مسجلة للفترة المختارة، لذلك مش هنعرض تقرير مليان شرط أو نتائج وهمية.</p>
