@@ -18,6 +18,7 @@ export default function DailyReportStudio({state,review}:Props){
  const touched=useRef(false);
  const [from,setFrom]=useState(today),[to,setTo]=useState(today);
  const [error,setError]=useState(''),[downloading,setDownloading]=useState(false);
+ const [renderedKey,setRenderedKey]=useState('');
  const canvas=useRef<HTMLCanvasElement>(null);
  useEffect(()=>{
   if(latestRecord&&!touched.current){setFrom(latestRecord.from_date);setTo(latestRecord.to_date);}
@@ -31,17 +32,20 @@ export default function DailyReportStudio({state,review}:Props){
  const totals=useMemo(()=>reportTotals(readings,state?.admins||[]),[state,readings]);
  const label=from===to?from:from+'  —  '+to;
  const title=from===to?'إحصائيات يومية':'إحصائيات الفترة المجمعة';
+ // A report can only be downloaded after the exact selected rows and dates are drawn.
+ const renderKey=useMemo(()=>JSON.stringify({from,to,title,rows,totals}),[from,to,title,rows,totals]);
+ const imageReady=Boolean(state&&!review&&period.canExport&&renderedKey===renderKey);
  useEffect(()=>{
   if(!canvas.current||!valid)return;
   let cancelled=false;
   const paths=['/assets/chico-approved-onestate.avif','/assets/chico-approved-wolf.avif','/assets/chico-banner-original.png','/assets/medal-gold.png','/assets/medal-silver.png','/assets/medal-bronze.png'];
   (async()=>{const art=await Promise.all(paths.map(loadLuxuryArt));await document.fonts?.ready;
-   if(!cancelled&&canvas.current)renderLuxuryPoster(canvas.current,rows,label,staff,readings.length,art,title,totals);
-  })().catch(()=>{if(!cancelled&&canvas.current)renderLuxuryPoster(canvas.current,rows,label,staff,readings.length,[null,null,null,null,null,null],title,totals);});
+   if(!cancelled&&canvas.current){renderLuxuryPoster(canvas.current,rows,label,staff,readings.length,art,title,totals);setRenderedKey(renderKey);}
+  })().catch(()=>{if(!cancelled&&canvas.current){try{renderLuxuryPoster(canvas.current,rows,label,staff,readings.length,[null,null,null,null,null,null],title,totals);setRenderedKey(renderKey);}catch{setError('تعذّر رسم التقرير');}}});
   return ()=>{cancelled=true;};
- },[rows,label,staff,readings.length,title,totals,valid]);
+ },[rows,label,staff,readings.length,title,totals,valid,renderKey]);
  const download=()=>{
-  if(!canvas.current||!state||review||!period.canExport||downloading)return;
+  if(!canvas.current||!imageReady||downloading)return;
   setDownloading(true);setError('');
   canvas.current.toBlob(blob=>{
    setDownloading(false);
@@ -58,7 +62,7 @@ export default function DailyReportStudio({state,review}:Props){
    <div><small>CHICO / PREMIUM STATISTICS</small><h2>التقرير اليومي</h2>
     <p>تقرير بصري متغيّر حسب البيانات المحفوظة. إذا كان الملف يغطي أكثر من يوم، تظهر فترة التغطية الكاملة من غير اختراع توزيع يومي.</p>
    </div>
-   <button className="v9-primary" type="button" disabled={review||!state||!period.canExport||downloading} onClick={download}><Download size={18}/>{downloading?'جاري تجهيز الصورة…':'تنزيل التقرير PNG'}</button>
+   <button className="v9-primary" type="button" disabled={!imageReady||downloading} onClick={download}><Download size={18}/>{downloading?'جاري تجهيز الصورة…':period.canExport&&!imageReady&&!review?'جاري رسم الصورة…':'تنزيل التقرير PNG'}</button>
   </header>
   <div className="v9-poster-filters">
    <label>من تاريخ<input type="date" value={from} onChange={e=>{touched.current=true;setFrom(e.target.value);}}/></label>
