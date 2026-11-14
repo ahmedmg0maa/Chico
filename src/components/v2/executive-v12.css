@@ -365,3 +365,24 @@
 .chico-v2 #chico-main-content:focus{outline:none}
 .chico-v2 #chico-main-content:focus-visible{outline:2px solid var(--ch-gold)}
 .chico-v2 .v9-tools-nav button[aria-current=page]{border-color:var(--ch-gold)}
+
+
+/* Management Tools already owns the page title. The selected subtool gets a
+   compact section title, not a second oversized illustrated hero. */
+.chico-v2 .v9-tools-active .x-titleband.x-illustrated-head{
+ position:relative;display:block;min-height:0;height:auto;overflow:visible;
+ margin:0 0 14px;padding:0;border:0;border-bottom:1px solid var(--ch-line);
+ background:transparent;box-shadow:none;border-radius:0;
+}
+.chico-v2 .v9-tools-active .x-titleband.x-illustrated-head::before,
+.chico-v2 .v9-tools-active .x-titleband.x-illustrated-head::after,
+.chico-v2 .v9-tools-active .x-illustrated-banner{display:none}
+.chico-v2 .v9-tools-active .x-titleband .x-illustrated-copy{
+ position:static;display:block;padding:0 0 14px;background:none;min-height:0;
+}
+.chico-v2 .v9-tools-active .x-titleband .x-illustrated-copy h1{
+ font-size:clamp(20px,1.8vw,25px);margin:5px 0 6px;color:var(--ch-text);
+}
+.chico-v2 .v9-tools-active .x-titleband .x-illustrated-copy p{
+ font-size:13px;color:var(--ch-muted);line-height:1.65;margin:0;
+}
