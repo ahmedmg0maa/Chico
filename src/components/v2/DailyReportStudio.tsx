@@ -4,6 +4,7 @@ import {useEffect,useMemo,useRef,useState} from 'react';
 import {CalendarDays,Download} from 'lucide-react';
 import type {State} from '@/lib/types';
 import {latestPeriod,selectPeriod,reportRows,reportTotals} from '@/lib/report-period';
+import {eligibleReadings} from '@/lib/rules';
 import {renderLuxuryPoster,loadLuxuryArt,type LuxuryPosterRow} from './PremiumPosterRenderer';
 export {renderLuxuryPoster,loadLuxuryArt};
 export type {LuxuryPosterRow,PremiumTotals} from './PremiumPosterRenderer';
@@ -12,7 +13,8 @@ type Props={state:State|null;review:boolean};
 const cairoToday=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'Africa/Cairo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
 export default function DailyReportStudio({state,review}:Props){
  const today=useMemo(cairoToday,[]);
- const latestRecord=useMemo(()=>latestPeriod(state?.readings||[]),[state]);
+ const eligibleRecords=useMemo(()=>eligibleReadings(state?.readings||[],state?.admins||[]),[state]);
+ const latestRecord=useMemo(()=>latestPeriod(eligibleRecords),[eligibleRecords]);
  const touched=useRef(false);
  const [from,setFrom]=useState(today),[to,setTo]=useState(today);
  const [error,setError]=useState(''),[downloading,setDownloading]=useState(false);
@@ -20,7 +22,7 @@ export default function DailyReportStudio({state,review}:Props){
  useEffect(()=>{
   if(latestRecord&&!touched.current){setFrom(latestRecord.from_date);setTo(latestRecord.to_date);}
  },[latestRecord]);
- const period=useMemo(()=>selectPeriod(state?.readings||[],from,to),[state,from,to]);
+ const period=useMemo(()=>selectPeriod(eligibleRecords,from,to),[eligibleRecords,from,to]);
  const {valid,matching:readings}=period;
  const partial=period.partial.length;
  const rows=useMemo(()=>reportRows(state?.admins||[],readings),[state,readings]);
@@ -66,6 +68,7 @@ export default function DailyReportStudio({state,review}:Props){
   {!valid&&<p className="v9-warning" role="alert">يجب اختيار فترة صحيحة داخل أسبوع واحد؛ Tickets يُصفّر يوم الإثنين.</p>}
   {partial>0&&<div className="v9-warning" role="alert">توجد {partial} قراءة تبدأ قبل الفترة المختارة أو تنتهي بعدها. إظهار بقية الأرقام وحدها هيطلع تقرير ناقص، لذلك التصدير متوقف. <button type="button" className="v9-quiet-btn" onClick={expandCoverage}>عرض فترة التغطية الكاملة ({period.expandFrom} — {period.expandTo})</button></div>}
   {valid&&readings.length===0&&partial===0&&<p className="v9-warning" role="status">مفيش قراءات محفوظة للفترة المختارة. اختر آخر تقرير مسجّل لعرض بيانات حقيقية.</p>}
+  {review&&<p className="v9-warning" role="status">دي معاينة التصميم فقط، بدون بيانات حية أو تصدير. رفع Excel واستخدام التقارير الفعلية من <a href="https://chicoteam.vercel.app/v2?tab=excel">الموقع الرسمي بعد تسجيل الدخول</a>.</p>}
   {error&&<p className="v9-warning" role="alert">{error}</p>}
   <div className="v9-poster-preview" style={{display:readings.length>0?'flex':'none'}}><canvas ref={canvas} role="img" aria-label={'تقرير CHICO '+label} style={{width:'100%',maxWidth:1100,height:'auto',aspectRatio:'auto'}}/></div>
   {readings.length===0&&partial===0&&<div className="v9-report-empty" role="status">
