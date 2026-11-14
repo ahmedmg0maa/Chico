@@ -37,5 +37,17 @@ const manualEntry=fs.readFileSync(path.resolve(__dirname,'../src/components/v2/R
 assert(manualEntry.includes("a.rank!=='Responsible'"),'General must not appear in manual entry');
 const state=fs.readFileSync(path.resolve(__dirname,'../src/lib/state.ts'),'utf8');
 assert(state.includes('eligibleReadings(readings.filter'), 'same eligibility rule in server summary');
+const importRoute=fs.readFileSync(path.resolve(__dirname,'../src/app/api/import/route.ts'),'utf8');
+const coreDb=fs.readFileSync(path.resolve(__dirname,'../src/lib/db.ts'),'utf8');
+const importCommit=fs.readFileSync(path.resolve(__dirname,'../src/app/api/import/commit/route.ts'),'utf8');
+assert(importRoute.includes('sql.json({rows,warnings:'),'staging must be stored as a JSONB object, not a string');
+assert(coreDb.includes('sql.json(payload)'),'backups must be stored as a real JSONB object');
+assert(importCommit.includes("if(typeof value==='string')"),'legacy preview JSONB string compatibility');
+assert(importCommit.indexOf('await snapshot(tx as unknown')>importCommit.indexOf("if(duplicate.length)"),'backup must be transactional after duplicate validation');
+assert(!importCommit.includes("await snapshot(sql,'Before verified CHICO Excel import')"),'no orphan backup before transaction');
+const apiSource=fs.readFileSync(path.resolve(__dirname,'../src/lib/api.ts'),'utf8');
+assert(apiSource.includes("'FILE_ALREADY_IMPORTED'")&&apiSource.includes("'FIRST_TICKETS_READING_MUST_COVER_WEEK_START'"),'expected business errors must have safe codes');
+console.log('PASS phase1: typed JSONB staging/backups, transactional snapshots, safe client errors');
+
 console.log('PASS phase1: 3301 source vs 3222 evaluated Tickets, Flags 50, General/Administrator excluded');
 console.log('PASS phase1: Monday reset, date coverage, decimal counters, Excel rank lock and manual General exclusion');
