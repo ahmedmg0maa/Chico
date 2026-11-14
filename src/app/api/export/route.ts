@@ -66,8 +66,8 @@ export async function GET(req:NextRequest){
    const workbook=new ExcelJS.Workbook();
    workbook.creator='CHICO GENERAL TEAM';workbook.created=new Date();
    const sheet=workbook.addWorksheet(scope==='team'?'الفريق':'القراءات',{views:[{state:'frozen',ySplit:1}]});
-   // ExcelJS rewrites cell values if column definitions are assigned after rows.
-   // Define columns first, then populate header and data to keep actual workbook cells.
+   // Define worksheet layout before adding rows so the export's formatting and
+   // field ordering are explicit and consistent across spreadsheet readers.
    sheet.columns=labels.map((name,i)=>({key:'c'+i,width:Math.max(16,Math.min(30,name.length+8))}));
    sheet.addRow(labels);
    for(const row of data)sheet.addRow(row);
