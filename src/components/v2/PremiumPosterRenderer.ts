@@ -148,13 +148,13 @@ export function renderLuxuryPoster(
   type(index===0?'HELPERS':'MODERATORS',x+43,tableY+48,32,C.ivory,{weight:850});
   type(String(data.rows.length).padStart(2,'0'),x+w-34,tableY+48,25,C.muted,{align:'right'});
   rule(x+24,tableY+87,x+w-24,tableY+87,rgba(C.gold,.28),1);
-  const hd=tableY+99;
+  const hd=tableY+thead;
   box(x+20,hd,w-40,cols-7,8,'rgba(195,160,104,.11)');
   type('NAME',x+87,hd+23,19,C.muted,{weight:800});
   type('TICKETS',x+443,hd+23,17,C.muted,{align:'center',weight:800});
   type('FLAGS',x+544,hd+23,17,C.muted,{align:'center',weight:800});
   type('RATE',x+642,hd+23,17,C.muted,{align:'center',weight:800});
-  const rY=hd+cols-1;
+  const rY=hd+cols;
   if(data.rows.length===0){
    type('لا توجد بيانات مسجلة',x+w/2,rY+ROW*2,28,C.muted,{align:'center',maxWidth:w-80});
   }
@@ -176,7 +176,7 @@ export function renderLuxuryPoster(
    const rateColor=row.rating===null?C.quiet:row.rating>=4.8?C.green:C.red;
    type(num(row.rating,2),x+642,itemY+ROW/2,21,rateColor,{align:'center',weight:800,maxWidth:93});
   });
-  const bottom=tableY+thead+cols+rowsH+8;
+  const bottom=tableY+thead+cols+rowsH+12;
   rule(x+24,bottom,x+w-24,bottom,rgba(C.gold,.24),1);
  };
  drawList(0);drawList(1);
