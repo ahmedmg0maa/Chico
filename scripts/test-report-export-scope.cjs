@@ -53,8 +53,11 @@ const endpoint=(scope,format)=>exportRoute.GET({nextUrl:new URL('https://chico.t
  assert.equal(names2.length,26,'No Administrative readings in exported performance ledger');
  assert(!names2.some(n=>String(n).startsWith('A. ')));
  console.log('PASS Excel readings: 26 eligible records from 29 source records');
- const csv=await endpoint('team','csv'),body=await csv.text();
- assert.equal(csv.status,200);assert(body.startsWith('\uFEFF'));assert(body.includes('Kararr'));assert(!body.includes('A. Marwan'));assert.equal(body.split('\r\n').length,27);
+ const csv=await endpoint('team','csv'),rawCSV=new Uint8Array(await csv.arrayBuffer());
+ // Fetch Response.text strips a UTF-8 BOM; check actual downloaded bytes instead.
+ assert.deepEqual(Array.from(rawCSV.slice(0,3)),[239,187,191]);
+ const body=Buffer.from(rawCSV).toString('utf8').replace(/^\uFEFF/,'');
+ assert.equal(csv.status,200);assert(body.includes('Kararr'));assert(!body.includes('A. Marwan'));assert.equal(body.split('\r\n').length,27);
  console.log('PASS CSV team counts, BOM encoding, excluded rank');
  const printed=await endpoint('team','print'),html=await printed.text();
  assert(printed.status===200&&html.includes('Evaluated Members: 26')&&!html.includes('A. Bashar'));
