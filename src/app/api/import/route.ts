@@ -47,7 +47,7 @@ export async function POST(req:NextRequest){
   // Legacy game sheets omit the year in their column names. Never silently
   // treat an uploaded historical report as belonging to the present year.
   const explicitYear=body.get('period_year');
-  const selectedYear=typeof explicitYear==='string'&&/^20\\d{2}$/.test(explicitYear)?Number(explicitYear):null;
+  const selectedYear=typeof explicitYear==='string'&&/^20[0-9]{2}$/.test(explicitYear)?Number(explicitYear):null;
   const legacyHeader=fromCol<0&&heads.some(h=>h.includes('total week')&&h.includes('from')&&h.includes('to'));
   if(legacyHeader&&selectedYear===null)return response({ok:false,error:'LEGACY_YEAR_REQUIRED'},422);
   const fallback=fromCol<0&&selectedYear!==null?inferLegacyPeriod(heads,selectedYear):null;
