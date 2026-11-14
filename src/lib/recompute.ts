@@ -1,15 +1,16 @@
 import {db} from './db';
 import {dateOnly} from './date-serialization';
-import {deltaTickets,deltaFlags,weekStart} from './rules';
+import {deltaTickets,deltaFlags,weekStart,ensureFirstTicketPeriod} from './rules';
 /** Recalculate all sequential counter deltas after edits/deletes; never assume the first flag balance is zero. */
 export async function recompute(adminId:string,sql:ReturnType<typeof db>){
-  const rows=await sql`SELECT id,to_date::text AS to_date,week_start::text AS week_start,tickets_counter,flags_counter,flags_baseline FROM chico_next.readings WHERE admin_id=${adminId} ORDER BY to_date ASC,id ASC`;
+  const rows=await sql`SELECT id,from_date::text AS from_date,to_date::text AS to_date,week_start::text AS week_start,tickets_counter,flags_counter,flags_baseline FROM chico_next.readings WHERE admin_id=${adminId} ORDER BY to_date ASC,id ASC`;
   let lastTickets:null|number=null, lastWeek='';let lastFlags:null|number=null;
   for(const r of rows){
     const ticket=r.tickets_counter===null?null:Number(r.tickets_counter);
     const flag=r.flags_counter===null?null:Number(r.flags_counter);
     const baseline=r.flags_baseline===null?null:Number(r.flags_baseline);
     const sameWeek=dateOnly(r.week_start)===lastWeek;
+    ensureFirstTicketPeriod(dateOnly(r.from_date),dateOnly(r.week_start),ticket,sameWeek);
     const t=deltaTickets(ticket,lastTickets,sameWeek);
     const f=deltaFlags(flag,lastFlags,baseline);
     await sql`UPDATE chico_next.readings SET tickets_delta=${t},flags_delta=${f},updated_at=now() WHERE id=${r.id}`;
