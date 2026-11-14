@@ -100,7 +100,7 @@ export async function POST(req:NextRequest){
   if(!rows.length)return response({ok:false,error:'EMPTY_XLSX'},400);
   const audit=auditImport(rows);warnings.push(...audit.issues);
   const hash=createHash('sha256').update(buf).digest('hex');
-  const stage=await sql`INSERT INTO chico_next.import_staging(source_hash,payload) VALUES(${hash},${JSON.stringify({rows,warnings:[...new Set(warnings)]})}::jsonb) RETURNING id`;
+  const stage=await sql`INSERT INTO chico_next.import_staging(source_hash,payload) VALUES(${hash},${sql.json({rows,warnings:[...new Set(warnings)]})}) RETURNING id`;
   await sql`DELETE FROM chico_next.import_staging WHERE created_at < now()-interval '24 hours'`;
   return response({ok:true,preview_id:String(stage[0].id),filename:file.name,sheet:sheet.name,rows,
    imported:audit.imported,leaders:audit.leaders,
