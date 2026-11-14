@@ -30,3 +30,14 @@ Status: **First implementation on preview branch; not approved or released.**
 - No automatic merge or production deploy of Phase 3 until explicit approval.
 
 Technical results do not replace subjective assessment of design quality.
+## Update — real website export regression, 2026-11-14
+- `DailyReportStudio` and `DiscordReportStudio` now mark completed Canvas renders against an exact signature of selected dates, rows, totals and mode (Discord). The export button is disabled for missing, pending or stale render states. It displays a rendering status while valid data is drawing.
+- Both pages hide an incomplete preview whenever a selected date range intersects but does not fully contain saved readings. Users must explicitly expand to the full coverage period; the four-day cumulative reading is never attributed to 12 November alone.
+- New `scripts/test-report-export-ui.cjs` runs in `prebuild` and checks that the safety guards remain in both report pages.
+- Full Next production build and the entire existing data/rules/import/report suite passed on the latest branch.
+- **Browser end-to-end:** isolated Next production server with network-stubbed authenticated state containing the 30 original people / 29 readings from the source fixture, 26 eligible. Both report tabs downloaded genuine PNG files, 1560 x 2144 pixels and about 2.7 MB each. Each PNG had correct signature and no JS errors. Both prevented partial-day exports, and expanding to the full 2026-11-09..12 coverage re-enabled downloads only after redraw.
+- Same browser download/period workflow also passed at **390 px mobile width** with no document-level horizontal overflow.
+- These tests used a local fixture and browser-route stubs to avoid production credentials and data mutation. They do NOT prove production authenticated import/update or externally accessible Vercel preview.
+- **Visual review:** inspected the generated poster at a downscaled overview width. The 26-row poster is dense at small thumbnail sizes; full-resolution readability and subjective art direction still require owner acceptance.
+- **Release blocker:** Vercel reported `Deployment rate limited — retry in 24 hours` for this preview branch, despite successful GitHub CI. The latest Phase 3 SHA is not available at a confirmed READY Vercel URL. Do not present an older preview URL as evidence of the latest changes.
+- Production `chicoteam.vercel.app` continues to serve Phase 2 (`bbbb696`); Phase 3 PR #16 remains draft and not merged. No customer/owner database modifications.
