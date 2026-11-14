@@ -26,6 +26,9 @@ export function eligibleReadings(readings:readonly Reading[],admins:readonly Adm
 
 export function serverFlagRate(flags:number|null,tickets:number|null){return flags===null||tickets===null||tickets<=0?null:Math.round(flags/tickets*10000)/100;}
 export function decimalHours(value:number){if(!Number.isFinite(value)||value<0||value>10000)throw new Error('INVALID_HOURS');return Math.round(value*100)/100;}
+export function ensureFirstTicketPeriod(from:string,week:string,current:number|null,previousInWeek:boolean){
+ if(current!==null&&current>0&&!previousInWeek&&from!==week)throw new Error('FIRST_TICKETS_READING_MUST_COVER_WEEK_START');
+}
 export function deltaTickets(current:number|null,prior:number|null,sameWeek:boolean):number|null {
   if(current===null)return null;
   if(current<0||!Number.isInteger(current))throw new Error('INVALID_TICKETS');
