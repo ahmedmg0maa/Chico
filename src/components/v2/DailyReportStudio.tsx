@@ -3,7 +3,7 @@
 import {useEffect,useMemo,useRef,useState} from 'react';
 import {CalendarDays,Download} from 'lucide-react';
 import type {Admin,Reading,State} from '@/lib/types';
-import {summarizeReadings,weekStart} from '@/lib/rules';
+import {summarizeReadings,weekStart,isEvaluatedAdmin,eligibleReadings} from '@/lib/rules';
 import {buildReportGroups} from '@/lib/report-groups';
 
 type Props={state:State|null;review:boolean};
@@ -11,7 +11,7 @@ export type LuxuryPosterRow={id:string;name:string;rank:string;order:number;tick
 const cairoToday=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'Africa/Cairo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
 const fmt=(n:number|null,dec=0)=>n===null?'—':n.toLocaleString('en-US',{minimumFractionDigits:dec,maximumFractionDigits:dec});
 const sum=(values:(number|null)[])=>{const present=values.filter((n):n is number=>n!==null);return present.length?present.reduce((a,b)=>a+b,0):null;};
-const eligible=(a:Admin)=>a.active&&a.in_reporting&&['Helper','SN.Helper','Moderator'].includes(a.rank);
+const eligible=isEvaluatedAdmin;
 function dailyRow(admin:Admin,readings:Reading[]):LuxuryPosterRow{
  const own=readings.filter(r=>r.admin_id===admin.id).sort((a,b)=>b.created_at.localeCompare(a.created_at));
  const flagsIncomplete=own.some(r=>r.flags_counter!==null&&r.flags_delta===null);
@@ -239,8 +239,7 @@ export default function DailyReportStudio({state,review}:Props){
  const partial=useMemo(()=>state?.readings.filter(r=>valid&&r.from_date<=to&&r.to_date>=from&&(r.from_date<from||r.to_date>to)).length||0,[state,from,to,valid]);
  const rows=useMemo(()=>state?.admins.filter(eligible).map(a=>dailyRow(a,readings))||[],[state,readings]);
  const staff=state?.admins.filter(a=>a.active).length||0;
- const totals=useMemo(()=>{const allowed=new Set(state?.admins.filter(a=>a.rank!=='Responsible'&&a.in_reporting).map(a=>a.id)||[]);
-  const metrics=summarizeReadings(readings.filter(r=>allowed.has(r.admin_id)));
+ const totals=useMemo(()=>{const metrics=summarizeReadings(eligibleReadings(readings,state?.admins||[]));
   return {tickets:metrics.tickets,flags:metrics.flags,rating:metrics.rating};
  },[state,readings]);
  const label=from===to?from:from+'  —  '+to;
