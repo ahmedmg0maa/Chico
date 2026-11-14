@@ -75,7 +75,7 @@ export default function DailyReportStudio({state,review}:Props){
   {valid&&readings.length===0&&partial===0&&<p className="v9-warning" role="status">مفيش قراءات محفوظة للفترة المختارة. اختر آخر تقرير مسجّل لعرض بيانات حقيقية.</p>}
   {review&&<p className="v9-warning" role="status">دي معاينة التصميم فقط، بدون بيانات حية أو تصدير. رفع Excel واستخدام التقارير الفعلية من <a href="https://chicoteam.vercel.app/v2?tab=excel">الموقع الرسمي بعد تسجيل الدخول</a>.</p>}
   {error&&<p className="v9-warning" role="alert">{error}</p>}
-  <div className="v9-poster-preview" style={{display:period.canExport?'flex':'none'}}><canvas ref={canvas} role="img" aria-label={'تقرير CHICO '+label} style={{width:'100%',maxWidth:1100,height:'auto',aspectRatio:'auto'}}/></div>
+  <div className="v9-poster-preview" role="region" aria-label="معاينة صورة التقرير قابلة للتمرير أفقيًا على الشاشات الصغيرة" tabIndex={0} style={{display:period.canExport?'flex':'none'}}><canvas ref={canvas} role="img" aria-label={'تقرير CHICO '+label} style={{width:'100%',maxWidth:1100,height:'auto',aspectRatio:'auto'}}/></div>
   {readings.length===0&&partial===0&&<div className="v9-report-empty" role="status">
     <b>التقرير جاهز للعرض بمجرد حفظ القراءات</b>
     <p>مفيش بيانات مسجلة للفترة المختارة، لذلك مش هنعرض تقرير مليان شرط أو نتائج وهمية.</p>
