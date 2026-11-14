@@ -75,7 +75,7 @@ export async function POST(req:NextRequest){
    }
    for(const id of affected)await recompute(id,tx as unknown as ReturnType<typeof db>);
    await tx`UPDATE chico_next.import_staging SET committed_at=now() WHERE id=${preview_id}`;
-   await tx`INSERT INTO chico_next.audit(action,summary) VALUES('XLSX_IMPORT',${String(inserted)+' readings; '+String(created)+' members created; '+'0 existing ranks changed'; '+String(leaders)+' leader excluded'})`;
+   await tx`INSERT INTO chico_next.audit(action,summary) VALUES('XLSX_IMPORT',${String(inserted)+' readings; '+String(created)+' members created; 0 existing ranks changed; '+String(leaders)+' leader excluded'})`;
    return {inserted,created,updated:0,leaders};
   });
   return response({ok:true,...result});
