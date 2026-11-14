@@ -376,7 +376,7 @@
 }
 .chico-v2 .v9-tools-active .x-titleband.x-illustrated-head::before,
 .chico-v2 .v9-tools-active .x-titleband.x-illustrated-head::after,
-.chico-v2 .v9-tools-active .x-illustrated-banner{display:none}
+.chico-v2 .v9-tools-active .x-illustrated-banner{display:none!important}
 .chico-v2 .v9-tools-active .x-titleband .x-illustrated-copy{
  position:static;display:block;padding:0 0 14px;background:none;min-height:0;
 }
