@@ -154,11 +154,10 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
 
  const intervalRows=(state?.readings??[]).filter(r=>r.week_start===summary?.week_start).sort((a,b)=>b.to_date.localeCompare(a.to_date)||b.created_at.localeCompare(a.created_at)).slice(0,8);
  const alerts=review?[]:warnings.filter(r=>r.lastUpdate!==null||r.flagsIncomplete).slice(0,3).map(r=>({label:r.name,desc:r.flagsIncomplete?'رصيد Flags السابق غير معروف':r.flags!==null&&r.flags>7?'Flags مرتفعة — '+r.flags:r.rating!==null&&r.rating<4.8?'التقييم '+pretty(r.rating,'rating'):'تحتاج مراجعة',severity:'warning'}));
+ // Four decision-focused metrics; staff count is in the hero and individual ratings remain in Team.
  const kpis=[
-  {title:'إجمالي الفريق',english:'Total Staff',value:pretty(totals.members),glyph:'members' as const,tone:'copper'},
   {title:'تذاكر الأسبوع',english:'Weekly Tickets',value:pretty(totals.tickets),glyph:'tickets' as const,tone:'gold'},
-  {title:'الفلاجات',english:'Total Flags',value:pretty(totals.flags),glyph:'flags' as const,tone:'ruby'},
-  {title:'متوسط التقييم',english:'Average Rating',value:pretty(totals.rating,'rating'),glyph:'rating' as const,tone:'violet'},
+  {title:'الفلاجات',english:'Weekly Flags',value:pretty(totals.flags),glyph:'flags' as const,tone:'ruby'},
   {title:'معدل الفلاجات',english:'Flag Rate',value:pretty(totals.rate,'percent'),glyph:'rate' as const,tone:'amber'},
   {title:'تغطية الفريق',english:'Team Coverage',value:pretty(totals.coverage,'percent'),glyph:'coverage' as const,tone:'emerald'}
  ];
@@ -226,7 +225,6 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
        <div className="v8-command-hero-art"><img src="/assets/chico-approved-hero.avif" alt="الشعار المعتمد لفريق CHICO وشعار OneState RP والذئب الهادئ" decoding="async" fetchPriority="high"/></div>
       </section>
       <div className="x-kpi-grid v8-kpi-grid">{kpis.map(({title,english,value,glyph,tone},index)=><div className={'x-kpi v8-kpi x-tone-'+tone} key={title} style={{animationDelay:(index*45)+'ms'}}><div className="x-kpi-title"><CommandIcon name={glyph}/><div><b>{title}</b><small>{english}</small></div></div><strong>{value}</strong><span>{review?'لا توجد قراءات بعد': 'الأسبوع الحالي'}</span><i className="v8-kpi-line"/></div>)}</div>
-      <section className="x-weekbanner"><div className="x-weeklabel"><CalendarDays size={26}/><div><small>WEEKLY OPERATIONS</small><strong>متابعة الأسبوع الحالي</strong></div></div><div className="x-week-center"><Star size={29}/><div><b>مؤشرات الأداء والمتابعة</b><span>{review?'الأسماء معتمدة · لا توجد إحصائيات':'المعلومات المستمدة من سجلات الفريق'}</span></div></div><div className="x-week-mini">ONE STATE · CHICO ME</div></section>
       <div className="x-triple">
        <section className="x-panel x-alerts-panel"><CardTitle icon={Bell} title="تنبيهات القيادة" en="LEADERSHIP ALERTS" action={<button className="x-text-action" onClick={()=>open('alerts')}>عرض الكل <ArrowLeft size={14}/></button>}/>
         {alerts.length?alerts.map((a,i)=><button className={'x-alert x-alert-'+a.severity} key={i} onClick={()=>open('alerts')}><div><b>{a.label}</b><span>{a.desc}</span></div><AlertTriangle size={18}/></button>):<div className="x-empty"><CheckCircle2 size={24}/><b>لا توجد تنبيهات مسجلة</b><p>تنبيهات الأداء تظهر هنا تلقائيًا</p></div>}
