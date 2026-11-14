@@ -37,7 +37,8 @@ export function canonicalName(name:string){
 export function resolvePerson(name:string,rank:Rank|null,existing:ExcelImportPerson[]){
  const exact=existing.find(p=>p.name.toLowerCase()===cleanName(name).toLowerCase());
  if(exact)return {person:exact,ambiguous:false};
- const matches=existing.filter(p=>canonicalName(p.name)===canonicalName(name)&&(!rank||p.rank===rank));
+ // Source ranks may be stale, so identity matching cannot depend on spreadsheet rank.
+ const matches=existing.filter(p=>canonicalName(p.name)===canonicalName(name));
  return {person:matches.length===1?matches[0]:null,ambiguous:matches.length>1};
 }
 export function strictDate(value:unknown):string|null{
