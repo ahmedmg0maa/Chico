@@ -3,6 +3,7 @@ import ExcelJS from 'exceljs';
 import {requireOwner,response,failure} from '@/lib/api';
 import {loadState} from '@/lib/state';
 import type {Reading,Admin} from '@/lib/types';
+import {eligibleReadings,isEvaluatedAdmin} from '@/lib/rules';
 
 export const runtime='nodejs';
 export const dynamic='force-dynamic';
@@ -23,11 +24,12 @@ const safeCell=(x:unknown)=>{
 const escapeHTML=(v:unknown)=>numeral(v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]||m));
 function personRow(admin:Admin,readings:Reading[]):Row{
  const mine=readings.filter(r=>r.admin_id===admin.id).sort((a,b)=>b.to_date.localeCompare(a.to_date));
- const flags=mine.some(r=>r.flags_counter!==null&&r.flags_delta===null)?null:sum(mine.map(r=>r.flags_delta));
+ const complete=(field:'tickets_delta'|'flags_delta'|'hours')=>mine.length>0&&mine.every(r=>r[field]!==null);
+ const flags=complete('flags_delta')?sum(mine.map(r=>r.flags_delta)):null;
  return {name:admin.name,rank:admin.rank,level:numeral(admin.admin_level),shift:admin.shift_label||'',
   status:admin.active?'نشط':'غير نشط',reporting:admin.in_reporting?'نعم':'لا',
-  tickets:sum(mine.map(r=>r.tickets_delta)),flags,
-  rating:mine.find(r=>r.rating!==null)?.rating??null,hours:sum(mine.map(r=>r.hours)),
+  tickets:complete('tickets_delta')?sum(mine.map(r=>r.tickets_delta)):null,flags,
+  rating:mine.find(r=>r.rating!==null)?.rating??null,hours:complete('hours')?sum(mine.map(r=>r.hours)):null,
   lastReading:mine[0]?.to_date||''};
 }
 function headers(scope:string){
@@ -47,11 +49,15 @@ export async function GET(req:NextRequest){
   if(!['xlsx','csv','print'].includes(format)||!['team','readings'].includes(scope))return response({ok:false,error:'INVALID_INPUT'},400);
   const state=await loadState();
   const period=state.summary.week_start;
-  const relevant=state.readings.filter(r=>r.week_start===period);
-  const rows=state.admins.map(a=>personRow(a,relevant));
-  const exportedReadings=scope==='readings'?state.readings:relevant;
+  // Reporting exports use the same active, evaluated roster as Discord and the live performance reports.
+  // General, Administrators and inactive historical names remain in the private roster/ledger only.
+  const evaluated=state.admins.filter(isEvaluatedAdmin);
+  const eligible=eligibleReadings(state.readings,state.admins);
+  const relevant=eligible.filter(r=>r.week_start===period);
+  const rows=evaluated.map(a=>personRow(a,relevant));
+  const exportedReadings=scope==='readings'?eligible:relevant;
   const labels=headers(scope);const data=cells(scope,rows,exportedReadings);
-  const base=scope==='readings'?'CHICO_Readings_Full_History':'CHICO_Team_'+period;
+  const base=scope==='readings'?'CHICO_Evaluated_Readings_History':'CHICO_Evaluated_Team_'+period;
   if(format==='csv'){
    const content='\uFEFF'+[labels,...data.map(a=>a.map(x=>numeral(x)))].map(row=>row.map(safeCell).join(',')).join('\r\n');
    return new Response(content,{headers:{'Content-Type':'text/csv; charset=utf-8','Content-Disposition':'attachment; filename="'+base+'.csv"','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
@@ -60,9 +66,11 @@ export async function GET(req:NextRequest){
    const workbook=new ExcelJS.Workbook();
    workbook.creator='CHICO GENERAL TEAM';workbook.created=new Date();
    const sheet=workbook.addWorksheet(scope==='team'?'الفريق':'القراءات',{views:[{state:'frozen',ySplit:1}]});
+   // Define worksheet layout before adding rows so the export's formatting and
+   // field ordering are explicit and consistent across spreadsheet readers.
+   sheet.columns=labels.map((name,i)=>({key:'c'+i,width:Math.max(16,Math.min(30,name.length+8))}));
    sheet.addRow(labels);
    for(const row of data)sheet.addRow(row);
-   sheet.columns=labels.map((name,i)=>({key:'c'+i,width:Math.max(16,Math.min(30,name.length+8))}));
    const header=sheet.getRow(1);header.font={bold:true,color:{argb:'FFFCE7BA'},size:12};
    header.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FF24242E'}};
    header.height=29;
@@ -74,10 +82,10 @@ export async function GET(req:NextRequest){
   const headerCells=labels.map(s=>'<th>'+escapeHTML(s)+'</th>').join('');
   const rowHTML=data.map(row=>'<tr>'+row.map(x=>'<td>'+escapeHTML(x===null?'—':x)+'</td>').join('')+'</tr>').join('');
   const summary=['Tickets: '+numeral(state.summary.tickets??'—'),'Flags: '+numeral(state.summary.flags??'—'),
-   'Flag Rate: '+numeral(state.summary.rate??'—'),'Members: '+state.admins.length];
+   'Flag Rate: '+numeral(state.summary.rate??'—'),'Evaluated Members: '+rows.length];
   const body='<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>'+escapeHTML(base)+'</title><style>'+
    'body{font:14px system-ui,sans-serif;margin:30px;background:#fff;color:#25232b}h1{color:#80602e}p{color:#62564d}button{padding:11px 20px;border:0;border-radius:7px;background:#302632;color:#fff;cursor:pointer}.top{display:flex;gap:12px;flex-wrap:wrap;margin:18px 0}.top b{border:1px solid #c9b69b;padding:10px 14px;border-radius:8px}table{border-collapse:collapse;width:100%;margin-top:20px}th,td{padding:8px;border:1px solid #d1cac1;font-size:11px;text-align:right;word-break:break-word}th{background:#f2e9da}tr:nth-child(even){background:#fcfaf7}img{width:100%;max-height:160px;object-fit:contain;background:#18151a}@media print{button{display:none}@page{size:landscape;margin:12mm}body{margin:0}thead{display:table-header-group}tr{break-inside:avoid}}'+
-   '</style></head><body><img src="/assets/chico-approved-hero.avif" alt="CHICO GENERAL TEAM"><h1>CHICO GENERAL TEAM — '+(scope==='team'?'كشف الفريق':'سجل القراءات')+'</h1><p>'+(scope==='readings'?'السجل التاريخي الكامل':'الأسبوع: '+escapeHTML(period))+' | لا تُستبدل القيم غير المسجلة بصفر</p><div class="top">'+summary.map(x=>'<b>'+escapeHTML(x)+'</b>').join('')+'</div><button onclick="window.print()">طباعة أو حفظ PDF</button><table><thead><tr>'+headerCells+'</tr></thead><tbody>'+rowHTML+'</tbody></table></body></html>';
+   '</style></head><body><img src="/assets/chico-approved-hero.avif" alt="CHICO GENERAL TEAM"><h1>CHICO GENERAL TEAM — '+(scope==='team'?'كشف الفريق':'سجل القراءات')+'</h1><p>'+(scope==='readings'?'سجل قراءات الإداريين داخل التقييم فقط':'الأسبوع: '+escapeHTML(period)+' · الفريق داخل التقييم فقط')+' | لا تُستبدل القيم غير المسجلة بصفر</p><div class="top">'+summary.map(x=>'<b>'+escapeHTML(x)+'</b>').join('')+'</div><button onclick="window.print()">طباعة أو حفظ PDF</button><table><thead><tr>'+headerCells+'</tr></thead><tbody>'+rowHTML+'</tbody></table></body></html>';
   return new Response(body,{headers:{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store','Content-Security-Policy':"default-src 'self'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src 'self' data:; base-uri 'none'; object-src 'none'"}});
  }catch(error){return failure(error);}
 }
