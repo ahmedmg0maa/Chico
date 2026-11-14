@@ -28,7 +28,7 @@ function reportRow(admin:Admin,readings:Reading[]):LuxuryPosterRow{
 export default function DiscordReportStudio({state,review}:Props){
  const today=useMemo(cairoToday,[]);
  const latestRecord=useMemo(()=>[...(state?.readings||[])].sort((a,b)=>b.to_date.localeCompare(a.to_date)||b.created_at.localeCompare(a.created_at))[0]||null,[state]);
- const latestDaily=latestRecord?.from_date===latestRecord?.to_date?latestRecord.to_date:null;
+ const latestDaily=latestRecord&&latestRecord.from_date===latestRecord.to_date?latestRecord.to_date:null;
  const touched=useRef(false);
  const [mode,setMode]=useState<Mode>('day');
  const [start,setStart]=useState(today);
