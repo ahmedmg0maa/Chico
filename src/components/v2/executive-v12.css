@@ -321,7 +321,7 @@
 }
 .chico-v2 .v9-entry-card .v9-reading-form{gap:16px}
 /* Visibility and contrast refinements in light mode after WCAG 2.1 AA audit. */
-.chico-v2.x-light .x-user-button small{color:#e8ddd0}
+.chico-v2.x-light .x-user-button small{color:#59463c}
 .chico-v2.x-light .v8-rank-label.v8-rank--helper{--rank:#086039;--rank-deep:#298351}
 .chico-v2.x-light .v8-rank-label.v8-rank--senior{--rank:#09568e}
 .chico-v2.x-light .v8-rank-label.v8-rank--moderator{--rank:#543a94}
