@@ -35,6 +35,9 @@ assert(main.includes('aria-label="تسجيل الخروج من CHICO"'),'Logout 
 const team=source('src/components/v2/ExecutiveTeamStudio.tsx');
 assert(!team.includes("||'CHICO GENERAL TEAM'"),'No fake fullname placeholder for team records');
 const operations=source('src/components/v2/ExecutiveOperationsWorkspace.tsx');
+const operationTabs=source('src/components/v2/ExecutiveOperations.tsx');
+assert(operations.includes('compactHead/>'),'Nested management subtools must request compact headings');
+assert(operationTabs.includes("{!compact&&<img className="),'Nested pages should not load redundant large artwork');
 assert(operations.includes("aria-current={selected===t.id?'page':undefined}"),'Management subnav must expose active state');
 assert(css.includes('.chico-v2.x-light .v8-rank-label.v8-rank--helper'),'Accessible light-theme rank contrast must be maintained');
 assert(css.includes('.chico-v2.x-light .x-user-button small'),'Light-theme user button subtitle contrast must be maintained');
