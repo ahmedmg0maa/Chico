@@ -67,7 +67,7 @@ async function api<T>(url:string,method='GET',data?:Record<string,unknown>|FormD
  const contentType=response.headers.get('content-type')||'';
  if(!contentType.includes('application/json'))throw new Error('الخادم لم يُرجع استجابة صحيحة');
  const payload=await response.json();
- if(!response.ok||payload.ok===false){const code=String(payload.error||'تعذّر تنفيذ العملية');throw new Error(userFacingErrors[code]||code);}
+ if(!response.ok||payload.ok===false){const code=String(payload.error||'تعذّر تنفيذ العملية');const readable=code.startsWith('OVERLAPPING_PERIOD:')?'فيه قراءة محفوظة تتداخل مع فترة الإداري '+code.slice('OVERLAPPING_PERIOD:'.length).trim()+'؛ راجع التقرير قبل رفعها تاني.':userFacingErrors[code]||code;throw new Error(readable);}
  return payload as T;
 }
 function Head({en,title,description,compact=false}:{en:string;title:string;description:string;compact?:boolean}){
@@ -184,7 +184,7 @@ export default function ExecutiveOperations({tab,state,review,onRefresh,initialA
  };
  const previewExcel=async()=>{
   if(!file||review)return;
-  setBusy(true);setError('');setSuccess('');setImportView(null);setAcceptedImport(false);
+  setBusy(true);setError('');setSuccess('');setImportView(null);setAcceptedImport(false);setApprovedRosterSync(false);
   try{const body=new FormData();body.append('file',file);body.set('period_year',periodYear);const view=await api<ImportView>('/api/import','POST',body);setImportView(view);}
   catch(e){setError(e instanceof Error?e.message:'تعذّرت معاينة Excel');}
   finally{setBusy(false);}
@@ -233,7 +233,7 @@ export default function ExecutiveOperations({tab,state,review,onRefresh,initialA
      <input ref={fileInputRef} type="file" accept=".xlsx" disabled={review||busy} onChange={e=>{setFile(e.target.files?.[0]||null);setImportView(null);setAcceptedImport(false);setApprovedRosterSync(false);}}/>
     </label>
     <label>سنة التقرير (للملفات بدون سنة)
-     <input type="number" min="2000" max="2099" step="1" value={periodYear} disabled={review||busy} onChange={e=>{setPeriodYear(e.target.value);setImportView(null);setAcceptedImport(false);}}/>
+     <input type="number" min="2000" max="2099" step="1" value={periodYear} disabled={review||busy} onChange={e=>{setPeriodYear(e.target.value);setImportView(null);setAcceptedImport(false);setApprovedRosterSync(false);}}/>
     </label>
     <p className="x-op-footnote x-op-full">لا نعتمد سنة الرفع تلقائيًا. اختار السنة الخاصة بتاريخ بيانات اللعبة قبل معاينة الملف.</p>
     <button className="x-primary" type="button" onClick={()=>void previewExcel()} disabled={review||busy||!file}><Upload size={17}/>{busy?'جاري فحص الملف ومطابقة البيانات…':'معاينة الملف'}</button>
