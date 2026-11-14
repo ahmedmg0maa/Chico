@@ -351,3 +351,17 @@
  .chico-v2 .v7-directory-summary{grid-template-columns:1fr}
  .chico-v2 .x-op-metrics{grid-template-columns:1fr}
 }
+
+
+/* Keyboard-first navigation, usable even with the flyout collapsed. */
+.chico-v2 .v12-skip-link{
+ position:fixed;z-index:9999;top:12px;right:12px;
+ transform:translateY(-170%);
+ padding:11px 17px;border:2px solid var(--ch-gold-bright);
+ border-radius:9px;background:#f9e2a6;color:#221915;font-weight:900;
+ transition:transform .15s ease;
+}
+.chico-v2 .v12-skip-link:focus{transform:translateY(0)}
+.chico-v2 #chico-main-content:focus{outline:none}
+.chico-v2 #chico-main-content:focus-visible{outline:2px solid var(--ch-gold)}
+.chico-v2 .v9-tools-nav button[aria-current=page]{border-color:var(--ch-gold)}
