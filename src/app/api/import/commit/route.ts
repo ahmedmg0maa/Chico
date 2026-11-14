@@ -28,7 +28,6 @@ export async function POST(req:NextRequest){
   if(p.warnings.length||audit.issues.length)return response({ok:false,error:'IMPORT_REVIEW_ERRORS',warnings:[...p.warnings,...audit.issues]},422);
   const rosterChanges=p.rows.some(r=>r.roster_action!=='match');
   if(rosterChanges&&!approve_roster_sync)return response({ok:false,error:'ROSTER_SYNC_CONFIRMATION_REQUIRED'},422);
-  await snapshot(sql,'Before verified CHICO Excel import');
   const result=await sql.begin(async tx=>{
    const locked=await tx`SELECT payload,source_hash,committed_at FROM chico_next.import_staging WHERE id=${preview_id} AND created_at>now()-interval '1 hour' FOR UPDATE`;
    if(!locked.length||locked[0].committed_at)throw new Error('PREVIEW_EXPIRED_OR_USED');
@@ -36,6 +35,8 @@ export async function POST(req:NextRequest){
    if(current.warnings.length||recheck.issues.length)throw new Error('IMPORT_REVIEW_ERRORS');
    const duplicate=await tx`SELECT 1 FROM chico_next.import_staging WHERE source_hash=${locked[0].source_hash} AND committed_at IS NOT NULL`;
    if(duplicate.length)throw new Error('FILE_ALREADY_IMPORTED');
+   // Backup belongs to the same transaction: failed/overlapping imports leave no orphan snapshots.
+   await snapshot(tx as unknown as ReturnType<typeof db>,'Before verified CHICO Excel import');
    let inserted=0,created=0,leaders=0;
    const affected=new Set<string>();
    for(const r of current.rows){
