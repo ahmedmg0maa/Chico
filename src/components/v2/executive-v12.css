@@ -389,3 +389,27 @@
 
 /* Phase 3: poster keeps its actual responsive 1560 x dynamic-height Canvas ratio. */
 .chico-v2 .v9-poster-preview canvas{aspect-ratio:auto;max-width:100%;height:auto;}
+
+/* Phase 3 user QA: phone preview is readable via inner horizontal swipe, not a 320px-wide microscopic poster. */
+.chico-v2 .v9-poster-mobile-help{display:none}
+@media(max-width:720px){
+ .chico-v2 .v9-poster-preview{
+  max-width:100%;min-width:0;
+  overflow-x:auto!important;overflow-y:hidden;
+  overscroll-behavior-x:contain;
+  -webkit-overflow-scrolling:touch;
+  justify-content:flex-start!important;
+  scrollbar-color:rgba(222,185,123,.55) transparent;
+  scrollbar-width:thin;
+ }
+ .chico-v2 .v9-poster-preview canvas{
+  width:880px!important;min-width:880px!important;max-width:none!important;
+  height:auto!important;flex:0 0 880px!important;
+ }
+ .chico-v2 .v9-poster-mobile-help{
+  display:block;margin:11px 0;padding:12px 14px;
+  border:1px solid var(--ch-line);border-radius:10px;
+  background:var(--ch-surface);color:var(--ch-muted);
+  font-size:13px;line-height:1.7;
+ }
+}
