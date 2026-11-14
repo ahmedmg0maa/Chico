@@ -3,7 +3,7 @@ import ExcelJS from 'exceljs';
 import {createHash} from 'node:crypto';
 import {db} from '@/lib/db';
 import {requireOwner,response,failure} from '@/lib/api';
-import {auditImport,canonicalName,cleanName,resolvePerson,strictDate,validInteger,validNumber,validRank,validateCoverage,findImportColumn,inferLegacyPeriod,normalizedExcelHeader,type ExcelImportPerson,type ExcelImportRow} from '@/lib/excel-import';
+import {auditImport,canonicalName,cleanName,resolvePerson,strictDate,validInteger,validNumber,validRank,readDecimalHours,isMissingCell,validateCoverage,findImportColumn,inferLegacyPeriod,normalizedExcelHeader,type ExcelImportPerson,type ExcelImportRow} from '@/lib/excel-import';
 import type {Rank} from '@/lib/types';
 
 export const runtime='nodejs';
@@ -60,33 +60,40 @@ export async function POST(req:NextRequest){
    const sourceLevel=validInteger(at(levelCol))||validInteger(combined.match(/\d+\s*$/)?.[0]);
    const found=resolvePerson(name,sourceRank,admins);
    if(found.ambiguous)warnings.push('Row '+i+': ambiguous roster match — fix existing names');
-   const existing=found.person,rank=sourceRank||existing?.rank||null;
-   const leader=rank==='Responsible'||canonicalName(name)==='general'||String(at(reportingCol)||'').toUpperCase()==='NO';
+   // The roster in the database is authoritative. A stale XLSX must never undo a reviewed rank.
+   const existing=found.person,rank=existing?.rank||sourceRank||null;
+   const leader=existing?.rank==='Responsible'||canonicalName(name)==='general'||(!existing&&sourceRank==='Responsible');
+   if(existing&&sourceRank&&sourceRank!==existing.rank)notices.push('Row '+i+': Excel says '+sourceRank+' but approved roster says '+existing.rank+' — roster preserved');
+   if(existing&&existing.name!==name)notices.push('Row '+i+': matched '+name+' to existing '+existing.name+' — database name preserved');
+   if(existing&&canonicalName(name)==='general'&&existing.rank!=='Responsible')warnings.push('Row '+i+': General rank conflict must be corrected in Team Management first');
+   if(!leader&&String(at(reportingCol)||'').toUpperCase()==='NO')notices.push('Row '+i+': Excel In Reporting=NO ignored; only team management controls exclusions');
    const from=leader?null:strictDate(at(fromCol))||fallback?.from||null;
    const to=leader?null:strictDate(at(toCol))||fallback?.to||null;
    const entered=leader?null:strictDate(at(enteredCol))||cairo;
-   const rawHours=at(hoursCol),dateHours=rawHours instanceof Date;
+   const rawHours=at(hoursCol),parsedHours=readDecimalHours(rawHours),dateHours=parsedHours.converted;
    const rating=leader?null:number(at(ratingCol),5);
    const flags=leader?null:validInteger(at(flagsCol));
    const baseline=leader?null:validInteger(at(flagsBaseCol));
    if(!leader){
     if(!validateCoverage(from,to))warnings.push('Row '+i+': invalid or missing report period');
-    if(dateHours)warnings.push('Row '+i+': TIME was converted to a date in Excel');
+    if(dateHours)notices.push('Row '+i+': TIME date-formatted cell converted to '+parsedHours.hours+' decimal hours — verify before approval');
+    if(parsedHours.invalid)warnings.push('Row '+i+': invalid TIME; cannot safely convert it');
     if(at(ratingCol)!==null&&at(ratingCol)!==''&&rating===null)warnings.push('Row '+i+': Rating must be between 0 and 5');
     if(flags!==null&&baseline===null)notices.push('Row '+i+': Flags baseline missing; the first delta cannot be assumed zero');
     if(rank===null)warnings.push('Row '+i+': Rank required for new administrator');
     if(validInteger(at(ticketsBaseCol))!==null&&validInteger(at(ticketsBaseCol))!==0)warnings.push('Row '+i+': nonzero Tickets opening balance is not supported safely; split the period or adjust the file');
-    if(rawHours!==null&&rawHours!==''&&rawHours!==undefined&&!dateHours&&number(rawHours,10000)===null)warnings.push('Row '+i+': invalid decimal TIME');
+    for(const [label,col] of [['Tickets Counter',ticketsCol],['Tickets Baseline',ticketsBaseCol],['Flags Counter',flagsCol],['Flags Baseline',flagsBaseCol]] as const){
+     if(col>=0&&!isMissingCell(at(col))&&validInteger(at(col))===null)warnings.push('Row '+i+': invalid '+label+' — requires a nonnegative whole number');
+    }
    }
-   const mismatch=!!existing&&(sourceRank!==null&&sourceRank!==existing.rank||name!==existing.name||leader&&existing.in_reporting);
-   rows.push({row:i,name,admin_id:existing?.id||null,roster_name:existing?.name||null,
-    rank:leader?'Responsible':rank,admin_level:leader?3:sourceLevel||existing?.admin_level||1,
-    roster_action:leader?'leader':!existing?'create':mismatch?'update':'match',
+   rows.push({row:i,name:existing?.name||name,source_rank:sourceRank,admin_id:existing?.id||null,roster_name:existing?.name||null,
+    rank:leader?'Responsible':rank,admin_level:leader?3:existing?.admin_level||sourceLevel||1,
+    roster_action:existing?'match':leader?'leader':'create',
     from_date:from,to_date:to,report_entered_on:entered,
     tickets_counter:leader?null:validInteger(at(ticketsCol)),
     tickets_baseline:leader?null:validInteger(at(ticketsBaseCol)),
     flags_counter:flags,flags_baseline:baseline,
-    hours:leader?null:dateHours?null:number(rawHours,10000),rating,
+    hours:leader?null:parsedHours.hours,rating,
     note:String(at(noteCol)||'Excel CHICO import'),skip_reading:leader,time_was_date:dateHours,year_inferred:!!fallback
    });
   }
