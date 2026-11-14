@@ -32,7 +32,7 @@ const rows=[
 poster.renderLuxuryPoster(canvas,rows,'2026-11-09 — 2026-11-12',30,29,[null,null,null,null,null,null],
  'إحصائيات الفترة المجمعة',{tickets:3222,flags:50,rating:4.9});
 const text=words.map(x=>x.s);
-for(const required of ['CHICO','GENERAL TEAM','TICKETS','FLAGS','3222','50','HELPERS','MODERATORS',
+for(const required of ['CHICO','GENERAL TEAM','TICKETS','FLAGS','3,222','50','HELPERS','MODERATORS',
  'TOP 3 HELPERS','TOP 3 MODERATORS','Rare','Bieso','SN.Gaby','M.Gambul','M.Bnammoo','M.Dark','Kararr','SN','0']){
  assert(text.includes(required),'poster text missing '+required);
 }
