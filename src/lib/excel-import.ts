@@ -18,7 +18,7 @@ export function normalizedExcelHeader(value:unknown){
 }
 export function findImportColumn(headers:string[],...items:string[]){
  for(const item of items){const index=headers.findIndex(h=>h===item);if(index>=0)return index;}
- for(const item of items){const index=headers.findIndex(h=>h.includes(item));if(index>=0)return index;}
+ for(const item of items){const index=headers.findIndex(h=>typeof h==='string'&&h.includes(item));if(index>=0)return index;}
  return -1;
 }
 export function inferLegacyPeriod(headers:string[],year:number){
