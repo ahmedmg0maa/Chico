@@ -34,7 +34,13 @@ const links:{id:Tab;label:string;en:string;icon:typeof Home}[]=[
   {id:'settings',label:'الإعدادات',en:'Settings',icon:Settings2}
 ];
 
-const primaryLinks=links.filter(x=>!['excel','server','weeks'].includes(x.id));
+// Stage 2: clear navigation hierarchy, preserving every existing route and capability.
+const navigationGroups:{label:string;en:string;items:Tab[]}[]=[
+ {label:'القيادة',en:'OVERVIEW',items:['dashboard','team','alerts']},
+ {label:'العمل اليومي',en:'OPERATIONS',items:['updates','operations']},
+ {label:'التقارير',en:'REPORTS',items:['daily','reports']},
+ {label:'النظام',en:'SYSTEM',items:['settings']}
+];
 function pretty(v:number|null|undefined,kind?:'percent'|'rating'){
  if(v===null||v===undefined||!Number.isFinite(v))return '—';
  if(kind==='rating')return v.toFixed(2);
@@ -148,11 +154,10 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
 
  const intervalRows=(state?.readings??[]).filter(r=>r.week_start===summary?.week_start).sort((a,b)=>b.to_date.localeCompare(a.to_date)||b.created_at.localeCompare(a.created_at)).slice(0,8);
  const alerts=review?[]:warnings.filter(r=>r.lastUpdate!==null||r.flagsIncomplete).slice(0,3).map(r=>({label:r.name,desc:r.flagsIncomplete?'رصيد Flags السابق غير معروف':r.flags!==null&&r.flags>7?'Flags مرتفعة — '+r.flags:r.rating!==null&&r.rating<4.8?'التقييم '+pretty(r.rating,'rating'):'تحتاج مراجعة',severity:'warning'}));
+ // Four decision-focused metrics; staff count is in the hero and individual ratings remain in Team.
  const kpis=[
-  {title:'إجمالي الفريق',english:'Total Staff',value:pretty(totals.members),glyph:'members' as const,tone:'copper'},
   {title:'تذاكر الأسبوع',english:'Weekly Tickets',value:pretty(totals.tickets),glyph:'tickets' as const,tone:'gold'},
-  {title:'الفلاجات',english:'Total Flags',value:pretty(totals.flags),glyph:'flags' as const,tone:'ruby'},
-  {title:'متوسط التقييم',english:'Average Rating',value:pretty(totals.rating,'rating'),glyph:'rating' as const,tone:'violet'},
+  {title:'الفلاجات',english:'Weekly Flags',value:pretty(totals.flags),glyph:'flags' as const,tone:'ruby'},
   {title:'معدل الفلاجات',english:'Flag Rate',value:pretty(totals.rate,'percent'),glyph:'rate' as const,tone:'amber'},
   {title:'تغطية الفريق',english:'Team Coverage',value:pretty(totals.coverage,'percent'),glyph:'coverage' as const,tone:'emerald'}
  ];
@@ -173,31 +178,40 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
    </div></div></div>;
 
  return <div className={'chico-v2 '+(light?'x-light':'')} dir="rtl">
+  <a className="v12-skip-link" href="#chico-main-content">تخطي إلى المحتوى الرئيسي</a>
   {review&&<div className="x-review-ribbon">قائمة الفريق من Excel المعتمد · لا توجد إحصائيات مسجلة · المعاينة غير متصلة بالحفظ</div>}
   <div className={"x-layout "+(menu?"v10-nav-open":"v10-nav-closed")}>
    <aside id="chico-main-navigation" className={"x-sidebar "+(menu?"x-sidebar-open":"")} aria-label="القائمة الرئيسية" aria-hidden={!menu} inert={!menu}>
     <div className="v10-nav-head"><Brand small/><button type="button" className="v10-nav-close" onClick={closeMenu} title="إغلاق القائمة" aria-label="إغلاق القائمة"><X size={19}/></button></div>
     <div className="x-sidebar-caption">ONE STATE RP · CHICO ME</div>
-    <div className="x-side-group">ADMINISTRATION <span> / لوحة الإدارة</span></div>
-    <nav>{primaryLinks.map(({id,label,en,icon:Icon})=><button type="button" key={id} className={'x-nav-link '+(tab===id?'x-nav-active':'')} onClick={()=>open(id)}>
-      <NavGlyph tab={id}/><span><b>{label}</b><small>{en}</small></span>{tab===id?<i className="x-active-chevron"/>:null}
-    </button>)}</nav>
+    <nav className="v12-nav" aria-label="أقسام الإدارة">{navigationGroups.map(group=>
+      <section className="v12-nav-group" aria-label={group.label} key={group.en}>
+       <div className="v12-nav-label"><span>{group.label}</span><small>{group.en}</small></div>
+       {group.items.map(id=>{
+        const item=links.find(link=>link.id===id);
+        if(!item)return null;
+        return <button type="button" key={id} className={'x-nav-link '+(tab===id?'x-nav-active':'')} onClick={()=>open(id)} aria-current={tab===id?'page':undefined}>
+         <NavGlyph tab={id}/><span><b>{item.label}</b><small>{item.en}</small></span>{tab===id?<i className="x-active-chevron"/>:null}
+        </button>;
+       })}
+      </section>
+     )}</nav>
     <div className="x-sidebar-footer"><span>ONE STATE RP</span><strong>CHICO ME</strong><small>PRIVATE MANAGEMENT</small></div>
    </aside>
    {menu&&<button className="x-mobile-scrim" aria-label="إغلاق القائمة" onClick={closeMenu}/>}
    <main className="x-body">
     <header className="x-topbar">
      <div className="x-top-group"><button type="button" className="x-icon x-burger v10-hamburger" onClick={toggleMenu} aria-label={menu?"إغلاق القائمة":"فتح القائمة"} aria-expanded={menu} aria-controls="chico-main-navigation" title={menu?"إغلاق القائمة":"فتح القائمة"}>{menu?<X size={22}/>:<Menu size={22}/>}<span>القائمة</span></button>
-      <div className="x-status"><span className="x-live-dot"/>{review?'وضع المعاينة':'النظام متصل بقاعدة البيانات'}</div><div className="x-breadcrumb">CHICO ME <ChevronLeft size={14}/> <b>{links.find(l=>l.id===tab)?.label}</b></div></div>
+      <div className="x-status"><span className="x-live-dot"/>{review?'وضع المعاينة':state?'البيانات محمّلة':'جاري تحميل البيانات'}</div><div className="x-breadcrumb">CHICO ME <ChevronLeft size={14}/> <b>{links.find(l=>l.id===tab)?.label}</b></div></div>
      <div className="x-top-actions"><span className="x-date"><CalendarDays size={16}/>{timeLabel}</span>
       <button className="x-icon" onClick={()=>setSearchOpen(!searchOpen)} aria-label="البحث"><Search size={20}/></button>
       <button className="x-icon" onClick={()=>open('alerts')} aria-label="التنبيهات"><Bell size={19}/>{warnings.length>0&&<i className="x-notif-dot"/>}</button>
       <button className="x-icon" onClick={switchAppearance} aria-label={light?'تفعيل الوضع الداكن':'تفعيل الوضع الفاتح'} aria-pressed={light}>{light?<Moon size={19}/>:<Sun size={19}/>}</button>
       <button className="x-icon" onClick={()=>void refresh()} aria-label="تحديث البيانات"><RefreshCw size={18}/></button>
-      <button className="x-user-button" onClick={()=>void logout()} title="الخروج"><div className="x-user-avatar"><Shield size={20}/></div><span>CHICO Leader <small>Team Director</small></span><LogOut size={16}/></button></div>
+      <button className="x-user-button" onClick={()=>void logout()} title="الخروج" aria-label="تسجيل الخروج من CHICO"><div className="x-user-avatar"><Shield size={20}/></div><span>CHICO Leader <small>Team Director</small></span><LogOut size={16}/></button></div>
     </header>
-    {searchOpen&&<div className="x-command-search"><Search size={18}/><input autoFocus placeholder="ابحث عن إداري…" value={filter} onChange={e=>{setFilter(e.target.value);open('team');}}/><button onClick={()=>{setSearchOpen(false);setFilter('');}} aria-label="إغلاق البحث"><X size={17}/></button></div>}
-    <div className="x-main-content v7-app-content" key={tab}>
+    {searchOpen&&<div className="x-command-search"><Search size={18}/><input autoFocus type="search" aria-label="البحث عن إداري" placeholder="ابحث عن إداري…" value={filter} onChange={e=>{setFilter(e.target.value);open('team');}}/><button onClick={()=>{setSearchOpen(false);setFilter('');}} aria-label="إغلاق البحث"><X size={17}/></button></div>}
+    <div id="chico-main-content" tabIndex={-1} className="x-main-content v7-app-content" key={tab}>
      {error&&<div className="x-error"><AlertTriangle size={17}/>{error}<button onClick={()=>void refresh()}>إعادة المحاولة</button></div>}
      {notice&&<div className="x-inline-notice"><Shield size={18}/>{notice}<button onClick={()=>setNotice('')}><X size={17}/></button></div>}
      {tab==='dashboard'&&<>
@@ -212,7 +226,6 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
        <div className="v8-command-hero-art"><img src="/assets/chico-approved-hero.avif" alt="الشعار المعتمد لفريق CHICO وشعار OneState RP والذئب الهادئ" decoding="async" fetchPriority="high"/></div>
       </section>
       <div className="x-kpi-grid v8-kpi-grid">{kpis.map(({title,english,value,glyph,tone},index)=><div className={'x-kpi v8-kpi x-tone-'+tone} key={title} style={{animationDelay:(index*45)+'ms'}}><div className="x-kpi-title"><CommandIcon name={glyph}/><div><b>{title}</b><small>{english}</small></div></div><strong>{value}</strong><span>{review?'لا توجد قراءات بعد': 'الأسبوع الحالي'}</span><i className="v8-kpi-line"/></div>)}</div>
-      <section className="x-weekbanner"><div className="x-weeklabel"><CalendarDays size={26}/><div><small>WEEKLY OPERATIONS</small><strong>متابعة الأسبوع الحالي</strong></div></div><div className="x-week-center"><Star size={29}/><div><b>مؤشرات الأداء والمتابعة</b><span>{review?'الأسماء معتمدة · لا توجد إحصائيات':'المعلومات المستمدة من سجلات الفريق'}</span></div></div><div className="x-week-mini">ONE STATE · CHICO ME</div></section>
       <div className="x-triple">
        <section className="x-panel x-alerts-panel"><CardTitle icon={Bell} title="تنبيهات القيادة" en="LEADERSHIP ALERTS" action={<button className="x-text-action" onClick={()=>open('alerts')}>عرض الكل <ArrowLeft size={14}/></button>}/>
         {alerts.length?alerts.map((a,i)=><button className={'x-alert x-alert-'+a.severity} key={i} onClick={()=>open('alerts')}><div><b>{a.label}</b><span>{a.desc}</span></div><AlertTriangle size={18}/></button>):<div className="x-empty"><CheckCircle2 size={24}/><b>لا توجد تنبيهات مسجلة</b><p>تنبيهات الأداء تظهر هنا تلقائيًا</p></div>}

@@ -140,7 +140,7 @@ export default function ExecutiveTeamStudio({admins,rows,review,onRefresh,onPrev
     if(!response.ok||body.ok===false)throw new Error(String(body.error||'تعذر حفظ التغييرات'));
     await onRefresh();
    }
-   setFeedback(method==='DELETE'?'تم حذف الإداري وحفظ نسخة احتياطية':'تم حفظ بيانات الإداري بنجاح');
+   setFeedback(review?(method==='DELETE'?'تم حذف الاسم من المعاينة المحلية فقط':'تم تعديل قائمة المعاينة على هذا الجهاز فقط'):(method==='DELETE'?'تم حذف الإداري وحفظ نسخة احتياطية':'تم حفظ بيانات الإداري بنجاح'));
    setShowEditor(false);setConfirmDelete(false);setConfirmName('');setTarget(null);
   }catch(e){setFailure(e instanceof Error?e.message:'تعذر تنفيذ العملية');}
   finally{setSaving(false);}
@@ -196,7 +196,7 @@ export default function ExecutiveTeamStudio({admins,rows,review,onRefresh,onPrev
      const current=admins.find(a=>a.id===row.id);
      return <tr key={row.id}>
       <td className="v7-index">{String((selectedPage-1)*size+i+1).padStart(2,'0')}</td>
-      <td><div className="v7-person-name"><RoleSeal rank={row.rank}/><div><b dir="auto">{row.name}</b><small>{(current as AdminExtra)?.full_name||'CHICO GENERAL TEAM'}</small></div></div></td>
+      <td><div className="v7-person-name"><RoleSeal rank={row.rank}/><div><b dir="auto">{row.name}</b>{(current as AdminExtra)?.full_name&&<small dir="auto">{(current as AdminExtra).full_name}</small>}</div></div></td>
       <td><RankLabel rank={row.rank}/></td>
       <td>{row.admin_level??'—'}</td><td>{row.shift_label||'—'}</td>
       <td className="v7-figure">{format(row.tickets)}</td>
@@ -215,7 +215,7 @@ export default function ExecutiveTeamStudio({admins,rows,review,onRefresh,onPrev
   {showEditor&&<ModalPortal light={light} onEscape={()=>{if(!saving)setShowEditor(false);}}><div className="v7-editor-overlay" onMouseDown={e=>{if(e.target===e.currentTarget&&!saving)setShowEditor(false);}}>
    <aside className="v7-editor-panel" role="dialog" aria-modal="true" aria-label={isEditing?'تعديل الإداري':'إضافة إداري'}>
     <header><span>CHICO / TEAM CONTROL</span><button onClick={()=>setShowEditor(false)} disabled={saving} aria-label="إغلاق"><X size={21}/></button></header>
-    <div className="v7-editor-art"><img src="/assets/chico-illustrated-team.avif" alt="" /><div><RoleSeal rank={draft.rank}/><h2>{isEditing?'تعديل بيانات الإداري':'إضافة إداري جديد'}</h2><p>{draft.name||'CHICO GENERAL TEAM'}</p></div></div>
+    <div className="v7-editor-art"><img src="/assets/chico-illustrated-team.avif" alt="" /><div><RoleSeal rank={draft.rank}/><h2>{isEditing?'تعديل بيانات الإداري':'إضافة إداري جديد'}</h2><p>{draft.name||'إداري جديد'}</p></div></div>
     <form onSubmit={save} className="v7-editor-form">
      <h3><UserRound size={18}/> المعلومات الأساسية</h3>
      <label>اسم اللعبة <em>*</em><input required maxLength={80} value={draft.name} onChange={e=>setDraft(s=>({...s,name:e.target.value}))} disabled={saving}/></label>

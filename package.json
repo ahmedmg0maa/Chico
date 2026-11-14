@@ -8,7 +8,7 @@
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "test:rules": "node scripts/test-rules.cjs",
-    "prebuild": "npm run test:rules && npm run test:excel && npm run test:phase1 && npm run test:import-route && npm run test:import-commit && npm run test:report && npm run test:roster && npm run test:local-roster && npm run test:preview-db && npm run typecheck",
+    "prebuild": "npm run build:executive-css && npm run test:rules && npm run test:excel && npm run test:phase1 && npm run test:import-route && npm run test:import-commit && npm run test:report && npm run test:roster && npm run test:local-roster && npm run test:preview-db && npm run typecheck && npm run test:phase2",
     "test:roster": "node scripts/test-roster.cjs",
     "test:preview-db": "node scripts/test-preview-db.cjs",
     "test:local-roster": "node scripts/test-local-roster.cjs",
@@ -16,7 +16,10 @@
     "test:report": "node scripts/test-report.cjs",
     "test:phase1": "node scripts/test-phase1-integrity.cjs",
     "test:import-route": "node scripts/test-import-route.cjs",
-    "test:import-commit": "node scripts/test-import-commit.cjs"
+    "test:import-commit": "node scripts/test-import-commit.cjs",
+    "test:phase2": "node scripts/test-phase2-shell.cjs",
+    "build:executive-css": "node scripts/build-executive-css.cjs",
+    "predev": "npm run build:executive-css"
   },
   "dependencies": {
     "next": "^16.0.0",

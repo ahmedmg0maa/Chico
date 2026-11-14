@@ -10,7 +10,7 @@ import {RANKS} from '@/lib/types';
 import {applyLocalRosterChange,LOCAL_ROSTER_HISTORY_KEY,type LocalRosterAction,type LocalRosterEvent} from '@/lib/localRoster';
 
 export type OperationTab = 'updates'|'excel'|'server'|'daily'|'reports'|'weeks'|'alerts'|'settings';
-type Props = {tab:OperationTab;state:State|null;review:boolean;onRefresh:()=>Promise<void>;initialAdminId?:string|null};
+type Props = {tab:OperationTab;state:State|null;review:boolean;onRefresh:()=>Promise<void>;initialAdminId?:string|null;compactHead?:boolean};
 type ReadForm={admin_id:string;from_date:string;to_date:string;tickets_counter:number|null;flags_counter:number|null;flags_baseline:number|null;hours:number|null;rating:number|null;note:string};
 type Imported={row:number;name:string;admin_id:string|null;roster_name:string|null;source_rank?:string|null;rank:string|null;admin_level:number|null;roster_action:string;from_date:string|null;to_date:string|null;report_entered_on:string|null;tickets_counter:number|null;tickets_baseline:number|null;flags_counter:number|null;flags_baseline:number|null;hours:number|null;rating:number|null;skip_reading:boolean};
 type ImportView={preview_id:string;filename:string;sheet:string;rows:Imported[];warnings:string[];notices:string[];requiresConfirmation:boolean;imported:number;leaders:number;rosterChanges:number};
@@ -43,11 +43,11 @@ async function api<T>(url:string,method='GET',data?:Record<string,unknown>|FormD
  if(!response.ok||payload.ok===false){const code=String(payload.error||'تعذّر تنفيذ العملية');throw new Error(userFacingErrors[code]||code);}
  return payload as T;
 }
-function Head({en,title,description}:{en:string;title:string;description:string}){
+function Head({en,title,description,compact=false}:{en:string;title:string;description:string;compact?:boolean}){
  const art=en.includes('GAME READINGS')?'updates':en.includes('XLSX')?'excel':en.includes('SERVER PERFORMANCE')?'server':en.includes('DISCORD STUDIO')?'reports':en.includes('WEEKLY CONTROL')?'weeks':en.includes('LEADERSHIP WATCH')?'alerts':'settings';
  const visual=art==='settings'?'login':art;
- return <section className={'x-titleband x-art-'+art+' x-illustrated-head'}>
-   <img className="x-illustrated-banner" src={'/assets/chico-illustrated-'+visual+'.avif'} alt="" loading="lazy" decoding="async"/>
+ return <section className={'x-titleband x-art-'+art+' x-illustrated-head'+(compact?' x-titleband-compact':'')}>
+   {!compact&&<img className="x-illustrated-banner" src={'/assets/chico-illustrated-'+visual+'.avif'} alt="" loading="lazy" decoding="async"/>}
    <div className="x-illustrated-copy"><span className="x-kicker">{en}</span><h1>{title}</h1><p>{description}</p></div>
  </section>;
 }
@@ -118,7 +118,7 @@ export function ExecutiveTeamManager({state,review,onRefresh,previewAdmins,onPre
   {message&&<p className="x-op-success"><CheckCircle2 size={16}/>{message}</p>}{error&&<p className="x-op-error"><AlertTriangle size={16}/>{error}</p>}
  </section>;
 }
-export default function ExecutiveOperations({tab,state,review,onRefresh,initialAdminId}:Props){
+export default function ExecutiveOperations({tab,state,review,onRefresh,initialAdminId,compactHead=false}:Props){
  const [reading,setReading]=useState<ReadForm>(emptyReading);
  const [editing,setEditing]=useState<string|null>(null);
  const [file,setFile]=useState<File|null>(null);
@@ -196,7 +196,7 @@ export default function ExecutiveOperations({tab,state,review,onRefresh,initialA
  const controls=<>{error&&<p role="alert" className="x-op-error"><AlertTriangle size={17}/>{error}</p>}{success&&<p role="status" className="x-op-success"><CheckCircle2 size={17}/>{success}</p>}</>;
  if(tab==='updates')return <ReadingEntryStudio state={state} review={review} onRefresh={onRefresh} initialAdminId={initialAdminId}/>;
   if(tab==='excel')return <>
-  <Head en="CHICO / XLSX REVIEW" title="استيراد Excel" description="معاينة جميع قراءات Excel والتواريخ وأرصدة Flags. لا تعديل أسماء أو رتب قبل موافقتك الصريحة."/><Hint review={review}/>
+  <Head compact={compactHead} en="CHICO / XLSX REVIEW" title="استيراد Excel" description="معاينة جميع قراءات Excel والتواريخ وأرصدة Flags. لا تعديل أسماء أو رتب قبل موافقتك الصريحة."/><Hint review={review}/>
   <section className="x-panel x-op-card"><div className="x-op-cardhead"><FileSpreadsheet size={20}/><h2>مراجعة ملف اللعبة</h2></div>
    <div className="x-op-form"><label className="x-op-full">ملف Excel بصيغة XLSX<input type="file" accept=".xlsx" disabled={review||busy} onChange={e=>{setFile(e.target.files?.[0]||null);setImportView(null);setAcceptedImport(false);setApprovedRosterSync(false);}}/></label><button className="x-primary" type="button" onClick={()=>void previewExcel()} disabled={review||busy||!file}><Upload size={17}/>معاينة الملف</button></div>
    {importView&&<>
@@ -238,7 +238,7 @@ export default function ExecutiveOperations({tab,state,review,onRefresh,initialA
   </section>
  </>;
  if(tab==='server')return <>
-  <Head en="CHICO / SERVER PERFORMANCE" title="أداء السيرفر" description="الأرقام من القراءات المحفوظة للأسبوع الحالي، مع فصل البيانات المفقودة عن الصفر."/><Hint review={review}/>
+  <Head compact={compactHead} en="CHICO / SERVER PERFORMANCE" title="أداء السيرفر" description="الأرقام من القراءات المحفوظة للأسبوع الحالي، مع فصل البيانات المفقودة عن الصفر."/><Hint review={review}/>
   <div className="x-op-metrics"><Metric label="إجمالي Tickets" value={fmt(summary?.tickets)}/><Metric label="Flags الأسبوع" value={fmt(summary?.flags)}/><Metric label="Server Flag Rate" value={summary?.rate===null||summary?.rate===undefined?'غير متاح':fmt(summary.rate)+'%'}/><Metric label="TIME المسجل" value={summary?.hours===null||summary?.hours===undefined?'—':fmt(summary.hours)+' h'}/><Metric label="متوسط التقييمات المسجلة" value={fmt(summary?.rating)}/><Metric label="إداريون لهم قراءة" value={fmt(summary?.reported,0)}/></div>
   <section className="x-panel x-op-card"><div className="x-op-cardhead"><BarChart3 size={20}/><h2>أفضل الإداريين حسب Tickets</h2></div>{summary?.top.length?<div className="x-op-mini-list">{summary.top.map((r,i)=><div key={r.id}><b>{i+1}. {r.name}</b><span>{r.rank} · {fmt(r.tickets)} Tickets</span></div>)}</div>:<Empty text="لا يوجد ترتيب موثّق لهذا الأسبوع"/>}<p className="x-op-footnote">الترتيب يستبعد Moderator والرتب القيادية.</p></section>
  </>;
@@ -252,7 +252,7 @@ export default function ExecutiveOperations({tab,state,review,onRefresh,initialA
        <a target="_blank" rel="noopener noreferrer" href="/api/export?scope=team&format=print"><Download size={16}/> طباعة PDF</a>
       </>}</div></section></>;
   if(tab==='weeks')return <>
-  <Head en="CHICO / WEEKLY CONTROL" title="الأسابيع" description="إغلاق الأسبوع أو إعادة فتحه إجراء يدوي بعد مراجعة تقرير القائد."/><Hint review={review}/>
+  <Head compact={compactHead} en="CHICO / WEEKLY CONTROL" title="الأسابيع" description="إغلاق الأسبوع أو إعادة فتحه إجراء يدوي بعد مراجعة تقرير القائد."/><Hint review={review}/>
   <section className="x-panel x-op-card"><div className="x-op-cardhead"><CalendarDays size={20}/><h2>اعتماد دورة أسبوعية</h2></div>
    <div className="x-op-form"><label>بداية الأسبوع (الإثنين)<input type="date" disabled={review||busy} value={activeWeek} onChange={e=>{setWeek(e.target.value);setAck(false);}}/></label><label className="x-op-full">ملاحظة الإغلاق / إعادة الفتح<input maxLength={500} value={closeNote} onChange={e=>setCloseNote(e.target.value)} disabled={review||busy}/></label>
     <div className="x-op-full"><b>الحالة الحالية: {currentWeek?.status==='closed'?'مغلق':currentWeek?.status==='open'?'مفتوح':'لم يُغلق'}</b></div>
@@ -263,14 +263,14 @@ export default function ExecutiveOperations({tab,state,review,onRefresh,initialA
   <section className="x-panel x-op-card"><div className="x-op-cardhead"><Archive size={20}/><h2>أرشيف الدورات المحفوظة</h2></div>{state?.weeks.length?<div className="x-op-mini-list">{state.weeks.map(w=><div key={w.week_start}><b>{w.week_start}</b><span>{w.status==='closed'?'مغلق':'مفتوح'}</span></div>)}</div>:<Empty text="لم تُسجّل عمليات إغلاق بعد"/>}</section>
  </>;
  if(tab==='alerts')return <>
-  <Head en="CHICO / LEADERSHIP WATCH" title="التنبيهات والمتابعة" description="ملاحظات تستند إلى Flags والتقييم والقراءات المسجلة؛ لا نصنع تنبيهات وهمية."/><Hint review={review}/>
+  <Head compact={compactHead} en="CHICO / LEADERSHIP WATCH" title="التنبيهات والمتابعة" description="ملاحظات تستند إلى Flags والتقييم والقراءات المسجلة؛ لا نصنع تنبيهات وهمية."/><Hint review={review}/>
   <section className="x-panel x-op-card"><div className="x-op-cardhead"><AlertTriangle size={20}/><h2>حالات تحتاج مراجعة</h2></div>
    {summary?.alerts.length?<div className="x-op-mini-list">{summary.alerts.map((a,i)=><div key={a.id+'-'+i}><b>{a.name}</b><span>{a.message}</span></div>)}</div>:<Empty text="لا توجد تنبيهات مستمدة من القراءات الحالية"/>}
    <p className="x-op-footnote">ظهور إنذار لا يثبت مخالفة؛ القرار بعد مراجعة البيانات وسياق الإداري.</p>
   </section>
  </>;
  return <>
-  <Head en="CHICO / CONTROL" title="الإعدادات" description="إعداد أسماء الفريق والنسخ الاحتياطية والإجراءات الحساسة بقرارات صريحة."/><Hint review={review}/>
+  <Head compact={compactHead} en="CHICO / CONTROL" title="الإعدادات" description="إعداد أسماء الفريق والنسخ الاحتياطية والإجراءات الحساسة بقرارات صريحة."/><Hint review={review}/>
   <section className="x-panel x-op-card"><div className="x-op-cardhead"><Users size={20}/><h2>استيراد الأسماء والرتب المعتمدة</h2></div><p className="x-op-footnote">فقط إذا كانت قائمة الإداريين فارغة، دون إنشاء أي إحصائيات.</p><button className="x-primary" type="button" disabled={review||busy||!!state?.admins.length} onClick={doSeed}>استيراد أسماء الفريق فقط</button>{controls}</section>
   <section className="x-panel x-op-card"><div className="x-op-cardhead"><Archive size={20}/><h2>النسخ الاحتياطية</h2></div><div className="x-op-actions"><button className="x-secondary" disabled={review||busy} type="button" onClick={()=>void perform(()=>api('/api/backup','POST'),'حُفظت نسخة احتياطية')}>إنشاء نسخة</button><button className="x-secondary" disabled={review||busy} type="button" onClick={()=>void loadBackups()}>عرض النسخ</button></div><div className="x-op-mini-list">{backupList.map(b=><div key={b.id}><b>{b.label}</b><span>{new Date(b.created_at).toLocaleString('ar-EG')}</span><a href={'/api/backup/'+b.id} download>تنزيل JSON</a></div>)}</div></section>
   <section className="x-panel x-op-card"><div className="x-op-cardhead"><Trash2 size={20}/><h2>منطقة الحذف الحساس</h2></div><p className="x-op-footnote">سيُنشئ الخادم نسخة احتياطية قبل الحذف. اكتب جملة التأكيد المناسبة، ثم أكّد مرة ثانية.</p><label className="x-op-field">جملة التأكيد<input value={phrase} onChange={e=>setPhrase(e.target.value)} disabled={review||busy} placeholder="RESET STATS أو DELETE ALL"/></label><div className="x-op-actions"><button type="button" className="x-op-danger" disabled={review||busy||phrase!=='RESET STATS'} onClick={()=>doReset('statistics')}>حذف الإحصائيات فقط</button><button type="button" className="x-op-danger" disabled={review||busy||phrase!=='DELETE ALL'} onClick={()=>doReset('everything')}>حذف الفريق وكل بياناته</button></div></section>

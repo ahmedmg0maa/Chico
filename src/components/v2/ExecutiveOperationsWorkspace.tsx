@@ -20,9 +20,9 @@ export default function ExecutiveOperationsWorkspace({state,review,onRefresh,onN
    <div className="v9-tools-shortcuts"><button type="button" onClick={()=>onNavigate('updates')}><Plus size={17}/>تسجيل قراءة</button><button type="button" onClick={()=>onNavigate('reports')}><Download size={17}/>صورة Discord</button></div>
   </header>
   <div className="v9-tools-content"><nav className="v9-tools-nav" aria-label="أدوات الإدارة">
-   {tools.map(t=><button key={t.id} type="button" className={selected===t.id?'active':''} onClick={()=>setSelected(t.id)}>
+   {tools.map(t=><button key={t.id} type="button" className={selected===t.id?'active':''} onClick={()=>setSelected(t.id)} aria-current={selected===t.id?'page':undefined}>
     <CommandIcon name={t.id}/><span><b>{t.label}</b><small>{t.desc}</small></span><ChevronDown size={16}/></button>)}
   </nav>
-  <div className="v9-tools-active"><ExecutiveOperations tab={selected} state={state} review={review} onRefresh={onRefresh}/></div></div>
+  <div className="v9-tools-active"><ExecutiveOperations tab={selected} state={state} review={review} onRefresh={onRefresh} compactHead/></div></div>
  </section>;
 }
