@@ -196,7 +196,7 @@ export default function ExecutiveTeamStudio({admins,rows,review,onRefresh,onPrev
      const current=admins.find(a=>a.id===row.id);
      return <tr key={row.id}>
       <td className="v7-index">{String((selectedPage-1)*size+i+1).padStart(2,'0')}</td>
-      <td><div className="v7-person-name"><RoleSeal rank={row.rank}/><div><b dir="auto">{row.name}</b><small>{(current as AdminExtra)?.full_name||'CHICO GENERAL TEAM'}</small></div></div></td>
+      <td><div className="v7-person-name"><RoleSeal rank={row.rank}/><div><b dir="auto">{row.name}</b>{(current as AdminExtra)?.full_name&&<small dir="auto">{(current as AdminExtra).full_name}</small>}</div></div></td>
       <td><RankLabel rank={row.rank}/></td>
       <td>{row.admin_level??'—'}</td><td>{row.shift_label||'—'}</td>
       <td className="v7-figure">{format(row.tickets)}</td>
