@@ -1,4 +1,4 @@
-import type { Reading, Rank } from './types';
+import type { Admin, Reading, Rank } from './types';
 
 /** ISO week starts Monday; uses UTC for date-only values, no implicit timezone shifting. */
 export function weekStart(iso:string): string {
@@ -10,6 +10,20 @@ export function weekStart(iso:string): string {
   return d.toISOString().slice(0,10);
 }
 export function isEligibleForTop(rank:Rank){return rank==='SN.Helper'||rank==='Helper';}
+/**
+ * The source of truth for performance: Helpers, Senior Helpers and Moderators.
+ * Administrator and Responsible retain their roster identity, but never appear
+ * in performance totals, ratings, flags or rankings.
+ */
+export function isEvaluatedRank(rank:Rank){return rank==='Helper'||rank==='SN.Helper'||rank==='Moderator';}
+export function isEvaluatedAdmin(admin:Pick<Admin,'active'|'in_reporting'|'rank'>){
+ return admin.active&&admin.in_reporting&&isEvaluatedRank(admin.rank);
+}
+export function eligibleReadings(readings:readonly Reading[],admins:readonly Admin[]):Reading[]{
+ const ids=new Set(admins.filter(isEvaluatedAdmin).map(a=>a.id));
+ return readings.filter(r=>ids.has(r.admin_id));
+}
+
 export function serverFlagRate(flags:number|null,tickets:number|null){return flags===null||tickets===null||tickets<=0?null:Math.round(flags/tickets*10000)/100;}
 export function decimalHours(value:number){if(!Number.isFinite(value)||value<0||value>10000)throw new Error('INVALID_HOURS');return Math.round(value*100)/100;}
 export function deltaTickets(current:number|null,prior:number|null,sameWeek:boolean):number|null {
