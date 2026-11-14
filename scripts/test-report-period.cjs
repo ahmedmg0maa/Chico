@@ -7,13 +7,15 @@ function compile(name,imports={}){
  return mod.exports;
 }
 const rules=compile('src/lib/rules.ts');
-const m=compile('src/lib/report-period.ts',{'./rules':rules});
+const excel=compile('src/lib/excel-import.ts',{'./rules':rules});
+const m=compile('src/lib/report-period.ts',{'./rules':rules,'./excel-import':excel});
 const admins=[
  {id:'1',name:'Rare',rank:'Helper',active:true,in_reporting:true,sort_order:1},
- {id:'2',name:'SN.Gaby',rank:'SN.Helper',active:true,in_reporting:true,sort_order:2},
+ {id:'2',name:'Gaby',rank:'SN.Helper',active:true,in_reporting:true,sort_order:2},
  {id:'3',name:'M.Gambul',rank:'Moderator',active:true,in_reporting:true,sort_order:3},
  {id:'4',name:'A. Marwan',rank:'Administrator',active:true,in_reporting:true,sort_order:4},
- {id:'5',name:'General',rank:'Responsible',active:true,in_reporting:false,sort_order:5}
+ {id:'5',name:'General',rank:'Responsible',active:true,in_reporting:false,sort_order:5},
+ {id:'6',name:'NoRead',rank:'Helper',active:true,in_reporting:true,sort_order:0}
 ];
 const reading=(id,from,to,tickets,flags,rating,at='2026-11-14T10:00:00.000Z')=>({
  admin_id:id,from_date:from,to_date:to,week_start:rules.weekStart(from),
@@ -26,6 +28,9 @@ const records=[
  reading('4','2026-11-13','2026-11-13',72,0,5.0),
  reading('1','2026-11-13','2026-11-13',20,0,4.87,'2026-11-13T10:00:00.000Z')
 ];
+records[0].source_row=14;records[0].source_name='Rare';
+records[1].source_row=5;records[1].source_name='SN.Gaby';
+records[2].source_row=22;records[2].source_name='M.Gambul';
 const included=rules.eligibleReadings(records,admins);
 assert.equal(included.length,4,'Administrator must not be part of report periods');
 const truncated=m.selectPeriod(included,'2026-11-10','2026-11-12');
@@ -45,7 +50,12 @@ const aggregates=m.reportTotals(complete.matching,admins);
 assert.equal(aggregates.tickets,957);
 assert.equal(aggregates.flags,9);
 const rows=m.reportRows(admins,complete.matching);
-assert.equal(rows.length,3,'no Administrator or General in poster');
+assert.equal(rows.length,3,'no Administrator, General or unreported person in poster');
+const senior=rows.find(x=>x.name==='SN.Gaby');
+assert(senior,'the game name SN.Gaby must survive canonical roster matching to Gaby');
+assert.equal(senior.order,5,'report uses worksheet row instead of approved roster sort');
+assert.equal(rows.find(x=>x.name==='Rare').order,14);
+assert(!rows.some(x=>x.name==='NoRead'),'missing staff are reported outside the poster, not as empty rows');
 const rare=rows.find(x=>x.name==='Rare');
 assert.equal(rare.tickets,221);
 assert.equal(rare.rating,4.87,'latest rating must use date, not order of upload');
@@ -60,7 +70,7 @@ assert.equal(incomplete.tickets,null,'missing Tickets must not be reported as pa
 assert.equal(incomplete.flags,null,'missing Flags must not be reported as partial known total');
 const incompleteRows=m.reportRows(admins,partialData);
 assert.equal(incompleteRows.find(x=>x.name==='Rare').tickets,null);
-assert.equal(incompleteRows.find(x=>x.name==='SN.Gaby').flags,null);
+assert.equal(incompleteRows.find(x=>x.name==='Gaby').flags,null);
 const genuineZero=[reading('1','2026-11-09','2026-11-09',0,0,5)];
 assert.equal(m.reportTotals(genuineZero,admins).tickets,0);
 assert.equal(m.reportTotals(genuineZero,admins).flags,0);
