@@ -26,7 +26,7 @@ export async function POST(req:NextRequest){
   const sheet=book.getWorksheet('CHICO_IMPORT')||book.worksheets[0];
   if(!sheet)return response({ok:false,error:'EMPTY_XLSX'},400);
   if(sheet.rowCount>502)return response({ok:false,error:'XLSX_TOO_MANY_ROWS'},422);
-  const heads=(sheet.getRow(1).values as unknown[]).map(x=>normalizedExcelHeader(value(x)));
+  const heads=Array.from(sheet.getRow(1).values as unknown[],x=>normalizedExcelHeader(value(x)));
   const find=(...items:string[])=>findImportColumn(heads,...items);
   const nameCol=find('name','admin','الاسم');
   const roleCol=find('rank','الرتبة');
