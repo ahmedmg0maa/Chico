@@ -192,11 +192,11 @@ export function renderLuxuryPoster(
  groups.forEach(drawTable);
  // Horizontal awards: only display populated awards; no empty podium winners.
  const medals=[P.bright,P.silver,P.bronze];
- const award=(group:{name:string;topTitle:string;rows:LuxuryPosterRow[];x:number})=>{
+ const award=(group:{name:string;topTitle:string;rows:LuxuryPosterRow[];topRows:LuxuryPosterRow[];x:number})=>{
   const {x}=group,w=692;panel(x,podiumY,w,306,17);
   panel(x+18,podiumY+17,w-36,62,9);
   text(group.topTitle,x+w/2,podiumY+49,31,P.bright,'center',w-70);
-  const winners=group.rows.filter(r=>r.tickets!==null).slice(0,3);
+  const winners=group.topRows;
   if(winners.length===0){
    text('لا توجد نتائج مسجلة لهذه الفترة',x+w/2,podiumY+178,27,P.dim);
    return;
