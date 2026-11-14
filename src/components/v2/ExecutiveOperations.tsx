@@ -244,6 +244,12 @@ export default function ExecutiveOperations({tab,state,review,onRefresh,initialA
       <td>{r.skip_reading?'قائد الفريق — بلا تقييم':r.roster_action==='create'?'إضافة اسم جديد':'مطابق — بدون تغيير الرتبة'}</td>
      </tr>)}</tbody>
     </table></div>
+    {importView.rosterChanges>0&&<div className="v9-warning" role="alert">
+     <b>فيه {importView.rosterChanges} اسم جديد مش موجود في قائمة الفريق المحفوظة:</b>
+     <p dir="auto">{importView.rows.filter(r=>r.roster_action!=='match').map(r=>r.name).join(' · ')}</p>
+     <p>بالموافقة، الأسماء دي هتتضاف فقط. مش هنحذف الموجودين اللي مش في Excel، ولا هنغيّر رتبهم.</p>
+     {state&&<p>عدد الأسماء الحالي {state.admins.length}، وبعد الإضافة هيصبح {state.admins.length+importView.rosterChanges} حتى لو بعضهم ملوش إحصائيات في الملف.</p>}
+    </div>}
     {!!importView.notices?.length&&<div className="v9-warning">{importView.notices.map((n,i)=><p key={i}>{n}</p>)}</div>}
     {!!importView.warnings.length&&<div className="x-op-error"><AlertTriangle size={18}/><div><b>لا يمكن حفظ الملف قبل تصحيح الأخطاء التالية</b>{importView.warnings.map((w,i)=><p key={i}>{w}</p>)}</div></div>}
     {!importView.warnings.length&&<>
