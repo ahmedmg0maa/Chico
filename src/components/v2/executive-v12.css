@@ -386,3 +386,6 @@
 .chico-v2 .v9-tools-active .x-titleband .x-illustrated-copy p{
  font-size:13px;color:var(--ch-muted);line-height:1.65;margin:0;
 }
+
+/* Phase 3: poster keeps its actual responsive 1560 x dynamic-height Canvas ratio. */
+.chico-v2 .v9-poster-preview canvas{aspect-ratio:auto;max-width:100%;height:auto;}
