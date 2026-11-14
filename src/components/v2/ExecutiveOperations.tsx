@@ -13,8 +13,9 @@ export type OperationTab = 'updates'|'excel'|'server'|'daily'|'reports'|'weeks'|
 type Props = {tab:OperationTab;state:State|null;review:boolean;onRefresh:()=>Promise<void>;initialAdminId?:string|null;compactHead?:boolean};
 type ReadForm={admin_id:string;from_date:string;to_date:string;tickets_counter:number|null;flags_counter:number|null;flags_baseline:number|null;hours:number|null;rating:number|null;note:string};
 type Imported={row:number;name:string;admin_id:string|null;roster_name:string|null;source_rank?:string|null;rank:string|null;admin_level:number|null;roster_action:string;from_date:string|null;to_date:string|null;report_entered_on:string|null;tickets_counter:number|null;tickets_baseline:number|null;flags_counter:number|null;flags_baseline:number|null;hours:number|null;rating:number|null;skip_reading:boolean};
-type ImportView={preview_id:string;filename:string;sheet:string;rows:Imported[];warnings:string[];notices:string[];requiresConfirmation:boolean;imported:number;leaders:number;rosterChanges:number};
+type ImportView={preview_id:string;filename:string;sheet:string;rows:Imported[];warnings:string[];notices:string[];requiresConfirmation:boolean;imported:number;leaders:number;rosterChanges:number;sourceTotals?:{people:number;tickets:number|null;flags:number|null;hours:number|null;from:string|null;to:string|null}};
 const cairoDate=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'Africa/Cairo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+const cairoYear=()=>new Intl.DateTimeFormat('en-US',{timeZone:'Africa/Cairo',year:'numeric'}).format(new Date());
 const emptyReading=():ReadForm=>({admin_id:'',from_date:cairoDate(),to_date:cairoDate(),tickets_counter:null,flags_counter:null,flags_baseline:null,hours:null,rating:null,note:''});
 const fmt=(n:number|null|undefined,places=2)=>n===null||n===undefined||!Number.isFinite(n)?'غير مسجّل':new Intl.NumberFormat('en-US',{maximumFractionDigits:places}).format(n);
 const fieldValue=(n:number|null)=>n===null?'':String(n);
@@ -33,6 +34,11 @@ const userFacingErrors:Record<string,string>={
  INVALID_IMPORT_ROW:'واحد أو أكثر من الصفوف ناقص أو غير صالح للاستيراد.',
  LEADER_RANK_CONFLICT:'بيانات قائد الفريق مختلفة عن الرتبة المعتمدة. صححها في إدارة الفريق أولًا.',
  MISSING_RANK:'في إداري جديد بدون رتبة صالحة.',
+ LEGACY_YEAR_REQUIRED:'ملف اللعبة مفيهوش سنة؛ اختار سنة الفترة وأعد معاينته.',
+ INVALID_XLSX:'اختار ملف Excel بصيغة XLSX أقل من 3 ميجابايت.',
+ EMPTY_XLSX:'ملف Excel المختار لا يحتوي على قراءات قابلة للاستيراد.',
+ XLSX_UNRECOGNIZED_HEADERS:'عناوين أعمدة Excel غير معروفة؛ راجع ورقة البيانات.',
+ XLSX_TOO_MANY_ROWS:'الحد الأقصى 500 صف بيانات.',
 };
 async function api<T>(url:string,method='GET',data?:Record<string,unknown>|FormData):Promise<T>{
  const multipart=data instanceof FormData;
@@ -122,6 +128,7 @@ export default function ExecutiveOperations({tab,state,review,onRefresh,initialA
  const [reading,setReading]=useState<ReadForm>(emptyReading);
  const [editing,setEditing]=useState<string|null>(null);
  const [file,setFile]=useState<File|null>(null);
+ const [periodYear,setPeriodYear]=useState(cairoYear);
  const [importView,setImportView]=useState<ImportView|null>(null);
  const [acceptedImport,setAcceptedImport]=useState(false);
  const [approvedRosterSync,setApprovedRosterSync]=useState(false);
@@ -156,7 +163,7 @@ export default function ExecutiveOperations({tab,state,review,onRefresh,initialA
  const previewExcel=async()=>{
   if(!file||review)return;
   setBusy(true);setError('');setSuccess('');setImportView(null);setAcceptedImport(false);
-  try{const body=new FormData();body.append('file',file);const view=await api<ImportView>('/api/import','POST',body);setImportView(view);}
+  try{const body=new FormData();body.append('file',file);body.set('period_year',periodYear);const view=await api<ImportView>('/api/import','POST',body);setImportView(view);}
   catch(e){setError(e instanceof Error?e.message:'تعذّرت معاينة Excel');}
   finally{setBusy(false);}
  };
