@@ -34,7 +34,13 @@ const links:{id:Tab;label:string;en:string;icon:typeof Home}[]=[
   {id:'settings',label:'الإعدادات',en:'Settings',icon:Settings2}
 ];
 
-const primaryLinks=links.filter(x=>!['excel','server','weeks'].includes(x.id));
+// Stage 2: clear navigation hierarchy, preserving every existing route and capability.
+const navigationGroups:{label:string;en:string;items:Tab[]}[]=[
+ {label:'القيادة',en:'OVERVIEW',items:['dashboard','team','alerts']},
+ {label:'العمل اليومي',en:'OPERATIONS',items:['updates','operations']},
+ {label:'التقارير',en:'REPORTS',items:['daily','reports']},
+ {label:'النظام',en:'SYSTEM',items:['settings']}
+];
 function pretty(v:number|null|undefined,kind?:'percent'|'rating'){
  if(v===null||v===undefined||!Number.isFinite(v))return '—';
  if(kind==='rating')return v.toFixed(2);
@@ -178,10 +184,18 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
    <aside id="chico-main-navigation" className={"x-sidebar "+(menu?"x-sidebar-open":"")} aria-label="القائمة الرئيسية" aria-hidden={!menu} inert={!menu}>
     <div className="v10-nav-head"><Brand small/><button type="button" className="v10-nav-close" onClick={closeMenu} title="إغلاق القائمة" aria-label="إغلاق القائمة"><X size={19}/></button></div>
     <div className="x-sidebar-caption">ONE STATE RP · CHICO ME</div>
-    <div className="x-side-group">ADMINISTRATION <span> / لوحة الإدارة</span></div>
-    <nav>{primaryLinks.map(({id,label,en,icon:Icon})=><button type="button" key={id} className={'x-nav-link '+(tab===id?'x-nav-active':'')} onClick={()=>open(id)}>
-      <NavGlyph tab={id}/><span><b>{label}</b><small>{en}</small></span>{tab===id?<i className="x-active-chevron"/>:null}
-    </button>)}</nav>
+    <nav className="v12-nav" aria-label="أقسام الإدارة">{navigationGroups.map(group=>
+      <section className="v12-nav-group" aria-label={group.label} key={group.en}>
+       <div className="v12-nav-label"><span>{group.label}</span><small>{group.en}</small></div>
+       {group.items.map(id=>{
+        const item=links.find(link=>link.id===id);
+        if(!item)return null;
+        return <button type="button" key={id} className={'x-nav-link '+(tab===id?'x-nav-active':'')} onClick={()=>open(id)} aria-current={tab===id?'page':undefined}>
+         <NavGlyph tab={id}/><span><b>{item.label}</b><small>{item.en}</small></span>{tab===id?<i className="x-active-chevron"/>:null}
+        </button>;
+       })}
+      </section>
+     )}</nav>
     <div className="x-sidebar-footer"><span>ONE STATE RP</span><strong>CHICO ME</strong><small>PRIVATE MANAGEMENT</small></div>
    </aside>
    {menu&&<button className="x-mobile-scrim" aria-label="إغلاق القائمة" onClick={closeMenu}/>}
