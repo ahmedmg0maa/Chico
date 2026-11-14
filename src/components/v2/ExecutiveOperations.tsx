@@ -233,7 +233,7 @@ export default function ExecutiveOperations({tab,state,review,onRefresh,initialA
     <div className="x-op-table-wrap"><table className="x-op-table">
      <thead><tr><th>الاسم كما في Excel</th><th>المطابقة في الموقع</th><th>رتبة Excel</th><th>الرتبة المعتمدة</th><th>بداية الفترة</th><th>نهاية الفترة</th><th>Tickets</th><th>Flags الختامي</th><th>Flags البداية</th><th>TIME</th><th>Rate</th><th>الإجراء</th></tr></thead>
      <tbody>{importView.rows.map(r=><tr key={r.row}>
-      <td dir="auto"><b>{r.name}</b></td>
+      <td dir="auto"><b>{r.source_name||r.name}</b></td>
       <td dir="auto">{r.roster_name||'اسم جديد'}</td><td>{r.source_rank||'—'}</td><td>{r.rank||'—'}</td>
       <td>{r.skip_reading?'—':r.from_date||'⚠️'}</td><td>{r.skip_reading?'—':r.to_date||'⚠️'}</td>
       <td>{r.skip_reading?'خارج الإحصائيات':fmt(r.tickets_counter,0)}</td>
