@@ -26,9 +26,9 @@ const unified=source('src/components/v2/executive-unified.css');
 assert(unified.includes('.chico-v2')&&unified.includes('v12-nav'),'Combined CSS contains the full app and new design system');
 for(const key of ['--ch-bg:','--ch-surface:','--ch-muted:','--ch-gold:','--ch-line:','prefers-reduced-motion','focus-visible','max-width:720px'])
  assert(css.includes(key),'Missing design system contract '+key);
-assert(!css.includes('.v9-poster-preview canvas'),'Poster design belongs to Phase 3 and must stay unchanged');
+assert(css.includes('.v9-poster-preview canvas')&&css.includes('aspect-ratio:auto'),'Phase 3 must preserve the poster Canvas native aspect ratio');
 const discord=source('src/components/v2/DiscordReportStudio.tsx');
-assert(discord.includes('latestRecord&&latestRecord.from_date===latestRecord.to_date'),'Empty Discord report must not dereference a null latest reading');
+assert(discord.includes('latestSingleDay(eligibleRecords)')&&discord.includes('latestRecord?.to_date'),'Discord controls safely handle no recent eligible reading');
 assert(main.includes('href="#chico-main-content"')&&main.includes('id="chico-main-content"'),'Skip to main content must be available');
 assert(main.includes("state?'البيانات محمّلة':'جاري تحميل البيانات'"),'Never falsely claim active DB connection before state fetch');
 assert(main.includes('aria-label="تسجيل الخروج من CHICO"'),'Logout button must be accessible');

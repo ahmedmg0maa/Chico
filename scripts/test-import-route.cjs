@@ -13,8 +13,12 @@ const rules=compile('src/lib/rules.ts',{});
 const excel=compile('src/lib/excel-import.ts',{'./rules':rules});
 const roster=fixture.map((r,i)=>({id:'00000000-0000-4000-8000-'+String(i+1).padStart(12,'0'),name:r[1],rank:r[0],admin_level:rankLevel[r[0]],in_reporting:r[0]!=='Responsible'}));
 let staged=null;
+let duplicateSavedFile=false;
+let storedOverlap=null;
 const sql=async(parts,...values)=>{
  const q=parts.join('?');
+ if(q.includes('FROM chico_next.import_staging')&&q.includes('committed_at IS NOT NULL'))return duplicateSavedFile?[{one:1}]:[];
+ if(q.includes('FROM chico_next.readings'))return storedOverlap?[storedOverlap]:[];
  if(q.includes('FROM chico_next.admins'))return roster;
  if(q.includes('INSERT INTO chico_next.import_staging')){staged=values[1];return [{id:'11111111-1111-4111-8111-111111111111'}];}
  if(q.includes('DELETE FROM chico_next.import_staging'))return [];
@@ -36,9 +40,22 @@ async function parse(options={}){
   const time=options.dateTime&&r[1]==='Bieso'?new Date('1899-12-31T12:00:00.000Z'):r[6];
   ws.addRow([r[1],role,level,'2026-11-09','2026-11-12','2026-11-13',r[5],r[2],r[4],r[3],time,r[7]]);
  });
+ if(options.unnamed)ws.addRow(['','Helper',1,'2026-11-09','2026-11-12','2026-11-13',25,0,2,0,1.5,4.9]);
  const buffer=Buffer.from(await wb.xlsx.writeBuffer());
  const file=new File([buffer],'CHICO_IMPORT.xlsx',{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
  const formData=new FormData();formData.set('file',file);
+ return route.POST({formData:async()=>formData});
+}
+async function parseLegacy(periodYear=null){
+ const wb=new ExcelJS.Workbook(),ws=wb.addWorksheet('Sheet1');
+ ws.addRow(['Rank / AdminLevel','Name','First Week Tickets','First Week Flags',
+  'Total Week Flags From 11/09 To 11/12','Total Week Tickets From 11/09 To 11/12',
+  'Total Week Hours From 11/09 To 11/12','Total Week Rate From 11/09 To 11/12']);
+ for(const r of fixture)ws.addRow([r[0]+' '+rankLevel[r[0]],r[1],r[2],r[3],r[4],r[5],r[6],r[7]]);
+ const bytes=Buffer.from(await wb.xlsx.writeBuffer());
+ const file=new File([bytes],'CHICO_legacy_original.xlsx',{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+ const formData=new FormData();formData.set('file',file);
+ if(periodYear!==null)formData.set('period_year',periodYear);
  return route.POST({formData:async()=>formData});
 }
 (async()=>{
@@ -70,6 +87,39 @@ async function parse(options={}){
  const dated=await parse({dateTime:true});
  assert.equal(dated.body.rows.find(r=>r.name==='Bieso').hours,1.5);
  assert(dated.body.notices.some(x=>x.includes('TIME date-formatted cell converted to 1.5')));
+ const blocked=await parseLegacy();
+ assert.equal(blocked.status,422);
+ assert.equal(blocked.body.error,'LEGACY_YEAR_REQUIRED');
+ const year=await parseLegacy('2026');
+ assert.equal(year.status,200);
+ assert.equal(year.body.imported,29);
+ assert.equal(year.body.leaders,1);
+ assert.equal(year.body.sourceTotals.people,26);
+ assert.equal(year.body.sourceTotals.tickets,3222);
+ assert.equal(year.body.sourceTotals.flags,50);
+ assert.equal(year.body.sourceTotals.hours,259);
+ assert.equal(year.body.sourceTotals.from,'2026-11-09');
+ assert.equal(year.body.sourceTotals.to,'2026-11-12');
+ assert.equal(year.body.warnings.length,0);
+ assert(year.body.notices.some(x=>x.includes('explicitly selected')));
+ const noName=await parse({unnamed:true});
+ assert.equal(noName.status,200);
+ assert(noName.body.warnings.some(w=>w.includes('missing administrator Name')),'populated unnamed XLSX row must block saving');
+ duplicateSavedFile=true;
+ const duplicate=await parse();
+ assert.equal(duplicate.status,409);
+ assert.equal(duplicate.body.error,'FILE_ALREADY_IMPORTED');
+ duplicateSavedFile=false;
+ storedOverlap={admin_id:roster.find(r=>r.name==='Bieso').id,from_date:'2026-11-09',to_date:'2026-11-12'};
+ const conflicting=await parse();
+ assert.equal(conflicting.status,200);
+ assert(conflicting.body.warnings.some(w=>w.includes('Bieso')&&w.includes('already saved reading overlaps')),'overlap should be blocked in preview');
+ storedOverlap=null;
+ const old=await parseLegacy('2025');
+ assert.equal(old.status,200);
+ assert(old.body.warnings.some(x=>x.includes('invalid or missing report period')),
+  'a selected year that makes the legacy date interval cross weeks must be blocked at commit');
+ console.log('PASS original 30-row legacy headers: explicit year required, 26 evaluated / 3222 Tickets / 50 Flags / 259h, unsafe date spans blocked');
  console.log('PASS CHICO 30-row XLSX source fixture => 29 readings + 1 General, exact totals and stable roster');
  console.log('PASS CHICO stale rank protection and date-formatted TIME review');
 })().catch(e=>{console.error(e);process.exit(1)});

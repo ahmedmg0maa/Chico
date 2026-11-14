@@ -5,7 +5,7 @@ export type ExcelImportPerson={
  id:string;name:string;rank:Rank;admin_level:number;in_reporting:boolean
 };
 export type ExcelImportRow={
- row:number;name:string;admin_id:string|null;roster_name:string|null;source_rank?:Rank|null;
+ row:number;name:string;source_name?:string;admin_id:string|null;roster_name:string|null;source_rank?:Rank|null;
  rank:Rank|null;admin_level:number|null;roster_action:'match'|'create'|'update'|'leader';
  from_date:string|null;to_date:string|null;report_entered_on:string|null;
  tickets_counter:number|null;tickets_baseline:number|null;

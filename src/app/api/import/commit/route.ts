@@ -70,10 +70,10 @@ export async function POST(req:NextRequest){
     const overlap=await tx`SELECT id FROM chico_next.readings WHERE admin_id=${id} AND from_date<=${r.to_date} AND to_date>=${r.from_date} LIMIT 1`;
     if(overlap.length)throw new Error('OVERLAPPING_PERIOD: '+r.name);
     await tx`INSERT INTO chico_next.readings(admin_id,from_date,to_date,week_start,
-      tickets_counter,flags_counter,flags_baseline,hours,rating,note,report_entered_on)
+      tickets_counter,flags_counter,flags_baseline,hours,rating,note,report_entered_on,source_row,source_name)
       VALUES(${id},${r.from_date},${r.to_date},${week},
       ${r.tickets_counter},${r.flags_counter},${r.flags_baseline},${r.hours},${r.rating},
-      ${r.note},${r.report_entered_on})`;
+      ${r.note},${r.report_entered_on},${r.row},${r.source_name||r.name})`;
     affected.add(id);inserted++;
    }
    for(const id of affected)await recompute(id,tx as unknown as ReturnType<typeof db>);

@@ -12,9 +12,10 @@ import {applyLocalRosterChange,LOCAL_ROSTER_HISTORY_KEY,type LocalRosterAction,t
 export type OperationTab = 'updates'|'excel'|'server'|'daily'|'reports'|'weeks'|'alerts'|'settings';
 type Props = {tab:OperationTab;state:State|null;review:boolean;onRefresh:()=>Promise<void>;initialAdminId?:string|null;compactHead?:boolean};
 type ReadForm={admin_id:string;from_date:string;to_date:string;tickets_counter:number|null;flags_counter:number|null;flags_baseline:number|null;hours:number|null;rating:number|null;note:string};
-type Imported={row:number;name:string;admin_id:string|null;roster_name:string|null;source_rank?:string|null;rank:string|null;admin_level:number|null;roster_action:string;from_date:string|null;to_date:string|null;report_entered_on:string|null;tickets_counter:number|null;tickets_baseline:number|null;flags_counter:number|null;flags_baseline:number|null;hours:number|null;rating:number|null;skip_reading:boolean};
-type ImportView={preview_id:string;filename:string;sheet:string;rows:Imported[];warnings:string[];notices:string[];requiresConfirmation:boolean;imported:number;leaders:number;rosterChanges:number};
+type Imported={row:number;name:string;source_name?:string;admin_id:string|null;roster_name:string|null;source_rank?:string|null;rank:string|null;admin_level:number|null;roster_action:string;from_date:string|null;to_date:string|null;report_entered_on:string|null;tickets_counter:number|null;tickets_baseline:number|null;flags_counter:number|null;flags_baseline:number|null;hours:number|null;rating:number|null;skip_reading:boolean};
+type ImportView={preview_id:string;filename:string;sheet:string;rows:Imported[];warnings:string[];notices:string[];requiresConfirmation:boolean;imported:number;leaders:number;rosterChanges:number;sourceTotals?:{people:number;tickets:number|null;flags:number|null;hours:number|null;from:string|null;to:string|null}};
 const cairoDate=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'Africa/Cairo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+const cairoYear=()=>new Intl.DateTimeFormat('en-US',{timeZone:'Africa/Cairo',year:'numeric'}).format(new Date());
 const emptyReading=():ReadForm=>({admin_id:'',from_date:cairoDate(),to_date:cairoDate(),tickets_counter:null,flags_counter:null,flags_baseline:null,hours:null,rating:null,note:''});
 const fmt=(n:number|null|undefined,places=2)=>n===null||n===undefined||!Number.isFinite(n)?'غير مسجّل':new Intl.NumberFormat('en-US',{maximumFractionDigits:places}).format(n);
 const fieldValue=(n:number|null)=>n===null?'':String(n);
@@ -33,6 +34,11 @@ const userFacingErrors:Record<string,string>={
  INVALID_IMPORT_ROW:'واحد أو أكثر من الصفوف ناقص أو غير صالح للاستيراد.',
  LEADER_RANK_CONFLICT:'بيانات قائد الفريق مختلفة عن الرتبة المعتمدة. صححها في إدارة الفريق أولًا.',
  MISSING_RANK:'في إداري جديد بدون رتبة صالحة.',
+ LEGACY_YEAR_REQUIRED:'ملف اللعبة مفيهوش سنة؛ اختار سنة الفترة وأعد معاينته.',
+ INVALID_XLSX:'اختار ملف Excel بصيغة XLSX أقل من 3 ميجابايت.',
+ EMPTY_XLSX:'ملف Excel المختار لا يحتوي على قراءات قابلة للاستيراد.',
+ XLSX_UNRECOGNIZED_HEADERS:'عناوين أعمدة Excel غير معروفة؛ راجع ورقة البيانات.',
+ XLSX_TOO_MANY_ROWS:'الحد الأقصى 500 صف بيانات.',
 };
 async function api<T>(url:string,method='GET',data?:Record<string,unknown>|FormData):Promise<T>{
  const multipart=data instanceof FormData;
@@ -122,6 +128,7 @@ export default function ExecutiveOperations({tab,state,review,onRefresh,initialA
  const [reading,setReading]=useState<ReadForm>(emptyReading);
  const [editing,setEditing]=useState<string|null>(null);
  const [file,setFile]=useState<File|null>(null);
+ const [periodYear,setPeriodYear]=useState(cairoYear);
  const [importView,setImportView]=useState<ImportView|null>(null);
  const [acceptedImport,setAcceptedImport]=useState(false);
  const [approvedRosterSync,setApprovedRosterSync]=useState(false);
@@ -156,7 +163,7 @@ export default function ExecutiveOperations({tab,state,review,onRefresh,initialA
  const previewExcel=async()=>{
   if(!file||review)return;
   setBusy(true);setError('');setSuccess('');setImportView(null);setAcceptedImport(false);
-  try{const body=new FormData();body.append('file',file);const view=await api<ImportView>('/api/import','POST',body);setImportView(view);}
+  try{const body=new FormData();body.append('file',file);body.set('period_year',periodYear);const view=await api<ImportView>('/api/import','POST',body);setImportView(view);}
   catch(e){setError(e instanceof Error?e.message:'تعذّرت معاينة Excel');}
   finally{setBusy(false);}
  };
@@ -198,18 +205,35 @@ export default function ExecutiveOperations({tab,state,review,onRefresh,initialA
   if(tab==='excel')return <>
   <Head compact={compactHead} en="CHICO / XLSX REVIEW" title="استيراد Excel" description="معاينة جميع قراءات Excel والتواريخ وأرصدة Flags. لا تعديل أسماء أو رتب قبل موافقتك الصريحة."/><Hint review={review}/>
   <section className="x-panel x-op-card"><div className="x-op-cardhead"><FileSpreadsheet size={20}/><h2>مراجعة ملف اللعبة</h2></div>
-   <div className="x-op-form"><label className="x-op-full">ملف Excel بصيغة XLSX<input type="file" accept=".xlsx" disabled={review||busy} onChange={e=>{setFile(e.target.files?.[0]||null);setImportView(null);setAcceptedImport(false);setApprovedRosterSync(false);}}/></label><button className="x-primary" type="button" onClick={()=>void previewExcel()} disabled={review||busy||!file}><Upload size={17}/>معاينة الملف</button></div>
+   {review&&<p className="v9-warning" role="status">دي معاينة تصميم فقط؛ رفع Excel وتنزيل التقارير متعطلين عمدًا هنا. للبيانات الحقيقية افتح <a href="https://chicoteam.vercel.app/v2?tab=excel">الموقع الرسمي بعد تسجيل الدخول</a>.</p>}
+   <div className="x-op-form">
+    <label className="x-op-full">ملف Excel بصيغة XLSX
+     <input type="file" accept=".xlsx" disabled={review||busy} onChange={e=>{setFile(e.target.files?.[0]||null);setImportView(null);setAcceptedImport(false);setApprovedRosterSync(false);}}/>
+    </label>
+    <label>سنة التقرير (للملفات بدون سنة)
+     <input type="number" min="2000" max="2099" step="1" value={periodYear} disabled={review||busy} onChange={e=>{setPeriodYear(e.target.value);setImportView(null);setAcceptedImport(false);}}/>
+    </label>
+    <p className="x-op-footnote x-op-full">لا نعتمد سنة الرفع تلقائيًا. اختار السنة الخاصة بتاريخ بيانات اللعبة قبل معاينة الملف.</p>
+    <button className="x-primary" type="button" onClick={()=>void previewExcel()} disabled={review||busy||!file}><Upload size={17}/>معاينة الملف</button>
+   </div>
    {importView&&<>
     <div className="x-op-metrics">
-     <Metric label="القراءات المستوردة" value={String(importView.imported)}/>
-     <Metric label="قائد مستبعد من التقييم" value={String(importView.leaders)}/>
+     <Metric label="القراءات التي سيتم حفظها" value={String(importView.imported)}/>
+     <Metric label="General خارج التقييم" value={String(importView.leaders)}/>
      <Metric label="أسماء جديدة تحتاج الموافقة" value={String(importView.rosterChanges)}/>
+     {importView.sourceTotals&&<>
+      <Metric label="الأعضاء المؤهلون للتقييم" value={String(importView.sourceTotals.people)}/>
+      <Metric label="Tickets المصدر للمؤهلين" value={fmt(importView.sourceTotals.tickets,0)}/>
+      <Metric label="Flags الجديدة من أرصدة البداية" value={fmt(importView.sourceTotals.flags,0)}/>
+      <Metric label="TIME بالساعات العشرية" value={fmt(importView.sourceTotals.hours,2)}/>
+     </>}
     </div>
+    {importView.sourceTotals&&<p className="x-op-footnote" role="status">الفترة: {importView.sourceTotals.from||'—'} إلى {importView.sourceTotals.to||'—'} · الإجماليات دي من ملف Excel قبل الحفظ، ولا تشمل General وAdministrator في التقييم. غير المسجل لا يساوي صفر.</p>}
     <p className="x-op-footnote">الملف: {importView.filename} · ورقة: {importView.sheet} · المعاينة لا تحفظ ولا تعدّل شيئًا.</p>
     <div className="x-op-table-wrap"><table className="x-op-table">
      <thead><tr><th>الاسم كما في Excel</th><th>المطابقة في الموقع</th><th>رتبة Excel</th><th>الرتبة المعتمدة</th><th>بداية الفترة</th><th>نهاية الفترة</th><th>Tickets</th><th>Flags الختامي</th><th>Flags البداية</th><th>TIME</th><th>Rate</th><th>الإجراء</th></tr></thead>
      <tbody>{importView.rows.map(r=><tr key={r.row}>
-      <td dir="auto"><b>{r.name}</b></td>
+      <td dir="auto"><b>{r.source_name||r.name}</b></td>
       <td dir="auto">{r.roster_name||'اسم جديد'}</td><td>{r.source_rank||'—'}</td><td>{r.rank||'—'}</td>
       <td>{r.skip_reading?'—':r.from_date||'⚠️'}</td><td>{r.skip_reading?'—':r.to_date||'⚠️'}</td>
       <td>{r.skip_reading?'خارج الإحصائيات':fmt(r.tickets_counter,0)}</td>
@@ -220,6 +244,12 @@ export default function ExecutiveOperations({tab,state,review,onRefresh,initialA
       <td>{r.skip_reading?'قائد الفريق — بلا تقييم':r.roster_action==='create'?'إضافة اسم جديد':'مطابق — بدون تغيير الرتبة'}</td>
      </tr>)}</tbody>
     </table></div>
+    {importView.rosterChanges>0&&<div className="v9-warning" role="alert">
+     <b>فيه {importView.rosterChanges} اسم جديد مش موجود في قائمة الفريق المحفوظة:</b>
+     <p dir="auto">{importView.rows.filter(r=>r.roster_action!=='match').map(r=>r.name).join(' · ')}</p>
+     <p>بالموافقة، الأسماء دي هتتضاف فقط. مش هنحذف الموجودين اللي مش في Excel، ولا هنغيّر رتبهم.</p>
+     {state&&<p>عدد الأسماء الحالي {state.admins.length}، وبعد الإضافة هيصبح {state.admins.length+importView.rosterChanges} حتى لو بعضهم ملوش إحصائيات في الملف.</p>}
+    </div>}
     {!!importView.notices?.length&&<div className="v9-warning">{importView.notices.map((n,i)=><p key={i}>{n}</p>)}</div>}
     {!!importView.warnings.length&&<div className="x-op-error"><AlertTriangle size={18}/><div><b>لا يمكن حفظ الملف قبل تصحيح الأخطاء التالية</b>{importView.warnings.map((w,i)=><p key={i}>{w}</p>)}</div></div>}
     {!importView.warnings.length&&<>
