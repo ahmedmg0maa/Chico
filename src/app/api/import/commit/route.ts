@@ -10,6 +10,8 @@ export const runtime='nodejs';
 const schema=z.object({preview_id:z.string().uuid(),confirm:z.literal('IMPORT REVIEWED'),approve_roster_sync:z.boolean().default(false)});
 type Payload={rows:ExcelImportRow[];warnings:string[]};
 function payload(value:unknown):Payload{
+ // Support older previews accidentally stored as a JSON string before the JSONB fix.
+ if(typeof value==='string'){try{value=JSON.parse(value);}catch{throw new Error('PREVIEW_FORMAT_OUTDATED');}}
  if(!value||typeof value!=='object'||Array.isArray(value))throw new Error('PREVIEW_FORMAT_OUTDATED');
  const p=value as Partial<Payload>;
  if(!Array.isArray(p.rows)||!Array.isArray(p.warnings))throw new Error('PREVIEW_FORMAT_OUTDATED');
