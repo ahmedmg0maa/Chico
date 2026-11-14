@@ -4,7 +4,7 @@ const fs=require('node:fs'),ExcelJS=require('exceljs');
 const base=process.env.CHICO_QA_URL,password=process.env.CHICO_QA_PASSWORD;
 if(!base||!password||!['localhost','127.0.0.1'].includes(new URL(base).hostname))throw Error('ISOLATED_LOCAL_QA_ONLY');
 const fixture=JSON.parse(fs.readFileSync('scripts/test-import-route.cjs','utf8').match(/const fixture=(\[[^\n;]+\]);/)[1]);
-const levels={Helper:1,'SN.Helper':1,Moderator:2,Administrator:3,Responsible:3};let cookie='';
+const levels={Helper:1,'SN.Helper':1,Moderator:2,Administrator:3,Responsible:3};let cookie='';let excelBytes=null;
 async function api(url,method='GET',data){
  const headers={Origin:base};if(cookie)headers.Cookie=cookie;
  if(data&&!(data instanceof FormData))headers['Content-Type']='application/json';
@@ -15,7 +15,8 @@ async function form(){
  const book=new ExcelJS.Workbook(),sheet=book.addWorksheet('Sheet1');
  sheet.addRow(['Rank / AdminLevel','Name','First Week Tickets','First Week Flags','Total Week Flags From 11/09 To 11/12','Total Week Tickets From 11/09 To 11/12','Total Week Hours From 11/09 To 11/12','Total Week Rate From 11/09 To 11/12']);
  fixture.forEach(r=>sheet.addRow([r[0]+' '+levels[r[0]],r[1],r[2],r[3],r[4],r[5],r[6],r[7]]));
- const f=new FormData();f.append('file',new File([await book.xlsx.writeBuffer()],'CHICO_QA.xlsx'));f.set('period_year','2026');return f;
+ const bytes=excelBytes||(excelBytes=Buffer.from(await book.xlsx.writeBuffer()));
+ const f=new FormData();f.append('file',new File([bytes],'CHICO_QA.xlsx'));f.set('period_year','2026');return f;
 }
 (async()=>{
  const login=await api('/api/auth','POST',{password});assert.equal(login.status,200);
