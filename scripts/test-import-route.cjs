@@ -16,10 +16,11 @@ let staged=null;
 const sql=async(parts,...values)=>{
  const q=parts.join('?');
  if(q.includes('FROM chico_next.admins'))return roster;
- if(q.includes('INSERT INTO chico_next.import_staging')){staged=JSON.parse(values[1]);return [{id:'11111111-1111-4111-8111-111111111111'}];}
+ if(q.includes('INSERT INTO chico_next.import_staging')){staged=values[1];return [{id:'11111111-1111-4111-8111-111111111111'}];}
  if(q.includes('DELETE FROM chico_next.import_staging'))return [];
  throw Error('Unknown fake SQL: '+q.slice(0,120));
 };
+sql.json=(value)=>value;
 const route=compile('src/app/api/import/route.ts',{
  'exceljs':ExcelJS,
  '@/lib/db':{db:()=>sql},
