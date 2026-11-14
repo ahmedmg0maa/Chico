@@ -24,4 +24,15 @@ for(const key of ['--ch-bg:','--ch-surface:','--ch-muted:','--ch-gold:','--ch-li
 assert(!css.includes('.v9-poster-preview canvas'),'Poster design belongs to Phase 3 and must stay unchanged');
 const discord=source('src/components/v2/DiscordReportStudio.tsx');
 assert(discord.includes('latestRecord&&latestRecord.from_date===latestRecord.to_date'),'Empty Discord report must not dereference a null latest reading');
+assert(main.includes('href="#chico-main-content"')&&main.includes('id="chico-main-content"'),'Skip to main content must be available');
+assert(main.includes("state?'البيانات محمّلة':'جاري تحميل البيانات'"),'Never falsely claim active DB connection before state fetch');
+assert(main.includes('aria-label="تسجيل الخروج من CHICO"'),'Logout button must be accessible');
+const team=source('src/components/v2/ExecutiveTeamStudio.tsx');
+assert(!team.includes("||'CHICO GENERAL TEAM'"),'No fake fullname placeholder for team records');
+const operations=source('src/components/v2/ExecutiveOperationsWorkspace.tsx');
+assert(operations.includes("aria-current={selected===t.id?'page':undefined}"),'Management subnav must expose active state');
+assert(css.includes('.chico-v2.x-light .v8-rank-label.v8-rank--helper'),'Accessible light-theme rank contrast must be maintained');
+assert(css.includes('.chico-v2.x-light .x-user-button small'),'Light-theme user button subtitle contrast must be maintained');
+assert(css.includes('.v9-history-table th')&&css.includes('.x-op-table th'),'Excel/history tables should have readable sticky headers');
+
 console.log('PASS CHICO Stage 2: grouped navigation, 4 dashboard KPIs, semantic route state, responsive visual tokens');
