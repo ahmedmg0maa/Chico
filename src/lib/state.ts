@@ -34,7 +34,8 @@ export async function loadState():Promise<State>{
     const flags=mine.filter(r=>r.flags_delta!==null);
     if(flags.length&&flags.length===mine.filter(r=>r.flags_counter!==null).length){
       const weekFlags=flags.reduce((n,r)=>n+(r.flags_delta||0),0);
-      if(weekFlags>10)alerts.push({id:admin.id,name:admin.name,message:`${weekFlags} weekly Flags`,kind:'danger'});
+      if(weekFlags>7)alerts.push({id:admin.id,name:admin.name,message:`${weekFlags} weekly Flags`,kind:'danger'});
+      else if(weekFlags>5)alerts.push({id:admin.id,name:admin.name,message:`${weekFlags} weekly Flags`,kind:'warning'});
     }
     const lastRating=mine.find(r=>r.rating!==null);
     if(lastRating?.rating!==null&&lastRating?.rating!==undefined&&lastRating.rating<4.8){
