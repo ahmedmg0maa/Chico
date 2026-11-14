@@ -1,5 +1,6 @@
 import type {Admin,Reading} from './types';
 import {eligibleReadings,isEvaluatedAdmin,summarizeReadings,weekStart} from './rules';
+import {canonicalName} from './excel-import';
 
 /** Keep a multi-day reading intact. Never attribute its totals to any individual day. */
 export function selectPeriod(readings:readonly Reading[],from:string,to:string){
@@ -13,14 +14,17 @@ export function selectPeriod(readings:readonly Reading[],from:string,to:string){
 }
 
 export function reportRows(admins:readonly Admin[],readings:readonly Reading[]){
- return admins.filter(isEvaluatedAdmin).map(a=>{
+ const recorded=new Set(readings.map(r=>r.admin_id));
+ return admins.filter(a=>isEvaluatedAdmin(a)&&recorded.has(a.id)).map(a=>{
   const own=readings.filter(r=>r.admin_id===a.id)
    .sort((x,y)=>y.to_date.localeCompare(x.to_date)||y.created_at.localeCompare(x.created_at));
   const completeTickets=own.length>0&&own.every(r=>r.tickets_delta!==null);
   const completeFlags=own.length>0&&own.every(r=>r.flags_delta!==null);
   const sum=(key:'tickets_delta'|'flags_delta')=>own.reduce((v,r)=>v+(r[key]??0),0);
+  const source=own.find(r=>r.source_name&&canonicalName(r.source_name)===canonicalName(a.name));
+  const ordered=own.find(r=>Number.isInteger(r.source_row)&&Number(r.source_row)>0);
   return {
-   id:a.id,name:a.name,rank:a.rank,order:a.sort_order,
+   id:a.id,name:source?.source_name||a.name,rank:a.rank,order:ordered?.source_row??a.sort_order,
    tickets:completeTickets?sum('tickets_delta'):null,
    flags:completeFlags?sum('flags_delta'):null,
    rating:own.find(r=>r.rating!==null)?.rating??null,
