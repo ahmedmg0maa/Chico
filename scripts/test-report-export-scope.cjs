@@ -1,4 +1,4 @@
-const assert=require('node:assert/strict'),path=require('node:path'),fs=require('node:fs'),vm=require('node:vm'),ts=require('typescript'),ExcelJS=require('exceljs');
+const assert=require('node:assert/strict'),path=require('node:path'),fs=require('node:fs'),ts=require('typescript'),ExcelJS=require('exceljs');
 const read=p=>fs.readFileSync(path.resolve(__dirname,'..',p),'utf8');
 const fixture=JSON.parse(read('scripts/test-import-route.cjs').match(/const fixture=(\[[^\n;]+\]);/)[1]);
 const admins=fixture.map((r,i)=>({
@@ -23,8 +23,10 @@ function compile(name,imports={}){
   module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,esModuleInterop:true
  }}).outputText;
  const module={exports:{}};
- vm.runInNewContext(source,{module,exports:module.exports,require:n=>imports[n]||require(n),
-  Response,Uint8Array,Buffer,Date,Intl,Number,URL,console},{filename:file});
+ // Execute the transpiled route in the host realm so ExcelJS receives real
+ // Array instances (vm realm arrays can be mistaken for objects by ExcelJS).
+ const evaluate=new Function('require','module','exports',source);
+ evaluate(n=>imports[n]||require(n),module,module.exports);
  return module.exports;
 }
 const rules=compile('src/lib/rules.ts');
