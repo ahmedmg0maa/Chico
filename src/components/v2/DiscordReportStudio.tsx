@@ -5,7 +5,7 @@ import {CalendarDays,Download,Ticket} from 'lucide-react';
 import {weekStart,eligibleReadings,isEvaluatedAdmin} from '@/lib/rules';
 import {latestPeriod,latestSingleDay,selectPeriod,reportRows,reportTotals} from '@/lib/report-period';
 import type {State} from '@/lib/types';
-import {renderLuxuryPoster,loadLuxuryArt,type LuxuryPosterRow} from './DailyReportStudio';
+import {renderLuxuryPoster,loadLuxuryArt} from './PremiumPosterRenderer';
 
 type Props={state:State|null;review:boolean};
 type Mode='day'|'range'|'week';
@@ -21,6 +21,7 @@ export default function DiscordReportStudio({state,review}:Props){
  const [end,setEnd]=useState(today);
  const [error,setError]=useState('');
  const [downloading,setDownloading]=useState(false);
+ const [renderedKey,setRenderedKey]=useState('');
  const canvas=useRef<HTMLCanvasElement>(null);
  useEffect(()=>{
   if(!touched.current&&latestRecord){setStart(latestRecord.from_date);setEnd(latestRecord.to_date);setMode(latestRecord.from_date===latestRecord.to_date?'day':'range');}
@@ -34,6 +35,9 @@ export default function DiscordReportStudio({state,review}:Props){
  const totals=useMemo(()=>reportTotals(matching,state?.admins||[]),[state,matching]);
  const title=mode==='day'?'إحصائيات يومية':mode==='week'?'ملخص الأسبوع حتى آخر قراءة':'إحصائيات الفترة المحددة';
  const dateLabel=start===end?start:start+'  —  '+end;
+ // Prevent exporting a previous date range or the default empty 300x150 canvas.
+ const renderKey=useMemo(()=>JSON.stringify({start,end,title,mode,rows,totals}),[start,end,title,mode,rows,totals]);
+ const imageReady=Boolean(state&&!review&&period.canExport&&renderedKey===renderKey);
  const expandCoverage=()=>{touched.current=true;setMode('range');setStart(period.expandFrom);setEnd(period.expandTo);};
  const setPeriod=(next:Mode)=>{
   touched.current=true;setMode(next);setError('');
@@ -53,14 +57,14 @@ export default function DiscordReportStudio({state,review}:Props){
     loadLuxuryArt('/assets/medal-bronze.png')
    ]);
    await document.fonts?.ready;
-   if(!cancelled&&canvas.current)renderLuxuryPoster(canvas.current,rows,dateLabel,staff,matching.length,art,title,totals);
+   if(!cancelled&&canvas.current){renderLuxuryPoster(canvas.current,rows,dateLabel,staff,matching.length,art,title,totals);setRenderedKey(renderKey);}
   })().catch(()=>{
-   if(!cancelled&&canvas.current)renderLuxuryPoster(canvas.current,rows,dateLabel,staff,matching.length,[null,null,null,null,null,null],title,totals);
+   if(!cancelled&&canvas.current){try{renderLuxuryPoster(canvas.current,rows,dateLabel,staff,matching.length,[null,null,null,null,null,null],title,totals);setRenderedKey(renderKey);}catch{setError('تعذّر رسم تقرير Discord');}}
   });
   return ()=>{cancelled=true;};
- },[rows,dateLabel,staff,matching.length,title,valid,totals]);
+ },[rows,dateLabel,staff,matching.length,title,valid,totals,renderKey]);
  const download=()=>{
-  if(!canvas.current||!state||review||!period.canExport||downloading)return;
+  if(!canvas.current||!imageReady||downloading)return;
   setError('');setDownloading(true);
   canvas.current.toBlob(blob=>{
    setDownloading(false);
@@ -77,8 +81,8 @@ export default function DiscordReportStudio({state,review}:Props){
     <h2>التقرير الجاهز للنشر على Discord</h2>
     <p>تقرير متغيّر بالقراءات الحقيقية: Tickets وFlags وتوب 3 لكل من Helpers وModerators.</p>
    </div>
-   <button type="button" className="v9-primary" disabled={!state||review||!period.canExport||downloading} onClick={download}>
-    <Download size={18}/>{downloading?'جاري تجهيز الصورة…':'تنزيل التقرير PNG'}
+   <button type="button" className="v9-primary" disabled={!imageReady||downloading} onClick={download}>
+    <Download size={18}/>{downloading?'جاري تجهيز الصورة…':period.canExport&&!imageReady&&!review?'جاري رسم الصورة…':'تنزيل التقرير PNG'}
    </button>
   </header>
   <div className="v9-poster-filters">
