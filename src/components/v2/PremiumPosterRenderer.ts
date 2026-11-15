@@ -58,7 +58,7 @@ export function renderLuxuryPoster(
   c.beginPath();c.roundRect(x,y,w,h,r);c.fillStyle=fill;c.fill();
   if(stroke){c.lineWidth=lw;c.strokeStyle=stroke;c.stroke();}
  }
- function line(x:number,y:number,x2:number,y2,color:string=P.gold,width=1){
+ function line(x:number,y:number,x2:number,y2:number,color:string=P.gold,width=1){
   c.beginPath();c.moveTo(x,y);c.lineTo(x2,y2);c.strokeStyle=color;c.lineWidth=width;c.stroke();
  }
  function path(points:number[][],fill:string|CanvasGradient,stroke?:string,lw=1){
