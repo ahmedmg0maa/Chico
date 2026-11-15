@@ -22,6 +22,12 @@ async function form(){
  const login=await api('/api/auth','POST',{password});assert.equal(login.status,200);
  cookie=(login.headers.get('set-cookie')||'').split(';')[0];assert(cookie.startsWith('chico_session='));
  const seed=await api('/api/seed','POST',{confirm:'IMPORT NAMES'});assert.equal(seed.status,200);
+ const initial=await api('/api/state');assert.equal(initial.status,200);
+ assert.equal(initial.body.admins.length,31);
+ assert.equal(initial.body.admins.filter(a=>a.active).length,27);
+ for(const name of ['Alajmi','Alkhaldy','Rey','Yoyo']){
+  const a=initial.body.admins.find(a=>a.name===name);assert(a&&!a.active&&!a.in_reporting,'historical inactive '+name);
+ }
  const p=await api('/api/import','POST',await form());assert.equal(p.status,200);
  assert.equal(p.body.imported,29);assert.equal(p.body.rosterChanges,3);
  assert.equal(p.body.sourceTotals.people,26);assert.equal(p.body.sourceTotals.tickets,3222);
@@ -32,6 +38,7 @@ async function form(){
  assert.equal(saved.status,200,JSON.stringify(saved.body));assert.equal(saved.body.inserted,29);assert.equal(saved.body.created,3);
  const state=await api('/api/state');assert.equal(state.status,200);
  assert.equal(state.body.readings.length,29);assert.equal(state.body.summary.tickets,3222);assert.equal(state.body.summary.flags,50);
+ assert.equal(state.body.admins.filter(a=>a.active).length,30,'Exactly 30 current active members after importing original source');
  const g=state.body.readings.find(r=>r.admin_name==='Gaby'),m=state.body.readings.find(r=>r.admin_name==='Alhassan');
  assert.equal(g.source_row,5);assert.equal(g.source_name,'SN.Gaby');
  assert.equal(m.source_row,18);assert.equal(m.source_name,'M.Alhassan');
@@ -41,8 +48,11 @@ async function form(){
  assert.equal(helpers.length,16);assert.equal(mods.length,10);
  assert.deepEqual(helpers.slice(0,4).map(x=>x.source_name),['Ahmedd','Bieso','Coconot','SN.Gaby']);
  assert.deepEqual(mods.slice(0,3).map(x=>x.source_name),['M.Alhassan','M.Bish','M.Bnammoo']);
- const repeated=await api('/api/import','POST',await form());assert.equal(repeated.status,200);
- const replay=await api('/api/import/commit','POST',{preview_id:repeated.body.preview_id,confirm:'IMPORT REVIEWED',approve_roster_sync:false});
- assert.equal(replay.status,409);assert.equal(replay.body.error,'FILE_ALREADY_IMPORTED');
+ const repeated=await api('/api/import','POST',await form());
+ assert.equal(repeated.status,409,'Duplicate workbook should be rejected during preview');
+ assert.equal(repeated.body.error,'FILE_ALREADY_IMPORTED');
+ const afterDuplicate=await api('/api/state');
+ assert.equal(afterDuplicate.status,200);
+ assert.equal(afterDuplicate.body.readings.length,29,'Rejected duplicate must leave the ledger unchanged');
  console.log('PASS ISOLATED AUTH HTTP: Excel->29 saved, 26 eligible, source names & row order, 3222 Tickets, 50 Flags, duplicate guarded');
 })().catch(e=>{console.error('ISOLATED_HTTP_QA_FAILED',e.stack||e);process.exitCode=1});
