@@ -50,4 +50,19 @@ assert(other.includes('لا يوجد ترتيب موثق'),'empty ranking should
 assert(other.includes('—'),'missing should remain dash, not zero');
 assert(!other.includes('TOP 1'),'missing rankings must not fabricate winners');
 assert(!text.includes('SN.Gaby')&&!text.includes('M.Gambul'),'clean role prefixes on artwork, keep original data in storage');
+// The poster must be data-bound even when its ornate look matches the approved image.
+words.length=0;
+poster.renderLuxuryPoster(canvas,[
+ row('SN.Nova','SN.Helper',1,19,0,4.81),
+ row('M.Future','Moderator',2,91,3,4.72)
+],'2026-11-16',2,2,[],undefined,{tickets:110,flags:3,rating:null});
+const changed=words.map(x=>x.s);
+for(const expected of ['2026-11-16','110','3','Nova','Future'])
+ assert(changed.includes(expected),'new-period report missing '+expected);
+for(const stale of ['3,222','SN.Nova','M.Future'])
+ assert(!changed.includes(stale),'poster still contains an old or redundantly prefixed value '+stale);
+assert.equal(poster.prestigeName('M.Gambul','Moderator'),'Gambul');
+assert.equal(poster.prestigeName('SN.Gaby','SN.Helper'),'Gaby');
+assert.equal(poster.prestigeName('Kararr','Helper'),'Kararr');
+console.log('PASS CHICO prestige portrait: editable period, actual counters, corrected game names and refined badges');
 console.log('PASS CHICO Phase 3: 1560px PNG-ready canvas, two columns/tops, zero/null accuracy, no fake data or banned badges');
