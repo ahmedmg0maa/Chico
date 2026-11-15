@@ -2,6 +2,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
 const source=(p)=>fs.readFileSync(path.join(__dirname,'..',p),'utf8');
 const main=source('src/components/v2/ExecutiveCommand.tsx');
 const route=source('src/app/v2/page.tsx');
+const rootRoute=source('src/app/page.tsx');
 const css=source('src/components/v2/executive-v12.css');
 const metadata=main.slice(main.indexOf('const navigationGroups:'),main.indexOf('function pretty('));
 const sidebar=main.slice(main.indexOf('<nav className="v12-nav"'),main.indexOf('<div className="x-sidebar-footer">'));
@@ -19,6 +20,7 @@ assert(!dashboardKpis.includes('Total Staff'),'Staff count belongs to hero, not 
 assert(!dashboardKpis.includes('Average Rating'),'Per-member rating belongs to team dashboard');
 assert(!main.includes('<section className="x-weekbanner">'),'Remove redundant ornamental weekly section');
 assert(route.includes("executive-unified.css"),'Stage 2 CSS must be loaded from one canonical entrypoint');
+assert(rootRoute.includes('executive-unified.css')&&!rootRoute.includes('executive-v11.css'),'The root site must include complete mobile poster styles, not old CSS layers');
 assert(!route.includes("executive-v12.css"),'No stacked versioned CSS imports on /v2');
 const bundler=source('scripts/build-executive-css.cjs');
 assert(bundler.includes('removedDeclarations')&&bundler.includes('combined.walkRules'),'CSS generator removes earlier exact-context declarations');

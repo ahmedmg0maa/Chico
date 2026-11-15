@@ -62,6 +62,20 @@ const endpoint=(scope,format)=>exportRoute.GET({nextUrl:new URL('https://chico.t
  const printed=await endpoint('team','print'),html=await printed.text();
  assert(printed.status===200&&html.includes('Evaluated Members: 26')&&!html.includes('A. Bashar'));
  console.log('PASS print view reports correct evaluation cohort size');
+ // This endpoint includes all historical readings. Its summary must describe
+ // that historical scope, not misleadingly reuse the latest weekly totals.
+ const historical={...readings[0],id:'historic',from_date:'2026-11-02',to_date:'2026-11-02',
+  week_start:'2026-11-02',tickets_delta:25,flags_delta:1};
+ current={...state,readings:[...readings,historical]};
+ const historyPrint=await endpoint('readings','print'),historyHTML=await historyPrint.text();
+ assert.equal(historyPrint.status,200);
+ assert(historyHTML.includes('القراءات المصدرة: 27'),'historical summary must count actual exported eligible rows');
+ assert(historyHTML.includes('فترة السجل: 2026-11-02 — 2026-11-12'),'historical summary must show full date coverage');
+ assert(historyHTML.includes('الإداريون أصحاب القراءات: 26'));
+ assert(!historyHTML.includes('Flag Rate: 1.55')&&!historyHTML.includes('Tickets: 3222')&&!historyHTML.includes('Flags: 50'),
+  'historical report must not present current-week totals as entire history');
+ current={...state,readings};
+ console.log('PASS historical print summary matches exported scope and does not confuse weeks');
  const old=readings[0];
  current={...state,readings:[...readings,{...old,id:'more',from_date:'2026-11-13',to_date:'2026-11-13',tickets_delta:null,flags_delta:null,hours:null,rating:null}]};
  const partial=await endpoint('team','xlsx'),wb2=new ExcelJS.Workbook();

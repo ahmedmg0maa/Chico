@@ -33,3 +33,6 @@ export const APPROVED_ROSTER: ReadonlyArray<{name:string;rank:Rank;admin_level:1
  {name:'Nar',rank:'Administrator' as Rank,admin_level:3},
  {name:'General',rank:'Responsible' as Rank,admin_level:3},
 ];
+
+/** Historical team members retained for records, but inactive on a fresh seed. */
+export const INACTIVE_ROSTER_NAMES:ReadonlyArray<string>=['Alajmi','Alkhaldy','Rey','Yoyo'];
