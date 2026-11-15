@@ -64,5 +64,10 @@ for(const stale of ['3,222','SN.Nova','M.Future'])
 assert.equal(poster.prestigeName('M.Gambul','Moderator'),'Gambul');
 assert.equal(poster.prestigeName('SN.Gaby','SN.Helper'),'Gaby');
 assert.equal(poster.prestigeName('Kararr','Helper'),'Kararr');
+const renderer=fs.readFileSync(rpath('src/components/v2/PremiumPosterRenderer.ts'),'utf8');
+assert(!renderer.includes('function wing('),'Final approved rank and winner cards must not use golden wing slashes');
+assert(renderer.includes('Center the full TOP 3 label'),'The TOP 3 headings must stay centered on matching symmetric crowns');
+assert(renderer.includes('Small shield only'),'Rank badges should use clean, compact shield styling');
+assert(renderer.includes('a clean burgundy header'),'Section headers should avoid yellow stripe brackets');
 console.log('PASS CHICO prestige portrait: editable period, actual counters, corrected game names and refined badges');
 console.log('PASS CHICO Phase 3: 1560px PNG-ready canvas, two columns/tops, zero/null accuracy, no fake data or banned badges');
