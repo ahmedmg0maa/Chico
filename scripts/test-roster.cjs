@@ -14,4 +14,9 @@ for(const item of list){
 }
 assert.equal(list.find(x=>x.name==='Bnammoo')?.rank,'Moderator');
 assert.equal(list.find(x=>x.name==='Me')?.admin_level,1);
+assert.deepEqual(Array.from(mod.exports.INACTIVE_ROSTER_NAMES).sort(),['Alajmi','Alkhaldy','Rey','Yoyo'].sort(),
+ 'Historical inactive names must be retained without being considered active');
+const seed=fs.readFileSync(path.resolve(__dirname,'../src/app/api/seed/route.ts'),'utf8');
+assert(seed.includes('INACTIVE_ROSTER_NAMES')&&seed.includes('active,in_reporting'),
+ 'Initial seed must honor historical active and reporting status');
 console.log('PASS CHICO official 31-person roster, ranks, levels; no fabricated performance stats');
