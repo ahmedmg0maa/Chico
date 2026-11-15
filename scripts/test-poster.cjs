@@ -15,7 +15,7 @@ const words=[];const ctx={
  fillText(s,x,y,max){words.push({s:String(s),x,y,max});},
  measureText(s){return{width:String(s).length*12};},
  roundRect(){},fillRect(){},beginPath(){},moveTo(){},lineTo(){},arc(){},quadraticCurveTo(){},closePath(){},
- fill(){},stroke(){},save(){},restore(){},translate(){},setLineDash(){},drawImage(){}
+ fill(){},stroke(){},save(){},restore(){},translate(){},scale(){},clip(){},setLineDash(){},drawImage(){}
 };
 const canvas={width:0,height:0,getContext:()=>ctx};
 const row=(name,rank,order,tickets,flags,rate,flagsIncomplete=false)=>({id:String(order),name,rank,order,tickets,flags,rating:rate,flagsIncomplete});
@@ -33,7 +33,7 @@ poster.renderLuxuryPoster(canvas,rows,'2026-11-09 — 2026-11-12',30,29,[null,nu
  'إحصائيات الفترة المجمعة',{tickets:3222,flags:50,rating:4.9});
 const text=words.map(x=>x.s);
 for(const required of ['CHICO','GENERAL TEAM','TICKETS','FLAGS','3,222','50','HELPERS','MODERATORS',
- 'TOP 3 HELPERS','TOP 3 MODERATORS','Rare','Bieso','SN.Gaby','M.Gambul','M.Bnammoo','M.Dark','Kararr','SN','0']){
+ 'TOP 3 HELPERS','TOP 3 MODERATORS','Rare','Bieso','Gaby','Gambul','Bnammoo','Dark','Kararr','SH','M','0']){
  assert(text.includes(required),'poster text missing '+required);
 }
 for(const forbidden of ['TOTAL STAFF','AVERAGE RATE','HELPERS + SN.HELPERS','CALL','CALLS','HAIL']){
@@ -48,5 +48,6 @@ poster.renderLuxuryPoster(canvas,noReadings,'2026-11-14',2,0,[],undefined,{ticke
 const other=words.map(x=>x.s);
 assert(other.includes('لا يوجد ترتيب موثق'),'empty ranking should show honest no-result');
 assert(other.includes('—'),'missing should remain dash, not zero');
-assert(!other.includes('0'),'missing should not be formatted as zero');
+assert(!other.includes('TOP 1'),'missing rankings must not fabricate winners');
+assert(!text.includes('SN.Gaby')&&!text.includes('M.Gambul'),'clean role prefixes on artwork, keep original data in storage');
 console.log('PASS CHICO Phase 3: 1560px PNG-ready canvas, two columns/tops, zero/null accuracy, no fake data or banned badges');
