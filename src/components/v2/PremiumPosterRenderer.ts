@@ -110,14 +110,6 @@ export function renderLuxuryPoster(
   const scale=Math.min(w/img.naturalWidth,h/img.naturalHeight),a=img.naturalWidth*scale,b=img.naturalHeight*scale;
   c.drawImage(img,x+(w-a)/2,y+(h-b)/2,a,b);
  }
- function wing(x:number,y:number,side=1,color=P.bright){
-  c.save();c.strokeStyle=color;c.lineWidth=1.6;
-  for(let i=0;i<4;i++){
-   c.beginPath();const yy=y+i*5;
-   c.moveTo(x,yy);c.quadraticCurveTo(x+side*9,yy-7,x+side*(14-i*.8),yy-12);
-   c.stroke();
-  }c.restore();
- }
  function crown(x:number,y:number,size:number){
   const w=size,h=size*.6;
   path([[x-w/2,y+h*.25],[x-w*.44,y-h*.40],[x-w*.15,y-h*.04],[x,y-h*.65],[x+w*.15,y-h*.04],[x+w*.44,y-h*.40],[x+w/2,y+h*.25]],
@@ -134,9 +126,10 @@ export function renderLuxuryPoster(
   line(x+12,y+11,x+w-12,y+11,'rgba(255,221,116,.55)',1);
  }
  function redRibbon(x:number,y:number,w:number,h:number){
-  path([[x,y],[x+w-25,y],[x+w,y+h*.12],[x+w-21,y+h*.98],[x+10,y+h*.98],[x,y+h*.6]],
-    gradient(x,y,x+w,y+h,[[0,'#4c0c09'],[.48,'#a0170b'],[.75,'#310808'],[1,'#160909']]),'#c07827',.9);
-  line(x+7,y+4,x+w-30,y+4,'rgba(255,176,93,.65)',1);
+  // Approved artwork: a clean burgundy header, no stepped yellow stripes.
+  rect(x,y,w,h,gradient(x,y,x+w,y+h,[[0,'#390b0b'],[.45,'#7c1210'],[1,'#21090b']]),6,'#c28b38',1.3);
+  line(x+9,y+4,x+w-9,y+4,'rgba(255,202,112,.68)',1);
+  line(x+9,y+h-4,x+w-9,y+h-4,'rgba(255,181,77,.32)',.8);
  }
  function surface(x:number,y:number,w:number,h:number){
   rect(x,y,w,h,gradient(x,y,x+w,y+h,[[0,'#211013'],[.22,'#0b0d0e'],[.75,'#0c0a0a'],[1,'#1a090a']]),7,'rgba(255,197,89,.32)',1);
@@ -169,7 +162,7 @@ export function renderLuxuryPoster(
  function rankBadge(rank:string,x:number,y:number){
   const color=rank==='SN.Helper'?P.blue:rank==='Moderator'?P.purple:P.green;
   const tag=rank==='SN.Helper'?'SH':rank==='Moderator'?'M':'H';
-  const ww=rank==='SN.Helper'?31:27,hh=21;
+  const ww=rank==='SN.Helper'?26:24,hh=19;
   c.save();c.shadowColor='rgba(255,194,77,.22)';c.shadowBlur=5;
   path([[x-ww/2,y-hh/2],[x+ww/2,y-hh/2],[x+ww/2+2,y-4],[x+ww/2-3,y+hh/2-1],
    [x,y+hh/2+5],[x-ww/2+3,y+hh/2-1],[x-ww/2-2,y-4]],
@@ -177,8 +170,8 @@ export function renderLuxuryPoster(
   c.restore();
   path([[x-ww/2+3,y-hh/2+3],[x+ww/2-3,y-hh/2+3],[x+ww/2-3,y+3],[x,y+hh/2+1],
     [x-ww/2+3,y+3]],'rgba(27,20,23,.6)',color,.9);
-  wing(x-ww/2-3,y+3,-1,'#d8a339');wing(x+ww/2+3,y+3,1,'#d8a339');
-  centered(tag,x,y+1,rank==='SN.Helper'?9:11,color,{weight:900});
+  // Small shield only: no gold wings/diagonal slashes behind the rank column.
+  centered(tag,x,y+1,rank==='SN.Helper'?8.8:10,color,{weight:900});
  }
  // 01 — Original poster palette: black basalt, crimson beams, bright gilded trim.
  const bg=gradient(0,0,W,H,[[0,'#170b0c'],[.24,'#070607'],[.73,'#080809'],[1,'#170709']]);
@@ -247,7 +240,7 @@ export function renderLuxuryPoster(
   const x=tablePositions[index],w=index===0?517:520,rowsInGroup=groups[index].rows;
   frame(x,tableY,w,tableH,8);
   redRibbon(x+9,tableY+9,w-20,58);
-  centered(index===0?'HELPERS':'MODERATORS',x+w*.40,tableY+35,32,P.pearl,{family:'Georgia,serif',weight:800,shadow:true});
+  centered(index===0?'HELPERS':'MODERATORS',x+w*.43,tableY+35,32,P.pearl,{family:'Georgia,serif',weight:800,shadow:true});
   frame(x+w-79,tableY+10,63,41,5);
   centered(String(rowsInGroup.length),x+w-48,tableY+31,25,P.bright,{family:'Georgia,serif',weight:800});
   const hdY=tableY+72;
@@ -280,9 +273,11 @@ export function renderLuxuryPoster(
  function awardPanel(index:number){
   const x=tablePositions[index],w=index===0?517:520,group=groups[index];
   frame(x,podiumY,w,podiumH,9);
-  frame(x+36,podiumY-12,w-72,65,9);
-  crown(x+82,podiumY+19,27);
-  centered(index===0?'TOP 3 HELPERS':'TOP 3 MODERATORS',x+w/2+19,podiumY+20,26,P.pearl,{weight:900,family:'Georgia,serif',maxWidth:w-170,shadow:true});
+  // Center the full TOP 3 label, balanced by equal small crowns on both sides.
+  frame(x+10,podiumY+9,w-20,53,8);
+  crown(x+58,podiumY+34,20);
+  crown(x+w-58,podiumY+34,20);
+  centered(index===0?'TOP 3 HELPERS':'TOP 3 MODERATORS',x+w/2,podiumY+35,26,P.pearl,{weight:900,family:'Georgia,serif',maxWidth:w-148,shadow:true});
   const cardY=podiumY+78,cardW=(w-34)/3;
   const colors=[P.bright,P.silver,P.bronze];
   if(!group.topRows.length){
@@ -294,9 +289,12 @@ export function renderLuxuryPoster(
    rect(cx+7,cardY+7,cardW-18,147,
     gradient(cx,cardY,cx+cardW,cardY+160,[[0,'#45220e'],[.4,'#171214'],[1,'#0f0b0b']]),6,color,1);
    centered('TOP '+String(i+1),cx+(cardW-4)/2,cardY+28,22,color,{weight:900,family:'Georgia,serif',shadow:true});
-   wing(cx+23,cardY+73,1,color);wing(cx+cardW-28,cardY+73,-1,color);
-   centered(fitName(row.name,row.rank,cardW-42,22),cx+(cardW-4)/2,cardY+76,22,P.pearl,{weight:800,maxWidth:cardW-42});
-   line(cx+18,cardY+102,cx+cardW-22,cardY+102,color,1);
+   // Quiet divider and centered name, without side streaks across text.
+   line(cx+20,cardY+53,cx+cardW-24,cardY+53,color,.9);
+   gleam(cx+(cardW-4)/2,cardY+53,2.5);
+   centered(fitName(row.name,row.rank,cardW-32,22),cx+(cardW-4)/2,cardY+82,22,P.pearl,{weight:800,maxWidth:cardW-32});
+   line(cx+20,cardY+103,cx+cardW-24,cardY+103,color,.9);
+   gleam(cx+(cardW-4)/2,cardY+103,2.5);
    ticket(cx+42,cardY+128,30,color);
    centered(amount(row.tickets),cx+103,cardY+129,30,P.bright,{family:'Georgia,serif',weight:900,maxWidth:cardW-98});
   });
