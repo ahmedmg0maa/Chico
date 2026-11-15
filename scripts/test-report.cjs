@@ -30,8 +30,9 @@ const render=fs.readFileSync(path.resolve(__dirname,'../src/components/v2/Premiu
 assert(!render.includes("◆ "), 'No diamond prefix beside SN.Helpers');
 assert(!render.includes("TOTAL STAFF"), 'No staff KPI');
 assert(!render.includes("AVERAGE RATE"), 'No average rating KPI');
-assert(render.includes("name:'TICKETS'")&&render.includes("name:'FLAGS'"),'Only the two required KPIs');
+assert(render.includes("label:'TICKETS'")&&render.includes("label:'FLAGS'"),'Only the two required KPIs');
 assert(render.includes("TOP 3 HELPERS")&&render.includes("TOP 3 MODERATORS"),'Correct shortened Top 3 captions');
-assert(render.includes("const itemHeight=rowsH/Math.max(data.rows.length,1)"),'All groups distribute actual rows evenly without blank panel');
-assert(render.includes("const H=podiumY+podiumH+116"),'Footer remains after podiums');
+assert(render.includes('const rowY=hdY+40,rowHeight=25.2'),'All report rows use a consistent compact luxury-table rhythm');
+assert(render.includes('const W=1122,H=1402+extra,scale=1560/W'),'Dynamic poster remains original portrait aspect ratio and expands for larger teams');
+assert(render.includes("prestigeName(row.name,row.rank)" )||render.includes('fitName(row.name,row.rank,'),'Rank prefixes are hidden only in rendered names');
 console.log('CHICO report group, rank, visible KPI and balanced layout checks passed');
