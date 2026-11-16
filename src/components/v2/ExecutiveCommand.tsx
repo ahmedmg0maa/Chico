@@ -14,6 +14,8 @@ import ExecutiveTeamStudio from './ExecutiveTeamStudio';
 import ExecutiveOperationsWorkspace from './ExecutiveOperationsWorkspace';
 import ExecutiveWeeklyChart from './ExecutiveWeeklyChart';
 import ExecutiveProfile from './ExecutiveProfile';
+import DashboardWeekNotice from './DashboardWeekNotice';
+import {previousRecordedWeek} from '@/lib/dashboard-history';
 import {CommandIcon,RankInsignia,RankLabel} from './ChicoVisualLanguage';
 import {isEvaluatedRank,isEvaluatedAdmin,eligibleReadings} from '@/lib/rules';
 
@@ -120,12 +122,15 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
  const rows:Row[]=useMemo<Row[]>(()=>review?reviewAdmins.map(a=>({id:a.id,name:a.name,rank:a.rank,admin_level:a.admin_level,shift_label:a.shift_label,active:a.active,in_reporting:a.in_reporting,sort_order:a.sort_order,tickets:null,flags:null,rating:null,hours:null,lastUpdate:null})):latestRows(state),[review,reviewAdmins,state]);
  const visible=useMemo(()=>rows.filter(r=>(rank==='all'||r.rank===rank)&&(r.name.toLowerCase().includes(filter.toLowerCase()))),[rows,rank,filter]);
  const summary=state?.summary;
+ // Only evaluated readings can make this week's performance available.
+ const currentEligible=useMemo(()=>!review&&state?eligibleReadings(state.readings,state.admins):[],[review,state]);
+ const hasRegisteredWeek=currentEligible.some(r=>r.week_start===summary?.week_start);
+ const previousWeek=useMemo(()=>!review&&state?previousRecordedWeek(state.admins,state.readings,state.summary.week_start):null,[review,state]);
  const active=rows.filter(r=>r.active).length;
  const evaluated=rows.filter(r=>isEvaluatedAdmin(r));
  const covered=evaluated.filter(r=>r.lastUpdate!==null).length;
- const totals={tickets:review?null:summary?.tickets??null,flags:review?null:summary?.flags??null,rate:review?null:summary?.rate??null,rating:review?null:summary?.rating??null,members:active,coverage:!review&&state?.readings.some(r=>r.week_start===state?.summary.week_start)&&evaluated.length?Math.round(100*covered/evaluated.length):null};
+ const totals={tickets:review?null:summary?.tickets??null,flags:review?null:summary?.flags??null,rate:review?null:summary?.rate??null,rating:review?null:summary?.rating??null,members:active,coverage:!review&&hasRegisteredWeek&&evaluated.length?Math.round(100*covered/evaluated.length):null};
  const top=rows.filter(r=>isEvaluatedAdmin(r)&&(r.rank==='Helper'||r.rank==='SN.Helper')&&r.tickets!==null).sort((a,b)=>(b.tickets??0)-(a.tickets??0)).slice(0,3);
- const hasRegisteredWeek=!!state?.readings.some(r=>r.week_start===summary?.week_start);
  const warnings=rows.filter(r=>isEvaluatedAdmin(r)&&(r.flagsIncomplete||(r.flags!==null&&r.flags>7)||(r.rating!==null&&r.rating<4.8)||(!r.lastUpdate&&r.active&&hasRegisteredWeek)));
  const timeLabel=review?'القائمة المعتمدة':summary?.week_start||'الأسبوع الحالي';
  async function refresh(){
@@ -152,7 +157,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
  const open=(id:Tab)=>{setTab(id);setFocused(null);if(window.matchMedia('(max-width: 1020px)').matches)setMenu(false);setNotice('');const u=new URL(window.location.href);u.searchParams.set('tab',id);window.history.replaceState(null,'',u.pathname+u.search);};
  
 
- const intervalRows=(state?.readings??[]).filter(r=>r.week_start===summary?.week_start).sort((a,b)=>b.to_date.localeCompare(a.to_date)||b.created_at.localeCompare(a.created_at)).slice(0,8);
+ const intervalRows=currentEligible.filter(r=>r.week_start===summary?.week_start).sort((a,b)=>b.to_date.localeCompare(a.to_date)||b.created_at.localeCompare(a.created_at)).slice(0,8);
  const alerts=review?[]:warnings.filter(r=>r.lastUpdate!==null||r.flagsIncomplete).slice(0,3).map(r=>({label:r.name,desc:r.flagsIncomplete?'رصيد Flags السابق غير معروف':r.flags!==null&&r.flags>7?'Flags مرتفعة — '+r.flags:r.rating!==null&&r.rating<4.8?'التقييم '+pretty(r.rating,'rating'):'تحتاج مراجعة',severity:'warning'}));
  // Four decision-focused metrics; staff count is in the hero and individual ratings remain in Team.
  const kpis=[
@@ -225,6 +230,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
        </div>
        <div className="v8-command-hero-art"><img src="/assets/chico-approved-hero.avif" alt="الشعار المعتمد لفريق CHICO وشعار OneState RP والذئب الهادئ" decoding="async" fetchPriority="high"/></div>
       </section>
+      {!review&&state&&!hasRegisteredWeek&&<DashboardWeekNotice currentWeek={summary?.week_start??'—'} previous={previousWeek} onReadReports={()=>open('daily')} onRecord={()=>open('updates')}/>}
       <div className="x-kpi-grid v8-kpi-grid">{kpis.map(({title,english,value,glyph,tone},index)=><div className={'x-kpi v8-kpi x-tone-'+tone} key={title} style={{animationDelay:(index*45)+'ms'}}><div className="x-kpi-title"><CommandIcon name={glyph}/><div><b>{title}</b><small>{english}</small></div></div><strong>{value}</strong><span>{review?'لا توجد قراءات بعد': 'الأسبوع الحالي'}</span><i className="v8-kpi-line"/></div>)}</div>
       <div className="x-triple">
        <section className="x-panel x-alerts-panel"><CardTitle icon={Bell} title="تنبيهات القيادة" en="LEADERSHIP ALERTS" action={<button className="x-text-action" onClick={()=>open('alerts')}>عرض الكل <ArrowLeft size={14}/></button>}/>
