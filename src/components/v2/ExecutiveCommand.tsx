@@ -101,6 +101,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
  const [light,setLight]=useState(false);
  const [editTarget,setEditTarget]=useState<string|null>(null);
  const [readingTarget,setReadingTarget]=useState<string|null>(null);
+ const [requestedReportPeriod,setRequestedReportPeriod]=useState<{from:string;to:string}|null>(null);
  const switchAppearance=()=>setLight(current=>{const next=!current;try{localStorage.setItem('chico-ui-theme',next?'light':'dark');}catch{}return next;});
  useEffect(()=>{try{setLight(localStorage.getItem('chico-ui-theme')==='light');}catch{}},[]);
  useEffect(()=>{const valid=links.map(l=>l.id);const initial=new URLSearchParams(window.location.search).get('tab') as Tab|null;if(initial&&valid.includes(initial))setTab(initial);},[]);
@@ -154,7 +155,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
   setPass('');setAuth('in');await refresh();
  }catch(e){setError(e instanceof Error?e.message:'خطأ في الدخول');}finally{setWorking(false);}}
  async function logout(){if(review){setPreviewLogin(true);return;}await fetch('/api/auth',{method:'DELETE'});setAuth('out');setState(null);setPass('');}
- const open=(id:Tab)=>{setTab(id);setFocused(null);if(window.matchMedia('(max-width: 1020px)').matches)setMenu(false);setNotice('');const u=new URL(window.location.href);u.searchParams.set('tab',id);window.history.replaceState(null,'',u.pathname+u.search);};
+ const open=(id:Tab)=>{setRequestedReportPeriod(null);setTab(id);setFocused(null);if(window.matchMedia('(max-width: 1020px)').matches)setMenu(false);setNotice('');const u=new URL(window.location.href);u.searchParams.set('tab',id);window.history.replaceState(null,'',u.pathname+u.search);};
  
 
  const intervalRows=currentEligible.filter(r=>r.week_start===summary?.week_start).sort((a,b)=>b.to_date.localeCompare(a.to_date)||b.created_at.localeCompare(a.created_at)).slice(0,8);
@@ -230,7 +231,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
        </div>
        <div className="v8-command-hero-art"><img src="/assets/chico-approved-hero.avif" alt="الشعار المعتمد لفريق CHICO وشعار OneState RP والذئب الهادئ" decoding="async" fetchPriority="high"/></div>
       </section>
-      {!review&&state&&!hasRegisteredWeek&&<DashboardWeekNotice currentWeek={summary?.week_start??'—'} previous={previousWeek} onReadReports={()=>open('daily')} onRecord={()=>open('updates')}/>}
+      {!review&&state&&!hasRegisteredWeek&&<DashboardWeekNotice currentWeek={summary?.week_start??'—'} previous={previousWeek} onReadReports={()=>{open('daily');if(previousWeek)setRequestedReportPeriod({from:previousWeek.from,to:previousWeek.to});}} onRecord={()=>open('updates')}/>}
       <div className="x-kpi-grid v8-kpi-grid">{kpis.map(({title,english,value,glyph,tone},index)=><div className={'x-kpi v8-kpi x-tone-'+tone} key={title} style={{animationDelay:(index*45)+'ms'}}><div className="x-kpi-title"><CommandIcon name={glyph}/><div><b>{title}</b><small>{english}</small></div></div><strong>{value}</strong><span>{review?'لا توجد قراءات بعد': 'الأسبوع الحالي'}</span><i className="v8-kpi-line"/></div>)}</div>
       <div className="x-triple">
        <section className="x-panel x-alerts-panel"><CardTitle icon={Bell} title="تنبيهات القيادة" en="LEADERSHIP ALERTS" action={<button className="x-text-action" onClick={()=>open('alerts')}>عرض الكل <ArrowLeft size={14}/></button>}/>
@@ -278,7 +279,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
         onClose={()=>setFocused(null)} onEdit={()=>{setEditTarget(focused.id);setFocused(null);}} onAddReading={()=>{setReadingTarget(focused.id);setFocused(null);open('updates');}}/>}
       </>}
       {tab==='operations'&&<ExecutiveOperationsWorkspace state={state} review={review} onRefresh={refresh} onNavigate={open}/>}
-      {tab!=='dashboard'&&tab!=='team'&&tab!=='operations'&&<ExecutiveOperations tab={tab} state={state} review={review} onRefresh={refresh} initialAdminId={readingTarget}/>}
+      {tab!=='dashboard'&&tab!=='team'&&tab!=='operations'&&<ExecutiveOperations tab={tab} state={state} review={review} onRefresh={refresh} initialAdminId={readingTarget} initialPeriod={requestedReportPeriod}/>}
 
      <footer className="x-foot"><span>© CHICO GENERAL TEAM · ONE STATE RP</span><span>{review?'VISUAL REVIEW — NOT LIVE DATA':'PROTECTED ADMINISTRATION PLATFORM'}</span></footer>
     </div>
