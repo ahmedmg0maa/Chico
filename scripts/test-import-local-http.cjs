@@ -39,13 +39,21 @@ async function form(){
  const saved=await api('/api/import/commit','POST',{preview_id:p.body.preview_id,confirm:'IMPORT REVIEWED',approve_roster_sync:true});
  assert.equal(saved.status,200,JSON.stringify(saved.body));assert.equal(saved.body.inserted,29);assert.equal(saved.body.created,3);
  const state=await api('/api/state');assert.equal(state.status,200);
- assert.equal(state.body.readings.length,29);assert.equal(state.body.summary.tickets,3222);assert.equal(state.body.summary.flags,50);
+ assert.equal(state.body.readings.length,29);
+ // Weekly dashboard must NOT show last week's 3,222/50 as this week's results.
+ if(state.body.summary.week_start!=='2026-11-09'){
+  assert.equal(state.body.summary.tickets,null);
+  assert.equal(state.body.summary.flags,null);
+ }
  assert.equal(state.body.admins.filter(a=>a.active).length,30,'Exactly 30 active people after the actual 30-person file');
 
  const g=state.body.readings.find(r=>r.admin_name==='Gaby'),m=state.body.readings.find(r=>r.admin_name==='Alhassan');
  assert.equal(g.source_row,5);assert.equal(g.source_name,'SN.Gaby');
  assert.equal(m.source_row,18);assert.equal(m.source_name,'M.Alhassan');
  const group=state.body.readings.filter(r=>['Helper','SN.Helper','Moderator'].includes(r.rank));
+ assert.equal(group.reduce((sum,r)=>sum+(r.tickets_delta??0),0),3222,'Source-period Tickets');
+ assert.equal(group.reduce((sum,r)=>sum+(r.flags_delta??0),0),50,'Source-period Flags');
+ assert.equal(group.reduce((sum,r)=>sum+(r.hours??0),0),259,'Source-period decimal TIME');
  const helpers=group.filter(r=>r.rank!=='Moderator').sort((a,b)=>a.source_row-b.source_row);
  const mods=group.filter(r=>r.rank==='Moderator').sort((a,b)=>a.source_row-b.source_row);
  assert.equal(helpers.length,16);assert.equal(mods.length,10);
