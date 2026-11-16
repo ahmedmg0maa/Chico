@@ -54,7 +54,12 @@ assert(command.includes('!review&&state&&!hasRegisteredWeek&&<DashboardWeekNotic
 assert(command.includes('const hasRegisteredWeek=currentEligible.some('),'Only eligible current-week records count as a weekly report');
 assert(command.includes('const intervalRows=currentEligible.filter('),'Period list must exclude leadership-only records');
 assert(notice.includes('onRecord')&&notice.includes('onReadReports'),'Actions must be real navigation controls');
-assert(notice.includes('مش داخلة في مؤشرات الأسبوع الحالي'),'Historic numbers must be explicitly identified as prior period');
+assert(notice.includes('إحصائيات الفترة السابقة فقط، وليست للأسبوع الحالي.'),'Historic numbers must be explicitly identified as prior period');
+assert(notice.includes('لا توجد قراءات بعد'),'Empty current week must be obvious without long prose');
+assert(notice.includes('v14-command-emblem')&&notice.includes('v14-command-panel'),'Use original command emblems, not generic system icons');
+assert(!notice.includes('lucide-react'),'Compact status panel should not use generic Lucide icons');
+assert(!notice.includes('نطاق التواريخ لا يعني'),'Remove the redundant explanatory paragraph from the visual panel');
+assert(notice.includes('عرض التقرير')&&notice.includes('تسجيل قراءة'),'Preserve clear short real action labels');
 assert(css.includes('.v13-week-notice')&&css.includes('.chico-v2.x-light .v13-week-notice'),'Style must work in both themes');
 const operations=read('src/components/v2/ExecutiveOperations.tsx');
 const daily=read('src/components/v2/DailyReportStudio.tsx');
