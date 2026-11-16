@@ -62,6 +62,42 @@ const endpoint=(scope,format)=>exportRoute.GET({nextUrl:new URL('https://chico.t
  const printed=await endpoint('team','print'),html=await printed.text();
  assert(printed.status===200&&html.includes('Evaluated Members: 26')&&!html.includes('A. Bashar'));
  console.log('PASS print view reports correct evaluation cohort size');
+ // Regression: exported history can cover last week while the dashboard is already
+ // in a NEW week with no readings. Never put the new week's null KPI header over it.
+ current={...state,summary:{week_start:'2026-11-16',tickets:null,flags:null,rate:null}};
+ const historicPrint=await endpoint('readings','print'),historicHtml=await historicPrint.text();
+ assert.equal(historicPrint.status,200);
+ for(const item of [
+  'القراءات المصدرة: 26','الإداريون أصحاب القراءات: 26',
+  'فترة السجل: 2026-11-09 — 2026-11-12',
+  'Tickets للسجل: 3222','Flags للسجل: 50','TIME للسجل: 259'
+ ])assert(historicHtml.includes(item),'Historical print must summarise exported rows: '+item);
+ assert(!historicHtml.includes('Flag Rate: —')&&!historicHtml.includes('Tickets: —'),
+   'Never display current-week blanks as historical totals');
+ const emptyWeekPrint=await endpoint('team','print'),emptyWeekHtml=await emptyWeekPrint.text();
+ assert(emptyWeekHtml.includes('Tickets: —')&&emptyWeekHtml.includes('Evaluated Members: 26'),
+   'Team print must continue to show the actual current week separately');
+ console.log('PASS historical print remains accurate when current week is empty');
+
+ // Two saved periods for the same person: count unique people, not rows;
+ // a missing metric in one row makes its multi-period aggregate unknown.
+ const extra={...readings[0],id:'next-week-record',
+  from_date:'2026-11-16',to_date:'2026-11-16',week_start:'2026-11-16',
+  tickets_delta:14,flags_delta:null,flags_counter:5,hours:null,rating:null};
+ current={...state,readings:[...readings,extra],summary:{week_start:'2026-11-23',tickets:null,flags:null,rate:null}};
+ const multiPrint=await endpoint('readings','print'),multiHtml=await multiPrint.text();
+ for(const item of [
+  'القراءات المصدرة: 27','الإداريون أصحاب القراءات: 26',
+  'فترة السجل: 2026-11-09 — 2026-11-16',
+  'Tickets للسجل: 3236','Flags للسجل: —','TIME للسجل: —'
+ ])assert(multiHtml.includes(item),'Mixed-period historical summary must be complete: '+item);
+ current={...state,readings:[],summary:{week_start:'2026-11-23',tickets:null,flags:null,rate:null}};
+ const noPrint=await endpoint('readings','print'),emptyHtml=await noPrint.text();
+ assert(emptyHtml.includes('القراءات المصدرة: 0')&&emptyHtml.includes('فترة السجل: لا توجد قراءات')&&
+ emptyHtml.includes('Tickets للسجل: —'),'Empty historical ledger must not show fake zeros');
+ current=state;
+ console.log('PASS historical export: cross-week, unique people, unknown totals, empty ledger');
+
  const old=readings[0];
  current={...state,readings:[...readings,{...old,id:'more',from_date:'2026-11-13',to_date:'2026-11-13',tickets_delta:null,flags_delta:null,hours:null,rating:null}]};
  const partial=await endpoint('team','xlsx'),wb2=new ExcelJS.Workbook();
