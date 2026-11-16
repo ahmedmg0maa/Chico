@@ -56,4 +56,12 @@ assert(command.includes('const intervalRows=currentEligible.filter('),'Period li
 assert(notice.includes('onRecord')&&notice.includes('onReadReports'),'Actions must be real navigation controls');
 assert(notice.includes('مش داخلة في مؤشرات الأسبوع الحالي'),'Historic numbers must be explicitly identified as prior period');
 assert(css.includes('.v13-week-notice')&&css.includes('.chico-v2.x-light .v13-week-notice'),'Style must work in both themes');
+const operations=read('src/components/v2/ExecutiveOperations.tsx');
+const daily=read('src/components/v2/DailyReportStudio.tsx');
+assert(command.includes('setRequestedReportPeriod({from:previousWeek.from,to:previousWeek.to})'),
+ 'Historical CTA must request the full saved coverage range');
+assert(operations.includes('initialPeriod={initialPeriod}'),
+ 'Operations should propagate requested report dates');
+assert(daily.includes('setFrom(initialPeriod.from)')&&daily.includes('setTo(initialPeriod.to)'),
+ 'Daily report must honor full historical date range when opened from the dashboard');
 console.log('PASS dashboard renders independent previous period, explicit no-report state and working navigation contracts');
