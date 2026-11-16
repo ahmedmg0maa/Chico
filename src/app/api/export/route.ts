@@ -41,6 +41,28 @@ function cells(scope:string,rows:Row[],readings:Reading[]){
  readings.map(r=>[r.admin_name,r.rank,r.from_date,r.to_date,r.report_entered_on,r.created_at,r.tickets_delta,r.flags_delta,r.hours,r.rating,r.note]):
  rows.map(r=>[r.name,r.rank,r.level,r.shift,r.status,r.reporting,r.tickets,r.flags,r.rating,r.hours,r.lastReading]);
 }
+/**
+ * A historical print view is not the current week's dashboard.
+ * Summarise ONLY the eligible rows actually present in this export.
+ * The from/to span is an envelope, not a claim that every day was reported.
+ * Any missing delta makes that historical total unknown, never partial/zero.
+ */
+function historicalPrintSummary(readings:Reading[]):string[]{
+ const total=(field:'tickets_delta'|'flags_delta'|'hours'):string=>{
+  if(!readings.length||readings.some(r=>r[field]===null))return '—';
+  return String(readings.reduce((sum,r)=>sum+(r[field]??0),0));
+ };
+ const first=readings.reduce<string|null>((min,r)=>!min||r.from_date<min?r.from_date:min,null);
+ const last=readings.reduce<string|null>((max,r)=>!max||r.to_date>max?r.to_date:max,null);
+ return [
+  'القراءات المصدرة: '+readings.length,
+  'الإداريون أصحاب القراءات: '+new Set(readings.map(r=>r.admin_id)).size,
+  'فترة السجل: '+(first&&last?first+' — '+last:'لا توجد قراءات'),
+  'Tickets للسجل: '+total('tickets_delta'),
+  'Flags للسجل: '+total('flags_delta'),
+  'TIME للسجل: '+total('hours')
+ ];
+}
 export async function GET(req:NextRequest){
  const denied=await requireOwner(req);if(denied)return denied;
  try{
@@ -81,8 +103,12 @@ export async function GET(req:NextRequest){
   }
   const headerCells=labels.map(s=>'<th>'+escapeHTML(s)+'</th>').join('');
   const rowHTML=data.map(row=>'<tr>'+row.map(x=>'<td>'+escapeHTML(x===null?'—':x)+'</td>').join('')+'</tr>').join('');
-  const summary=['Tickets: '+numeral(state.summary.tickets??'—'),'Flags: '+numeral(state.summary.flags??'—'),
-   'Flag Rate: '+numeral(state.summary.rate??'—'),'Evaluated Members: '+rows.length];
+  const summary=scope==='readings'?historicalPrintSummary(exportedReadings):[
+   'Tickets: '+numeral(state.summary.tickets??'—'),
+   'Flags: '+numeral(state.summary.flags??'—'),
+   'Flag Rate: '+numeral(state.summary.rate??'—'),
+   'Evaluated Members: '+rows.length
+  ];
   const body='<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>'+escapeHTML(base)+'</title><style>'+
    'body{font:14px system-ui,sans-serif;margin:30px;background:#fff;color:#25232b}h1{color:#80602e}p{color:#62564d}button{padding:11px 20px;border:0;border-radius:7px;background:#302632;color:#fff;cursor:pointer}.top{display:flex;gap:12px;flex-wrap:wrap;margin:18px 0}.top b{border:1px solid #c9b69b;padding:10px 14px;border-radius:8px}table{border-collapse:collapse;width:100%;margin-top:20px}th,td{padding:8px;border:1px solid #d1cac1;font-size:11px;text-align:right;word-break:break-word}th{background:#f2e9da}tr:nth-child(even){background:#fcfaf7}img{width:100%;max-height:160px;object-fit:contain;background:#18151a}@media print{button{display:none}@page{size:landscape;margin:12mm}body{margin:0}thead{display:table-header-group}tr{break-inside:avoid}}'+
    '</style></head><body><img src="/assets/chico-approved-hero.avif" alt="CHICO GENERAL TEAM"><h1>CHICO GENERAL TEAM — '+(scope==='team'?'كشف الفريق':'سجل القراءات')+'</h1><p>'+(scope==='readings'?'سجل قراءات الإداريين داخل التقييم فقط':'الأسبوع: '+escapeHTML(period)+' · الفريق داخل التقييم فقط')+' | لا تُستبدل القيم غير المسجلة بصفر</p><div class="top">'+summary.map(x=>'<b>'+escapeHTML(x)+'</b>').join('')+'</div><button onclick="window.print()">طباعة أو حفظ PDF</button><table><thead><tr>'+headerCells+'</tr></thead><tbody>'+rowHTML+'</tbody></table></body></html>';
