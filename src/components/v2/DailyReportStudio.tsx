@@ -9,9 +9,9 @@ import {renderLuxuryPoster,loadLuxuryArt,type LuxuryPosterRow} from './PremiumPo
 export {renderLuxuryPoster,loadLuxuryArt};
 export type {LuxuryPosterRow,PremiumTotals} from './PremiumPosterRenderer';
 
-type Props={state:State|null;review:boolean};
+type Props={state:State|null;review:boolean;initialPeriod?:{from:string;to:string}|null};
 const cairoToday=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'Africa/Cairo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
-export default function DailyReportStudio({state,review}:Props){
+export default function DailyReportStudio({state,review,initialPeriod}:Props){
  const today=useMemo(cairoToday,[]);
  const eligibleRecords=useMemo(()=>eligibleReadings(state?.readings||[],state?.admins||[]),[state]);
  const latestRecord=useMemo(()=>latestPeriod(eligibleRecords),[eligibleRecords]);
@@ -23,6 +23,15 @@ export default function DailyReportStudio({state,review}:Props){
  useEffect(()=>{
   if(latestRecord&&!touched.current){setFrom(latestRecord.from_date);setTo(latestRecord.to_date);}
  },[latestRecord]);
+ // When opened from the dashboard's previous-week summary, show the entire
+ // recorded coverage, not just the most recent individual member reading.
+ useEffect(()=>{
+  if(initialPeriod){
+   touched.current=true;
+   setFrom(initialPeriod.from);
+   setTo(initialPeriod.to);
+  }
+ },[initialPeriod?.from,initialPeriod?.to]);
  const period=useMemo(()=>selectPeriod(eligibleRecords,from,to),[eligibleRecords,from,to]);
  const {valid,matching:readings}=period;
  const partial=period.partial.length;
