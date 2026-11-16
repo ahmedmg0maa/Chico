@@ -10,7 +10,7 @@ import {RANKS} from '@/lib/types';
 import {applyLocalRosterChange,LOCAL_ROSTER_HISTORY_KEY,type LocalRosterAction,type LocalRosterEvent} from '@/lib/localRoster';
 
 export type OperationTab = 'updates'|'excel'|'server'|'daily'|'reports'|'weeks'|'alerts'|'settings';
-type Props = {tab:OperationTab;state:State|null;review:boolean;onRefresh:()=>Promise<void>;initialAdminId?:string|null;compactHead?:boolean};
+type Props = {tab:OperationTab;state:State|null;review:boolean;onRefresh:()=>Promise<void>;initialAdminId?:string|null;initialPeriod?:{from:string;to:string}|null;compactHead?:boolean};
 type ReadForm={admin_id:string;from_date:string;to_date:string;tickets_counter:number|null;flags_counter:number|null;flags_baseline:number|null;hours:number|null;rating:number|null;note:string};
 type Imported={row:number;name:string;source_name?:string;admin_id:string|null;roster_name:string|null;source_rank?:string|null;rank:string|null;admin_level:number|null;roster_action:string;from_date:string|null;to_date:string|null;report_entered_on:string|null;tickets_counter:number|null;tickets_baseline:number|null;flags_counter:number|null;flags_baseline:number|null;hours:number|null;rating:number|null;skip_reading:boolean};
 type ImportView={preview_id:string;filename:string;sheet:string;rows:Imported[];warnings:string[];notices:string[];requiresConfirmation:boolean;imported:number;leaders:number;rosterChanges:number;sourceTotals?:{people:number;tickets:number|null;flags:number|null;hours:number|null;from:string|null;to:string|null}};
@@ -145,7 +145,7 @@ export function ExecutiveTeamManager({state,review,onRefresh,previewAdmins,onPre
   {message&&<p className="x-op-success"><CheckCircle2 size={16}/>{message}</p>}{error&&<p className="x-op-error"><AlertTriangle size={16}/>{error}</p>}
  </section>;
 }
-export default function ExecutiveOperations({tab,state,review,onRefresh,initialAdminId,compactHead=false}:Props){
+export default function ExecutiveOperations({tab,state,review,onRefresh,initialAdminId,initialPeriod,compactHead=false}:Props){
  const [reading,setReading]=useState<ReadForm>(emptyReading);
  const [editing,setEditing]=useState<string|null>(null);
  const [file,setFile]=useState<File|null>(null);
@@ -294,7 +294,7 @@ export default function ExecutiveOperations({tab,state,review,onRefresh,initialA
   <div className="x-op-metrics"><Metric label="إجمالي Tickets" value={fmt(summary?.tickets)}/><Metric label="Flags الأسبوع" value={fmt(summary?.flags)}/><Metric label="Server Flag Rate" value={summary?.rate===null||summary?.rate===undefined?'غير متاح':fmt(summary.rate)+'%'}/><Metric label="TIME المسجل" value={summary?.hours===null||summary?.hours===undefined?'—':fmt(summary.hours)+' h'}/><Metric label="متوسط التقييمات المسجلة" value={fmt(summary?.rating)}/><Metric label="إداريون لهم قراءة" value={fmt(summary?.reported,0)}/></div>
   <section className="x-panel x-op-card"><div className="x-op-cardhead"><BarChart3 size={20}/><h2>أفضل الإداريين حسب Tickets</h2></div>{summary?.top.length?<div className="x-op-mini-list">{summary.top.map((r,i)=><div key={r.id}><b>{i+1}. {r.name}</b><span>{r.rank} · {fmt(r.tickets)} Tickets</span></div>)}</div>:<Empty text="لا يوجد ترتيب موثّق لهذا الأسبوع"/>}<p className="x-op-footnote">الترتيب يستبعد Moderator والرتب القيادية.</p></section>
  </>;
- if(tab==='daily')return <DailyReportStudio state={state} review={review}/>;
+ if(tab==='daily')return <DailyReportStudio state={state} review={review} initialPeriod={initialPeriod}/>;
  if(tab==='reports')return <><DiscordReportStudio state={state} review={review}/>
     <section className="x-panel v9-export-extras"><h3>ملفات بيانات إضافية</h3><p>للمراجعة خارج Discord، تقدر تطلع Excel أو CSV من نفس البيانات المحفوظة.</p>
       <div className="v9-export-links">{review?<span>التصدير يحتاج الدخول الحقيقي</span>:<>
