@@ -64,4 +64,10 @@ assert(operations.includes('initialPeriod={initialPeriod}'),
  'Operations should propagate requested report dates');
 assert(daily.includes('setFrom(initialPeriod.from)')&&daily.includes('setTo(initialPeriod.to)'),
  'Daily report must honor full historical date range when opened from the dashboard');
+const previewRoute=read('src/app/week-demo/page.tsx');
+assert(previewRoute.includes("process.env.VERCEL_ENV!=='preview'")&&previewRoute.includes("notFound()"),
+ 'Fixture-only demonstration must return 404 on production');
+const demo=read('src/components/v2/DashboardWeekDemo.tsx');
+assert(demo.includes('DashboardWeekNotice')&&demo.includes('بيانات العرض مأخوذة من ملف اختبار'),
+ 'Preview must use the real component with a visible non-production label');
 console.log('PASS dashboard renders independent previous period, explicit no-report state and working navigation contracts');
