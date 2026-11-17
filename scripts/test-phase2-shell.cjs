@@ -53,3 +53,8 @@ assert(dark.includes('ct-emblem-float')&&dark.includes('ct-page-in')&&dark.inclu
 assert(css.includes('.v9-history-table th')&&css.includes('.x-op-table th'),'Excel/history tables should have readable sticky headers');
 
 console.log('PASS CHICO Stage 2: grouped navigation, 4 dashboard KPIs, semantic route state, responsive visual tokens');
+
+assert(nexus.includes("{id:'salary',label:'الرواتب'}")&&nexus.includes("{id:'academy',label:'التدريب'}"),'Both new standalone pages must be present in the dock');
+assert(nexus.includes('[0,1,2,6].map')&&nexus.includes('[3,4,5,7].map'),'Four direct destinations on both sides; legacy keyboard shortcut indexes retained');
+assert(source('src/components/v2/signature.css').includes('repeat(4,minmax(0,1fr)) 74px repeat(4,minmax(0,1fr))'),'Nine-slot dock layout');
+console.log('PASS dock salary and academy routes, balanced nine-slot layout.');

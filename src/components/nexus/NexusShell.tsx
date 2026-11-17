@@ -12,7 +12,9 @@ export const NEXUS_DESTINATIONS=[
  {id:'updates',label:'تسجيل'},
  {id:'daily',label:'التقارير'},
  {id:'excel',label:'Excel'},
- {id:'reports',label:'Discord'}
+ {id:'reports',label:'Discord'},
+ {id:'salary',label:'الرواتب'},
+ {id:'academy',label:'التدريب'}
 ] as const satisfies readonly {id:Tab;label:string}[];
 
 export function NexusDock({tab,onNavigate,onMore,menuOpen}:{tab:Tab;onNavigate:(tab:Tab)=>void;onMore:()=>void;menuOpen:boolean}){
@@ -38,11 +40,11 @@ export function NexusDock({tab,onNavigate,onMore,menuOpen}:{tab:Tab;onNavigate:(
  return <div className={'nx-dock-wrap '+(collapsed?'is-collapsed':'')}>
   <button className="nx-dock-toggle" type="button" onClick={()=>setCollapsed(v=>!v)} aria-expanded={!collapsed} aria-controls="nexus-spatial-dock" aria-label={collapsed?'إظهار شريط التنقل':'إخفاء شريط التنقل'}><span aria-hidden="true">{collapsed?'⌃':'⌄'}</span></button>
   <nav id="nexus-spatial-dock" className="nx-dock" aria-label="شريط التنقل الرئيسي" hidden={collapsed}>
-   {NEXUS_DESTINATIONS.slice(0,3).map(item)}
+   {[0,1,2,6].map(i=>item(NEXUS_DESTINATIONS[i],i))}
    <button type="button" className={'nx-dock-core '+(menuOpen?'is-active':'')} onClick={onMore} aria-label="كل أقسام الموقع" aria-expanded={menuOpen} aria-controls="chico-main-navigation" title="كل الأقسام">
     <img src="/assets/chico-approved-wolf.avif" alt="" width={40} height={40}/><span>الأقسام</span>
    </button>
-   {NEXUS_DESTINATIONS.slice(3).map((r,i)=>item(r,i+3))}
+   {[3,4,5,7].map(i=>item(NEXUS_DESTINATIONS[i],i))}
   </nav>
  </div>;
 }

@@ -59,3 +59,21 @@
 .chico-v2.nx-app .ct-auth-panel .x-review-login{margin-top:0}
 @media(max-width:760px){.chico-v2.nx-app .ct-auth-main{padding:14px}.chico-v2.nx-app .ct-auth-stage{grid-template-columns:minmax(0,1fr);gap:16px;padding:14px;min-height:0}.chico-v2.nx-app .ct-auth-visual .ct-wolf-theater{height:258px}.chico-v2.nx-app .ct-auth-heading{margin-bottom:17px}.chico-v2.nx-app .ct-auth-panel{padding:19px}.chico-v2.nx-app .ct-auth-foot{margin-top:18px}}
 @media(prefers-reduced-motion:reduce){.chico-v2.nx-app .ct-auth-stage,.chico-v2.nx-app .ct-auth-panel{animation:none!important}}
+
+/* Nine-slot dock: four destinations on each side of the shared emblem. */
+.chico-v2.nx-app .nx-dock-wrap:not(.is-collapsed){width:min(1000px,calc(100vw - 28px))}
+.chico-v2.nx-app .nx-dock{grid-template-columns:repeat(4,minmax(0,1fr)) 74px repeat(4,minmax(0,1fr))}
+.chico-v2.nx-app .nx-dock-item>span:last-child{white-space:nowrap;max-width:100%;line-height:1.3}
+@media(max-width:760px){
+ .chico-v2.nx-app .nx-dock-wrap:not(.is-collapsed){width:calc(100vw - 12px)}
+ .chico-v2.nx-app .nx-dock{grid-template-columns:repeat(4,minmax(0,1fr)) 44px repeat(4,minmax(0,1fr));gap:1px;padding:5px 3px}
+ .chico-v2.nx-app .nx-dock-item{font-size:9px;min-height:46px;gap:3px;padding:2px 0}
+ .chico-v2.nx-app .nx-dock-item .v8-symbol,.chico-v2.nx-app .nx-dock-item .v8-symbol svg{width:22px;height:22px}
+}
+@media(max-width:420px){
+ .chico-v2.nx-app .nx-dock{grid-template-columns:repeat(4,minmax(0,1fr)) 35px repeat(4,minmax(0,1fr));gap:0;padding-inline:2px}
+ .chico-v2.nx-app .nx-dock-item{font-size:8px;gap:3px}
+ .chico-v2.nx-app .nx-dock-item .v8-symbol,.chico-v2.nx-app .nx-dock-item .v8-symbol svg{width:18px;height:18px}
+ .chico-v2.nx-app .nx-dock-core img{width:25px;height:25px}
+ .chico-v2.nx-app .nx-dock-core{font-size:7px;min-height:39px}
+}
