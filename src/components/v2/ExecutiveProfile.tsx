@@ -2,7 +2,7 @@
 import {useEffect,useMemo,useState,type ReactNode} from 'react';
 import {Activity,CalendarDays,Clock3,History,Pencil,Plus,Shield,Ticket,Flag,Star,X} from 'lucide-react';
 import type {Admin,Rank,Reading} from '@/lib/types';
-import {RankLabel} from './ChicoVisualLanguage';
+import {RankLabel,CommandIcon} from './ChicoVisualLanguage';
 import ModalPortal from './ModalPortal';
 
 type Member={id:string;name:string;rank:Rank;admin_level?:number|null;shift_label?:string|null;full_name?:string|null;notes?:string|null;timezone?:string|null;supervisor_id?:string|null;joined_on?:string|null;active:boolean;in_reporting:boolean;tickets:number|null;flags:number|null;hours:number|null;rating:number|null;lastUpdate:string|null;periodFrom?:string|null};
@@ -42,27 +42,27 @@ export default function ExecutiveProfile({member,readings,admins=[],review,mark,
  const lastRecord=memberReadings[0];
  return <ModalPortal light={light} onEscape={onClose}><div className="v9-profile-overlay" onMouseDown={e=>{if(e.target===e.currentTarget)onClose();}}>
   <section className="v9-profile-modal" role="dialog" aria-modal="true" aria-label={'الملف الإداري '+member.name}>
-   <div className="v9-profile-topbar"><span>CHICO / ADMIN PROFILE</span><button type="button" onClick={onClose} aria-label="إغلاق الملف"><X size={21}/></button></div>
+   <div className="v9-profile-topbar"><span>CHICO TEAM</span><button type="button" onClick={onClose} aria-label="إغلاق الملف"><X size={21}/></button></div>
    <header className="v9-profile-header">
     <div className="v9-profile-identity"><span className="v9-profile-mark">{mark}</span>
      <div><small>الملف الإداري</small><h2>{member.name}</h2><div className="v9-profile-line"><RankLabel rank={member.rank}/><span>المستوى {member.admin_level??'—'}</span><span className={member.active?'v9-online':'v9-offline'}>{member.active?'نشط':'غير نشط'}</span></div></div>
     </div>
     <div className="v9-profile-actions"><button type="button" className="v9-quiet-btn" onClick={onEdit}><Pencil size={18}/>تعديل البيانات</button>{onAddReading&&<button type="button" className="v9-primary" onClick={onAddReading}><Plus size={18}/>إضافة قراءة</button>}</div>
    </header>
-   <div className="v9-profile-kpis">
-    <div><Ticket size={18}/><small>Tickets في السجل</small><b>{n(tickets)}</b></div>
-    <div><Flag size={18}/><small>Flags في السجل</small><b>{n(flags)}</b></div>
-    <div><Clock3 size={18}/><small>TIME المسجل</small><b>{n(hours,2)}{hours===null?'':' h'}</b></div>
-    <div><Star size={18}/><small>آخر Rating</small><b>{n(lastRating,2)}</b></div>
+   <div className="v9-profile-kpis ct-profile-metrics">
+    <div><CommandIcon name="tickets"/><small>Tickets في السجل</small><b>{n(tickets)}</b></div>
+    <div><CommandIcon name="flags"/><small>Flags في السجل</small><b>{n(flags)}</b></div>
+    <div><CommandIcon name="shift"/><small>TIME المسجل</small><b>{n(hours,2)}{hours===null?'':' h'}</b></div>
+    <div><CommandIcon name="rating"/><small>آخر Rating</small><b>{n(lastRating,2)}</b></div>
    </div>
    <nav className="v9-profile-tabs" aria-label="أقسام ملف الإداري">
     <button type="button" className={tab==='performance'?'selected':''} onClick={()=>setTab('performance')}><Activity size={17}/>الأداء</button>
     <button type="button" className={tab==='readings'?'selected':''} onClick={()=>setTab('readings')}><CalendarDays size={17}/>سجل الأيام ({memberReadings.length})</button>
     <button type="button" className={tab==='details'?'selected':''} onClick={()=>setTab('details')}><Shield size={17}/>البيانات والسجل الإداري</button>
    </nav>
-   <div className="v9-profile-content">
+   <div className="v9-profile-content ct-content-reveal" key={tab}>
     {tab==='performance'&&<>
-     <section className="v9-profile-section"><div className="v9-profile-section-heading"><h3>متابعة الأداء المحفوظ</h3><small>المقارنة بين فترات التقارير الفعلية</small></div>
+     <section className="v9-profile-section"><div className="v9-profile-section-heading"><h3>الأداء المسجل</h3><small>فترات فعلية</small></div>
       {topChart.length?<div className="v9-performance-chart">{topChart.map(r=><div key={r.id} className="v9-performance-bar" title={'الفترة: '+coverage(r)+' | Tickets: '+n(r.tickets_delta)}>
        <span>{n(r.tickets_delta)}</span><div className="v9-performance-track"><div style={{height:r.tickets_delta===null?3:Math.max(3,Math.round((r.tickets_delta/max)*100))+'%'}}/></div>
        <small>{r.to_date.slice(5)}</small>
