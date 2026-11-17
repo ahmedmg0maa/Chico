@@ -222,3 +222,206 @@
  .chico-v2.nx-app .nx-stage-wolf{width:min(76%,200px)}
  .chico-v2.nx-app .nx-wolf-stage{min-height:290px}
 }
+
+/* NEXUS signature refinement — machined edges, spatial lighting, restrained material system. */
+.chico-v2.nx-app{
+ --nx-metal:linear-gradient(120deg,#8793a4,#dbe3ee 16%,#4c586a 29%,#121823 47%,#8b96a8 62%,#343e4c 83%,#b29b72);
+ --nx-glass:linear-gradient(150deg,rgba(62,74,93,.83),rgba(27,35,48,.96) 35%,rgba(12,18,27,.98) 86%);
+ --nx-material:linear-gradient(145deg,#273241,#171e2a 36%,#101620 95%);
+ --nx-lift:0 14px 28px #0005,inset 0 1px rgba(234,242,255,.18),inset 0 -1px #0008;
+}
+.chico-v2.nx-app .nx-stage{
+ border-radius:25px;border:1px solid #929eb06b;
+ background:
+ radial-gradient(ellipse at 49% 82%,#d4a86220,transparent 31%),
+ radial-gradient(ellipse at 48% 30%,#3c4c6273,transparent 54%),
+ linear-gradient(155deg,#151d29 0%,#080c13 46%,#111925 100%);
+ padding:clamp(17px,2vw,27px);box-shadow:0 22px 50px #0006,inset 0 1px #e5ebf223;
+}
+.chico-v2.nx-app .nx-stage::before{
+ opacity:1;background:
+ radial-gradient(ellipse 82% 123% at 50% -82%,transparent 72%,#9eafc82b 72.5%,#252e3b 73%,#111722 76%,#d9b37699 76.5%,transparent 77%),
+ radial-gradient(ellipse at 50% 0%,#8898af18,transparent 49%),
+ repeating-linear-gradient(114deg,transparent 0 180px,#c6d6ff04 181px 182px,transparent 183px 260px);
+}
+.chico-v2.nx-app .nx-stage::after{
+ content:"";position:absolute;left:-8%;right:-8%;bottom:-9%;height:31%;pointer-events:none;z-index:-1;
+ transform:perspective(270px) rotateX(48deg);transform-origin:bottom;
+ background:linear-gradient(180deg,#080b0f00,#c6ab6450 51%,#151f2a 52%,#49596d28 53%,#080d14 94%),
+ repeating-linear-gradient(90deg,transparent 0 115px,#a5bbd311 116px 117px,transparent 118px 230px);
+ border-top:1px solid #d1b77b77;box-shadow:0 -3px 25px #f9c66a13;
+}
+.chico-v2.nx-app .nx-stage-head{margin-bottom:17px}
+.chico-v2.nx-app .nx-stage-head h1{font-size:clamp(26px,2.7vw,38px);font-weight:920}
+.chico-v2.nx-app .nx-eyebrow{font-size:9px;letter-spacing:.21em;color:#e3c891}
+.chico-v2.nx-app .nx-command-rail{
+ display:grid;grid-template-columns:minmax(0,1fr) minmax(137px,15%);gap:13px;
+ align-items:stretch;margin-bottom:clamp(13px,1.6vw,24px);direction:ltr
+}
+.chico-v2.nx-app .nx-command-rail>.x-kpi-grid.v8-kpi-grid{
+ grid-template-columns:repeat(4,minmax(0,1fr));margin:0;gap:12px;direction:ltr
+}
+.chico-v2.nx-app .nx-command-rail .x-kpi{
+ position:relative;isolation:isolate;overflow:hidden;display:flex;flex-direction:column;justify-content:center;
+ min-height:145px;padding:14px 15px;background:linear-gradient(135deg,#354253 0%,#202735 25%,#121722 70%,#1c2432 100%);
+ border:1px solid color-mix(in srgb,var(--kpi-accent,#dab878) 44%,#6b7583 56%);
+ border-top-color:#d6e1f28f;border-radius:16px;box-shadow:0 11px 22px #0005,inset 0 1px #f7faff15,inset 0 -3px 15px color-mix(in srgb,var(--kpi-accent,#dab878) 13%,transparent)
+}
+.chico-v2.nx-app .nx-command-rail .x-kpi:before{
+ content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+ background:radial-gradient(ellipse at left bottom,color-mix(in srgb,var(--kpi-accent,#dab878) 32%,transparent),transparent 56%),
+ linear-gradient(122deg,#fff0 0 32%,#e6edff0c 33%,#fff0 54%);
+}
+.chico-v2.nx-app .nx-command-rail .x-kpi:after{content:"";position:absolute;left:12%;right:35%;bottom:0;height:1px;background:linear-gradient(90deg,transparent,var(--kpi-accent),transparent);box-shadow:0 0 12px var(--kpi-accent)}
+.chico-v2.nx-app .nx-command-rail .x-tone-violet{--kpi-accent:#b8a2ff;--kpi-glow:#8e72f328}
+.chico-v2.nx-app .nx-command-rail .x-tone-amethyst{--kpi-accent:#cf98ed;--kpi-glow:#bc79ec28}
+.chico-v2.nx-app .nx-command-rail .x-tone-gold{--kpi-accent:#f2ca7c;--kpi-glow:#efbf6826}
+.chico-v2.nx-app .nx-command-rail .x-tone-ice{--kpi-accent:#8fc9ff;--kpi-glow:#72b7ed28}
+.chico-v2.nx-app .nx-command-rail .x-kpi-title{direction:ltr;gap:9px;align-items:center}
+.chico-v2.nx-app .nx-command-rail .x-kpi-title>div{direction:rtl;min-width:0;text-align:right}
+.chico-v2.nx-app .nx-command-rail .x-kpi-title b{font-size:13px}
+.chico-v2.nx-app .nx-command-rail .x-kpi-title small{font-size:10px}
+.chico-v2.nx-app .nx-command-rail .x-kpi-title .v8-symbol{
+ width:48px;height:48px;min-width:48px;border:0;border-radius:0;background:none;box-shadow:none;filter:drop-shadow(0 4px 6px #0007)
+}
+.chico-v2.nx-app .nx-command-rail .x-kpi-title .v8-symbol svg{width:43px;height:43px}
+.chico-v2.nx-app .nx-command-rail .v8-symbol::after,.chico-v2.nx-app .nx-dock .v8-symbol::after{display:none}
+.chico-v2.nx-app .nx-command-rail .x-kpi>strong{font-weight:880;line-height:1.1;font-size:clamp(26px,3vw,41px);margin:5px 0 4px;direction:ltr;text-align:right}
+.chico-v2.nx-app .nx-command-rail .x-kpi>span{font-size:10px;color:#c4cddd;direction:rtl;text-align:right}
+.chico-v2.nx-app .nx-command-rail .v8-kpi-line{display:none}
+.chico-v2.nx-app .nx-command-rail .nx-rate-card{
+ min-width:0;display:grid;grid-template-rows:auto 1fr;place-items:center;padding:8px;background:radial-gradient(ellipse,#2c2b28,#111722 72%);border-color:#ac926958;
+}
+.chico-v2.nx-app .nx-command-rail .nx-rate-card .nx-panel-title h2{font-size:11px;letter-spacing:.025em}
+.chico-v2.nx-app .nx-command-rail .nx-ring{
+ width:min(108px,100%);margin:4px auto 0;padding:9px;
+ background:conic-gradient(from -90deg,#fbe7b2,#bf8a41 var(--nx-progress),#4a4c52 var(--nx-progress),#2d3540 100%);
+ box-shadow:0 0 0 4px #9faec32b,0 0 0 5px #d4b37b20,0 3px 18px #e0ab4a24,inset 0 2px 6px #0a0c11ab;
+}
+.chico-v2.nx-app .nx-command-rail .nx-ring-unrecorded{background:conic-gradient(#58606d,#353c49,#5a6573,#313947,#58606d)}
+.chico-v2.nx-app .nx-command-rail .nx-ring-inner{background:radial-gradient(ellipse at 40% 0%,#343b48,#111620 76%);border-color:#a7b7cb51}
+.chico-v2.nx-app .nx-command-rail .nx-ring-inner strong{font-size:26px}
+.chico-v2.nx-app .nx-command-rail .nx-ring-inner small{font-size:9px}
+.chico-v2.nx-app .nx-stage-grid{grid-template-columns:minmax(0,1fr) minmax(250px,1.16fr) minmax(0,1.13fr);align-items:stretch;gap:clamp(12px,1.6vw,24px)}
+.chico-v2.nx-app .nx-stage-side{align-content:stretch;grid-template-rows:auto 1fr;gap:15px}
+.chico-v2.nx-app .nx-stage-leaders{grid-template-rows:1fr 1fr}
+.chico-v2.nx-app .nx-glass{background:var(--nx-glass);border-color:#a6b4c449;border-top-color:#e5efff77;box-shadow:0 15px 27px #0005,inset 0 1px #e0e8f310,inset 0 -1px #06080c}
+.chico-v2.nx-app .nx-role-card{padding:15px 17px}
+.chico-v2.nx-app .nx-other-roles{display:flex;align-items:center;justify-content:space-between;direction:rtl;font-size:10px;color:var(--ch-muted);padding-top:8px;margin-top:8px;border-top:1px solid #aab5ce1a}
+.chico-v2.nx-app .nx-other-roles b{color:var(--ch-text)}
+.chico-v2.nx-app .nx-chart-compact{min-height:0;min-width:0;height:auto;border:1px solid #b2c0d04b;background:var(--nx-glass);box-shadow:var(--nx-lift);border-radius:17px}
+.chico-v2.nx-app .nx-chart-compact .v7-chart-head{padding:11px 12px;border-bottom-color:#99afc42a;gap:6px}
+.chico-v2.nx-app .nx-chart-compact .v7-chart-head b{font-size:12px}
+.chico-v2.nx-app .nx-chart-compact .v7-chart-head>div{gap:7px}
+.chico-v2.nx-app .nx-chart-compact .v7-chart-head>div>svg{width:17px;height:17px}
+.chico-v2.nx-app .nx-chart-compact .v7-chart-head label{padding:4px 6px;gap:4px}
+.chico-v2.nx-app .nx-chart-compact .v7-chart-head label svg{display:none}
+.chico-v2.nx-app .nx-chart-compact .v7-chart-head select{max-width:96px;font-size:10px}
+.chico-v2.nx-app .nx-chart-compact .v7-chart-empty{min-height:95px;gap:8px;padding:18px 10px;background:repeating-linear-gradient(0deg,transparent 0 25px,#abb9c80b 25px 26px)}
+.chico-v2.nx-app .nx-chart-compact .v7-chart-empty b{font-size:12px;color:var(--ch-muted)}
+.chico-v2.nx-app .nx-chart-compact .v7-chart-empty svg{width:24px;height:24px;opacity:.6}
+.chico-v2.nx-app .nx-chart-compact .v7-chart-area{min-height:0;padding:4px 8px}
+.chico-v2.nx-app .nx-chart-compact .v7-chart-area svg{height:auto;max-height:158px;max-width:100%}
+.chico-v2.nx-app .nx-wolf-stage{min-height:385px;justify-content:center;overflow:visible}
+.chico-v2.nx-app .nx-stage-wolf{width:min(92%,310px);filter:drop-shadow(6px 12px 9px #0009) drop-shadow(0 0 16px #dcae6245);z-index:2}
+.chico-v2.nx-app .nx-orbit-outer{width:min(104%,365px);top:0;mask:radial-gradient(farthest-side,transparent calc(100% - 6px),#000 calc(100% - 5px));background:conic-gradient(from -64deg,transparent 0deg,#c5d1df 25deg,#394556 55deg,transparent 76deg,#f9dfa3 95deg,#ae7934 139deg,transparent 163deg,#c6d5e151 202deg,transparent 230deg,#dbb276 260deg,#f5e6ba 281deg,transparent 312deg)}
+.chico-v2.nx-app .nx-orbit-inner{width:min(89%,318px);top:5%;border:1px solid #9eacbf70;box-shadow:0 0 0 5px #8397b216,inset 0 0 33px #b1bbd112}
+.chico-v2.nx-app .nx-stage-rim{position:absolute;top:2%;left:50%;transform:translateX(-50%) rotate(24deg);width:min(107%,365px);aspect-ratio:1;border-radius:50%;border:1px solid #e8c08322;border-left:9px solid #9eabb729;border-right:6px solid #a8905e40;z-index:-1;pointer-events:none}
+.chico-v2.nx-app .nx-stage-beam{position:absolute;top:-10%;bottom:18%;left:50%;width:min(95%,310px);transform:translateX(-50%);background:conic-gradient(from 153deg at 50% 0%,#dce9fb0e,#dce9fb04 15deg,#dce9fb17 25deg,#dce9fb05 37deg,transparent 55deg);filter:blur(9px);z-index:-1;pointer-events:none;clip-path:polygon(43% 0,58% 0,100% 100%,0 100%)}
+.chico-v2.nx-app .nx-wolf-halo{background:radial-gradient(ellipse,#b6cbef38,#cea3651c 40%,transparent 72%);width:min(105%,350px);top:0}
+.chico-v2.nx-app .nx-wolf-plinth{
+ width:min(95%,305px);height:43px;transform:perspective(220px) rotateX(18deg);border-radius:50%;z-index:1;
+ background:linear-gradient(180deg,#d1dae5 0%,#6b7789 11%,#1a2432 19%,#121821 43%,#414b5b 57%,#151921 74%,#dcb66e 80%,#735023 91%,#171a21);
+ border-color:#b4c0d0;border-bottom:3px solid #f2ce82;box-shadow:0 18px 23px #0009,0 4px 21px #e2b36b60,inset 0 -2px #f6d38c70;
+}
+.chico-v2.nx-app .nx-wolf-plinth:after{content:"";position:absolute;top:-12px;left:19%;right:19%;height:18px;border-radius:50%;background:radial-gradient(ellipse,#fff5c5 0%,#ffe2a2a0 20%,#cc8b3355 43%,transparent 72%);filter:blur(3px);z-index:-1}
+.chico-v2.nx-app .nx-stage-brand{margin:11px 0 6px}.chico-v2.nx-app .nx-stage-brand b{font-size:clamp(16px,1.7vw,24px);letter-spacing:.10em}
+.chico-v2.nx-app .nx-stage-brand small{font-size:9px;letter-spacing:.5em}
+.chico-v2.nx-app .nx-stage-report{font-size:11px;opacity:.9}
+.chico-v2.nx-app .nx-podium{position:relative;overflow:hidden;isolation:isolate;padding:12px 12px 11px;border-color:color-mix(in srgb,var(--podium) 26%,#8899b254)}
+.chico-v2.nx-app .nx-podium::before{position:absolute;content:"";inset:0;z-index:-1;pointer-events:none;background:radial-gradient(ellipse at 50% 105%,color-mix(in srgb,var(--podium) 18%,transparent),transparent 70%)}
+.chico-v2.nx-app .nx-podium-grid{gap:7px;padding-top:8px}
+.chico-v2.nx-app .nx-podium-person{min-height:103px;background:linear-gradient(150deg,#444f5f 0%,#222c3a 30%,#151b26 75%);border-top-color:#a7b9c887;box-shadow:inset 0 1px #f3faff0c,0 5px 12px #0005;padding:7px 4px}
+.chico-v2.nx-app .nx-podium-person.nx-position-1{min-height:121px;background:linear-gradient(150deg,color-mix(in srgb,var(--podium) 24%,#374155),#1b2331 56%,#171c25);box-shadow:0 0 14px color-mix(in srgb,var(--podium) 14%,transparent)}
+.chico-v2.nx-app .nx-vacant-crest{width:29px;height:33px;display:block;color:var(--podium);opacity:.56}
+.chico-v2.nx-app .nx-vacant-crest svg{width:100%;height:100%}
+.chico-v2.nx-app .nx-podium-person.nx-podium-vacant{opacity:.79;cursor:default;transform:none}
+.chico-v2.nx-app .nx-podium-vacant b{font-size:18px;color:var(--ch-muted)}
+.chico-v2.nx-app .nx-podium-vacant small{font-size:9px}
+.chico-v2.nx-app .nx-podium-note{font-size:10px;text-align:center;margin-top:7px;color:var(--ch-muted)}
+.chico-v2.nx-app .nx-dock{padding:9px 17px;background:linear-gradient(180deg,#4e5969ed,#1b2330f5 12%,#111721fa 55%,#090d14f8 96%);border-radius:26px 26px 20px 20px;border-top:2px solid #d7dbe3a9;border-bottom:1px solid #c7a66b9b;box-shadow:0 10px 35px #000b,inset 0 2px #e8effe12,inset 0 -2px #bc94502b}
+.chico-v2.nx-app .nx-dock-core{min-height:76px;border:2px solid #e4bd74;box-shadow:0 0 0 4px #171d25,0 0 0 5px #e6ba6f55,0 2px 25px #daa4555c,inset 0 1px #e7eafa44;background:radial-gradient(ellipse at 40% 15%,#717c8b72,#151b23 70%);transform:translateY(-8px)}
+.chico-v2.nx-app .nx-dock-core img{width:46px;height:46px;object-fit:contain;filter:drop-shadow(0 3px 4px #0008)}
+.chico-v2.nx-app .nx-dock-item{position:relative;font-size:12px;min-height:57px}
+.chico-v2.nx-app .nx-dock-item:not(.is-active):before{content:"";position:absolute;top:15%;bottom:15%;right:0;width:1px;background:linear-gradient(transparent,#8093a32d,transparent)}
+.chico-v2.nx-app .nx-dock-item.is-active{background:linear-gradient(140deg,#a77f3e45,#f5d79912);border-color:#f3d69d9e;box-shadow:inset 0 -4px 14px #d9ac4f34,0 0 13px #d9ac4f19}
+.chico-v2.nx-app .nx-dock-item .v8-symbol svg{width:29px;height:29px}
+.chico-v2.nx-app .nx-workspace-heading{display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:92px;padding:18px 22px;margin-bottom:16px;background:var(--nx-material);border:1px solid var(--nx-edge);border-top-color:#b3becd79;border-radius:18px;box-shadow:var(--nx-lift)}
+.chico-v2.nx-app .nx-workspace-heading h1{font-size:clamp(23px,2.7vw,33px);margin:2px 0 0;font-weight:900;color:var(--ch-text)}
+.chico-v2.nx-app .nx-workspace-symbol{display:grid;place-items:center;width:56px;height:56px;border:1px solid #d4b47a5a;background:linear-gradient(145deg,#ad956719,#101823);border-radius:14px}
+.chico-v2.nx-app .nx-workspace-symbol .v8-symbol{background:none;border:0;box-shadow:none;color:var(--nx-gold)}
+.chico-v2.nx-app :is(.v7-directory-board,.v7-directory-stat,.v9-entry-card,.v9-reading-history,.v9-poster-studio,.v7-workspace-card,.v9-tools-shell){background:var(--nx-material);border-color:var(--nx-edge);box-shadow:var(--nx-lift)}
+.chico-v2.nx-app .v7-directory-table thead th,.chico-v2.nx-app .x-op-table th,.chico-v2.nx-app .v9-history-table th{background:#222c3a;color:#dce7f4;border-bottom-color:#9eafc34b}
+.chico-v2.nx-app.x-light{
+ --nx-material:linear-gradient(145deg,#fff,#edf0f5);--nx-glass:linear-gradient(145deg,#fff,#e9edf3);--nx-lift:0 10px 23px #263c5415,inset 0 1px white;
+}
+.chico-v2.nx-app.x-light .nx-stage{background:radial-gradient(ellipse at 50% 39%,#c4d0df,#f0f3f7 70%);border-color:#b2bac6}
+.chico-v2.nx-app.x-light .nx-eyebrow{color:#77551e}
+.chico-v2.nx-app.x-light .nx-command-rail .x-kpi{background:linear-gradient(145deg,#fff,#e5eaf0);border-color:#adb9ca;box-shadow:var(--nx-lift)}
+.chico-v2.nx-app.x-light .nx-command-rail .x-kpi>span{color:#445266}
+.chico-v2.nx-app.x-light .nx-command-rail .x-tone-violet{--kpi-accent:#6443b0}
+.chico-v2.nx-app.x-light .nx-command-rail .x-tone-amethyst{--kpi-accent:#8846a2}
+.chico-v2.nx-app.x-light .nx-command-rail .x-tone-gold{--kpi-accent:#9a6512}
+.chico-v2.nx-app.x-light .nx-command-rail .x-tone-ice{--kpi-accent:#285e9d}
+.chico-v2.nx-app.x-light .nx-command-rail .nx-rate-card,.chico-v2.nx-app.x-light .nx-ring-inner{background:#f4f6fa}
+.chico-v2.nx-app.x-light .nx-podium-person{background:linear-gradient(145deg,#fff,#e4eaf2);border-color:#bcc9d8;color:#263247}
+.chico-v2.nx-app.x-light .nx-podium-person.nx-position-1{background:linear-gradient(145deg,#fff,#e2ece7);border-color:var(--podium)}
+.chico-v2.nx-app.x-light .nx-podium-medal{color:#625536}
+.chico-v2.nx-app.x-light .nx-dock{background:linear-gradient(145deg,#fff,#dfe5ee);border-color:#b6a078}
+.chico-v2.nx-app.x-light .nx-workspace-symbol{background:#eef2f7}
+.chico-v2.nx-app.x-light .v7-directory-table thead th,.chico-v2.nx-app.x-light .x-op-table th,.chico-v2.nx-app.x-light .v9-history-table th{background:#e1e7ef;color:#2c384a}
+@media(max-width:1100px){
+ .chico-v2.nx-app .nx-command-rail{grid-template-columns:minmax(0,1fr) minmax(120px,15%);gap:9px}
+ .chico-v2.nx-app .nx-command-rail>.x-kpi-grid.v8-kpi-grid{gap:8px}
+ .chico-v2.nx-app .nx-command-rail .x-kpi{padding:10px;min-height:122px}
+ .chico-v2.nx-app .nx-command-rail .x-kpi-title .v8-symbol{width:37px;height:37px;min-width:37px}
+ .chico-v2.nx-app .nx-command-rail .x-kpi-title .v8-symbol svg{width:35px;height:35px}
+ .chico-v2.nx-app .nx-command-rail .x-kpi-title b{font-size:11px}
+}
+@media(max-width:1060px){
+ .chico-v2.nx-app .nx-stage-grid{grid-template-columns:1fr 1fr;gap:12px}
+ .chico-v2.nx-app .nx-wolf-stage{grid-column:1/-1;grid-row:1;min-height:320px}
+ .chico-v2.nx-app .nx-stage-wolf{width:min(74%,230px)}
+ .chico-v2.nx-app .nx-orbit-outer,.chico-v2.nx-app .nx-stage-rim{width:min(85%,285px)}
+ .chico-v2.nx-app .nx-orbit-inner{width:min(67%,245px)}
+}
+@media(max-width:760px){
+ .chico-v2.nx-app .nx-command-rail{grid-template-columns:1fr}
+ .chico-v2.nx-app .nx-command-rail>.x-kpi-grid.v8-kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .chico-v2.nx-app .nx-command-rail .nx-rate-card{display:flex;justify-content:space-between;gap:12px;padding:8px 14px}
+ .chico-v2.nx-app .nx-command-rail .nx-ring{width:70px;margin:2px 0;padding:5px}
+ .chico-v2.nx-app .nx-command-rail .nx-ring-inner strong{font-size:18px}
+ .chico-v2.nx-app .nx-command-rail .nx-ring-inner small{font-size:7px}
+ .chico-v2.nx-app .nx-stage-grid{grid-template-columns:1fr}
+ .chico-v2.nx-app .nx-wolf-stage{grid-column:auto}
+ .chico-v2.nx-app .nx-stage-team{display:grid;grid-template-columns:1fr;grid-template-rows:auto auto}
+ .chico-v2.nx-app .nx-stage-side{gap:10px}
+ .chico-v2.nx-app .nx-stage-wolf{width:min(78%,210px)}
+ .chico-v2.nx-app .nx-wolf-stage{min-height:300px}
+ .chico-v2.nx-app .nx-dock{padding:6px 4px;border-radius:17px}
+ .chico-v2.nx-app .nx-dock-core{min-height:47px;border-width:1px;transform:none;box-shadow:0 0 11px #d2a35740}
+ .chico-v2.nx-app .nx-dock-core img{width:28px;height:28px}
+ .chico-v2.nx-app .nx-dock-item{min-height:46px;font-size:9px}
+ .chico-v2.nx-app .nx-dock-item .v8-symbol svg{width:22px;height:22px}
+ .chico-v2.nx-app .nx-command-rail .x-kpi{min-height:109px}
+ .chico-v2.nx-app .nx-workspace-heading{padding:12px 15px;min-height:75px;margin-bottom:12px}
+}
+@media(min-width:1061px) and (max-height:950px){
+ .chico-v2.nx-app .nx-stage{padding:19px}
+ .chico-v2.nx-app .nx-stage-head{margin-bottom:12px}
+ .chico-v2.nx-app .nx-command-rail{margin-bottom:13px}
+ .chico-v2.nx-app .nx-command-rail .x-kpi{min-height:130px;padding:10px 13px}
+ .chico-v2.nx-app .nx-wolf-stage{min-height:350px}
+ .chico-v2.nx-app .nx-stage-wolf{width:min(89%,270px)}
+ .chico-v2.nx-app .nx-stage-side{gap:10px}
+}
