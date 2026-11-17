@@ -85,7 +85,7 @@ export function NexusStage({week,rate,coverage,active,roles,helpers,moderators,o
    <div className="nx-wolf-stage">
     <div className="nx-orbit nx-orbit-outer" aria-hidden="true"/><div className="nx-orbit nx-orbit-inner" aria-hidden="true"/>
     <div className="nx-wolf-halo" aria-hidden="true"/>
-    <img className="nx-stage-wolf" src="/assets/chico-approved-wolf.avif" alt="شعار الذئب CHICO" width={240} height={240} decoding="async"/>
+    <img className="nx-stage-wolf" src="/assets/chico-nexus-wolf-sculpture.svg" alt="ذئب NEXUS المعدني، مستوحى من هوية CHICO" width={360} height={380} decoding="async"/>
     <div className="nx-wolf-plinth" aria-hidden="true"><span/><i/></div>
     <div className="nx-stage-brand"><b>CHICO TEAM <em>1.0</em></b><small>N E X U S</small></div>
     <button type="button" className="nx-link nx-stage-report" onClick={onRead}>عرض التقارير <span aria-hidden="true">↗</span></button>
