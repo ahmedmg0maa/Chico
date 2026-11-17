@@ -64,10 +64,11 @@ function Podium({title,leaders,onOpen,onTeam,variant}:{title:string;leaders:Lead
  </section>;
 }
 
-export function NexusStage({week,rate,coverage,active,roles,helpers,moderators,onTeam,onRead,onRecord,onOpen}:{week:string;rate:number|null;coverage:number|null;active:number;roles:RoleCount[];helpers:Leader[];moderators:Leader[];onTeam:()=>void;onRead:()=>void;onRecord:()=>void;onOpen:(id:string)=>void}){
+export function NexusStage({week,rate,coverage,active,roles,helpers,moderators,onTeam,onRead,onRecord,onOpen,children}:{week:string;rate:number|null;coverage:number|null;active:number;roles:RoleCount[];helpers:Leader[];moderators:Leader[];onTeam:()=>void;onRead:()=>void;onRecord:()=>void;onOpen:(id:string)=>void;children?:React.ReactNode}){
  return <section className="nx-stage" aria-label="مركز قيادة CHICO">
   <div className="nx-stage-head"><div><p className="nx-eyebrow">CHICO NEXUS / COMMAND CENTER</p><h1>مركز القيادة</h1><span className="nx-stage-week"><span className="nx-tiny-dot"/> <bdi>{week}</bdi></span></div>
    <button type="button" className="nx-button nx-primary" onClick={onRecord}><CommandIcon compact name="updates"/> تسجيل قراءة</button></div>
+  {children}
   <div className="nx-stage-grid">
    <div className="nx-stage-side nx-stage-team">
     <section className="nx-glass nx-rate-card"><div className="nx-panel-title"><h2>Weekly Flag %</h2><CommandIcon name="rate" compact/></div>
