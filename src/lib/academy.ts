@@ -371,6 +371,7 @@ export function permission(rule:Rule,rank:TrainingRank):'allowed'|'evidence'|'re
  return rank==='Moderator'&&rule.duration!=='Permanent'?'allowed':'restricted';
 }
 export const LESSONS=[
- {id:'jail',title:'Jail — سجن اللاعب',example:'Rp9 · DriveBy · 60 min',steps:['ابحث عن اسم اللاعب في Search players.','افتح Sanctions ثم Punish.','اختر DriveBy من قائمة المخالفات.','أدخل Rp9 في خانة السبب ثم اضغط Punish.','راجع رسالة النظام للتأكد من تطبيق العقوبة.'],source:'1.mov / 2.mov'},
+ {id:'jail',title:'Jail 01 — سجن اللاعب',example:'Rp9 · DriveBy · 60 min',steps:['ابحث عن اسم اللاعب في Search players.','افتح Sanctions ثم Punish.','اختر DriveBy من قائمة المخالفات.','أدخل Rp9 في خانة السبب ثم اضغط Punish.','راجع رسالة النظام للتأكد من تطبيق العقوبة.'],source:'1.mov'},
+ {id:'jail-2',title:'Jail 02 — نسخة تدريبية ثانية',example:'Rp9 · DriveBy · 60 min',steps:['ابحث عن اسم اللاعب في Search players.','افتح Sanctions ثم Punish.','اختر DriveBy من قائمة المخالفات.','أدخل Rp9 في خانة السبب ثم اضغط Punish.','راجع رسالة النظام للتأكد من تطبيق العقوبة.'],source:'2.mov'},
  {id:'mute',title:'Mute — كتم اللاعب',example:'Chat8 · MusicInVoiceChat · 60 min',steps:['ابحث عن اللاعب في Search players.','افتح Sanctions ثم Punish.','اختر MusicInVoiceChat.','أدخل Chat8 في خانة السبب ثم اضغط Punish.','راجع رسالة النظام وتأكد من كتم المحادثة الصوتية فقط.'],source:'3.mov'}
 ] as const;
