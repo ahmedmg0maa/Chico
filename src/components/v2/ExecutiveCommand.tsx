@@ -261,7 +261,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
        {focused&&<ExecutiveProfile member={focused} readings={review?[]:state?.readings||[]} admins={review?reviewAdmins:state?.admins||[]} review={review} light={light} mark={<RankMark rank={focused.rank}/>}
         onClose={()=>setFocused(null)} onEdit={()=>{setEditTarget(focused.id);setFocused(null);}} onAddReading={()=>{setReadingTarget(focused.id);setFocused(null);open('updates');}}/>}
       </>}
-      {tab==='operations'&&<ExecutiveOperationsWorkspace state={state} review={review} onRefresh={refresh} onNavigate={open}/>}
+      {tab==='operations'&&<ExecutiveOperationsWorkspace state={state} previewAdmins={reviewAdmins} review={review} onRefresh={refresh} onNavigate={open}/>}
       {tab!=='dashboard'&&tab!=='team'&&tab!=='operations'&&<ExecutiveOperations tab={tab} state={state} review={review} onRefresh={refresh} initialAdminId={readingTarget} initialPeriod={requestedReportPeriod}/>}
 
      <footer className="x-foot"><span>© CHICO TEAM</span></footer>
