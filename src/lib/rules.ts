@@ -49,8 +49,8 @@ export function summarizeReadings(readings:Reading[]){
   const f=readings.filter(x=>x.flags_delta!==null);
   const hours=readings.filter(x=>x.hours!==null);
   const ratings=readings.filter(x=>x.rating!==null);
-  const tickets=t.length?t.reduce((a,x)=>a+(x.tickets_delta??0),0):null;
-  const flags=f.length?f.reduce((a,x)=>a+(x.flags_delta??0),0):null;
+  const tickets=t.length===readings.length&&t.length?t.reduce((a,x)=>a+(x.tickets_delta??0),0):null;
+  const flags=f.length===readings.length&&f.length?f.reduce((a,x)=>a+(x.flags_delta??0),0):null;
   const incompleteFlags=readings.some(x=>x.flags_counter!==null&&x.flags_delta===null);
-  return { tickets, flags:incompleteFlags?null:flags, rate:incompleteFlags?null:serverFlagRate(flags,tickets), hours:hours.length?hours.reduce((a,x)=>a+(x.hours??0),0):null, rating:ratings.length?Math.round(ratings.reduce((a,x)=>a+(x.rating??0),0)/ratings.length*100)/100:null, incompleteFlags };
+  return { tickets, flags:incompleteFlags?null:flags, rate:incompleteFlags?null:serverFlagRate(flags,tickets), hours:hours.length===readings.length&&hours.length?hours.reduce((a,x)=>a+(x.hours??0),0):null, rating:ratings.length?Math.round(ratings.reduce((a,x)=>a+(x.rating??0),0)/ratings.length*100)/100:null, incompleteFlags };
 }

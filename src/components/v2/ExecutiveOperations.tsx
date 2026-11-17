@@ -2,8 +2,11 @@
 
 import {useRef,useState, type FormEvent} from 'react';
 import ReadingEntryStudio from './ReadingEntryStudio';
-import DiscordReportStudio from './DiscordReportStudio';
-import DailyReportStudio from './DailyReportStudio';
+import {CommandIcon} from './ChicoVisualLanguage';
+import dynamic from 'next/dynamic';
+const ReportLoading=()=> <div className="ct-workspace-loading" role="status">جاري تحميل التقرير…</div>;
+const DiscordReportStudio=dynamic(()=>import('./DiscordReportStudio'),{loading:ReportLoading});
+const DailyReportStudio=dynamic(()=>import('./DailyReportStudio'),{loading:ReportLoading});
 import {Activity, AlertTriangle, Archive, BarChart3, CalendarDays, CheckCircle2, Download, FileSpreadsheet, Flag, Pencil, Plus, Save, Shield, Ticket, Trash2, Upload, Users} from 'lucide-react';
 import type {Admin, Reading, State, Rank} from '@/lib/types';
 import {RANKS} from '@/lib/types';
@@ -75,7 +78,7 @@ function Head({en,title,description,compact=false}:{en:string;title:string;descr
  const visual=art==='settings'?'login':art;
  return <section className={'x-titleband x-art-'+art+' x-illustrated-head'+(compact?' x-titleband-compact':'')}>
    {!compact&&<img className="x-illustrated-banner" src={'/assets/chico-illustrated-'+visual+'.avif'} alt="" loading="lazy" decoding="async"/>}
-   <div className="x-illustrated-copy"><span className="x-kicker">{en}</span><h1>{title}</h1><p>{description}</p></div>
+   <div className="x-illustrated-copy ct-workspace-identity"><CommandIcon name={art}/><div><h1>{title}</h1><p>{description}</p></div></div>
  </section>;
 }
 function Empty({text}:{text:string}){return <div className="x-empty"><Activity size={25}/><b>{text}</b></div>;}
@@ -228,8 +231,9 @@ export default function ExecutiveOperations({tab,state,review,onRefresh,initialA
   <Head compact={compactHead} en="CHICO / XLSX REVIEW" title="استيراد Excel" description="معاينة جميع قراءات Excel والتواريخ وأرصدة Flags. لا تعديل أسماء أو رتب قبل موافقتك الصريحة."/><Hint review={review}/>
   <section className="x-panel x-op-card"><div className="x-op-cardhead"><FileSpreadsheet size={20}/><h2>مراجعة ملف اللعبة</h2></div>
    {review&&<p className="v9-warning" role="status">دي معاينة تصميم فقط؛ رفع Excel وتنزيل التقارير متعطلين عمدًا هنا. للبيانات الحقيقية افتح <a href="https://chicoteam.vercel.app/v2?tab=excel">الموقع الرسمي بعد تسجيل الدخول</a>.</p>}
-   <div className="x-op-form">
-    <label className="x-op-full">ملف Excel بصيغة XLSX
+   <div className="ct-import-steps" aria-label="مراحل الاستيراد"><span className="is-current"><b>01</b> اختيار الملف</span><span className={importView?'is-current':''}><b>02</b> مراجعة البيانات</span><span className={importView&&acceptedImport?'is-current':''}><b>03</b> اعتماد الحفظ</span></div>
+   <div className="x-op-form ct-import-form">
+    <label className="x-op-full ct-file-field">ملف Excel بصيغة XLSX
      <input ref={fileInputRef} type="file" accept=".xlsx" disabled={review||busy} onChange={e=>{setFile(e.target.files?.[0]||null);setImportView(null);setAcceptedImport(false);setApprovedRosterSync(false);}}/>
     </label>
     <label>سنة التقرير (للملفات بدون سنة)

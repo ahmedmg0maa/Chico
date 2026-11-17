@@ -52,20 +52,21 @@ export function CommandIcon({name,compact=false,className=''}:IconProps){
  * The accent token, not dense ornamental details, communicates the hierarchy.
  */
 export function RankInsignia({rank,compact=false}:{rank:Rank;compact?:boolean}){
- const token=rankToken(rank);const id='ctRank'+useId().replace(/[^a-zA-Z0-9_-]/g,'');
+ const token=rankToken(rank);const id='ctRank'+useId().replace(/[^a-zA-Z0-9_-]/g,'');const metal='url(#'+id+')';
  const gold=token==='responsible'||token==='administrator';
- return <span className={'v8-insignia ct-rank v8-rank--'+token+' '+(compact?'v8-insignia--compact':'')} role="img" aria-label={'رتبة '+rank} title={rank}>
-  <svg viewBox="0 0 50 50" aria-hidden="true">
-   <defs><linearGradient id={id} x1="0" y1="0" x2="1" y2="1"><stop stopColor="#dce9ef"/><stop offset=".28" stopColor="currentColor"/><stop offset=".65" stopColor="currentColor" stopOpacity=".36"/><stop offset="1" stopColor="currentColor"/></linearGradient></defs>
-   <path d="M25 4 43 13v15c0 8-8 14-18 19C15 42 7 36 7 28V13Z" fill="#151d28" stroke={'url(#'+id+')'} strokeWidth="2"/>
-   <path d="M25 8 39 15v13q0 9-14 15Q11 37 11 28V15Z" fill="currentColor" opacity=".09"/>
-   <g fill={'url(#'+id+')'} stroke="#111925" strokeWidth=".8" strokeLinejoin="round">
-   {token==='helper'&&<path d="m25 14 10 10-10 10-10-10Z"/>}
-   {token==='senior'&&<path d="m14 23 11-10 11 10-4 4-7-6-7 6Zm0 10 11-10 11 10-4 4-7-6-7 6Z"/>}
-   {token==='moderator'&&<path d="m25 12 4 9 10 1-7 7 2 10-9-5-9 5 2-10-7-7 10-1Z"/>}
-   {gold&&<path d="m12 19 8 6 5-12 5 12 8-6-4 16H16Z"/>}
-   </g>
-   <path d="m9 14 16-8 16 8" fill="none" stroke="#fff" strokeOpacity=".35" strokeWidth="1"/>
+ return <span className={'v8-insignia ct-rank ct-signature-rank v8-rank--'+token+' '+(compact?'v8-insignia--compact':'')} role="img" aria-label={'رتبة '+rank} title={rank}>
+  <svg viewBox="0 0 50 54" aria-hidden="true">
+   <defs><linearGradient id={id} x1="0%" y1="0%" x2="100%" y2="100%"><stop stopColor="#eef0f6"/><stop offset=".25" stopColor="currentColor"/><stop offset=".49" stopColor="currentColor" stopOpacity=".55"/><stop offset=".68" stopColor="#26313d"/><stop offset=".86" stopColor="currentColor"/><stop offset="1" stopColor="#e2e9ee"/></linearGradient></defs>
+   <path d="M25 3 44 11v17c0 10-8 17-19 23C14 45 6 38 6 28V11Z" fill="#0b111a" stroke={metal} strokeWidth="2.6"/>
+   <path d="M25 8 39 14v14c0 8-6 14-14 18-8-4-14-10-14-18V14Z" fill="currentColor" opacity=".12"/>
+   <path d="M14 30Q12 21 20 15l3-8 6 9 5-3 2 8 6 5-3 3-7 1q-4 7-7 11-1-7-8-11l-4 4Z" fill={metal} stroke="#101824" strokeWidth=".7" strokeLinejoin="round"/>
+   <path d="M18 28q5-6 14-7M29 32q-6 3-4 9m6-16 4 1" fill="none" stroke="#121a24" strokeWidth="1.1" strokeLinecap="round"/>
+   <path d="m34 25 2 0" stroke="#e9d2a6" strokeWidth="1.1" strokeLinecap="round"/>
+   {token==='helper'&&<path d="m21 45 4 2 4-2" stroke="currentColor" strokeWidth="1.8" fill="none"/>}
+   {token==='senior'&&<path d="m18 43 7 4 7-4m-10 5 3 2 3-2" stroke="currentColor" strokeWidth="1.5" fill="none"/>}
+   {token==='moderator'&&<path d="m15 39 2 4 2-4m12 0 2 4 2-4" stroke="currentColor" strokeWidth="1.3" fill="none"/>}
+   {gold&&<path d="m16 9 5 3 4-6 4 6 5-3-2 6H18Z" fill={metal} stroke="#111923" strokeWidth=".6"/>}
+   <path d="M8 12 25 5 42 12" fill="none" stroke="#fff" opacity=".45" strokeWidth=".8"/>
   </svg>
  </span>;
 }

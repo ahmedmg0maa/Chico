@@ -1,6 +1,7 @@
 'use client';
 
 import {useEffect,useMemo,useRef,useState} from 'react';
+import {CommandIcon} from './ChicoVisualLanguage';
 import {CalendarDays,Download,Ticket} from 'lucide-react';
 import {weekStart,eligibleReadings,isEvaluatedAdmin} from '@/lib/rules';
 import {latestPeriod,latestSingleDay,selectPeriod,reportRows,reportTotals} from '@/lib/report-period';
@@ -74,17 +75,14 @@ export default function DiscordReportStudio({state,review}:Props){
    setTimeout(()=>URL.revokeObjectURL(url),1500);
   },'image/png');
  };
- return <section className="x-panel v9-poster-studio chico-daily-report">
+ return <section className="x-panel v9-poster-studio chico-daily-report ct-report-studio">
   <header className="v9-poster-intro">
-   <div>
-    <small>CHICO / PREMIUM REPORT STUDIO</small>
-    <h2>التقرير الجاهز للنشر على Discord</h2>
-    <p>تقرير متغيّر بالقراءات الحقيقية: Tickets وFlags وتوب 3 لكل من Helpers وModerators.</p>
-   </div>
+   <div className="ct-workspace-identity"><CommandIcon name="reports"/><div><h2>تقرير Discord</h2><p>صورة جاهزة للنشر</p></div></div>
    <button type="button" className="v9-primary" disabled={!imageReady||downloading} onClick={download}>
     <Download size={18}/>{downloading?'جاري تجهيز الصورة…':period.canExport&&!imageReady&&!review?'جاري رسم الصورة…':'تنزيل التقرير PNG'}
    </button>
   </header>
+  <div className="ct-report-layout"><div className="ct-report-controls"><div className="ct-report-panel-title"><CalendarDays size={18}/> فترة التقرير</div>
   <div className="v9-poster-filters">
    <label>نوع التقرير
     <select value={mode} onChange={e=>setPeriod(e.target.value as Mode)}>
@@ -106,13 +104,14 @@ export default function DiscordReportStudio({state,review}:Props){
   {valid&&matching.length===0&&partial===0&&<p className="v9-warning" role="status">لا توجد قراءات محفوظة للفترة المحددة؛ علامة — تعني عدم وجود بيانات، وليس صفر.</p>}
   {error&&<p className="v9-warning" role="alert">{error}</p>}
   {review&&<p className="v9-warning" role="status">دي معاينة التصميم فقط؛ مفيش فيها قراءات محفوظة أو تنزيل حقيقي. للاستيراد والتقارير الفعلية افتح <a href="https://chicoteam.vercel.app/v2?tab=excel">الموقع الرسمي بعد تسجيل الدخول</a>.</p>}
+  </div><div className="ct-report-stage"><div className="ct-report-panel-title"><span className="ct-preview-dot"/> معاينة التقرير</div>
   <div className="v9-poster-preview" role="region" aria-label="معاينة صورة التقرير قابلة للتمرير أفقيًا على الشاشات الصغيرة" tabIndex={0} style={{display:period.canExport?'flex':'none'}}><canvas ref={canvas} role="img" aria-label={'تقرير CHICO الفاخر '+title+' للفترة '+dateLabel} style={{width:'100%',maxWidth:1100,height:'auto',aspectRatio:'auto'}}/></div>
   {matching.length===0&&partial===0&&<div className="v9-report-empty" role="status">
-    <b>التقرير جاهز للعرض بمجرد حفظ القراءات</b>
-    <p>مفيش بيانات مسجلة للفترة المختارة، لذلك مش هنعرض تقرير مليان شرط أو نتائج وهمية.</p>
+    <CommandIcon name="reports"/><b>لا توجد قراءات لهذه الفترة</b>
     <a href="/v2?tab=excel">افتح استيراد Excel</a>
    </div>}
   {period.canExport&&<p className="v9-poster-mobile-help">اسحب الصورة يمين وشمال لقراءة الأسماء والأرقام بحجم واضح. زر PNG ينزّل الصورة كاملة بالدقة الأصلية.</p>}
+  </div></div>
   <p className="v9-poster-note"><Ticket size={15} style={{verticalAlign:'middle'}}/> الصورة بتعرض أصحاب القراءات فقط، بنفس ترتيب الملف الأصلي عند توافره؛ {missingCount>0?`${missingCount} إداريين بدون قراءات مش ظاهرين بالصورة لكن موجودين في الفريق. `:''}Top 3 للـModerators منفصل عن Helpers وSN.Helpers، بالـTickets المسجّلة فقط.</p>
  </section>;
 }

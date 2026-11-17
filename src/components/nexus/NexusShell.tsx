@@ -1,6 +1,6 @@
 'use client';
 
-import {useEffect,useState} from 'react';
+import {useEffect,useState,useRef,type PointerEvent} from 'react';
 import ExecutiveWeeklyChart from '../v2/ExecutiveWeeklyChart';
 import {CommandIcon,RankInsignia} from '../v2/ChicoVisualLanguage';
 import type {Tab} from '../v2/ExecutiveCommand';
@@ -67,6 +67,21 @@ function Podium({title,leaders,onOpen,onTeam,variant}:{title:string;leaders:Lead
  </section>;
 }
 
+function WolfStage(){
+ const ref=useRef<HTMLDivElement>(null);
+ const frame=useRef(0);
+ useEffect(()=>()=>cancelAnimationFrame(frame.current),[]);
+ function move(e:PointerEvent<HTMLDivElement>){
+  if(e.pointerType!=='mouse'||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const el=e.currentTarget,box=el.getBoundingClientRect(),x=(e.clientX-box.left)/box.width-.5,y=(e.clientY-box.top)/box.height-.5;
+  cancelAnimationFrame(frame.current);frame.current=requestAnimationFrame(()=>{if(ref.current){ref.current.style.setProperty('--wolf-x',(x*13).toFixed(2)+'deg');ref.current.style.setProperty('--wolf-y',(-y*9).toFixed(2)+'deg');}});
+ }
+ function reset(){cancelAnimationFrame(frame.current);ref.current?.style.setProperty('--wolf-x','0deg');ref.current?.style.setProperty('--wolf-y','0deg');}
+ return <div className="ct-wolf-theater" ref={ref} onPointerMove={move} onPointerLeave={reset}>
+  <div className="ct-theater-light" aria-hidden="true"/><div className="ct-theater-ring ct-ring-outer" aria-hidden="true"/><div className="ct-theater-ring ct-ring-inner" aria-hidden="true"/><div className="ct-theater-orbit" aria-hidden="true"/><div className="ct-wolf-float"><div className="ct-wolf-parallax"><img src="/assets/chico-noble-wolf.svg" alt="شعار الذئب CHICO TEAM" width={420} height={430} decoding="async"/></div></div><div className="ct-theater-platform" aria-hidden="true"><span/><i/></div>
+ </div>;
+}
+
 export function NexusStage({week,rate,coverage,active,roles,helpers,moderators,onTeam,onRead,onRecord,onOpen,readings,children}:{week:string;rate:number|null;coverage:number|null;active:number;roles:RoleCount[];helpers:Leader[];moderators:Leader[];onTeam:()=>void;onRead:()=>void;onRecord:()=>void;onOpen:(id:string)=>void;readings:Reading[];children?:React.ReactNode}){
  return <section className="nx-stage" aria-label="مركز قيادة CHICO">
   <div className="nx-stage-head"><div><h1>مركز القيادة</h1><span className="nx-stage-week"><span className="nx-tiny-dot"/> <bdi>{week}</bdi></span></div>
@@ -88,12 +103,7 @@ export function NexusStage({week,rate,coverage,active,roles,helpers,moderators,o
     <ExecutiveWeeklyChart readings={readings} compact/>
    </div>
    <div className="nx-wolf-stage">
-    <div className="nx-orbit nx-orbit-outer" aria-hidden="true"/><div className="nx-orbit nx-orbit-inner" aria-hidden="true"/>
-    <div className="nx-wolf-halo" aria-hidden="true"/>
-    <div className="nx-stage-beam" aria-hidden="true"/>
-    
-    <img className="nx-stage-wolf" src="/assets/chico-approved-wolf.avif" alt="شعار CHICO TEAM" width={240} height={240} decoding="async"/>
-    
+    <WolfStage/>
     <div className="nx-stage-brand"><b>CHICO TEAM</b></div>
     <button type="button" className="nx-link nx-stage-report" onClick={onRead}>التقارير <span aria-hidden="true">↗</span></button>
    </div>

@@ -9,10 +9,12 @@ import {
   Ticket,TrendingUp,Trophy,Users,UserRound,Workflow,X
 } from 'lucide-react';
 import type {Admin,Reading,State,Rank} from '@/lib/types';
-import ExecutiveOperations from './ExecutiveOperations';
-import ExecutiveTeamStudio from './ExecutiveTeamStudio';
-import ExecutiveOperationsWorkspace from './ExecutiveOperationsWorkspace';
-import ExecutiveProfile from './ExecutiveProfile';
+import dynamic from 'next/dynamic';
+const WorkspaceLoading=()=> <div className="ct-workspace-loading" role="status">جاري تحميل القسم…</div>;
+const ExecutiveOperations=dynamic(()=>import('./ExecutiveOperations'),{loading:WorkspaceLoading});
+const ExecutiveTeamStudio=dynamic(()=>import('./ExecutiveTeamStudio'),{loading:WorkspaceLoading});
+const ExecutiveOperationsWorkspace=dynamic(()=>import('./ExecutiveOperationsWorkspace'),{loading:WorkspaceLoading});
+const ExecutiveProfile=dynamic(()=>import('./ExecutiveProfile'),{loading:WorkspaceLoading});
 import DashboardWeekNotice from './DashboardWeekNotice';
 import {NexusDock,NexusStage} from '../nexus/NexusShell';
 import {previousRecordedWeek} from '@/lib/dashboard-history';
@@ -54,7 +56,7 @@ function latestRows(state:State|null):Row[]{
  if(!state)return [];
  return state.admins.map((a:Admin)=>{
   const arr=state.readings.filter((r:Reading)=>r.admin_id===a.id&&r.week_start===state.summary.week_start).sort((x,y)=>y.to_date.localeCompare(x.to_date));
-  const add=(f:(r:Reading)=>number|null)=>{const vals=arr.map(f).filter((n):n is number=>n!==null);return vals.length?vals.reduce((x,y)=>x+y,0):null;};
+  const add=(f:(r:Reading)=>number|null)=>{const vals=arr.map(f);return vals.length&&vals.every((n):n is number=>n!==null)?vals.reduce((x,y)=>x+y,0):null;};
   return {id:a.id,name:a.name,rank:a.rank,active:a.active,in_reporting:a.in_reporting,admin_level:a.admin_level,shift_label:a.shift_label,full_name:a.full_name,notes:a.notes,timezone:a.timezone,supervisor_id:a.supervisor_id,joined_on:a.joined_on,sort_order:a.sort_order,
    tickets:add(r=>r.tickets_delta),flags:arr.some(r=>r.flags_counter!==null&&r.flags_delta===null)?null:add(r=>r.flags_delta),flagsIncomplete:arr.some(r=>r.flags_counter!==null&&r.flags_delta===null),periodFrom:arr[0]?.from_date??null,
    hours:add(r=>r.hours),rating:arr.find(r=>r.rating!==null)?.rating??null,lastUpdate:arr[0]?.to_date??null};
@@ -130,10 +132,10 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
  const evaluated=rows.filter(r=>isEvaluatedAdmin(r));
  const covered=evaluated.filter(r=>r.lastUpdate!==null).length;
  const totals={tickets:review?null:summary?.tickets??null,flags:review?null:summary?.flags??null,rate:review?null:summary?.rate??null,rating:review?null:summary?.rating??null,members:active,coverage:!review&&hasRegisteredWeek&&evaluated.length?Math.round(100*covered/evaluated.length):null};
- const top=rows.filter(r=>isEvaluatedAdmin(r)&&(r.rank==='Helper'||r.rank==='SN.Helper')&&r.tickets!==null).sort((a,b)=>(b.tickets??0)-(a.tickets??0)).slice(0,3);
+ const top=rows.filter(r=>isEvaluatedAdmin(r)&&(r.rank==='Helper'||r.rank==='SN.Helper')&&r.tickets!==null&&r.tickets>0).sort((a,b)=>(b.tickets??0)-(a.tickets??0)||(a.sort_order??0)-(b.sort_order??0)||a.name.localeCompare(b.name,'en')).slice(0,3);
  const warnings=rows.filter(r=>isEvaluatedAdmin(r)&&(r.flagsIncomplete||(r.flags!==null&&r.flags>7)||(r.rating!==null&&r.rating<4.8)||(!r.lastUpdate&&r.active&&hasRegisteredWeek)));
  const timeLabel=review?'معاينة بلا إحصائيات':summary?.week_start||'الأسبوع الحالي';
- const moderatorTop=rows.filter(r=>isEvaluatedAdmin(r)&&r.rank==='Moderator'&&r.tickets!==null).sort((a,b)=>(b.tickets??0)-(a.tickets??0)||(a.sort_order??0)-(b.sort_order??0)).slice(0,3);
+ const moderatorTop=rows.filter(r=>isEvaluatedAdmin(r)&&r.rank==='Moderator'&&r.tickets!==null&&r.tickets>0).sort((a,b)=>(b.tickets??0)-(a.tickets??0)||(a.sort_order??0)-(b.sort_order??0)||a.name.localeCompare(b.name,'en')).slice(0,3);
  const roleCounts=[{label:'Helper',kind:'helper' as const,count:rows.filter(r=>r.active&&r.rank==='Helper').length},{label:'SN.Helper',kind:'senior' as const,count:rows.filter(r=>r.active&&r.rank==='SN.Helper').length},{label:'Moderator',kind:'moderator' as const,count:rows.filter(r=>r.active&&r.rank==='Moderator').length}];
  async function refresh(){
   if(review)return;
@@ -213,7 +215,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
      <div className="ct-top-actions"><button className="ct-icon-button" onClick={()=>setSearchOpen(!searchOpen)} aria-label="البحث"><Search size={19}/></button><button className="ct-icon-button" onClick={()=>open('alerts')} aria-label="التنبيهات"><Bell size={19}/>{warnings.length>0&&<i className="x-notif-dot"/>}</button>{!review&&<button className="ct-icon-button" onClick={()=>void refresh()} aria-label="تحديث البيانات"><RefreshCw size={17}/></button>}<button className="ct-icon-button" onClick={()=>void logout()} aria-label="تسجيل الخروج من CHICO"><LogOut size={18}/></button><span className="ct-connection" role="status" title={review?'معاينة':state?'البيانات محمّلة':'جاري تحميل البيانات'} data-ready={review||!!state}/></div>
     </header>
     {searchOpen&&<div className="x-command-search"><Search size={18}/><input autoFocus type="search" aria-label="البحث عن إداري" placeholder="ابحث عن إداري…" value={filter} onChange={e=>{setFilter(e.target.value);open('team');}}/><button onClick={()=>{setSearchOpen(false);setFilter('');}} aria-label="إغلاق البحث"><X size={17}/></button></div>}
-    <div id="chico-main-content" tabIndex={-1} className="x-main-content v7-app-content ct-page-motion" key={tab}>
+    <div id="chico-main-content" tabIndex={-1} className={'x-main-content v7-app-content ct-page-motion ct-workspace-' + tab} key={tab}>
      {error&&<div className="x-error"><AlertTriangle size={17}/>{error}<button onClick={()=>void refresh()}>إعادة المحاولة</button></div>}
      {notice&&<div className="x-inline-notice"><Shield size={18}/>{notice}<button onClick={()=>setNotice('')}><X size={17}/></button></div>}
      {tab==='dashboard'&&<>
@@ -256,16 +258,15 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
       </section>
      </>}
      {tab==='team'&&<>
-       <section className="nx-workspace-heading"><div><h1>إدارة الفريق</h1></div><span className="nx-workspace-symbol"><CommandIcon name="team"/></span></section>
        <ExecutiveTeamStudio admins={review?reviewAdmins:state?.admins||[]} rows={rows} review={review} searchQuery={filter} onRefresh={refresh}
         onPreviewChange={updateReviewAdmins} onOpen={setFocused} editTarget={editTarget} light={light} onEditConsumed={()=>setEditTarget(null)}/>
        {focused&&<ExecutiveProfile member={focused} readings={review?[]:state?.readings||[]} admins={review?reviewAdmins:state?.admins||[]} review={review} light={light} mark={<RankMark rank={focused.rank}/>}
         onClose={()=>setFocused(null)} onEdit={()=>{setEditTarget(focused.id);setFocused(null);}} onAddReading={()=>{setReadingTarget(focused.id);setFocused(null);open('updates');}}/>}
       </>}
-      {tab==='operations'&&<ExecutiveOperationsWorkspace state={state} review={review} onRefresh={refresh} onNavigate={open}/>}
+      {tab==='operations'&&<ExecutiveOperationsWorkspace state={state} previewAdmins={reviewAdmins} review={review} onRefresh={refresh} onNavigate={open}/>}
       {tab!=='dashboard'&&tab!=='team'&&tab!=='operations'&&<ExecutiveOperations tab={tab} state={state} review={review} onRefresh={refresh} initialAdminId={readingTarget} initialPeriod={requestedReportPeriod}/>}
 
-     <footer className="x-foot"><span>© CHICO TEAM · ONE STATE RP</span><span>{review?'VISUAL REVIEW — NOT LIVE DATA':'PROTECTED ADMINISTRATION PLATFORM'}</span></footer>
+     <footer className="x-foot"><span>© CHICO TEAM</span></footer>
     </div>
    </main>
    <NexusDock tab={tab} onNavigate={open} onMore={toggleMenu} menuOpen={menu}/>

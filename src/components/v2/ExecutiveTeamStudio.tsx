@@ -157,7 +157,8 @@ export default function ExecutiveTeamStudio({admins,rows,review,onRefresh,onPrev
  const destroy=()=>{if(!editorAdmin||confirmName.trim()!==editorAdmin.name)return;
   void run('DELETE',{confirm:'DELETE'});
  };
- return <div className="v7-team-studio">
+ return <div className="v7-team-studio ct-directory">
+  <div className="ct-workspace-mast"><div className="ct-workspace-identity"><CommandIcon name="team"/><div><h1>إدارة الفريق</h1><span>الأسماء والرتب والمناوبات</span></div></div></div>
   <div className="v7-directory-summary">
    <Stat title="إجمالي الإداريين" value={rows.length} icon={Users}/>
    <Stat title="نشط حاليًا" value={rows.filter(r=>r.active).length} icon={CheckCircle2} tone="v7-green"/>
@@ -166,7 +167,7 @@ export default function ExecutiveTeamStudio({admins,rows,review,onRefresh,onPrev
   </div>
   <section className="v7-directory-board" aria-label="إدارة أعضاء الفريق">
    <div className="v7-board-heading">
-    <div><small>TEAM MANAGEMENT / CHICO ME</small><h2><Users size={22}/> إدارة الفريق والإداريين</h2><p>إضافة وتعديل وحذف ومراجعة أعضاء الفريق من مكان واحد</p></div>
+    <div><h2>الإداريون</h2></div>
     <div className="v7-board-actions">
      <button type="button" onClick={()=>void onRefresh()} className="v7-btn v7-btn-icon" title="تحديث البيانات" disabled={review}><RefreshCw size={19}/></button>
      <CSVExport items={filtered}/>
@@ -180,7 +181,7 @@ export default function ExecutiveTeamStudio({admins,rows,review,onRefresh,onPrev
      <option value="roster">ترتيب كشف Excel</option><option value="name">ترتيب بالاسم</option><option value="rank">ترتيب بالرتبة</option><option value="tickets">أعلى Tickets</option><option value="flags">الفلاجات</option><option value="rating">التقييم</option><option value="lastUpdate">آخر تحديث</option>
     </select>
     <button type="button" className="v7-btn v7-btn-icon" aria-label="عكس الترتيب" title="عكس الترتيب" onClick={()=>setDescending(x=>!x)}><ArrowUpDown size={18}/></button>
-    <div className="v7-layout-switch"><button type="button" className={layout==='table'?'selected':''} onClick={()=>setLayout('table')} aria-label="عرض الجدول"><List size={19}/></button><button type="button" className={layout==='cards'?'selected':''} onClick={()=>setLayout('cards')} aria-label="عرض البطاقات"><LayoutGrid size={19}/></button></div>
+    <div className="v7-layout-switch"><button type="button" className={layout==='table'?'selected':''} onClick={()=>setLayout('table')} aria-label="عرض الجدول" aria-pressed={layout==='table'}><List size={19}/></button><button type="button" className={layout==='cards'?'selected':''} onClick={()=>setLayout('cards')} aria-label="عرض البطاقات" aria-pressed={layout==='cards'}><LayoutGrid size={19}/></button></div>
    </div>
    <div className="v7-role-filter" role="group" aria-label="فلترة حسب الرتب">
     {[{id:'all',label:'الكل'},...RANKS.map(r=>({id:r,label:r}))].map(r=><button key={r.id} type="button" className={(rank===r.id?'active ':'')+(r.id==='all'?'':'v8-rank-filter v8-rank--'+rankToken(r.id as Rank))} onClick={()=>setFilterRole(r.id as 'all'|Rank)}>{r.label}<b>{r.id==='all'?rows.length:rows.filter(a=>a.rank===r.id).length}</b></button>)}
@@ -196,7 +197,7 @@ export default function ExecutiveTeamStudio({admins,rows,review,onRefresh,onPrev
      const current=admins.find(a=>a.id===row.id);
      return <tr key={row.id}>
       <td className="v7-index">{String((selectedPage-1)*size+i+1).padStart(2,'0')}</td>
-      <td><div className="v7-person-name"><RoleSeal rank={row.rank}/><div><b dir="auto">{row.name}</b>{(current as AdminExtra)?.full_name&&<small dir="auto">{(current as AdminExtra).full_name}</small>}</div></div></td>
+      <td><div className="v7-person-name"><RoleSeal rank={row.rank}/><div><button type="button" className="ct-person-link" onClick={()=>onOpen(row)} dir="auto">{row.name}</button>{(current as AdminExtra)?.full_name&&<small dir="auto">{(current as AdminExtra).full_name}</small>}</div></div></td>
       <td><RankLabel rank={row.rank}/></td>
       <td>{row.admin_level??'—'}</td><td>{row.shift_label||'—'}</td>
       <td className="v7-figure">{format(row.tickets)}</td>
@@ -214,8 +215,8 @@ export default function ExecutiveTeamStudio({admins,rows,review,onRefresh,onPrev
   {feedback&&<div className="v7-toast" role="status"><CheckCircle2 size={20}/>{feedback}<button type="button" onClick={()=>setFeedback('')} aria-label="إغلاق"><X size={17}/></button></div>}
   {showEditor&&<ModalPortal light={light} onEscape={()=>{if(!saving)setShowEditor(false);}}><div className="v7-editor-overlay" onMouseDown={e=>{if(e.target===e.currentTarget&&!saving)setShowEditor(false);}}>
    <aside className="v7-editor-panel" role="dialog" aria-modal="true" aria-label={isEditing?'تعديل الإداري':'إضافة إداري'}>
-    <header><span>CHICO / TEAM CONTROL</span><button onClick={()=>setShowEditor(false)} disabled={saving} aria-label="إغلاق"><X size={21}/></button></header>
-    <div className="v7-editor-art"><img src="/assets/chico-illustrated-team.avif" alt="" /><div><RoleSeal rank={draft.rank}/><h2>{isEditing?'تعديل بيانات الإداري':'إضافة إداري جديد'}</h2><p>{draft.name||'إداري جديد'}</p></div></div>
+    <header><span>CHICO TEAM</span><button onClick={()=>setShowEditor(false)} disabled={saving} aria-label="إغلاق"><X size={21}/></button></header>
+    <div className="v7-editor-art ct-editor-identity"><div><RoleSeal rank={draft.rank}/><h2>{isEditing?'تعديل بيانات الإداري':'إضافة إداري جديد'}</h2><p>{draft.name||'إداري جديد'}</p></div></div>
     <form onSubmit={save} className="v7-editor-form">
      <h3><UserRound size={18}/> المعلومات الأساسية</h3>
      <label>اسم اللعبة <em>*</em><input required maxLength={80} value={draft.name} onChange={e=>setDraft(s=>({...s,name:e.target.value}))} disabled={saving}/></label>

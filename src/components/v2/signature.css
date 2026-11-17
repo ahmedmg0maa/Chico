@@ -1,0 +1,35 @@
+/* CHICO TEAM — signature cinematic experience, Phase 1.
+   The interface remains real DOM. Artwork and light never represent data. */
+.chico-v2.nx-app .nx-stage{position:relative;isolation:isolate;background:radial-gradient(ellipse at 50% 63%,#a47a3d33,transparent 27%),radial-gradient(ellipse at 47% 20%,#6e86bf1e,transparent 51%),linear-gradient(155deg,#202a39,#0c1119 44%,#121926);border-color:#acb7c34d;box-shadow:0 20px 55px #0008,inset 0 1px #f0e2bf18}
+.chico-v2.nx-app .nx-stage::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(ellipse 95% 120% at 50% -85%,transparent 72%,#e9c78560 72.4%,#242e3b 73%,#1c2530 77%,#b8c9df28 77.4%,transparent 78%),linear-gradient(118deg,transparent 27%,#a4badc0c 38%,transparent 47%);opacity:.9}
+.chico-v2.nx-app .nx-wolf-stage{min-width:0;min-height:350px;gap:5px;isolation:isolate}
+.chico-v2.nx-app .ct-wolf-theater{position:relative;width:100%;height:clamp(258px,29vw,365px);isolation:isolate;perspective:850px;--wolf-x:0deg;--wolf-y:0deg;display:grid;place-items:center}
+.chico-v2.nx-app .ct-theater-light{position:absolute;inset:0;z-index:-1;background:radial-gradient(ellipse at 48% 73%,#eec47e37,transparent 52%),conic-gradient(from 151deg at 50% 0%,transparent 0deg,#b5cbfa18 10deg,#e6e5ce11 28deg,transparent 55deg);pointer-events:none;animation:ct-theater-breathe 7s ease-in-out infinite}
+.chico-v2.nx-app .ct-theater-ring{position:absolute;top:4%;left:50%;width:min(97%,340px);aspect-ratio:1;border-radius:50%;pointer-events:none;transform:translateX(-50%);z-index:-1}
+.chico-v2.nx-app .ct-ring-outer{background:conic-gradient(from 30deg,#e8bd7d,transparent 16%,#bac9e140 24%,transparent 35%,#e8c590 60%,#b1b9d530 74%,transparent 82%,#e8bd7d);mask:radial-gradient(farthest-side,transparent calc(100% - 3px),#000 0);animation:ct-ring-revolve 24s linear infinite}
+.chico-v2.nx-app .ct-ring-inner{width:min(85%,300px);top:9%;border:1px solid #aabedf55;box-shadow:0 0 0 6px #a2b5d00c,inset 0 0 28px #d7ac6412}
+.chico-v2.nx-app .ct-theater-orbit{position:absolute;top:17%;left:50%;width:min(108%,365px);height:55%;z-index:2;border-radius:50%;border:1px solid #a1adee44;border-top:2px solid #fdebbe9e;border-bottom:1px solid #ae87f377;transform:translateX(-50%) rotate(-24deg) scaleY(.72);box-shadow:0 0 20px #dcae5e19;pointer-events:none}
+.chico-v2.nx-app .ct-wolf-float{position:relative;z-index:1;width:min(82%,302px);margin-top:-37px;animation:ct-noble-float 5.4s ease-in-out infinite;will-change:transform}
+.chico-v2.nx-app .ct-wolf-parallax{transform:rotateY(var(--wolf-x)) rotateX(var(--wolf-y));transform-style:preserve-3d;transition:transform .45s cubic-bezier(.2,.8,.2,1)}
+.chico-v2.nx-app .ct-wolf-parallax img{width:100%;height:auto;aspect-ratio:420/430;object-fit:contain;filter:drop-shadow(0 12px 13px #0008) drop-shadow(0 0 15px #e1ba6940);display:block}
+.chico-v2.nx-app .ct-theater-platform{position:absolute;bottom:8%;left:50%;width:min(90%,340px);height:46px;transform:translateX(-50%);border-radius:50%;background:linear-gradient(180deg,#828f9f,#17202a 17%,#101620 45%,#4c5866 62%,#1a202b 72%,#e4b86e 85%,#74522a 92%,#1a2029);border:1px solid #bcc7d28c;border-bottom:2px solid #efc77c;box-shadow:0 12px 24px #0009,0 0 29px #d9a44832;z-index:0;pointer-events:none}
+.chico-v2.nx-app .ct-theater-platform span{position:absolute;inset:0 4% 29%;border-radius:50%;border:1px solid #f1d498a0;background:radial-gradient(ellipse,#efd38c85 0%,#9f783c65 27%,#171d28 67%);box-shadow:inset 0 0 12px #edb66388}
+.chico-v2.nx-app .ct-theater-platform i{position:absolute;top:-16px;left:15%;right:15%;height:20px;background:radial-gradient(ellipse,#fff2c8a0,#ddb86538 42%,transparent 72%);filter:blur(4px);animation:ct-theater-breathe 6s ease-in-out infinite}
+.chico-v2.nx-app .nx-stage-brand{margin-top:-4px;position:relative;z-index:2}
+.chico-v2.nx-app .nx-stage-brand b{font-size:clamp(17px,1.6vw,24px);letter-spacing:.16em;color:#f0d8ad}
+.chico-v2.nx-app .nx-stage-side>.nx-glass,.chico-v2.nx-app .nx-stage-side>.nx-chart-compact,.chico-v2.nx-app .nx-command-rail .x-kpi,.chico-v2.nx-app .nx-command-rail .nx-rate-card{animation:ct-signature-enter .65s cubic-bezier(.2,.75,.25,1) both;animation-delay:.09s}
+.chico-v2.nx-app .nx-command-rail .x-kpi:nth-child(2){animation-delay:.16s}
+.chico-v2.nx-app .nx-command-rail .x-kpi:nth-child(3){animation-delay:.23s}
+.chico-v2.nx-app .nx-command-rail .x-kpi:nth-child(4){animation-delay:.30s}
+.chico-v2.nx-app .nx-stage-side>.nx-glass:nth-child(2),.chico-v2.nx-app .nx-stage-side>.nx-chart-compact{animation-delay:.24s}
+.chico-v2.nx-app .nx-stage-wolf{animation:none!important}
+.chico-v2.nx-app .nx-dock{position:relative;border-top-color:#d6be8b80;box-shadow:0 9px 32px #000b,inset 0 1px #e7d4ae20,0 0 22px #d7ac5e14}
+.chico-v2.nx-app .nx-dock-item.is-active{background:radial-gradient(ellipse at 50% 100%,#be8d3636,#e1b76c10 60%,transparent);border-color:#dfbc8055}
+.chico-v2.nx-app .nx-dock-item.is-active:after{box-shadow:0 0 12px 1px #ecc98599}
+@keyframes ct-signature-enter{from{opacity:0;transform:translateY(12px) scale(.985)}to{opacity:1;transform:none}}
+@keyframes ct-noble-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes ct-theater-breathe{0%,100%{opacity:.55}50%{opacity:1}}
+@keyframes ct-ring-revolve{to{transform:translateX(-50%) rotate(360deg)}}
+@media(min-width:1061px) and (max-height:950px){.chico-v2.nx-app .ct-wolf-theater{height:303px}.chico-v2.nx-app .ct-wolf-float{width:min(78%,253px)}.chico-v2.nx-app .ct-theater-ring{width:min(96%,293px)}.chico-v2.nx-app .ct-ring-inner{width:min(84%,258px)}.chico-v2.nx-app .nx-wolf-stage{min-height:336px}}
+@media(max-width:760px){.chico-v2.nx-app .ct-wolf-theater{height:270px}.chico-v2.nx-app .ct-wolf-float{width:min(75%,219px);margin-top:-30px}.chico-v2.nx-app .ct-theater-ring{width:min(92%,255px)}.chico-v2.nx-app .ct-ring-inner{width:min(81%,223px)}.chico-v2.nx-app .ct-theater-platform{width:min(85%,260px);height:37px}.chico-v2.nx-app .ct-theater-orbit{width:min(97%,282px)}.chico-v2.nx-app .nx-wolf-stage{min-height:310px}}
+@media(prefers-reduced-motion:reduce){.chico-v2.nx-app .ct-wolf-theater *,.chico-v2.nx-app .nx-stage-side>.nx-glass,.chico-v2.nx-app .nx-stage-side>.nx-chart-compact,.chico-v2.nx-app .nx-command-rail .x-kpi,.chico-v2.nx-app .nx-command-rail .nx-rate-card{animation:none!important;transition:none!important}.chico-v2.nx-app .ct-wolf-parallax{transform:none!important}}
