@@ -140,3 +140,62 @@
 .chico-v2.nx-app .ct-admin-studio{animation:ct-workspace-enter .3s ease-out both}
 @media(max-width:780px){.chico-v2.nx-app .ct-points-grid,.chico-v2.nx-app .ct-shifts-grid{grid-template-columns:minmax(0,1fr)}.chico-v2.nx-app .ct-admin-studio{padding:9px}.chico-v2.nx-app .ct-admin-card{padding:10px}.chico-v2.nx-app .ct-admin-metrics>div{padding:8px}.chico-v2.nx-app .ct-admin-metrics small{font-size:10px}.chico-v2.nx-app .ct-audit-list article{flex-wrap:wrap}.chico-v2.nx-app .ct-audit-list time{max-width:none;flex-basis:100%}}
 @media(prefers-reduced-motion:reduce){.chico-v2.nx-app .ct-admin-studio{animation:none!important}}
+
+/* Signature experience: live-results stage, no staged winners or fake figures. */
+.chico-v2.nx-app .ct-performance-experience{position:relative;isolation:isolate;overflow:hidden;background:radial-gradient(ellipse at 50% 5%,#b9965b13,transparent 35%),var(--ct-surface)}
+.chico-v2.nx-app .ct-experience-controls{display:flex;align-items:end;gap:8px;flex-wrap:wrap}
+.chico-v2.nx-app .ct-experience-controls label{min-width:195px}
+.chico-v2.nx-app .ct-experience-meta{display:flex;gap:9px;align-items:center;flex-wrap:wrap;color:var(--ct-muted);font-size:11px}
+.chico-v2.nx-app .ct-experience-meta svg{color:var(--ct-gold)}
+.chico-v2.nx-app .ct-experience-meta span{border-inline-start:1px solid var(--ct-edge);padding-inline-start:9px}
+.chico-v2.nx-app .ct-experience-empty{min-height:300px;display:grid;align-content:center;justify-items:center;gap:14px;text-align:center;background:radial-gradient(ellipse at 50% 44%,#c6a16b18,transparent 50%),#0d141e;border:1px solid var(--ct-edge);border-radius:14px;padding:22px}
+.chico-v2.nx-app .ct-empty-emblem{width:92px;height:92px;display:grid;place-items:center;border-radius:50%;border:1px solid #cba76d55;background:radial-gradient(circle,#f3d49720,transparent 72%);box-shadow:0 0 0 8px #d6ad6910,0 0 34px #e2b86719;animation:ct-honor-ambient 5s ease-in-out infinite}
+.chico-v2.nx-app .ct-empty-emblem .v8-symbol{width:56px;height:56px;color:#dfbd85}
+.chico-v2.nx-app .ct-empty-emblem .v8-symbol svg{width:52px;height:52px}
+.chico-v2.nx-app .ct-experience-empty h3{margin:5px 0 0;font-size:22px}
+.chico-v2.nx-app .ct-experience-empty p{margin:0;color:var(--ct-muted);font-size:13px}
+.chico-v2.nx-app .ct-insight-notice{display:flex;align-items:center;gap:8px;margin:0;padding:10px 12px;border:1px solid #d6b36b50;border-radius:9px;background:#d5ae6310;color:#f1d5a0;font-size:12px}
+.chico-v2.nx-app .ct-insight-notice svg{flex-shrink:0}
+.chico-v2.nx-app .ct-honor-board{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.chico-v2.nx-app .ct-honor-group{--honor:#7cdaa8;min-width:0;position:relative;isolation:isolate;overflow:hidden;padding:14px;border-radius:14px;border:1px solid color-mix(in srgb,var(--honor) 35%,#65728733);background:radial-gradient(ellipse at 50% 0%,color-mix(in srgb,var(--honor) 12%,transparent),transparent 70%),#0d151f}
+.chico-v2.nx-app .ct-honor-mods{--honor:#c2a0f5}
+.chico-v2.nx-app .ct-honor-group h3{display:flex;align-items:center;gap:8px;direction:ltr;margin:0 0 17px;font-size:15px;color:var(--honor)}
+.chico-v2.nx-app .ct-honor-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;align-items:end;direction:ltr}
+.chico-v2.nx-app .ct-honor-winner{--medal:#bcc9d5;position:relative;isolation:isolate;overflow:hidden;text-align:center;display:flex;flex-direction:column;justify-content:end;align-items:center;gap:5px;min-width:0;min-height:190px;padding:13px 5px 10px;background:linear-gradient(150deg,#364153,#161f2a 44%,#0b131d);border:1px solid #a3b9d04d;border-top-color:var(--medal);border-radius:12px;box-shadow:0 13px 20px #0005;animation:ct-honor-rise .8s cubic-bezier(.17,.82,.26,1) both}
+.chico-v2.nx-app .ct-honor-winner.ct-place-1{--medal:#f2cb7c;min-height:212px;box-shadow:0 0 24px #e5bd6828,0 12px 24px #0007}
+.chico-v2.nx-app .ct-honor-winner.ct-place-2{animation-delay:150ms}
+.chico-v2.nx-app .ct-honor-winner.ct-place-3{--medal:#d8a479;animation-delay:290ms}
+.chico-v2.nx-app .ct-honor-rays{position:absolute;inset:-40%;z-index:-1;pointer-events:none;background:conic-gradient(from 0deg,transparent 12%,color-mix(in srgb,var(--medal) 18%,transparent),transparent 25%,transparent 70%,#e4f0ff16,transparent 83%);animation:ct-honor-sweep 12s linear infinite}
+.chico-v2.nx-app .ct-honor-medal{display:grid;place-items:center;position:relative;gap:0;color:var(--medal);padding:5px;min-width:42px;animation:ct-medal-reveal .9s cubic-bezier(.12,.8,.24,1) both}
+.chico-v2.nx-app .ct-honor-medal b{font-size:15px;font-variant-numeric:tabular-nums}
+.chico-v2.nx-app .ct-honor-winner .v8-insignia{width:46px;height:50px}
+.chico-v2.nx-app .ct-honor-winner>strong{font-size:13px;overflow-wrap:anywhere;max-width:100%}
+.chico-v2.nx-app .ct-honor-winner>span:not(.ct-honor-medal):not(.v8-insignia),.chico-v2.nx-app .ct-honor-winner>small{font-size:10px;color:var(--ct-muted)}
+.chico-v2.nx-app .ct-honor-value{font-size:clamp(17px,2vw,26px);color:var(--medal);font-variant-numeric:tabular-nums}
+.chico-v2.nx-app .ct-experience-caption{margin:0;color:var(--ct-muted);font-size:11px;line-height:1.8}
+.chico-v2.nx-app .ct-insight-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.chico-v2.nx-app .ct-insight-metrics article{display:flex;align-items:center;gap:8px;min-width:0;padding:13px 10px;background:var(--ct-inset);border:1px solid var(--ct-edge);border-radius:10px;animation:ct-honor-rise .55s both}
+.chico-v2.nx-app .ct-insight-metrics article:nth-child(2){animation-delay:70ms}.chico-v2.nx-app .ct-insight-metrics article:nth-child(3){animation-delay:140ms}.chico-v2.nx-app .ct-insight-metrics article:nth-child(4){animation-delay:210ms}
+.chico-v2.nx-app .ct-insight-metrics .v8-symbol{width:33px;height:33px;min-width:33px;color:var(--ct-gold)}
+.chico-v2.nx-app .ct-insight-metrics article div{min-width:0;display:grid;gap:4px}
+.chico-v2.nx-app .ct-insight-metrics small{font-size:10px;color:var(--ct-muted)}
+.chico-v2.nx-app .ct-insight-metrics strong{font-size:clamp(16px,2vw,25px);font-variant-numeric:tabular-nums;overflow-wrap:anywhere;direction:ltr;text-align:right}
+.chico-v2.nx-app .ct-insight-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.chico-v2.nx-app .ct-insight-grid p,.chico-v2.nx-app .ct-insight-grid details{font-size:12px;color:var(--ct-muted);line-height:1.8;overflow-wrap:anywhere}
+.chico-v2.nx-app .ct-insight-grid summary{color:#edcf99;cursor:pointer}
+.chico-v2.nx-app .ct-coverage-track{height:8px;border:1px solid #95a7bd32;background:#060c13;border-radius:8px;overflow:hidden}
+.chico-v2.nx-app .ct-coverage-track i{display:block;height:100%;background:linear-gradient(90deg,#8e6839,#f2d49c);transform-origin:right;animation:ct-coverage-fill .8s ease-out both}
+.chico-v2.nx-app .ct-comparison-value{display:block;text-align:right;font-size:25px;color:#efd29c}
+.chico-v2.nx-app .ct-insight-list article{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #aabbd01c;font-size:12px}
+.chico-v2.nx-app .ct-insight-list article>div{display:grid;gap:3px;min-width:0;overflow-wrap:anywhere}
+.chico-v2.nx-app .ct-insight-list small{color:var(--ct-muted);font-size:10px;text-align:right}
+.chico-v2.nx-app .ct-insight-list article>strong{color:#efd29c}
+.chico-v2.nx-app .ct-insight-list article>span:last-child{color:var(--ct-muted)}
+@keyframes ct-honor-rise{from{opacity:0;transform:translateY(19px) scale(.96)}to{opacity:1;transform:none}}
+@keyframes ct-medal-reveal{from{opacity:0;transform:perspective(450px) rotateY(-145deg) scale(.65)}to{opacity:1;transform:none}}
+@keyframes ct-honor-sweep{to{transform:rotate(360deg)}}
+@keyframes ct-honor-ambient{50%{transform:translateY(-5px);box-shadow:0 0 0 11px #d6ad690b,0 0 44px #e2b86735}}
+@keyframes ct-coverage-fill{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@media(max-width:1050px){.chico-v2.nx-app .ct-honor-board{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:680px){.chico-v2.nx-app .ct-insight-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.chico-v2.nx-app .ct-insight-grid{grid-template-columns:1fr}.chico-v2.nx-app .ct-honor-group{padding:10px}.chico-v2.nx-app .ct-honor-winner{min-height:167px;padding:8px 3px}.chico-v2.nx-app .ct-honor-winner.ct-place-1{min-height:185px}.chico-v2.nx-app .ct-honor-winner .v8-insignia{width:35px;height:40px}.chico-v2.nx-app .ct-insight-list article{grid-template-columns:auto minmax(0,1fr) auto;gap:6px}.chico-v2.nx-app .ct-insight-list article>span:last-child{grid-column:3}.chico-v2.nx-app .ct-experience-controls{width:100%}.chico-v2.nx-app .ct-experience-controls label{min-width:0;flex:1}.chico-v2.nx-app .ct-experience-empty{min-height:250px}}
+@media(prefers-reduced-motion:reduce){.chico-v2.nx-app :is(.ct-honor-winner,.ct-honor-medal,.ct-honor-rays,.ct-empty-emblem,.ct-insight-metrics article,.ct-coverage-track i){animation:none!important}}
