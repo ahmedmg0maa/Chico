@@ -12,7 +12,6 @@ import type {Admin,Reading,State,Rank} from '@/lib/types';
 import ExecutiveOperations from './ExecutiveOperations';
 import ExecutiveTeamStudio from './ExecutiveTeamStudio';
 import ExecutiveOperationsWorkspace from './ExecutiveOperationsWorkspace';
-import ExecutiveWeeklyChart from './ExecutiveWeeklyChart';
 import ExecutiveProfile from './ExecutiveProfile';
 import DashboardWeekNotice from './DashboardWeekNotice';
 import {NexusDock,NexusStage} from '../nexus/NexusShell';
@@ -166,10 +165,10 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
  const alerts=review?[]:warnings.filter(r=>r.lastUpdate!==null||r.flagsIncomplete).slice(0,3).map(r=>({label:r.name,desc:r.flagsIncomplete?'رصيد Flags السابق غير معروف':r.flags!==null&&r.flags>7?'Flags مرتفعة — '+r.flags:r.rating!==null&&r.rating<4.8?'التقييم '+pretty(r.rating,'rating'):'تحتاج مراجعة',severity:'warning'}));
  // NEXUS: four core measures; Flag Rate and Team Coverage remain separate in the command stage.
  const kpis=[
-  {title:'تذاكر الأسبوع',english:'Weekly Tickets',value:pretty(totals.tickets),glyph:'tickets' as const,tone:'gold'},
-  {title:'الفلاجات',english:'Weekly Flags',value:pretty(totals.flags),glyph:'flags' as const,tone:'ruby'},
-  {title:'التقييم',english:'Rating',value:pretty(totals.rating,'rating'),glyph:'rating' as const,tone:'amber'},
-  {title:'الساعات',english:'Time',value:pretty(review?null:summary?.hours),glyph:'shift' as const,tone:'emerald'}
+  {title:'تذاكر الأسبوع',english:'Weekly Tickets',value:pretty(totals.tickets),glyph:'tickets' as const,tone:'violet'},
+  {title:'الفلاجات',english:'Weekly Flags',value:pretty(totals.flags),glyph:'flags' as const,tone:'amethyst'},
+  {title:'التقييم',english:'Rating',value:pretty(totals.rating,'rating'),glyph:'rating' as const,tone:'gold'},
+  {title:'الساعات',english:'Time',value:pretty(review?null:summary?.hours),glyph:'shift' as const,tone:'ice'}
  ];
  const isLogin=(auth!=='in')||previewLogin;
  if(isLogin)return <div className={'chico-v2 nx-app x-auth-scene '+(light?'x-light':'')} dir="rtl">
@@ -225,8 +224,8 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
      {error&&<div className="x-error"><AlertTriangle size={17}/>{error}<button onClick={()=>void refresh()}>إعادة المحاولة</button></div>}
      {notice&&<div className="x-inline-notice"><Shield size={18}/>{notice}<button onClick={()=>setNotice('')}><X size={17}/></button></div>}
      {tab==='dashboard'&&<>
-      <NexusStage week={timeLabel} rate={totals.rate} coverage={totals.coverage} active={active} roles={roleCounts} helpers={top} moderators={moderatorTop} onTeam={()=>open('team')} onRead={()=>open('daily')} onRecord={()=>open('updates')} onOpen={id=>{const member=rows.find(r=>r.id===id);if(member){open('team');setFocused(member);}}}>
-      <div className="x-kpi-grid v8-kpi-grid">{kpis.map(({title,english,value,glyph,tone},index)=><div className={'x-kpi v8-kpi x-tone-'+tone} key={title} style={{animationDelay:(index*45)+'ms'}}><div className="x-kpi-title"><CommandIcon name={glyph}/><div><b>{title}</b><small>{english}</small></div></div><strong>{value}</strong><span>{review?'لا توجد قراءات بعد': 'الأسبوع الحالي'}</span><i className="v8-kpi-line"/></div>)}</div>
+      <NexusStage week={timeLabel} rate={totals.rate} coverage={totals.coverage} active={active} roles={roleCounts} helpers={top} moderators={moderatorTop} readings={review?[]:currentEligible} onTeam={()=>open('team')} onRead={()=>open('daily')} onRecord={()=>open('updates')} onOpen={id=>{const member=rows.find(r=>r.id===id);if(member){open('team');setFocused(member);}}}>
+      <div className="x-kpi-grid v8-kpi-grid">{kpis.map(({title,english,value,glyph,tone},index)=><div className={'x-kpi v8-kpi x-tone-'+tone} key={title} style={{animationDelay:(index*45)+'ms'}}><div className="x-kpi-title"><CommandIcon name={glyph}/><div><b>{title}</b><small>{english}</small></div></div><strong>{value}</strong><span>{value==='—'?'غير مسجل': 'الأسبوع الحالي'}</span><i className="v8-kpi-line"/></div>)}</div>
       </NexusStage>
       {!review&&state&&!hasRegisteredWeek&&<DashboardWeekNotice currentWeek={summary?.week_start??'—'} previous={previousWeek} onReadReports={()=>{open('daily');if(previousWeek)setRequestedReportPeriod({from:previousWeek.from,to:previousWeek.to});}} onRecord={()=>open('updates')}/>}
 
@@ -247,7 +246,6 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
        </section>
       </div>
       <div className="v7-bottom-dashboard">
-        <ExecutiveWeeklyChart readings={review?[]:state?eligibleReadings(state.readings,state.admins):[]}/>
        <section className="x-panel x-quick"><CardTitle icon={Workflow} title="إجراءات سريعة" en="QUICK ACTIONS"/>
         <div className="x-action-grid">{[
           {label:'تسجيل تحديث',icon:Plus,id:'updates' as Tab},{label:'مساحة العمليات',icon:Workflow,id:'operations' as Tab},
@@ -265,7 +263,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
       </section>
      </>}
      {tab==='team'&&<>
-       <section className="v7-team-hero"><img src="/assets/chico-illustrated-team.avif" alt=""/><div><small>CHICO / EXECUTIVE TEAM MANAGEMENT</small><h1>إدارة الفريق والإداريين</h1><p>تحكم كامل في بيانات الفريق، رتب الإداريين، المناوبات، وسجلاتهم</p></div></section>
+       <section className="nx-workspace-heading"><div><p className="nx-eyebrow">CHICO NEXUS / STAFF</p><h1>إدارة الفريق</h1></div><span className="nx-workspace-symbol"><CommandIcon name="team"/></span></section>
        <ExecutiveTeamStudio admins={review?reviewAdmins:state?.admins||[]} rows={rows} review={review} searchQuery={filter} onRefresh={refresh}
         onPreviewChange={updateReviewAdmins} onOpen={setFocused} editTarget={editTarget} light={light} onEditConsumed={()=>setEditTarget(null)}/>
        {focused&&<ExecutiveProfile member={focused} readings={review?[]:state?.readings||[]} admins={review?reviewAdmins:state?.admins||[]} review={review} light={light} mark={<RankMark rank={focused.rank}/>}
