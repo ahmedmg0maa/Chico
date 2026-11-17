@@ -9,10 +9,12 @@ import {
   Ticket,TrendingUp,Trophy,Users,UserRound,Workflow,X
 } from 'lucide-react';
 import type {Admin,Reading,State,Rank} from '@/lib/types';
-import ExecutiveOperations from './ExecutiveOperations';
-import ExecutiveTeamStudio from './ExecutiveTeamStudio';
-import ExecutiveOperationsWorkspace from './ExecutiveOperationsWorkspace';
-import ExecutiveProfile from './ExecutiveProfile';
+import dynamic from 'next/dynamic';
+const WorkspaceLoading=()=> <div className="ct-workspace-loading" role="status">جاري تحميل القسم…</div>;
+const ExecutiveOperations=dynamic(()=>import('./ExecutiveOperations'),{loading:WorkspaceLoading});
+const ExecutiveTeamStudio=dynamic(()=>import('./ExecutiveTeamStudio'),{loading:WorkspaceLoading});
+const ExecutiveOperationsWorkspace=dynamic(()=>import('./ExecutiveOperationsWorkspace'),{loading:WorkspaceLoading});
+const ExecutiveProfile=dynamic(()=>import('./ExecutiveProfile'),{loading:WorkspaceLoading});
 import DashboardWeekNotice from './DashboardWeekNotice';
 import {NexusDock,NexusStage} from '../nexus/NexusShell';
 import {previousRecordedWeek} from '@/lib/dashboard-history';
