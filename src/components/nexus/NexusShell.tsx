@@ -1,9 +1,10 @@
 'use client';
 
 import {useEffect,useState} from 'react';
+import ExecutiveWeeklyChart from '../v2/ExecutiveWeeklyChart';
 import {CommandIcon,RankInsignia} from '../v2/ChicoVisualLanguage';
 import type {Tab} from '../v2/ExecutiveCommand';
-import type {Rank} from '@/lib/types';
+import type {Rank,Reading} from '@/lib/types';
 
 export const NEXUS_DESTINATIONS=[
  {id:'dashboard',label:'القيادة'},
@@ -39,7 +40,7 @@ export function NexusDock({tab,onNavigate,onMore,menuOpen}:{tab:Tab;onNavigate:(
   <nav id="nexus-spatial-dock" className="nx-dock" aria-label="شريط التنقل الرئيسي" hidden={collapsed}>
    {NEXUS_DESTINATIONS.slice(0,3).map(item)}
    <button type="button" className={'nx-dock-core '+(menuOpen?'is-active':'')} onClick={onMore} aria-label="كل أقسام الموقع" aria-expanded={menuOpen} aria-controls="chico-main-navigation" title="كل الأقسام">
-    <img src="/assets/chico-approved-wolf.avif" alt="" width={40} height={40}/><span>الأقسام</span>
+    <img src="/assets/chico-nexus-wolf-sculpture.svg" alt="" width={40} height={40}/><span>الأقسام</span>
    </button>
    {NEXUS_DESTINATIONS.slice(3).map((r,i)=>item(r,i+3))}
   </nav>
@@ -53,38 +54,44 @@ const display=(n:number|null|undefined)=>n===null||n===undefined||!Number.isFini
 function Podium({title,leaders,onOpen,onTeam,variant}:{title:string;leaders:Leader[];onOpen:(id:string)=>void;onTeam:()=>void;variant:'helpers'|'mods'}){
  return <section className={'nx-glass nx-podium nx-podium--'+variant} aria-label={title}>
   <div className="nx-panel-title"><h2>{title}</h2><button type="button" className="nx-link" onClick={onTeam}>الفريق <span aria-hidden="true">↗</span></button></div>
-  {leaders.length?<div className="nx-podium-grid">{[1,0,2].filter(i=>leaders[i]).map(i=>{
+  <div className="nx-podium-grid">{[1,0,2].map(i=>{
    const r=leaders[i];
+   if(!r)return <div className={'nx-podium-person nx-podium-vacant nx-position-'+(i+1)} key={'empty-'+i} aria-label={'المركز '+(i+1)+' غير محدد'}><span className="nx-podium-medal">{String(i+1).padStart(2,'0')}</span><span className="nx-vacant-crest" aria-hidden="true"><svg viewBox="0 0 40 44" fill="none"><path d="M20 2 36 8v17c0 7-7 12-16 17C11 37 4 32 4 25V8Z" stroke="currentColor" strokeWidth="1.2"/><path d="M15 22h10" stroke="currentColor" strokeWidth="1.5"/></svg></span><b>—</b><small>غير محدد</small></div>;
    return <button type="button" className={'nx-podium-person nx-position-'+(i+1)} key={r.id} onClick={()=>onOpen(r.id)}>
     <span className="nx-podium-medal" aria-label={'المركز '+(i+1)}>{String(i+1).padStart(2,'0')}</span>
     <RankInsignia rank={r.rank}/><b dir="auto" title={r.name}>{r.name}</b>
     <strong>{display(r.tickets)}</strong><small>Tickets</small>
    </button>;
-  })}</div>:<div className="nx-no-ranking"><CommandIcon name="rating" compact/><span>لا يوجد ترتيب مسجّل</span></div>}
+  })}</div>
+  {!leaders.length&&<div className="nx-podium-note">بانتظار أول تقرير</div>}
  </section>;
 }
 
-export function NexusStage({week,rate,coverage,active,roles,helpers,moderators,onTeam,onRead,onRecord,onOpen,children}:{week:string;rate:number|null;coverage:number|null;active:number;roles:RoleCount[];helpers:Leader[];moderators:Leader[];onTeam:()=>void;onRead:()=>void;onRecord:()=>void;onOpen:(id:string)=>void;children?:React.ReactNode}){
+export function NexusStage({week,rate,coverage,active,roles,helpers,moderators,onTeam,onRead,onRecord,onOpen,readings,children}:{week:string;rate:number|null;coverage:number|null;active:number;roles:RoleCount[];helpers:Leader[];moderators:Leader[];onTeam:()=>void;onRead:()=>void;onRecord:()=>void;onOpen:(id:string)=>void;readings:Reading[];children?:React.ReactNode}){
  return <section className="nx-stage" aria-label="مركز قيادة CHICO">
   <div className="nx-stage-head"><div><p className="nx-eyebrow">CHICO NEXUS / COMMAND CENTER</p><h1>مركز القيادة</h1><span className="nx-stage-week"><span className="nx-tiny-dot"/> <bdi>{week}</bdi></span></div>
    <button type="button" className="nx-button nx-primary" onClick={onRecord}><CommandIcon compact name="updates"/> تسجيل قراءة</button></div>
-  {children}
+  <div className="nx-command-rail">
+   {children}
+   <section className="nx-glass nx-rate-card" aria-label="معدل الفلاجات الأسبوعي"><div className="nx-panel-title"><h2>Weekly Flag %</h2></div>
+    <div className={'nx-ring '+(rate===null?'nx-ring-unrecorded':'')} style={{'--nx-progress':Math.min(100,Math.max(0,rate??0))+'%'} as React.CSSProperties} aria-label={rate===null?'لا تتوفر نسبة الفلاجات':display(rate)+'%'}><div className="nx-ring-inner"><strong>{rate===null?'—':display(rate)+'%'}</strong><small>{rate===null?'غير مسجل':'الأسبوع الحالي'}</small></div></div>
+   </section>
+  </div>
   <div className="nx-stage-grid">
    <div className="nx-stage-side nx-stage-team">
-    <section className="nx-glass nx-rate-card"><div className="nx-panel-title"><h2>Weekly Flag %</h2><CommandIcon name="rate" compact/></div>
-     <div className="nx-ring" style={{'--nx-progress':Math.min(100,Math.max(0,rate??0))+'%'} as React.CSSProperties} aria-label={rate===null?'لا تتوفر نسبة الفلاجات':display(rate)+'%'}>
-      <div className="nx-ring-inner"><strong>{rate===null?'—':display(rate)+'%'}</strong><small>{rate===null?'لا توجد بيانات':'الأسبوع الحالي'}</small></div>
-     </div>
-    </section>
     <section className="nx-glass nx-role-card"><div className="nx-panel-title"><h2>الفريق</h2><button type="button" className="nx-link" onClick={onTeam}>إدارة <span aria-hidden="true">↗</span></button></div>
      <div className="nx-active-total"><strong>{active}</strong><span>إداري نشط</span></div>
      <div className="nx-role-list">{roles.map(r=><div key={r.kind} className={'nx-role nx-role--'+r.kind}><i/><span>{r.label}</span><b>{r.count}</b></div>)}</div>
+     {active>roles.reduce((sum,r)=>sum+r.count,0)&&<div className="nx-other-roles"><span>القيادة والإدارة</span><b>{active-roles.reduce((sum,r)=>sum+r.count,0)}</b></div>}
      <div className="nx-coverage">تغطية التقييم <b>{coverage===null?'—':display(coverage)+'%'}</b></div>
     </section>
+    <ExecutiveWeeklyChart readings={readings} compact/>
    </div>
    <div className="nx-wolf-stage">
     <div className="nx-orbit nx-orbit-outer" aria-hidden="true"/><div className="nx-orbit nx-orbit-inner" aria-hidden="true"/>
     <div className="nx-wolf-halo" aria-hidden="true"/>
+    <div className="nx-stage-beam" aria-hidden="true"/>
+    <div className="nx-stage-rim" aria-hidden="true"/>
     <img className="nx-stage-wolf" src="/assets/chico-nexus-wolf-sculpture.svg" alt="ذئب NEXUS المعدني، مستوحى من هوية CHICO" width={360} height={380} decoding="async"/>
     <div className="nx-wolf-plinth" aria-hidden="true"><span/><i/></div>
     <div className="nx-stage-brand"><b>CHICO TEAM <em>1.0</em></b><small>N E X U S</small></div>
