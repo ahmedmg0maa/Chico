@@ -6,7 +6,7 @@ export const runtime='nodejs';
 export const dynamic='force-dynamic';
 const CHUNK=1048576,MAX=50*CHUNK;
 const idSchema=z.string().uuid();
-const lesson=z.enum(['jail','mute']);
+const lesson=z.enum(['jail','jail-2','mute']);
 const start=z.object({action:z.literal('start'),lesson,mime:z.enum(['video/mp4','video/webm','video/quicktime']),size:z.number().int().min(1).max(MAX)});
 const finish=z.object({action:z.literal('finish'),id:idSchema});
 export async function GET(req:NextRequest){const denied=await requireOwner(req);if(denied)return denied;try{const rows=await db()`SELECT lesson,mime,total_bytes FROM chico_next.academy_media WHERE ready=true ORDER BY lesson`;return response({ok:true,items:rows});}catch(e){return failure(e);}}
