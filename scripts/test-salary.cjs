@@ -8,3 +8,9 @@ assert.throws(()=>p.changeBonus(row,-1));assert.throws(()=>p.changeBonus(row,100
 const route=fs.readFileSync('src/app/api/salary/route.ts','utf8');assert.equal((route.match(/await requireOwner\(req\)/g)||[]).length,2);assert(route.includes('FOR UPDATE')&&route.includes('SALARY_CONFLICT'));
 const sql=fs.readFileSync('db/007_salary_profiles.sql','utf8');assert(sql.includes('ENABLE ROW LEVEL SECURITY')&&sql.includes('FROM PUBLIC, anon, authenticated'));
 console.log('PASS salary: exact copy, manual bonus ×1/×2/×3, removal clears amount, input validation, owner guards, revision conflict and private table.');
+
+const page=fs.readFileSync('src/components/v2/ExecutiveCommand.tsx','utf8'),ui=fs.readFileSync('src/components/v2/SalaryCenter.tsx','utf8'),exp=fs.readFileSync('src/app/api/salary/export/route.ts','utf8');
+assert(page.includes("items:['salary']")&&page.includes("tab==='salary'&&<SalaryCenter"));
+assert(ui.includes('Copy All')&&ui.includes("copyField(row.client_id,'Client ID')")&&ui.includes('Hide All IDs')&&!ui.includes('30 hours'));
+assert(exp.includes('await requireOwner(req)')&&exp.includes('LEFT JOIN chico_next.salary_profiles')&&exp.includes('private, no-store')&&exp.includes("numFmt='@'"));
+console.log('PASS standalone salary route, visible IDs, field copy, owner-only XLSX and removed hour condition.');
