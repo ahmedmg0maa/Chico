@@ -1,7 +1,7 @@
 -- Private bounded training clips; no public bucket or anonymous reads.
 CREATE TABLE IF NOT EXISTS chico_next.academy_media (
  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
- lesson text NOT NULL CHECK(lesson IN ('jail','mute')),
+ lesson text NOT NULL CHECK(lesson IN ('jail','jail-2','mute')),
  mime text NOT NULL CHECK(mime IN ('video/mp4','video/webm','video/quicktime')),
  total_bytes integer NOT NULL CHECK(total_bytes BETWEEN 1 AND 52428800),
  ready boolean NOT NULL DEFAULT false,
