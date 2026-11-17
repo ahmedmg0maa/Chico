@@ -197,3 +197,28 @@
 }
 @media(max-width:370px){.chico-v2.nx-app .nx-stage-team{grid-template-columns:1fr}.chico-v2.nx-app .nx-dock-item{font-size:8px}.chico-v2.nx-app .nx-stage-wolf{width:min(68%,190px)}}
 @media(prefers-reduced-motion:reduce){.chico-v2.nx-app .nx-stage *,.chico-v2.nx-app .nx-dock *{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+/* The official emblem stays in the masthead; the central sculpture is transparent original vector artwork. */
+.chico-v2.nx-app .nx-stage-wolf{width:min(89%,285px);aspect-ratio:360/380;margin:0 auto -8px;filter:drop-shadow(0 14px 16px #0009) drop-shadow(0 0 10px #b9c9e419)}
+.chico-v2.nx-app .nx-wolf-stage{min-height:370px}
+.chico-v2.nx-app .x-review-ribbon{pointer-events:none;position:relative;inset:auto;margin:0;min-height:24px;padding:4px 8px;font-size:10px;text-align:center;background:#252b34;color:#e5c58c;border-bottom:1px solid #ad936642}
+.chico-v2.nx-app .x-status{max-width:180px}
+@media(min-width:1061px) and (max-height:950px){
+ .chico-v2.nx-app .nx-stage{padding:21px}
+ .chico-v2.nx-app .nx-stage-head{margin-bottom:13px}
+ .chico-v2.nx-app .nx-stage-wolf{width:min(87%,252px)}
+ .chico-v2.nx-app .nx-wolf-stage{min-height:342px}
+ .chico-v2.nx-app .nx-stage-grid{gap:15px}
+ .chico-v2.nx-app .nx-stage-side{gap:9px}
+ .chico-v2.nx-app .nx-ring{width:min(118px,100%)}
+ .chico-v2.nx-app .nx-no-ranking{min-height:95px}
+ .chico-v2.nx-app .nx-stage .x-kpi.v8-kpi{min-height:110px;padding:12px 15px}
+}
+@media(max-width:1060px){
+ .chico-v2.nx-app .nx-stage-wolf{width:min(76%,224px)}
+ .chico-v2.nx-app .nx-wolf-stage{min-height:310px}
+}
+@media(max-width:640px){
+ .chico-v2.nx-app .nx-stage-wolf{width:min(76%,200px)}
+ .chico-v2.nx-app .nx-wolf-stage{min-height:290px}
+}
