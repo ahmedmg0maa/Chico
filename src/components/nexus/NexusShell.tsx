@@ -67,7 +67,7 @@ function Podium({title,leaders,onOpen,onTeam,variant}:{title:string;leaders:Lead
  </section>;
 }
 
-function WolfStage(){
+export function WolfStage(){
  const ref=useRef<HTMLDivElement>(null);
  const frame=useRef(0);
  useEffect(()=>()=>cancelAnimationFrame(frame.current),[]);
