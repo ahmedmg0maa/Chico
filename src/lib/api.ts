@@ -18,7 +18,7 @@ export function failure(error:unknown){
  const config=raw.includes('NOT_CONFIGURED')||raw.includes('does not exist')||
    raw.includes('ENOTFOUND')||raw.includes('ECONNREFUSED')||raw.includes('password authentication failed');
  const known=conflict.has(code)||invalid.has(code);
- if(!known)console.error('[CHICO_API]',config?'Configuration or database unavailable':code);
+ if(!known)console.error('[CHICO_API]',config?'SERVICE_NOT_READY':'INTERNAL_ERROR');
  const safe=known?code:config?'SERVICE_NOT_READY':'INTERNAL_ERROR';
  const status=conflict.has(code)?409:invalid.has(code)?422:config?503:500;
  return response({ok:false,error:safe},status);
