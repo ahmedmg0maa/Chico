@@ -66,11 +66,11 @@ function RankMark({rank}:{rank:Rank}){return <RankInsignia rank={rank} compact/>
 function statusFor(r:Row){return !r.active?'غير نشط':(r.rating!==null&&r.rating<4.8)||(r.flags!==null&&r.flags>7)?'متابعة':r.flagsIncomplete?'رصيد Flags غير مكتمل':!r.lastUpdate?'بلا تحديث':'نشط';}
 function CardTitle({icon:Icon,title,en,action}:{icon:typeof Home;title:string;en:string;action?:React.ReactNode}){
  const symbol=en.includes('ALERT')?'alerts':en.includes('PERIOD')?'updates':en.includes('PERFORMER')?'team':en.includes('TEAM')?'team':en.includes('STATUS')?'members':'operations';
- return <div className="x-card-title"><div className="x-section-heading"><CommandIcon compact name={symbol}/><span>{title}</span><small>{en}</small></div>{action}</div>;
+ return <div className="x-card-title"><div className="x-section-heading"><CommandIcon compact name={symbol}/><span>{title}</span></div>{action}</div>;
 }
 function Brand({small=false}:{small?:boolean}){return <div className={'x-brand '+(small?'x-brand-small':'')}>
  <div className="x-brand-wolf"><img src="/assets/chico-approved-wolf.avif" alt="شعار الذئب الرسمي لفريق CHICO"/></div>
- <div className="x-brand-words"><b>CHICO</b><small>G E N E R A L &nbsp; T E A M</small></div>
+ <div className="x-brand-words"><b>CHICO TEAM</b></div>
  </div>;}
 
 export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{review?:boolean;initialTab?:Tab}){
@@ -99,12 +99,10 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
  },[review]);
  const updateReviewAdmins=(next:Admin[])=>{setReviewAdmins(next);setFocused(null);try{localStorage.setItem('chico-approved-roster-local-v1',JSON.stringify(next));}catch{}};
  const [tab,setTab]=useState<Tab>(initialTab);
- const [light,setLight]=useState(false);
+ const light=false;
  const [editTarget,setEditTarget]=useState<string|null>(null);
  const [readingTarget,setReadingTarget]=useState<string|null>(null);
  const [requestedReportPeriod,setRequestedReportPeriod]=useState<{from:string;to:string}|null>(null);
- const switchAppearance=()=>setLight(current=>{const next=!current;try{localStorage.setItem('chico-ui-theme',next?'light':'dark');}catch{}return next;});
- useEffect(()=>{try{setLight(localStorage.getItem('chico-ui-theme')==='light');}catch{}},[]);
  useEffect(()=>{const valid=links.map(l=>l.id);const initial=new URLSearchParams(window.location.search).get('tab') as Tab|null;if(initial&&valid.includes(initial))setTab(initial);},[]);
  const [menu,setMenu]=useState(false);
  // NEXUS uses a transient overlay, never a permanently expanded sidebar.
@@ -173,11 +171,11 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
  const isLogin=(auth!=='in')||previewLogin;
  if(isLogin)return <div className={'chico-v2 nx-app x-auth-scene '+(light?'x-light':'')} dir="rtl">
   {review&&<div className="x-review-ribbon">معاينة أسماء الفريق المعتمدة · بدون إحصائيات</div>}
-  <div className="x-auth-frame"><div className="x-auth-art"><img className="x-auth-illustrated-banner" src="/assets/chico-illustrated-login.avif" alt="CHICO ME · بوابة قيادة الفريق" decoding="async"/><div className="x-auth-art-inner"><p>CHICO GENERAL TEAM</p><span>ONE STATE RP · ADMINISTRATION</span></div></div>
+  <div className="x-auth-frame"><div className="x-auth-art"><img className="x-auth-illustrated-banner" src="/assets/chico-illustrated-login.avif" alt="CHICO TEAM · بوابة قيادة الفريق" decoding="async"/><div className="x-auth-art-inner"><p>CHICO TEAM</p><span>ONE STATE RP · ADMINISTRATION</span></div></div>
    <div className="x-auth-form">
-    <div className="x-auth-mini"><span><span className="x-live-dot"/>PRIVATE ADMINISTRATION</span><button type="button" onClick={switchAppearance} aria-label={light?'تفعيل الوضع الداكن':'تفعيل الوضع الفاتح'} aria-pressed={light}>{light?<Moon size={17}/>:<Sun size={17}/>}</button></div>
+    <div className="x-auth-mini"><span><span className="x-live-dot"/>PRIVATE ADMINISTRATION</span></div>
     <div className="x-auth-icon"><LockKeyhole size={27}/></div>
-    <p className="x-kicker">SECURE ACCESS / CHICO</p><h1>بوابة القيادة</h1><p className="x-muted">لوحة الإدارة الرسمية لفريق CHICO General Team</p>
+    <p className="x-kicker">SECURE ACCESS / CHICO</p><h1>بوابة القيادة</h1><p className="x-muted">لوحة الإدارة الرسمية لفريق CHICO TEAM</p>
     {review?<div className="x-review-login"><p>معاينة شاشة الدخول — لا تُستخدم كلمات مرور في الوضع التجريبي.</p><button className="x-primary" onClick={()=>setPreviewLogin(false)}>الانتقال إلى مركز القيادة <ArrowLeft size={17}/></button></div>:
     <form onSubmit={login} className="x-auth-fields"><label htmlFor="v2-pass">كلمة مرور الإدارة</label><div className="x-input-shell"><KeyRound size={19}/><input id="v2-pass" type={reveal?'text':'password'} value={pass} onChange={e=>setPass(e.target.value)} placeholder="أدخل كلمة المرور" required autoComplete="current-password"/><button type="button" onClick={()=>setReveal(!reveal)}>{reveal?'إخفاء':'إظهار'}</button></div>
       {error&&<div className="x-error"><AlertTriangle size={17}/>{error}</div>}
@@ -188,50 +186,45 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
 
  return <div className={'chico-v2 nx-app '+(light?'x-light':'')} dir="rtl">
   <a className="v12-skip-link" href="#chico-main-content">تخطي إلى المحتوى الرئيسي</a>
-  {review&&<div className="x-review-ribbon">NEXUS PREVIEW · لا توجد إحصائيات مسجلة · الحفظ غير متصل بالإنتاج</div>}
+  {review&&<div className="x-review-ribbon">معاينة · بدون إحصائيات · لا حفظ في الإنتاج</div>}
   <div className={"x-layout "+(menu?"v10-nav-open":"v10-nav-closed")}>
    <aside id="chico-main-navigation" className={"x-sidebar "+(menu?"x-sidebar-open":"")} aria-label="القائمة الرئيسية" aria-hidden={!menu} inert={!menu}>
     <div className="v10-nav-head"><Brand small/><button type="button" className="v10-nav-close" onClick={closeMenu} title="إغلاق القائمة" aria-label="إغلاق القائمة"><X size={19}/></button></div>
-    <div className="x-sidebar-caption">ONE STATE RP · CHICO ME</div>
+    
     <nav className="v12-nav" aria-label="أقسام الإدارة">{navigationGroups.map(group=>
       <section className="v12-nav-group" aria-label={group.label} key={group.en}>
-       <div className="v12-nav-label"><span>{group.label}</span><small>{group.en}</small></div>
+       <div className="v12-nav-label"><span>{group.label}</span></div>
        {group.items.map(id=>{
         const item=links.find(link=>link.id===id);
         if(!item)return null;
         return <button type="button" key={id} className={'x-nav-link '+(tab===id?'x-nav-active':'')} onClick={()=>open(id)} aria-current={tab===id?'page':undefined}>
-         <NavGlyph tab={id}/><span><b>{item.label}</b><small>{item.en}</small></span>{tab===id?<i className="x-active-chevron"/>:null}
+         <NavGlyph tab={id}/><span><b>{item.label}</b></span>
         </button>;
        })}
       </section>
      )}</nav>
-    <div className="x-sidebar-footer"><span>ONE STATE RP</span><strong>CHICO ME</strong><small>PRIVATE MANAGEMENT</small></div>
+    <div className="x-sidebar-footer"><button type="button" onClick={()=>void logout()} aria-label="تسجيل الخروج"><LogOut size={18}/> تسجيل الخروج</button></div>
    </aside>
    {menu&&<button className="x-mobile-scrim" aria-label="إغلاق القائمة" onClick={closeMenu}/>}
    <main className="x-body">
-    <header className="x-topbar">
-     <div className="x-top-group"><div className="nx-top-brand"><img src="/assets/chico-approved-wolf.avif" alt="" width={38} height={38}/><div><b>CHICO TEAM 1.0</b><small>NEXUS</small></div></div><button type="button" className="x-icon x-burger v10-hamburger" onClick={toggleMenu} aria-label={menu?"إغلاق القائمة":"فتح القائمة"} aria-expanded={menu} aria-controls="chico-main-navigation" title={menu?"إغلاق القائمة":"فتح القائمة"}>{menu?<X size={22}/>:<Menu size={22}/>}<span>القائمة</span></button>
-      <div className="x-status"><span className="x-live-dot"/>{review?'وضع المعاينة':state?'البيانات محمّلة':'جاري تحميل البيانات'}</div><div className="x-breadcrumb">CHICO ME <ChevronLeft size={14}/> <b>{links.find(l=>l.id===tab)?.label}</b></div></div>
-     <div className="x-top-actions"><span className="x-date"><CalendarDays size={16}/>{timeLabel}</span>
-      <button className="x-icon" onClick={()=>setSearchOpen(!searchOpen)} aria-label="البحث"><Search size={20}/></button>
-      <button className="x-icon" onClick={()=>open('alerts')} aria-label="التنبيهات"><Bell size={19}/>{warnings.length>0&&<i className="x-notif-dot"/>}</button>
-      <button className="x-icon" onClick={switchAppearance} aria-label={light?'تفعيل الوضع الداكن':'تفعيل الوضع الفاتح'} aria-pressed={light}>{light?<Moon size={19}/>:<Sun size={19}/>}</button>
-      <button className="x-icon" onClick={()=>void refresh()} aria-label="تحديث البيانات"><RefreshCw size={18}/></button>
-      <button className="x-user-button" onClick={()=>void logout()} title="الخروج" aria-label="تسجيل الخروج من CHICO"><div className="x-user-avatar"><Shield size={20}/></div><span>CHICO Leader <small>Team Director</small></span><LogOut size={16}/></button></div>
+    <header className="x-topbar ct-topbar">
+     <div className="ct-top-start"><button type="button" className="ct-icon-button v10-hamburger" onClick={toggleMenu} aria-label={menu?'إغلاق القائمة':'فتح القائمة'} aria-expanded={menu} aria-controls="chico-main-navigation"><Menu size={22}/></button><button type="button" className="ct-brand" onClick={()=>open('dashboard')} aria-label="CHICO TEAM — مركز القيادة"><img src="/assets/chico-approved-wolf.avif" alt="" width={32} height={32}/><b>CHICO TEAM</b></button></div>
+     <span className="ct-page-title">{links.find(l=>l.id===tab)?.label}</span>
+     <div className="ct-top-actions"><button className="ct-icon-button" onClick={()=>setSearchOpen(!searchOpen)} aria-label="البحث"><Search size={19}/></button><button className="ct-icon-button" onClick={()=>open('alerts')} aria-label="التنبيهات"><Bell size={19}/>{warnings.length>0&&<i className="x-notif-dot"/>}</button>{!review&&<button className="ct-icon-button" onClick={()=>void refresh()} aria-label="تحديث البيانات"><RefreshCw size={17}/></button>}<button className="ct-icon-button" onClick={()=>void logout()} aria-label="تسجيل الخروج من CHICO"><LogOut size={18}/></button><span className="ct-connection" role="status" title={review?'معاينة':state?'البيانات محمّلة':'جاري تحميل البيانات'} data-ready={review||!!state}/></div>
     </header>
     {searchOpen&&<div className="x-command-search"><Search size={18}/><input autoFocus type="search" aria-label="البحث عن إداري" placeholder="ابحث عن إداري…" value={filter} onChange={e=>{setFilter(e.target.value);open('team');}}/><button onClick={()=>{setSearchOpen(false);setFilter('');}} aria-label="إغلاق البحث"><X size={17}/></button></div>}
-    <div id="chico-main-content" tabIndex={-1} className="x-main-content v7-app-content" key={tab}>
+    <div id="chico-main-content" tabIndex={-1} className="x-main-content v7-app-content ct-page-motion" key={tab}>
      {error&&<div className="x-error"><AlertTriangle size={17}/>{error}<button onClick={()=>void refresh()}>إعادة المحاولة</button></div>}
      {notice&&<div className="x-inline-notice"><Shield size={18}/>{notice}<button onClick={()=>setNotice('')}><X size={17}/></button></div>}
      {tab==='dashboard'&&<>
       <NexusStage week={timeLabel} rate={totals.rate} coverage={totals.coverage} active={active} roles={roleCounts} helpers={top} moderators={moderatorTop} readings={review?[]:currentEligible} onTeam={()=>open('team')} onRead={()=>open('daily')} onRecord={()=>open('updates')} onOpen={id=>{const member=rows.find(r=>r.id===id);if(member){open('team');setFocused(member);}}}>
-      <div className="x-kpi-grid v8-kpi-grid">{kpis.map(({title,english,value,glyph,tone},index)=><div className={'x-kpi v8-kpi x-tone-'+tone} key={title} style={{animationDelay:(index*45)+'ms'}}><div className="x-kpi-title"><CommandIcon name={glyph}/><div><b>{title}</b><small>{english}</small></div></div><strong>{value}</strong><span>{value==='—'?'غير مسجل': 'الأسبوع الحالي'}</span><i className="v8-kpi-line"/></div>)}</div>
+      <div className="x-kpi-grid v8-kpi-grid">{kpis.map(({title,english,value,glyph,tone},index)=><div className={'x-kpi v8-kpi x-tone-'+tone} key={title} style={{animationDelay:(index*45)+'ms'}}><div className="x-kpi-title"><CommandIcon name={glyph}/><div><b>{english.replace("Weekly ","")}</b></div></div><strong>{value}</strong><span>{value==='—'?'غير مسجل': 'الأسبوع الحالي'}</span><i className="v8-kpi-line"/></div>)}</div>
       </NexusStage>
       {!review&&state&&!hasRegisteredWeek&&<DashboardWeekNotice currentWeek={summary?.week_start??'—'} previous={previousWeek} onReadReports={()=>{open('daily');if(previousWeek)setRequestedReportPeriod({from:previousWeek.from,to:previousWeek.to});}} onRecord={()=>open('updates')}/>}
 
       <div className="x-triple">
        <section className="x-panel x-alerts-panel"><CardTitle icon={Bell} title="تنبيهات القيادة" en="LEADERSHIP ALERTS" action={<button className="x-text-action" onClick={()=>open('alerts')}>عرض الكل <ArrowLeft size={14}/></button>}/>
-        {alerts.length?alerts.map((a,i)=><button className={'x-alert x-alert-'+a.severity} key={i} onClick={()=>open('alerts')}><div><b>{a.label}</b><span>{a.desc}</span></div><AlertTriangle size={18}/></button>):<div className="x-empty"><CheckCircle2 size={24}/><b>لا توجد تنبيهات مسجلة</b><p>تنبيهات الأداء تظهر هنا تلقائيًا</p></div>}
+        {alerts.length?alerts.map((a,i)=><button className={'x-alert x-alert-'+a.severity} key={i} onClick={()=>open('alerts')}><div><b>{a.label}</b><span>{a.desc}</span></div><AlertTriangle size={18}/></button>):<div className="x-empty"><CheckCircle2 size={24}/><b>لا توجد تنبيهات مسجلة</b></div>}
        </section>
        <section className="x-panel x-chart-panel"><CardTitle icon={TrendingUp} title="القراءات حسب نطاق التغطية" en="RECORDED PERIODS"/>
         {intervalRows.length?<div className="x-period-list">
@@ -242,7 +235,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
            <strong>Flags: {pretty(r.flags_delta)}</strong>
           </div>)}
           <p>كل زيادة تخص فترة القراءة المعروضة؛ لا نوزّع الزيادة على أيام لم تُسجَّل فيها قراءات.</p>
-         </div>:<div className="x-empty"><Activity size={26}/><b>لا توجد قراءات مسجلة لهذا الأسبوع</b><p>ستظهر الفترة الحقيقية لكل قراءة بعد تسجيلها، دون أرقام افتراضية</p></div>}
+         </div>:<div className="x-empty"><Activity size={26}/><b>لا توجد قراءات مسجلة لهذا الأسبوع</b></div>}
        </section>
       </div>
       <div className="v7-bottom-dashboard">
@@ -263,7 +256,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
       </section>
      </>}
      {tab==='team'&&<>
-       <section className="nx-workspace-heading"><div><p className="nx-eyebrow">CHICO NEXUS / STAFF</p><h1>إدارة الفريق</h1></div><span className="nx-workspace-symbol"><CommandIcon name="team"/></span></section>
+       <section className="nx-workspace-heading"><div><h1>إدارة الفريق</h1></div><span className="nx-workspace-symbol"><CommandIcon name="team"/></span></section>
        <ExecutiveTeamStudio admins={review?reviewAdmins:state?.admins||[]} rows={rows} review={review} searchQuery={filter} onRefresh={refresh}
         onPreviewChange={updateReviewAdmins} onOpen={setFocused} editTarget={editTarget} light={light} onEditConsumed={()=>setEditTarget(null)}/>
        {focused&&<ExecutiveProfile member={focused} readings={review?[]:state?.readings||[]} admins={review?reviewAdmins:state?.admins||[]} review={review} light={light} mark={<RankMark rank={focused.rank}/>}
