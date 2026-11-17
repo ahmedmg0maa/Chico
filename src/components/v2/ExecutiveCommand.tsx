@@ -16,7 +16,7 @@ const ExecutiveTeamStudio=dynamic(()=>import('./ExecutiveTeamStudio'),{loading:W
 const ExecutiveOperationsWorkspace=dynamic(()=>import('./ExecutiveOperationsWorkspace'),{loading:WorkspaceLoading});
 const ExecutiveProfile=dynamic(()=>import('./ExecutiveProfile'),{loading:WorkspaceLoading});
 import DashboardWeekNotice from './DashboardWeekNotice';
-import {NexusDock,NexusStage} from '../nexus/NexusShell';
+import {NexusDock,NexusStage,WolfStage} from '../nexus/NexusShell';
 import {previousRecordedWeek} from '@/lib/dashboard-history';
 import {CommandIcon,RankInsignia,RankLabel} from './ChicoVisualLanguage';
 import {isEvaluatedRank,isEvaluatedAdmin,eligibleReadings} from '@/lib/rules';
@@ -171,20 +171,24 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
   {title:'الساعات',english:'Time',value:pretty(review?null:summary?.hours),glyph:'shift' as const,tone:'ice'}
  ];
  const isLogin=(auth!=='in')||previewLogin;
- if(isLogin)return <div className={'chico-v2 nx-app x-auth-scene '+(light?'x-light':'')} dir="rtl">
-  {review&&<div className="x-review-ribbon">معاينة أسماء الفريق المعتمدة · بدون إحصائيات</div>}
-  <div className="x-auth-frame"><div className="x-auth-art"><img className="x-auth-illustrated-banner" src="/assets/chico-illustrated-login.avif" alt="CHICO TEAM · بوابة قيادة الفريق" decoding="async"/><div className="x-auth-art-inner"><p>CHICO TEAM</p><span>ONE STATE RP · ADMINISTRATION</span></div></div>
-   <div className="x-auth-form">
-    <div className="x-auth-mini"><span><span className="x-live-dot"/>PRIVATE ADMINISTRATION</span></div>
-    <div className="x-auth-icon"><LockKeyhole size={27}/></div>
-    <p className="x-kicker">SECURE ACCESS / CHICO</p><h1>بوابة القيادة</h1><p className="x-muted">لوحة الإدارة الرسمية لفريق CHICO TEAM</p>
-    {review?<div className="x-review-login"><p>معاينة شاشة الدخول — لا تُستخدم كلمات مرور في الوضع التجريبي.</p><button className="x-primary" onClick={()=>setPreviewLogin(false)}>الانتقال إلى مركز القيادة <ArrowLeft size={17}/></button></div>:
-    <form onSubmit={login} className="x-auth-fields"><label htmlFor="v2-pass">كلمة مرور الإدارة</label><div className="x-input-shell"><KeyRound size={19}/><input id="v2-pass" type={reveal?'text':'password'} value={pass} onChange={e=>setPass(e.target.value)} placeholder="أدخل كلمة المرور" required autoComplete="current-password"/><button type="button" onClick={()=>setReveal(!reveal)}>{reveal?'إخفاء':'إظهار'}</button></div>
-      {error&&<div className="x-error"><AlertTriangle size={17}/>{error}</div>}
+ if(isLogin)return <div className="chico-v2 nx-app x-auth-scene ct-auth-signature" dir="rtl">
+  {review&&<div className="x-review-ribbon">معاينة شاشة الدخول · لا اتصال ببيانات الإنتاج</div>}
+  <header className="ct-auth-top"><div className="ct-auth-brand"><img src="/assets/chico-approved-wolf.avif" alt="" width={34} height={34}/><b>CHICO TEAM</b></div><span><Shield size={15}/> دخول الإدارة</span></header>
+  <main className="ct-auth-main">
+   <div className="nx-stage ct-auth-stage">
+    <div className="ct-auth-visual"><WolfStage/><div className="nx-stage-brand"><b>CHICO TEAM</b></div></div>
+    <section className="ct-auth-panel" aria-labelledby="ct-auth-title">
+     <div className="ct-auth-heading"><span className="ct-auth-lock"><LockKeyhole size={24}/></span><h1 id="ct-auth-title">بوابة القيادة</h1></div>
+     {review?<div className="x-review-login"><p>معاينة فقط — لا تحتاج إلى كلمة مرور.</p><button className="x-primary" onClick={()=>setPreviewLogin(false)}>الدخول إلى مركز القيادة <ArrowLeft size={17}/></button></div>:
+     <form onSubmit={login} className="x-auth-fields ct-auth-fields"><label htmlFor="v2-pass">كلمة مرور الإدارة</label><div className="x-input-shell"><KeyRound size={19}/><input id="v2-pass" type={reveal?'text':'password'} value={pass} onChange={e=>setPass(e.target.value)} placeholder="أدخل كلمة المرور" required autoComplete="current-password" aria-invalid={!!error}/><button type="button" onClick={()=>setReveal(!reveal)} aria-pressed={reveal}>{reveal?'إخفاء':'إظهار'}</button></div>
+      {error&&<div className="x-error" role="alert"><AlertTriangle size={17}/>{error}</div>}
       <button className="x-primary" disabled={working||auth==='checking'} type="submit">{working||auth==='checking'?'جارٍ التحقق…':'الدخول إلى مركز القيادة'} <ArrowLeft size={17}/></button>
-    </form>}
-    <div className="x-login-foot"><Shield size={17}/> ACCESS CONTROLLED · CHICO ME</div>
-   </div></div></div>;
+     </form>}
+     <div className="ct-auth-foot"><Shield size={15}/> وصول مخصص للإدارة</div>
+    </section>
+   </div>
+  </main>
+ </div>;
 
  return <div className={'chico-v2 nx-app '+(light?'x-light':'')} dir="rtl">
   <a className="v12-skip-link" href="#chico-main-content">تخطي إلى المحتوى الرئيسي</a>

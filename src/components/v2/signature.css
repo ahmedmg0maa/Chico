@@ -33,3 +33,29 @@
 @media(min-width:1061px) and (max-height:950px){.chico-v2.nx-app .ct-wolf-theater{height:303px}.chico-v2.nx-app .ct-wolf-float{width:min(78%,253px)}.chico-v2.nx-app .ct-theater-ring{width:min(96%,293px)}.chico-v2.nx-app .ct-ring-inner{width:min(84%,258px)}.chico-v2.nx-app .nx-wolf-stage{min-height:336px}}
 @media(max-width:760px){.chico-v2.nx-app .ct-wolf-theater{height:270px}.chico-v2.nx-app .ct-wolf-float{width:min(75%,219px);margin-top:-30px}.chico-v2.nx-app .ct-theater-ring{width:min(92%,255px)}.chico-v2.nx-app .ct-ring-inner{width:min(81%,223px)}.chico-v2.nx-app .ct-theater-platform{width:min(85%,260px);height:37px}.chico-v2.nx-app .ct-theater-orbit{width:min(97%,282px)}.chico-v2.nx-app .nx-wolf-stage{min-height:310px}}
 @media(prefers-reduced-motion:reduce){.chico-v2.nx-app .ct-wolf-theater *,.chico-v2.nx-app .nx-stage-side>.nx-glass,.chico-v2.nx-app .nx-stage-side>.nx-chart-compact,.chico-v2.nx-app .nx-command-rail .x-kpi,.chico-v2.nx-app .nx-command-rail .nx-rate-card{animation:none!important;transition:none!important}.chico-v2.nx-app .ct-wolf-parallax{transform:none!important}}
+
+/* Authentication is the first room of the same CHICO TEAM command center. */
+.chico-v2.nx-app.ct-auth-signature{display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;min-height:100dvh;padding:0;background:radial-gradient(ellipse at 50% -10%,#29344470,transparent 55%),#090e15;color-scheme:dark}
+.chico-v2.nx-app .ct-auth-top{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:54px;padding:8px clamp(14px,3vw,32px);background:#0e141def;border-bottom:1px solid #aebbd020;box-shadow:0 8px 22px #0003}
+.chico-v2.nx-app .ct-auth-brand{display:flex;align-items:center;gap:9px;direction:ltr;color:#f3f4f6;font-size:13px;font-weight:850;letter-spacing:.035em}
+.chico-v2.nx-app .ct-auth-brand img{border-radius:50%;object-fit:cover;flex:none}
+.chico-v2.nx-app .ct-auth-top>span{display:flex;align-items:center;gap:6px;font-size:12px;color:#9dabbf}
+.chico-v2.nx-app .ct-auth-main{flex:1;display:grid;place-items:center;padding:clamp(16px,4vw,52px);min-width:0}
+.chico-v2.nx-app .ct-auth-stage{width:min(100%,1000px);min-height:510px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.92fr);direction:ltr;align-items:center;gap:clamp(20px,5vw,60px);padding:clamp(22px,4vw,55px);overflow:hidden;animation:ct-signature-enter .6s ease-out both}
+.chico-v2.nx-app .ct-auth-visual{min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;direction:ltr}
+.chico-v2.nx-app .ct-auth-visual .nx-stage-brand{text-align:center;margin-top:4px}
+.chico-v2.nx-app .ct-auth-visual .ct-wolf-theater{height:clamp(285px,32vw,370px)}
+.chico-v2.nx-app .ct-auth-panel{direction:rtl;min-width:0;padding:clamp(18px,3vw,31px);background:linear-gradient(155deg,#26303de8,#121923f2 70%);border:1px solid #a6b5c53b;border-top-color:#d5c29b78;border-radius:15px;box-shadow:0 12px 34px #0005,inset 0 1px #e1e8f513;animation:ct-signature-enter .55s .15s both}
+.chico-v2.nx-app .ct-auth-heading{display:flex;align-items:center;gap:12px;margin-bottom:24px}
+.chico-v2.nx-app .ct-auth-heading h1{margin:0;color:#edf1f6;font-size:clamp(23px,3vw,32px);font-weight:850;line-height:1.3}
+.chico-v2.nx-app .ct-auth-lock{display:grid;place-items:center;flex:0 0 44px;height:44px;border:1px solid #d4b27b50;border-radius:11px;background:linear-gradient(145deg,#d3a96820,#d3a96804);color:#edca8d}
+.chico-v2.nx-app .ct-auth-fields{margin-top:0;gap:11px}
+.chico-v2.nx-app .ct-auth-fields .x-input-shell{min-height:51px;background:#0e1622;border:1px solid #9dadc34a;border-radius:9px;padding:8px 11px}
+.chico-v2.nx-app .ct-auth-fields .x-input-shell:focus-within{border-color:#d4b27b;box-shadow:0 0 0 1px #d4b27b26}
+.chico-v2.nx-app .ct-auth-fields .x-input-shell input{color:#e8edf4;height:32px;padding:0}
+.chico-v2.nx-app .ct-auth-fields input:-webkit-autofill{-webkit-text-fill-color:#e8edf4!important;box-shadow:0 0 0 1000px #0e1622 inset!important;border:0!important}
+.chico-v2.nx-app .ct-auth-fields .x-primary,.chico-v2.nx-app .ct-auth-panel .x-review-login .x-primary{width:100%;min-height:49px;margin-top:8px}
+.chico-v2.nx-app .ct-auth-foot{display:flex;align-items:center;gap:7px;color:#9dabbf;font-size:11px;border-top:1px solid #a6b5c525;margin-top:25px;padding-top:15px}
+.chico-v2.nx-app .ct-auth-panel .x-review-login{margin-top:0}
+@media(max-width:760px){.chico-v2.nx-app .ct-auth-main{padding:14px}.chico-v2.nx-app .ct-auth-stage{grid-template-columns:minmax(0,1fr);gap:16px;padding:14px;min-height:0}.chico-v2.nx-app .ct-auth-visual .ct-wolf-theater{height:258px}.chico-v2.nx-app .ct-auth-heading{margin-bottom:17px}.chico-v2.nx-app .ct-auth-panel{padding:19px}.chico-v2.nx-app .ct-auth-foot{margin-top:18px}}
+@media(prefers-reduced-motion:reduce){.chico-v2.nx-app .ct-auth-stage,.chico-v2.nx-app .ct-auth-panel{animation:none!important}}
