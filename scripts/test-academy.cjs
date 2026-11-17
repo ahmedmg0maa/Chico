@@ -7,7 +7,7 @@ assert(!RULES.some(r=>r.code==='Media1'));assert.equal(RULES.find(r=>r.code==='R
 assert.deepEqual(['Jail','Mute','Ban','Kick'].map(k=>RULES.filter(r=>r.kind===k).length),[15,8,18,4]);
 for(const r of RULES){for(const rank of ['Helper','SN.Helper','Moderator']){assert.equal(permission(r,rank),r.kind==='Kick'?'evidence':r.kind==='Ban'?(rank==='Moderator'&&r.duration!=='Permanent'?'allowed':'restricted'):'allowed');}}
 assert.deepEqual(LESSONS.map(x=>x.id),['jail','mute']);
-const page=read('src/components/v2/ExecutiveCommand.tsx');assert(page.includes("items:['salary','academy']")&&page.includes("tab==='academy'&&<AcademyCenter"));
+const page=read('src/components/v2/ExecutiveCommand.tsx');assert(page.includes("items:['academy']")&&page.includes("tab==='academy'&&<AcademyCenter"));
 for(const p of ['src/app/api/academy/route.ts','src/app/api/academy/media/[lesson]/route.ts'])assert(read(p).includes('await requireOwner(req)'));
 const ddl=read('db/008_academy_media.sql');assert((ddl.match(/ENABLE ROW LEVEL SECURITY/g)||[]).length===2);
 console.log('PASS Academy: 45 source rules; Media1 omitted; exact category counts; rank authorization; evidence required for Kick; two lessons; protected media and standalone nav.');
