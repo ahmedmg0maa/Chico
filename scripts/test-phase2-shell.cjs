@@ -44,8 +44,12 @@ const operationTabs=source('src/components/v2/ExecutiveOperations.tsx');
 assert(operations.includes('compactHead/>'),'Nested management subtools must request compact headings');
 assert(operationTabs.includes("{!compact&&<img className="),'Nested pages should not load redundant large artwork');
 assert(operations.includes("aria-current={selected===t.id?'page':undefined}"),'Management subnav must expose active state');
-assert(css.includes('.chico-v2.x-light .v8-rank-label.v8-rank--helper'),'Accessible light-theme rank contrast must be maintained');
-assert(css.includes('.chico-v2.x-light .x-user-button small'),'Light-theme user button subtitle contrast must be maintained');
+assert(main.includes('const light=false;')&&!main.includes('switchAppearance')&&!main.includes("localStorage.getItem('chico-ui-theme')"),'CHICO TEAM must always render dark, regardless of old preference');
+assert(main.includes('ct-topbar')&&main.includes('<b>CHICO TEAM</b>'),'Compact canonical masthead must be present');
+assert(!main.includes('CHICO TEAM 1.0')&&!nexus.includes('N E X U S'),'No old brand additions in app shell');
+assert(!sidebar.includes('<small>{item.en}</small>'),'Drawer links should have one readable label');
+const dark=source('src/components/v2/nexus.css');
+assert(dark.includes('ct-emblem-float')&&dark.includes('ct-page-in')&&dark.includes('ct-drawer-in')&&dark.includes('prefers-reduced-motion:reduce'),'Motion should be purposeful and respect reduced motion');
 assert(css.includes('.v9-history-table th')&&css.includes('.x-op-table th'),'Excel/history tables should have readable sticky headers');
 
 console.log('PASS CHICO Stage 2: grouped navigation, 4 dashboard KPIs, semantic route state, responsive visual tokens');
