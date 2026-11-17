@@ -3,8 +3,10 @@
 import {useRef,useState, type FormEvent} from 'react';
 import ReadingEntryStudio from './ReadingEntryStudio';
 import {CommandIcon} from './ChicoVisualLanguage';
-import DiscordReportStudio from './DiscordReportStudio';
-import DailyReportStudio from './DailyReportStudio';
+import dynamic from 'next/dynamic';
+const ReportLoading=()=> <div className="ct-workspace-loading" role="status">جاري تحميل التقرير…</div>;
+const DiscordReportStudio=dynamic(()=>import('./DiscordReportStudio'),{loading:ReportLoading});
+const DailyReportStudio=dynamic(()=>import('./DailyReportStudio'),{loading:ReportLoading});
 import {Activity, AlertTriangle, Archive, BarChart3, CalendarDays, CheckCircle2, Download, FileSpreadsheet, Flag, Pencil, Plus, Save, Shield, Ticket, Trash2, Upload, Users} from 'lucide-react';
 import type {Admin, Reading, State, Rank} from '@/lib/types';
 import {RANKS} from '@/lib/types';
