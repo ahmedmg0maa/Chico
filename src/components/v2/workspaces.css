@@ -199,3 +199,7 @@
 @media(max-width:1050px){.chico-v2.nx-app .ct-honor-board{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:680px){.chico-v2.nx-app .ct-insight-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.chico-v2.nx-app .ct-insight-grid{grid-template-columns:1fr}.chico-v2.nx-app .ct-honor-group{padding:10px}.chico-v2.nx-app .ct-honor-winner{min-height:167px;padding:8px 3px}.chico-v2.nx-app .ct-honor-winner.ct-place-1{min-height:185px}.chico-v2.nx-app .ct-honor-winner .v8-insignia{width:35px;height:40px}.chico-v2.nx-app .ct-insight-list article{grid-template-columns:auto minmax(0,1fr) auto;gap:6px}.chico-v2.nx-app .ct-insight-list article>span:last-child{grid-column:3}.chico-v2.nx-app .ct-experience-controls{width:100%}.chico-v2.nx-app .ct-experience-controls label{min-width:0;flex:1}.chico-v2.nx-app .ct-experience-empty{min-height:250px}}
 @media(prefers-reduced-motion:reduce){.chico-v2.nx-app :is(.ct-honor-winner,.ct-honor-medal,.ct-honor-rays,.ct-empty-emblem,.ct-insight-metrics article,.ct-coverage-track i){animation:none!important}}
+
+/* Small stable loading shell: no fake totals, no motion when requested. */
+.chico-v2 .ct-workspace-loading{display:grid;place-items:center;min-height:180px;padding:20px;color:#a8b6c8;font-size:13px;background:#111923;border:1px solid #a6b5c52b;border-radius:12px}
+.chico-v2 .ct-chart-incomplete{padding:4px 8px;margin:0;font-size:10px;color:#dbbe84;text-align:right}
