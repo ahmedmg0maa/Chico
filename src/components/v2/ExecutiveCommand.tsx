@@ -105,7 +105,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
  const [requestedReportPeriod,setRequestedReportPeriod]=useState<{from:string;to:string}|null>(null);
  useEffect(()=>{const valid=links.map(l=>l.id);const initial=new URLSearchParams(window.location.search).get('tab') as Tab|null;if(initial&&valid.includes(initial))setTab(initial);},[]);
  const [menu,setMenu]=useState(false);
- // NEXUS uses a transient overlay, never a permanently expanded sidebar.
+ // CHICO TEAM uses a transient overlay, never a permanently expanded sidebar.
  const toggleMenu=()=>setMenu(current=>!current);
  const closeMenu=()=>setMenu(false);
  useEffect(()=>{if(!menu)return;const handler=(event:KeyboardEvent)=>{if(event.key==='Escape')setMenu(false);};window.addEventListener('keydown',handler);return()=>window.removeEventListener('keydown',handler);},[menu]);
@@ -203,7 +203,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
        })}
       </section>
      )}</nav>
-    <div className="x-sidebar-footer"><button type="button" onClick={()=>void logout()} aria-label="تسجيل الخروج"><LogOut size={18}/> تسجيل الخروج</button></div>
+    <div className="x-sidebar-footer"><button type="button" onClick={()=>void logout()} aria-label="تسجيل الخروج من القائمة"><LogOut size={18}/> تسجيل الخروج</button></div>
    </aside>
    {menu&&<button className="x-mobile-scrim" aria-label="إغلاق القائمة" onClick={closeMenu}/>}
    <main className="x-body">
@@ -265,7 +265,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
       {tab==='operations'&&<ExecutiveOperationsWorkspace state={state} review={review} onRefresh={refresh} onNavigate={open}/>}
       {tab!=='dashboard'&&tab!=='team'&&tab!=='operations'&&<ExecutiveOperations tab={tab} state={state} review={review} onRefresh={refresh} initialAdminId={readingTarget} initialPeriod={requestedReportPeriod}/>}
 
-     <footer className="x-foot"><span>© CHICO GENERAL TEAM · ONE STATE RP</span><span>{review?'VISUAL REVIEW — NOT LIVE DATA':'PROTECTED ADMINISTRATION PLATFORM'}</span></footer>
+     <footer className="x-foot"><span>© CHICO TEAM · ONE STATE RP</span><span>{review?'VISUAL REVIEW — NOT LIVE DATA':'PROTECTED ADMINISTRATION PLATFORM'}</span></footer>
     </div>
    </main>
    <NexusDock tab={tab} onNavigate={open} onMore={toggleMenu} menuOpen={menu}/>
