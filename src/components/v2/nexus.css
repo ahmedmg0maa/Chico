@@ -498,3 +498,32 @@
 @media(max-width:760px){.chico-v2.nx-app .ct-topbar{height:51px;min-height:51px!important;padding:4px 8px!important;gap:3px}.chico-v2.nx-app .ct-page-title{display:none}.chico-v2.nx-app .ct-top-start,.chico-v2.nx-app .ct-top-actions{gap:2px}.chico-v2.nx-app .ct-icon-button{width:29px;min-width:29px;height:32px}.chico-v2.nx-app .ct-brand{font-size:11px;gap:5px}.chico-v2.nx-app .ct-brand img{width:27px;height:27px}.chico-v2.nx-app .ct-connection{display:none}.chico-v2.nx-app .x-action-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.chico-v2.nx-app .nx-wolf-stage{min-height:285px}.chico-v2.nx-app .nx-stage-wolf{width:min(65%,180px)!important}.chico-v2.nx-app .nx-dock-core{min-height:47px}}
 @media(max-width:360px){.chico-v2.nx-app .ct-brand{font-size:10px}.chico-v2.nx-app .ct-icon-button{min-width:26px;width:26px}.chico-v2.nx-app .ct-top-actions{gap:0}}
 @media(prefers-reduced-motion:reduce){.chico-v2.nx-app .ct-page-motion,.chico-v2.nx-app .nx-stage-wolf,.chico-v2.nx-app .nx-wolf-halo,.chico-v2.nx-app .nx-orbit-outer,.chico-v2.nx-app .x-layout.v10-nav-open>.x-sidebar,.chico-v2.nx-app .nx-command-rail .x-kpi>strong{animation:none!important}.chico-v2.nx-app .nx-dock-item,.chico-v2.nx-app .x-kpi,.chico-v2.nx-app .nx-glass,.chico-v2.nx-app .x-action-grid button{transition:none!important}}
+
+/* Approved CHICO TEAM focus treatment: one clean edge, never nested gold rings. */
+.chico-v2.nx-app :is(input,select,textarea):focus{
+ outline:none!important;
+ border-color:#d4b27b!important;
+ box-shadow:0 0 0 1px #d4b27b26!important;
+}
+.chico-v2.nx-app :is(.v7-search,.x-input-shell,.x-command-search) :is(input,select,textarea){
+ background:transparent!important;border:0!important;box-shadow:none!important;outline:none!important;border-radius:0!important;min-width:0;
+}
+.chico-v2.nx-app :is(.v7-search,.x-input-shell,.x-command-search) :is(input,select,textarea):focus{
+ outline:none!important;border:0!important;box-shadow:none!important;
+}
+.chico-v2.nx-app :is(.v7-search,.x-input-shell):focus-within{
+ border-color:#d4b27b;box-shadow:0 0 0 1px #d4b27b26;
+}
+.chico-v2.nx-app .x-command-search:focus-within{
+ border-bottom-color:#d4b27b;box-shadow:none;
+}
+.chico-v2.nx-app .x-command-search{top:54px}
+.chico-v2.nx-app .v7-search input{min-height:0;height:100%;padding:0}
+.chico-v2.nx-app :is(button,a):focus-visible{
+ outline:2px solid #d4b27b;outline-offset:2px;box-shadow:none!important;
+}
+.chico-v2.nx-app .v12-nav button:focus-visible,
+.chico-v2.nx-app .x-topbar button:focus-visible{
+ outline:2px solid #d4b27b;outline-offset:2px;box-shadow:none!important;
+}
+@media(max-width:760px){.chico-v2.nx-app .x-command-search{top:51px}}
