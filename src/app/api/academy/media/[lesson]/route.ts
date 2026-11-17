@@ -7,7 +7,7 @@ const CHUNK=1048576;
 type Props={params:Promise<{lesson:string}>};
 export async function GET(req:NextRequest,{params}:Props){
  const denied=await requireOwner(req);if(denied)return denied;
- try{const {lesson}=await params;if(!['jail','mute'].includes(lesson))return response({ok:false},404);
+ try{const {lesson}=await params;if(!['jail','jail-2','mute'].includes(lesson))return response({ok:false},404);
  const sql=db(),rows=await sql`SELECT id,total_bytes,mime FROM chico_next.academy_media WHERE lesson=${lesson} AND ready=true`;if(!rows.length)return response({ok:false,error:'NOT_FOUND'},404);
  const m=rows[0],size=Number(m.total_bytes),range=req.headers.get('range');
  let start=0,end=size-1;
