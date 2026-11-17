@@ -40,7 +40,7 @@ export function NexusDock({tab,onNavigate,onMore,menuOpen}:{tab:Tab;onNavigate:(
   <nav id="nexus-spatial-dock" className="nx-dock" aria-label="شريط التنقل الرئيسي" hidden={collapsed}>
    {NEXUS_DESTINATIONS.slice(0,3).map(item)}
    <button type="button" className={'nx-dock-core '+(menuOpen?'is-active':'')} onClick={onMore} aria-label="كل أقسام الموقع" aria-expanded={menuOpen} aria-controls="chico-main-navigation" title="كل الأقسام">
-    <img src="/assets/chico-nexus-wolf-sculpture.svg" alt="" width={40} height={40}/><span>الأقسام</span>
+    <img src="/assets/chico-approved-wolf.avif" alt="" width={40} height={40}/><span>الأقسام</span>
    </button>
    {NEXUS_DESTINATIONS.slice(3).map((r,i)=>item(r,i+3))}
   </nav>
@@ -69,7 +69,7 @@ function Podium({title,leaders,onOpen,onTeam,variant}:{title:string;leaders:Lead
 
 export function NexusStage({week,rate,coverage,active,roles,helpers,moderators,onTeam,onRead,onRecord,onOpen,readings,children}:{week:string;rate:number|null;coverage:number|null;active:number;roles:RoleCount[];helpers:Leader[];moderators:Leader[];onTeam:()=>void;onRead:()=>void;onRecord:()=>void;onOpen:(id:string)=>void;readings:Reading[];children?:React.ReactNode}){
  return <section className="nx-stage" aria-label="مركز قيادة CHICO">
-  <div className="nx-stage-head"><div><p className="nx-eyebrow">CHICO NEXUS / COMMAND CENTER</p><h1>مركز القيادة</h1><span className="nx-stage-week"><span className="nx-tiny-dot"/> <bdi>{week}</bdi></span></div>
+  <div className="nx-stage-head"><div><h1>مركز القيادة</h1><span className="nx-stage-week"><span className="nx-tiny-dot"/> <bdi>{week}</bdi></span></div>
    <button type="button" className="nx-button nx-primary" onClick={onRecord}><CommandIcon compact name="updates"/> تسجيل قراءة</button></div>
   <div className="nx-command-rail">
    {children}
@@ -91,11 +91,11 @@ export function NexusStage({week,rate,coverage,active,roles,helpers,moderators,o
     <div className="nx-orbit nx-orbit-outer" aria-hidden="true"/><div className="nx-orbit nx-orbit-inner" aria-hidden="true"/>
     <div className="nx-wolf-halo" aria-hidden="true"/>
     <div className="nx-stage-beam" aria-hidden="true"/>
-    <div className="nx-stage-rim" aria-hidden="true"/>
-    <img className="nx-stage-wolf" src="/assets/chico-nexus-wolf-sculpture.svg" alt="ذئب NEXUS المعدني، مستوحى من هوية CHICO" width={360} height={380} decoding="async"/>
-    <div className="nx-wolf-plinth" aria-hidden="true"><span/><i/></div>
-    <div className="nx-stage-brand"><b>CHICO TEAM <em>1.0</em></b><small>N E X U S</small></div>
-    <button type="button" className="nx-link nx-stage-report" onClick={onRead}>عرض التقارير <span aria-hidden="true">↗</span></button>
+    
+    <img className="nx-stage-wolf" src="/assets/chico-approved-wolf.avif" alt="شعار CHICO TEAM" width={240} height={240} decoding="async"/>
+    
+    <div className="nx-stage-brand"><b>CHICO TEAM</b></div>
+    <button type="button" className="nx-link nx-stage-report" onClick={onRead}>التقارير <span aria-hidden="true">↗</span></button>
    </div>
    <div className="nx-stage-side nx-stage-leaders">
     <Podium title="Top 3 Helpers" leaders={helpers} variant="helpers" onOpen={onOpen} onTeam={onTeam}/>
