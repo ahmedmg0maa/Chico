@@ -1,6 +1,7 @@
 'use client';
 import {useEffect,useMemo,useState,type FormEvent} from 'react';
 import {CalendarDays,CheckCircle2,ChevronDown,Clock3,Download,History,Pencil,Plus,Save,Search,ShieldAlert,Trash2,X} from 'lucide-react';
+import {CommandIcon} from './ChicoVisualLanguage';
 import {weekStart} from '@/lib/rules';
 import type {Reading,State} from '@/lib/types';
 
@@ -74,9 +75,9 @@ export default function ReadingEntryStudio({state,review,onRefresh,initialAdminI
   setBusy(true);setError('');setNotice('');
   void (async()=>{try{await request('/api/readings/'+encodeURIComponent(r.id),'DELETE',{confirm:'DELETE'});await onRefresh();setNotice('تم حذف القراءة وإعادة حساب الفروق مع إنشاء نسخة احتياطية');if(editing===r.id)startNew();}catch(err){setError(err instanceof Error?err.message:'تعذر الحذف');}finally{setBusy(false);}})();
  };
- return <div className="v9-reading-studio">
+ return <div className="v9-reading-studio ct-entry-workspace">
   <section id="chico-reading-entry" className="x-panel v9-entry-card">
-   <header className="v9-entry-heading"><div><small>CHICO / SAVED READINGS</small><h2>{editing?'تعديل تقرير محفوظ':'إضافة تقرير أداء'}</h2><p>اختار الإداري والفترة، وسجّل الأرقام كما ظهرت في اللعبة. الحفظ هيحسب الفرق تلقائيًا.</p></div>{editing&&<button type="button" className="v9-quiet-btn" onClick={startNew}><X size={16}/>إلغاء التعديل</button>}</header>
+   <header className="v9-entry-heading"><div className="ct-workspace-identity"><CommandIcon name="updates"/><div><h2>{editing?'تعديل تقرير محفوظ':'تسجيل تقرير'}</h2><p>العدادات كما تظهر في اللعبة</p></div></div>{editing&&<button type="button" className="v9-quiet-btn" onClick={startNew}><X size={16}/>إلغاء التعديل</button>}</header>
    <form className="v9-reading-form" onSubmit={save}>
     <div className="v9-reading-step"><b>1</b><span>الإداري وتاريخ التقرير</span></div>
     <label className="v9-wide">الإداري
@@ -96,10 +97,10 @@ export default function ReadingEntryStudio({state,review,onRefresh,initialAdminI
     <div className="v9-input-note"><CalendarDays size={17}/>تاريخ التقرير هو اليوم أو الأيام اللي القراءات بتغطيها. تاريخ الإضافة بيتحفظ بشكل مستقل. ووقت الحفظ الفعلي بيسجله الموقع تلقائيًا.</div>
     <div className="v9-reading-step"><b>2</b><span>الأرقام الموجودة في اللعبة</span></div>
     <div className="v9-number-grid">
-     <label>Tickets <small>العداد الحالي، وليس الفرق</small><input type="number" min="0" step="1" disabled={review||busy} placeholder="غير مسجل" value={draft.tickets_counter??''} onChange={e=>update('tickets_counter',parse(e.target.value))}/></label>
-     <label>Flags <small>الرصيد التراكمي الحالي</small><input type="number" min="0" step="1" disabled={review||busy} placeholder="غير مسجل" value={draft.flags_counter??''} onChange={e=>update('flags_counter',parse(e.target.value))}/></label>
-     <label>TIME <small>ساعات عشرية: 1.5 = ساعة ونصف</small><input type="number" min="0" max="500" step="0.01" disabled={review||busy} placeholder="غير مسجل" value={draft.hours??''} onChange={e=>update('hours',parse(e.target.value))}/></label>
-     <label>Rating <small>التقييم من 5</small><input type="number" min="0" max="5" step="0.01" disabled={review||busy} placeholder="غير مسجل" value={draft.rating??''} onChange={e=>update('rating',parse(e.target.value))}/></label>
+     <label><span className="ct-field-title"><CommandIcon name="tickets" compact/>Tickets</span><small>العداد الحالي، وليس الفرق</small><input type="number" min="0" step="1" disabled={review||busy} placeholder="غير مسجل" value={draft.tickets_counter??''} onChange={e=>update('tickets_counter',parse(e.target.value))}/></label>
+     <label><span className="ct-field-title"><CommandIcon name="flags" compact/>Flags</span><small>الرصيد التراكمي الحالي</small><input type="number" min="0" step="1" disabled={review||busy} placeholder="غير مسجل" value={draft.flags_counter??''} onChange={e=>update('flags_counter',parse(e.target.value))}/></label>
+     <label><span className="ct-field-title"><CommandIcon name="shift" compact/>TIME</span><small>ساعات عشرية: 1.5 = ساعة ونصف</small><input type="number" min="0" max="500" step="0.01" disabled={review||busy} placeholder="غير مسجل" value={draft.hours??''} onChange={e=>update('hours',parse(e.target.value))}/></label>
+     <label><span className="ct-field-title"><CommandIcon name="rating" compact/>Rating</span><small>التقييم من 5</small><input type="number" min="0" max="5" step="0.01" disabled={review||busy} placeholder="غير مسجل" value={draft.rating??''} onChange={e=>update('rating',parse(e.target.value))}/></label>
     </div>
     <button type="button" className="v9-advanced-toggle" aria-expanded={advanced} onClick={()=>setAdvanced(a=>!a)}>خيارات إضافية <ChevronDown size={17}/></button>
     {advanced&&<div className="v9-advanced-fields"><label>رصيد Flags المعروف قبل أول قراءة <small>اكتبه بس لو معروف. لا نفترض إنه صفر.</small><input type="number" min="0" step="1" value={draft.flags_baseline??''} onChange={e=>update('flags_baseline',parse(e.target.value))} disabled={review||busy}/></label><label>ملاحظة (اختياري)<textarea maxLength={600} rows={2} value={draft.note} onChange={e=>update('note',e.target.value)} disabled={review||busy}/></label></div>}
@@ -109,7 +110,7 @@ export default function ReadingEntryStudio({state,review,onRefresh,initialAdminI
    {notice&&<div className="v9-message success" role="status"><CheckCircle2 size={18}/>{notice}</div>}
   </section>
   <section className="x-panel v9-reading-history">
-   <header className="v9-entry-heading"><div><small>SAVED HISTORY</small><h2>سجل القراءات والأيام المحفوظة</h2><p>تقدر ترجع لأي تقرير قديم، تعرف الفترة اللي غطاها وإمتى اتضاف، وتعدّله لو الأسبوع لسه مفتوح.</p></div><span className="v9-record-count">{ordered.length} سجل</span></header>
+   <header className="v9-entry-heading"><div className="ct-workspace-identity"><CommandIcon name="history"/><div><h2>سجل القراءات</h2></div></div><span className="v9-record-count">{ordered.length} سجل</span></header>
    <div className="v9-history-controls">
     <label><Search size={17}/><input value={historySearch} onChange={e=>setHistorySearch(e.target.value)} placeholder="بحث بالاسم أو التاريخ" aria-label="بحث في السجل"/></label>
     <select aria-label="فلتر الإداري" value={historyAdmin} onChange={e=>setHistoryAdmin(e.target.value)}><option value="">كل الإداريين</option>{state?.admins.map(a=><option key={a.id} value={a.id}>{a.name}</option>)}</select>
