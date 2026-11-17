@@ -1,6 +1,6 @@
 -- Salary metadata only; no automatic salary calculation or payment.
 CREATE TABLE IF NOT EXISTS chico_next.salary_profiles (
- admin_id uuid PRIMARY KEY REFERENCES chico_next.admins(id) ON DELETE RESTRICT,
+ admin_id uuid PRIMARY KEY REFERENCES chico_next.admins(id) ON DELETE CASCADE,
  rp_name text NOT NULL DEFAULT '' CHECK (char_length(rp_name)<=120),
  rp_server text NOT NULL DEFAULT '' CHECK (char_length(rp_server)<=80),
  client_id uuid,
