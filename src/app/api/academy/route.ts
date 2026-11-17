@@ -15,7 +15,7 @@ export async function POST(req:NextRequest){
  try{const body=z.discriminatedUnion('action',[start,finish]).safeParse(await req.json());if(!body.success)return response({ok:false,error:'INVALID_INPUT'},422);
  const v=body.data,sql=db();
  if(v.action==='start'){
- const result=await sql.begin(async tx=>{await tx`SELECT pg_advisory_xact_lock(hashtext('chico_academy_'+${v.lesson}))`;
+ const result=await sql.begin(async tx=>{await tx`SELECT pg_advisory_xact_lock(hashtext('chico_academy_'||${v.lesson}))`;
  await tx`DELETE FROM chico_next.academy_media WHERE lesson=${v.lesson} AND ready=false`;
  return await tx`INSERT INTO chico_next.academy_media(lesson,mime,total_bytes) VALUES(${v.lesson},${v.mime},${v.size}) RETURNING id::text`;});
  return response({ok:true,id:result[0].id});
