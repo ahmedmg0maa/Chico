@@ -15,6 +15,7 @@ import ExecutiveOperationsWorkspace from './ExecutiveOperationsWorkspace';
 import ExecutiveWeeklyChart from './ExecutiveWeeklyChart';
 import ExecutiveProfile from './ExecutiveProfile';
 import DashboardWeekNotice from './DashboardWeekNotice';
+import {NexusDock,NexusStage} from '../nexus/NexusShell';
 import {previousRecordedWeek} from '@/lib/dashboard-history';
 import {CommandIcon,RankInsignia,RankLabel} from './ChicoVisualLanguage';
 import {isEvaluatedRank,isEvaluatedAdmin,eligibleReadings} from '@/lib/rules';
@@ -40,6 +41,7 @@ const links:{id:Tab;label:string;en:string;icon:typeof Home}[]=[
 const navigationGroups:{label:string;en:string;items:Tab[]}[]=[
  {label:'القيادة',en:'OVERVIEW',items:['dashboard','team','alerts']},
  {label:'العمل اليومي',en:'OPERATIONS',items:['updates','operations']},
+ {label:'البيانات والتحليل',en:'DATA',items:['excel','server','weeks']},
  {label:'التقارير',en:'REPORTS',items:['daily','reports']},
  {label:'النظام',en:'SYSTEM',items:['settings']}
 ];
@@ -133,7 +135,9 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
  const totals={tickets:review?null:summary?.tickets??null,flags:review?null:summary?.flags??null,rate:review?null:summary?.rate??null,rating:review?null:summary?.rating??null,members:active,coverage:!review&&hasRegisteredWeek&&evaluated.length?Math.round(100*covered/evaluated.length):null};
  const top=rows.filter(r=>isEvaluatedAdmin(r)&&(r.rank==='Helper'||r.rank==='SN.Helper')&&r.tickets!==null).sort((a,b)=>(b.tickets??0)-(a.tickets??0)).slice(0,3);
  const warnings=rows.filter(r=>isEvaluatedAdmin(r)&&(r.flagsIncomplete||(r.flags!==null&&r.flags>7)||(r.rating!==null&&r.rating<4.8)||(!r.lastUpdate&&r.active&&hasRegisteredWeek)));
- const timeLabel=review?'القائمة المعتمدة':summary?.week_start||'الأسبوع الحالي';
+ const timeLabel=review?'معاينة بلا إحصائيات':summary?.week_start||'الأسبوع الحالي';
+ const moderatorTop=rows.filter(r=>isEvaluatedAdmin(r)&&r.rank==='Moderator'&&r.tickets!==null).sort((a,b)=>(b.tickets??0)-(a.tickets??0)||(a.sort_order??0)-(b.sort_order??0)).slice(0,3);
+ const roleCounts=[{label:'Helper',kind:'helper' as const,count:rows.filter(r=>r.active&&r.rank==='Helper').length},{label:'SN.Helper',kind:'senior' as const,count:rows.filter(r=>r.active&&r.rank==='SN.Helper').length},{label:'Moderator',kind:'moderator' as const,count:rows.filter(r=>r.active&&r.rank==='Moderator').length}];
  async function refresh(){
   if(review)return;
   try{
@@ -155,20 +159,20 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
   setPass('');setAuth('in');await refresh();
  }catch(e){setError(e instanceof Error?e.message:'خطأ في الدخول');}finally{setWorking(false);}}
  async function logout(){if(review){setPreviewLogin(true);return;}await fetch('/api/auth',{method:'DELETE'});setAuth('out');setState(null);setPass('');}
- const open=(id:Tab)=>{setRequestedReportPeriod(null);setTab(id);setFocused(null);if(window.matchMedia('(max-width: 1020px)').matches)setMenu(false);setNotice('');const u=new URL(window.location.href);u.searchParams.set('tab',id);window.history.replaceState(null,'',u.pathname+u.search);};
+ const open=(id:Tab)=>{setRequestedReportPeriod(null);setTab(id);setFocused(null);setMenu(false);setNotice('');const u=new URL(window.location.href);u.searchParams.set('tab',id);window.history.replaceState(null,'',u.pathname+u.search);};
  
 
  const intervalRows=currentEligible.filter(r=>r.week_start===summary?.week_start).sort((a,b)=>b.to_date.localeCompare(a.to_date)||b.created_at.localeCompare(a.created_at)).slice(0,8);
  const alerts=review?[]:warnings.filter(r=>r.lastUpdate!==null||r.flagsIncomplete).slice(0,3).map(r=>({label:r.name,desc:r.flagsIncomplete?'رصيد Flags السابق غير معروف':r.flags!==null&&r.flags>7?'Flags مرتفعة — '+r.flags:r.rating!==null&&r.rating<4.8?'التقييم '+pretty(r.rating,'rating'):'تحتاج مراجعة',severity:'warning'}));
- // Four decision-focused metrics; staff count is in the hero and individual ratings remain in Team.
+ // NEXUS: four core measures; Flag Rate and Team Coverage remain separate in the command stage.
  const kpis=[
   {title:'تذاكر الأسبوع',english:'Weekly Tickets',value:pretty(totals.tickets),glyph:'tickets' as const,tone:'gold'},
   {title:'الفلاجات',english:'Weekly Flags',value:pretty(totals.flags),glyph:'flags' as const,tone:'ruby'},
-  {title:'معدل الفلاجات',english:'Flag Rate',value:pretty(totals.rate,'percent'),glyph:'rate' as const,tone:'amber'},
-  {title:'تغطية الفريق',english:'Team Coverage',value:pretty(totals.coverage,'percent'),glyph:'coverage' as const,tone:'emerald'}
+  {title:'التقييم',english:'Rating',value:pretty(totals.rating,'rating'),glyph:'rating' as const,tone:'amber'},
+  {title:'الساعات',english:'Time',value:pretty(review?null:summary?.hours),glyph:'shift' as const,tone:'emerald'}
  ];
  const isLogin=(auth!=='in')||previewLogin;
- if(isLogin)return <div className={'chico-v2 x-auth-scene '+(light?'x-light':'')} dir="rtl">
+ if(isLogin)return <div className={'chico-v2 nx-app x-auth-scene '+(light?'x-light':'')} dir="rtl">
   {review&&<div className="x-review-ribbon">معاينة أسماء الفريق المعتمدة · بدون إحصائيات</div>}
   <div className="x-auth-frame"><div className="x-auth-art"><img className="x-auth-illustrated-banner" src="/assets/chico-illustrated-login.avif" alt="CHICO ME · بوابة قيادة الفريق" decoding="async"/><div className="x-auth-art-inner"><p>CHICO GENERAL TEAM</p><span>ONE STATE RP · ADMINISTRATION</span></div></div>
    <div className="x-auth-form">
@@ -183,7 +187,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
     <div className="x-login-foot"><Shield size={17}/> ACCESS CONTROLLED · CHICO ME</div>
    </div></div></div>;
 
- return <div className={'chico-v2 '+(light?'x-light':'')} dir="rtl">
+ return <div className={'chico-v2 nx-app '+(light?'x-light':'')} dir="rtl">
   <a className="v12-skip-link" href="#chico-main-content">تخطي إلى المحتوى الرئيسي</a>
   {review&&<div className="x-review-ribbon">قائمة الفريق من Excel المعتمد · لا توجد إحصائيات مسجلة · المعاينة غير متصلة بالحفظ</div>}
   <div className={"x-layout "+(menu?"v10-nav-open":"v10-nav-closed")}>
@@ -207,7 +211,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
    {menu&&<button className="x-mobile-scrim" aria-label="إغلاق القائمة" onClick={closeMenu}/>}
    <main className="x-body">
     <header className="x-topbar">
-     <div className="x-top-group"><button type="button" className="x-icon x-burger v10-hamburger" onClick={toggleMenu} aria-label={menu?"إغلاق القائمة":"فتح القائمة"} aria-expanded={menu} aria-controls="chico-main-navigation" title={menu?"إغلاق القائمة":"فتح القائمة"}>{menu?<X size={22}/>:<Menu size={22}/>}<span>القائمة</span></button>
+     <div className="x-top-group"><div className="nx-top-brand"><img src="/assets/chico-approved-wolf.avif" alt="" width={38} height={38}/><div><b>CHICO TEAM 1.0</b><small>NEXUS</small></div></div><button type="button" className="x-icon x-burger v10-hamburger" onClick={toggleMenu} aria-label={menu?"إغلاق القائمة":"فتح القائمة"} aria-expanded={menu} aria-controls="chico-main-navigation" title={menu?"إغلاق القائمة":"فتح القائمة"}>{menu?<X size={22}/>:<Menu size={22}/>}<span>القائمة</span></button>
       <div className="x-status"><span className="x-live-dot"/>{review?'وضع المعاينة':state?'البيانات محمّلة':'جاري تحميل البيانات'}</div><div className="x-breadcrumb">CHICO ME <ChevronLeft size={14}/> <b>{links.find(l=>l.id===tab)?.label}</b></div></div>
      <div className="x-top-actions"><span className="x-date"><CalendarDays size={16}/>{timeLabel}</span>
       <button className="x-icon" onClick={()=>setSearchOpen(!searchOpen)} aria-label="البحث"><Search size={20}/></button>
@@ -221,16 +225,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
      {error&&<div className="x-error"><AlertTriangle size={17}/>{error}<button onClick={()=>void refresh()}>إعادة المحاولة</button></div>}
      {notice&&<div className="x-inline-notice"><Shield size={18}/>{notice}<button onClick={()=>setNotice('')}><X size={17}/></button></div>}
      {tab==='dashboard'&&<>
-      <section className="v8-command-hero" aria-label="لوحة القيادة الرسمية لفريق CHICO">
-       <div className="v8-command-hero-copy">
-        <span className="v8-eyebrow"><span className="v8-live-pulse"/> ONE STATE RP / CHICO ME / COMMAND</span>
-        <h1>مركز القيادة <span>الاحترافي</span></h1>
-        <p>لوحة إدارة الفريق، متابعة الأداء الحقيقي، واتخاذ قرارات دقيقة من مكان واحد.</p>
-        <div className="v8-command-meta"><span><CommandIcon compact name="members"/> {active} إداري نشط</span><span><CommandIcon compact name="weeks"/> {timeLabel}</span></div>
-        <div className="v8-hero-actions"><button type="button" className="v8-hero-primary" onClick={()=>open('team')}>إدارة الإداريين <ArrowLeft size={18}/></button><button type="button" className="v8-hero-secondary" onClick={()=>open('updates')}>تسجيل قراءة <Plus size={17}/></button></div>
-       </div>
-       <div className="v8-command-hero-art"><img src="/assets/chico-approved-hero.avif" alt="الشعار المعتمد لفريق CHICO وشعار OneState RP والذئب الهادئ" decoding="async" fetchPriority="high"/></div>
-      </section>
+      <NexusStage week={timeLabel} rate={totals.rate} coverage={totals.coverage} active={active} roles={roleCounts} helpers={top} moderators={moderatorTop} onTeam={()=>open('team')} onRead={()=>open('daily')} onRecord={()=>open('updates')} onOpen={id=>{const member=rows.find(r=>r.id===id);if(member){open('team');setFocused(member);}}}/>
       {!review&&state&&!hasRegisteredWeek&&<DashboardWeekNotice currentWeek={summary?.week_start??'—'} previous={previousWeek} onReadReports={()=>{open('daily');if(previousWeek)setRequestedReportPeriod({from:previousWeek.from,to:previousWeek.to});}} onRecord={()=>open('updates')}/>}
       <div className="x-kpi-grid v8-kpi-grid">{kpis.map(({title,english,value,glyph,tone},index)=><div className={'x-kpi v8-kpi x-tone-'+tone} key={title} style={{animationDelay:(index*45)+'ms'}}><div className="x-kpi-title"><CommandIcon name={glyph}/><div><b>{title}</b><small>{english}</small></div></div><strong>{value}</strong><span>{review?'لا توجد قراءات بعد': 'الأسبوع الحالي'}</span><i className="v8-kpi-line"/></div>)}</div>
       <div className="x-triple">
@@ -247,10 +242,6 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
           </div>)}
           <p>كل زيادة تخص فترة القراءة المعروضة؛ لا نوزّع الزيادة على أيام لم تُسجَّل فيها قراءات.</p>
          </div>:<div className="x-empty"><Activity size={26}/><b>لا توجد قراءات مسجلة لهذا الأسبوع</b><p>ستظهر الفترة الحقيقية لكل قراءة بعد تسجيلها، دون أرقام افتراضية</p></div>}
-       </section>
-       <section className="x-panel x-leaders-panel"><CardTitle icon={Trophy} title="أفضل الإداريين" en="TOP PERFORMERS" action={<button className="x-text-action" onClick={()=>open('team')}>الفريق <ArrowLeft size={14}/></button>}/>
-        {top.length?top.map((r,i)=><button className="x-leader" key={r.id} onClick={()=>{setFocused(r);open('team');setFocused(r);}}><span className={'x-place x-place-'+i}>{i+1}</span><span className="x-person-icon"><RankMark rank={r.rank}/></span><span className="x-leader-name"><b>{r.name}</b><small>{r.rank}</small></span><strong>{pretty(r.tickets)}</strong></button>):<div className="x-empty"><Trophy size={26}/><b>لا يوجد ترتيب متاح</b><p>يبدأ الترتيب بعد تسجيل أداء المؤهلين</p></div>}
-        <p className="x-panel-footnote">الترتيب يستبعد رتبة Moderator والرتب القيادية</p>
        </section>
       </div>
       <div className="v7-bottom-dashboard">
@@ -284,14 +275,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
      <footer className="x-foot"><span>© CHICO GENERAL TEAM · ONE STATE RP</span><span>{review?'VISUAL REVIEW — NOT LIVE DATA':'PROTECTED ADMINISTRATION PLATFORM'}</span></footer>
     </div>
    </main>
-   <nav className="v8-mobile-dock" aria-label="التنقل السريع على الهاتف">
-    {([{id:'dashboard',name:'القيادة'},{id:'team',name:'الفريق'},{id:'updates',name:'تسجيل'},{id:'daily',name:'التقرير'}] as const).map(item=>
-     <button type="button" key={item.id} className={tab===item.id?'active':''} onClick={()=>open(item.id)} aria-current={tab===item.id?'page':undefined}>
-      <CommandIcon name={item.id} compact/><span>{item.name}</span>
-      
-     </button>
-    )}
-   </nav>
+   <NexusDock tab={tab} onNavigate={open} onMore={toggleMenu} menuOpen={menu}/>
   </div>
  </div>;
 }
