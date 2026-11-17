@@ -108,9 +108,9 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
  useEffect(()=>{try{setLight(localStorage.getItem('chico-ui-theme')==='light');}catch{}},[]);
  useEffect(()=>{const valid=links.map(l=>l.id);const initial=new URLSearchParams(window.location.search).get('tab') as Tab|null;if(initial&&valid.includes(initial))setTab(initial);},[]);
  const [menu,setMenu]=useState(false);
- useEffect(()=>{try{setMenu(window.matchMedia('(min-width: 1021px)').matches&&localStorage.getItem('chico-nav-open')==='1');}catch{}},[]);
- const toggleMenu=()=>setMenu(current=>{const next=!current;try{if(window.matchMedia('(min-width: 1021px)').matches)localStorage.setItem('chico-nav-open',next?'1':'0');}catch{}return next;});
- const closeMenu=()=>{setMenu(false);try{if(window.matchMedia('(min-width: 1021px)').matches)localStorage.setItem('chico-nav-open','0');}catch{}};
+ // NEXUS uses a transient overlay, never a permanently expanded sidebar.
+ const toggleMenu=()=>setMenu(current=>!current);
+ const closeMenu=()=>setMenu(false);
  useEffect(()=>{if(!menu)return;const handler=(event:KeyboardEvent)=>{if(event.key==='Escape')setMenu(false);};window.addEventListener('keydown',handler);return()=>window.removeEventListener('keydown',handler);},[menu]);
  const [pass,setPass]=useState('');
  const [reveal,setReveal]=useState(false);
@@ -189,7 +189,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
 
  return <div className={'chico-v2 nx-app '+(light?'x-light':'')} dir="rtl">
   <a className="v12-skip-link" href="#chico-main-content">تخطي إلى المحتوى الرئيسي</a>
-  {review&&<div className="x-review-ribbon">قائمة الفريق من Excel المعتمد · لا توجد إحصائيات مسجلة · المعاينة غير متصلة بالحفظ</div>}
+  {review&&<div className="x-review-ribbon">NEXUS PREVIEW · لا توجد إحصائيات مسجلة · الحفظ غير متصل بالإنتاج</div>}
   <div className={"x-layout "+(menu?"v10-nav-open":"v10-nav-closed")}>
    <aside id="chico-main-navigation" className={"x-sidebar "+(menu?"x-sidebar-open":"")} aria-label="القائمة الرئيسية" aria-hidden={!menu} inert={!menu}>
     <div className="v10-nav-head"><Brand small/><button type="button" className="v10-nav-close" onClick={closeMenu} title="إغلاق القائمة" aria-label="إغلاق القائمة"><X size={19}/></button></div>
