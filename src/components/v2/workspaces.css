@@ -203,3 +203,40 @@
 /* Small stable loading shell: no fake totals, no motion when requested. */
 .chico-v2 .ct-workspace-loading{display:grid;place-items:center;min-height:180px;padding:20px;color:#a8b6c8;font-size:13px;background:#111923;border:1px solid #a6b5c52b;border-radius:12px}
 .chico-v2 .ct-chart-incomplete{padding:4px 8px;margin:0;font-size:10px;color:#dbbe84;text-align:right}
+
+/* Salary Center — English-only, compact, shared dark material system */
+.chico-v2.nx-app .ct-salary{direction:ltr;text-align:left}
+.chico-v2.nx-app .ct-salary-head,.chico-v2.nx-app .ct-salary-head>div,.chico-v2.nx-app .ct-salary-name,.chico-v2.nx-app .ct-salary-actions,.chico-v2.nx-app .ct-bonus-controls{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.chico-v2.nx-app .ct-salary-head,.chico-v2.nx-app .ct-salary-name{justify-content:space-between}
+.chico-v2.nx-app .ct-salary-head h2{font-size:23px;margin:0}
+.chico-v2.nx-app .ct-salary-icon{display:grid;place-items:center;width:42px;height:42px;border-radius:12px;background:linear-gradient(145deg,#ad895b36,#171e2a);border:1px solid #d8b47b66;color:#e8c58d}
+.chico-v2.nx-app .ct-salary-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.chico-v2.nx-app .ct-salary-summary>div{display:grid;gap:5px;padding:13px;border:1px solid var(--ct-edge);border-radius:10px;background:var(--ct-inset)}
+.chico-v2.nx-app .ct-salary-summary small,.chico-v2.nx-app .ct-salary-policy{font-size:11px;color:var(--ct-muted)}
+.chico-v2.nx-app .ct-salary-summary strong{font-size:25px;color:#ebd1a3}
+.chico-v2.nx-app .ct-salary-policy,.chico-v2.nx-app .ct-salary-status{margin:0;font-size:12px}
+.chico-v2.nx-app .ct-salary-status{color:#82d7ae}
+.chico-v2.nx-app .ct-salary-toolbar{display:flex;align-items:center;gap:8px}
+.chico-v2.nx-app .ct-salary-toolbar input{flex:1;min-width:0}
+.chico-v2.nx-app .ct-salary-toolbar button{white-space:nowrap}
+.chico-v2.nx-app .ct-salary-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:start}
+.chico-v2.nx-app .ct-salary-card{min-width:0;display:grid;gap:12px;padding:16px;background:linear-gradient(150deg,#273344,#141b26 48%,#101722);border:1px solid #a8b9cf40;border-radius:13px;box-shadow:0 8px 20px #0004;animation:ct-workspace-enter .35s both}
+.chico-v2.nx-app .ct-salary-card[data-bonus=true]{border-color:#d1ad6980;box-shadow:0 8px 20px #0004,inset 0 1px #e9bd7350}
+.chico-v2.nx-app .ct-salary-name h3{font-size:17px;color:#f0d5a6;margin:0;overflow-wrap:anywhere}
+.chico-v2.nx-app .ct-bonus-mark{display:inline-flex;align-items:center;gap:5px;color:#f2d59d;border:1px solid #d6b37a65;border-radius:6px;padding:5px 8px;background:#c39b501c;font-size:11px;font-weight:800}
+.chico-v2.nx-app .ct-salary-details{display:grid;gap:7px;border-block:1px solid var(--ct-edge);padding:12px 0}
+.chico-v2.nx-app .ct-salary-details p{margin:0;font-size:14px;overflow-wrap:anywhere}
+.chico-v2.nx-app .ct-salary-details p:first-child{font-weight:750;font-size:16px}
+.chico-v2.nx-app .ct-salary-details .ct-client-id{display:flex;align-items:center;gap:7px;color:var(--ct-muted);font-size:11px}
+.chico-v2.nx-app .ct-client-id span{min-width:0;flex:1;overflow-wrap:anywhere}
+.chico-v2.nx-app .ct-salary-icon-btn{display:grid;place-items:center;width:31px;height:31px;flex:none;border:1px solid #b1c1d044;border-radius:7px;background:#111924;color:#dcc18d}
+.chico-v2.nx-app .ct-salary-icon-btn:disabled{opacity:.35;cursor:not-allowed}
+.chico-v2.nx-app .ct-salary-actions button{min-height:34px;display:flex;align-items:center;gap:6px}
+.chico-v2.nx-app .ct-bonus-controls{border-top:1px solid var(--ct-edge);padding-top:10px}
+.chico-v2.nx-app .ct-bonus-controls strong,.chico-v2.nx-app .ct-salary-amount{color:#ecd19c;font-variant-numeric:tabular-nums}
+.chico-v2.nx-app .ct-salary-amount{font-size:12px;margin:0}
+.chico-v2.nx-app .ct-bonus-add{color:#e8c58d}
+.chico-v2.nx-app .ct-salary-edit label{color:#b9c6d8}
+@media(max-width:1000px){.chico-v2.nx-app .ct-salary-grid{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:520px){.chico-v2.nx-app .ct-salary-summary>div{padding:8px}.chico-v2.nx-app .ct-salary-summary strong{font-size:19px}.chico-v2.nx-app .ct-salary-summary small{font-size:10px}.chico-v2.nx-app .ct-salary-card{padding:11px}}
+@media(prefers-reduced-motion:reduce){.chico-v2.nx-app .ct-salary-card{animation:none!important}}
