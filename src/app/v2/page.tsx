@@ -3,8 +3,8 @@ import ExecutiveCommand,{type Tab} from '@/components/v2/ExecutiveCommand';
 import '@/components/v2/executive-unified.css';
 
 export const metadata:Metadata={
- title:'CHICO GENERAL TEAM — إدارة الفريق',
- description:'OneState RP · CHICO GENERAL TEAM — Private administrative dashboard and verified staff reporting'
+ title:'CHICO TEAM — إدارة الفريق',
+ description:'OneState RP · CHICO TEAM — Private administrative dashboard and verified staff reporting'
 };
 export const dynamic='force-dynamic';
 export default async function ExecutivePreview({searchParams}:{searchParams:Promise<{review?:string;tab?:string}>}){

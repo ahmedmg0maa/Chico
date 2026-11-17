@@ -13,11 +13,14 @@ assert(!main.includes('primaryLinks.map'),'Legacy ungrouped sidebar should be re
 assert(sidebar.includes("aria-current={tab===id?'page':undefined}"),'Active route accessible to assistive tech');
 assert(sidebar.includes("onClick={()=>open(id)}"),'Every nav link works through existing router');
 const dashboardKpis=main.slice(main.indexOf('const kpis=['),main.indexOf('const isLogin='));
-assert.equal((dashboardKpis.match(/title:/g)||[]).length,4,'Only four decision KPI cards on the home page');
-for(const needed of ['Weekly Tickets','Weekly Flags','Flag Rate','Team Coverage'])
+assert.equal((dashboardKpis.match(/title:/g)||[]).length,4,'Only four core decision KPI cards on the home page');
+for(const needed of ['Weekly Tickets','Weekly Flags','Rating','Time'])
  assert(dashboardKpis.includes(needed),'Missing executive KPI '+needed);
 assert(!dashboardKpis.includes('Total Staff'),'Staff count belongs to hero, not duplicated in KPI');
-assert(!dashboardKpis.includes('Average Rating'),'Per-member rating belongs to team dashboard');
+const nexus=source('src/components/nexus/NexusShell.tsx');
+assert(nexus.includes('Weekly Flag %')&&nexus.includes('تغطية التقييم'),'Rate and coverage must stay available in distinct command panels');
+assert(nexus.includes('Top 3 Helpers')&&nexus.includes('Top 3 Moderators'),'Both approved ranking groups must appear on the dashboard');
+assert(nexus.includes('NEXUS_DESTINATIONS')&&nexus.includes('aria-keyshortcuts'),'Floating dock has real routing and keyboard hints');
 assert(!main.includes('<section className="x-weekbanner">'),'Remove redundant ornamental weekly section');
 assert(route.includes("executive-unified.css"),'Stage 2 CSS must be loaded from one canonical entrypoint');
 assert(rootRoute.includes('executive-unified.css')&&!rootRoute.includes('executive-v11.css'),'The root site must include complete mobile poster styles, not old CSS layers');
@@ -41,8 +44,12 @@ const operationTabs=source('src/components/v2/ExecutiveOperations.tsx');
 assert(operations.includes('compactHead/>'),'Nested management subtools must request compact headings');
 assert(operationTabs.includes("{!compact&&<img className="),'Nested pages should not load redundant large artwork');
 assert(operations.includes("aria-current={selected===t.id?'page':undefined}"),'Management subnav must expose active state');
-assert(css.includes('.chico-v2.x-light .v8-rank-label.v8-rank--helper'),'Accessible light-theme rank contrast must be maintained');
-assert(css.includes('.chico-v2.x-light .x-user-button small'),'Light-theme user button subtitle contrast must be maintained');
+assert(main.includes('const light=false;')&&!main.includes('switchAppearance')&&!main.includes("localStorage.getItem('chico-ui-theme')"),'CHICO TEAM must always render dark, regardless of old preference');
+assert(main.includes('ct-topbar')&&main.includes('<b>CHICO TEAM</b>'),'Compact canonical masthead must be present');
+assert(!main.includes('CHICO TEAM 1.0')&&!nexus.includes('N E X U S'),'No old brand additions in app shell');
+assert(!sidebar.includes('<small>{item.en}</small>'),'Drawer links should have one readable label');
+const dark=source('src/components/v2/nexus.css');
+assert(dark.includes('ct-emblem-float')&&dark.includes('ct-page-in')&&dark.includes('ct-drawer-in')&&dark.includes('prefers-reduced-motion:reduce'),'Motion should be purposeful and respect reduced motion');
 assert(css.includes('.v9-history-table th')&&css.includes('.x-op-table th'),'Excel/history tables should have readable sticky headers');
 
 console.log('PASS CHICO Stage 2: grouped navigation, 4 dashboard KPIs, semantic route state, responsive visual tokens');

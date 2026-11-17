@@ -1,0 +1,529 @@
+/* NEXUS — shared spatial identity, all actual application routes.
+   Source module appended by the canonical CSS generator, never a second bundle. */
+.chico-v2.nx-app{
+ --nx-obsidian:#080b10;--nx-graphite:#121722;--nx-titanium:#6d788b;
+ --nx-gold:#dfb875;--nx-platinum:#ebf1fa;--nx-electric:#77baff;--nx-purple:#b58af0;
+ --nx-edge:rgba(186,198,220,.23);--nx-metal-edge:rgba(232,198,133,.44);
+ --nx-material:linear-gradient(145deg,rgba(43,51,65,.9),rgba(14,19,27,.96) 72%);
+ --nx-lift:0 18px 42px rgba(0,0,0,.3),inset 0 1px rgba(244,248,255,.09);
+ --nx-radius:18px;--nx-speed:180ms;--nx-space:clamp(12px,1.45vw,22px);
+ --ch-bg:var(--nx-obsidian);--ch-surface:#141a24;--ch-surface-alt:#1b2330;
+ --ch-text:#f1f4f8;--ch-muted:#b4becd;--ch-subtle:#98a7ba;
+ --ch-line:var(--nx-edge);--ch-line-strong:var(--nx-metal-edge);
+ background:radial-gradient(ellipse at 50% 0%,#293342 0,transparent 35%),var(--nx-obsidian);
+ color:var(--ch-text);min-height:100dvh;
+}
+.chico-v2.nx-app .x-layout.v10-nav-open,.chico-v2.nx-app .x-layout.v10-nav-closed{display:block!important;grid-template-columns:none!important}
+.chico-v2.nx-app .x-layout>.x-sidebar{
+ position:fixed!important;left:0;top:0;bottom:0;width:min(310px,88vw)!important;height:100dvh!important;
+ z-index:100;overflow-y:auto;background:linear-gradient(155deg,#222b39,#0b0f17 68%);
+ border:1px solid var(--nx-metal-edge);box-shadow:20px 0 70px #0008;transition:transform var(--nx-speed) ease;
+}
+.chico-v2.nx-app .x-layout.v10-nav-open>.x-sidebar{display:flex!important;transform:translateX(0)!important}
+.chico-v2.nx-app .x-layout.v10-nav-closed>.x-sidebar{display:none!important}
+.chico-v2.nx-app .x-layout.v10-nav-open>.x-mobile-scrim{
+ display:block!important;position:fixed;inset:0;width:100%;height:100dvh;z-index:90;
+ background:#02040999;backdrop-filter:blur(5px);border:0;
+}
+.chico-v2.nx-app .x-body{width:100%;min-width:0;background:transparent;overflow:clip}
+.chico-v2.nx-app .x-topbar{
+ min-height:70px;border-bottom:1px solid var(--nx-edge);background:rgba(12,16,23,.92);
+ box-shadow:0 8px 30px #0003;backdrop-filter:blur(16px);z-index:40;
+}
+.chico-v2.nx-app .x-main-content{max-width:1560px;padding:clamp(16px,2.2vw,32px);padding-bottom:128px!important}
+.chico-v2.nx-app .nx-top-brand{display:flex;align-items:center;gap:9px;flex-shrink:0;direction:ltr}
+.chico-v2.nx-app .nx-top-brand img{display:block;object-fit:contain;border-radius:50%;width:38px;height:38px}
+.chico-v2.nx-app .nx-top-brand div{display:grid;gap:3px}
+.chico-v2.nx-app .nx-top-brand b{font-weight:900;font-size:13px;letter-spacing:.025em;color:var(--ch-text);white-space:nowrap}
+.chico-v2.nx-app .nx-top-brand small{font:750 9px/1.2 Inter,system-ui,sans-serif;letter-spacing:.28em;color:var(--nx-gold)}
+.chico-v2.nx-app .x-breadcrumb{display:none}
+.chico-v2.nx-app .x-panel,.chico-v2.nx-app .v7-chart-card,.chico-v2.nx-app .nx-glass{
+ border:1px solid var(--nx-edge);border-top-color:rgba(226,233,247,.32);border-radius:var(--nx-radius);
+ background:var(--nx-material);box-shadow:var(--nx-lift);
+}
+.chico-v2.nx-app button:focus-visible,.chico-v2.nx-app input:focus-visible,.chico-v2.nx-app select:focus-visible{outline:2px solid var(--nx-gold);outline-offset:3px}
+.chico-v2.nx-app .nx-link{background:none;border:0;color:var(--nx-gold);font-weight:800;font-size:12px;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.chico-v2.nx-app .nx-link:hover{color:var(--ch-text)}
+.chico-v2.nx-app .nx-button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:45px;border-radius:11px;padding:10px 19px;font-weight:850}
+.chico-v2.nx-app .nx-primary{background:linear-gradient(145deg,#fff0c1,#d3a45b);color:#221a11;border:1px solid #ffe5a9;box-shadow:0 6px 20px #b6813333,inset 0 1px #fff9;transition:filter var(--nx-speed),transform var(--nx-speed)}
+.chico-v2.nx-app .nx-primary:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.chico-v2.nx-app .nx-primary .v8-symbol{color:#554021}
+.chico-v2.nx-app .nx-stage{
+ position:relative;isolation:isolate;overflow:hidden;min-width:0;padding:clamp(16px,2vw,28px);margin-bottom:var(--nx-space);
+ border:1px solid var(--nx-edge);border-top-color:#d7bc84b3;border-radius:24px;
+ background:radial-gradient(ellipse at 50% 42%,#34455a80,transparent 54%),linear-gradient(155deg,#161e2b,#070a10 76%);
+ box-shadow:0 24px 65px #0005;
+}
+.chico-v2.nx-app .nx-stage:before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(124deg,transparent 24%,#b4c7e00a 35%,transparent 45%),radial-gradient(ellipse at 50% 100%,#eab45d18,transparent 50%)}
+.chico-v2.nx-app .nx-stage-head{display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap;margin-bottom:18px}
+.chico-v2.nx-app .nx-eyebrow{margin:0 0 5px;font:750 10px/1.4 Inter,system-ui,sans-serif;letter-spacing:.18em;color:var(--nx-gold)}
+.chico-v2.nx-app .nx-stage-head h1{font-size:clamp(26px,3vw,40px);font-weight:900;line-height:1.15;margin:0 0 8px;letter-spacing:-.025em;color:var(--ch-text)}
+.chico-v2.nx-app .nx-stage-week{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--ch-muted)}
+.chico-v2.nx-app .nx-tiny-dot{width:6px;height:6px;border-radius:50%;background:var(--nx-gold);box-shadow:0 0 9px #efc16a80}
+.chico-v2.nx-app .nx-stage-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(225px,1.12fr) minmax(0,1.16fr);gap:var(--nx-space);align-items:center;direction:ltr}
+.chico-v2.nx-app .nx-stage-side{display:grid;gap:12px;min-width:0;direction:rtl}
+.chico-v2.nx-app .nx-glass{min-width:0;padding:14px}
+.chico-v2.nx-app .nx-panel-title{display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0}
+.chico-v2.nx-app .nx-panel-title h2{margin:0;color:var(--ch-text);font-weight:850;font-size:14px;line-height:1.4}
+.chico-v2.nx-app .nx-panel-title .v8-symbol{width:28px;height:28px}
+.chico-v2.nx-app .nx-ring{
+ --nx-progress:0%;width:min(140px,100%);aspect-ratio:1;margin:12px auto 3px;padding:11px;border-radius:50%;
+ background:conic-gradient(from -90deg,#fff0b7 0%,#c19859 var(--nx-progress),#343b47 var(--nx-progress),#222936 100%);
+ box-shadow:0 0 0 5px #b9c4da10,0 0 24px #e8b96a20,inset 0 2px 7px #0006;
+ display:grid;place-items:center;position:relative;
+}
+.chico-v2.nx-app .nx-ring-inner{width:100%;height:100%;border:1px solid #d7b66b42;border-radius:50%;background:#141a24;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:3px}
+.chico-v2.nx-app .nx-ring-inner strong{font-size:clamp(19px,2.2vw,28px);font-weight:900;color:var(--ch-text);font-variant-numeric:tabular-nums}
+.chico-v2.nx-app .nx-ring-inner small{font-size:10px;color:var(--ch-muted)}
+.chico-v2.nx-app .nx-active-total{display:flex;align-items:baseline;gap:8px;padding:8px 0}
+.chico-v2.nx-app .nx-active-total strong{font-size:30px;font-weight:950;line-height:1}
+.chico-v2.nx-app .nx-active-total span{color:var(--ch-muted);font-size:11px}
+.chico-v2.nx-app .nx-role-list{display:grid;gap:7px}
+.chico-v2.nx-app .nx-role{display:flex;direction:ltr;align-items:center;gap:8px;color:var(--ch-muted);font-size:12px}
+.chico-v2.nx-app .nx-role i{width:8px;height:8px;border-radius:50%;background:var(--role);box-shadow:0 0 9px var(--role)}
+.chico-v2.nx-app .nx-role b{margin-left:auto;color:var(--ch-text);font-variant-numeric:tabular-nums}
+.chico-v2.nx-app .nx-role--helper{--role:#35d28c}.chico-v2.nx-app .nx-role--senior{--role:#57b8ff}.chico-v2.nx-app .nx-role--moderator{--role:#b579ea}
+.chico-v2.nx-app .nx-coverage{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-top:12px;padding-top:10px;border-top:1px solid var(--nx-edge);font-size:11px;color:var(--ch-muted)}
+.chico-v2.nx-app .nx-wolf-stage{position:relative;min-height:350px;display:flex;flex-direction:column;align-items:center;justify-content:center;isolation:isolate;direction:ltr}
+.chico-v2.nx-app .nx-orbit{position:absolute;top:4%;left:50%;transform:translateX(-50%);aspect-ratio:1;width:min(96%,310px);border-radius:50%;z-index:-1;pointer-events:none}
+.chico-v2.nx-app .nx-orbit-outer{background:conic-gradient(from 33deg,transparent 0deg,#f7df9b 42deg,#a1824e 70deg,transparent 112deg,#8192ac85 140deg,transparent 196deg,#e9c786 250deg,transparent 292deg);mask:radial-gradient(farthest-side,transparent calc(100% - 2px),#000 0);filter:drop-shadow(0 0 9px #e9b96499)}
+.chico-v2.nx-app .nx-orbit-inner{width:min(81%,265px);top:9%;border:1px solid #dce6fe40;box-shadow:0 0 28px #aac8f416,inset 0 0 24px #eab96010}
+.chico-v2.nx-app .nx-wolf-halo{position:absolute;width:94%;max-width:320px;aspect-ratio:1;top:1%;left:50%;transform:translateX(-50%);z-index:-2;border-radius:50%;background:radial-gradient(ellipse,#a5b8d633 0,#d2a65416 36%,transparent 70%)}
+.chico-v2.nx-app .nx-stage-wolf{display:block;width:min(80%,238px);height:auto;aspect-ratio:1;object-fit:contain;filter:drop-shadow(0 18px 23px #0009);margin:0 auto -5px;z-index:1}
+.chico-v2.nx-app .nx-wolf-plinth{position:relative;height:34px;width:min(84%,270px);background:linear-gradient(180deg,#778397 0%,#242c38 14%,#131922 48%,#4b5668 69%,#b78a4d 86%,#141922 100%);border:1px solid #b1bbc4;border-bottom:3px solid #e4b96f;border-radius:50%;box-shadow:0 16px 19px #0007,0 6px 20px #e2ab5538;transform:perspective(220px) rotateX(14deg)}
+.chico-v2.nx-app .nx-wolf-plinth span{position:absolute;inset:1px 5px 8px;border-radius:50%;border:1px solid #f9dda0;box-shadow:inset 0 0 13px #dfb36c33}
+.chico-v2.nx-app .nx-stage-brand{text-align:center;margin:12px 0 9px;display:grid;gap:5px}
+.chico-v2.nx-app .nx-stage-brand b{font-size:clamp(16px,1.9vw,24px);font-weight:950;letter-spacing:.07em;color:var(--ch-text);white-space:nowrap}
+.chico-v2.nx-app .nx-stage-brand em{color:var(--nx-gold);font-style:normal}
+.chico-v2.nx-app .nx-stage-brand small{font:850 10px/1.4 Inter,system-ui,sans-serif;letter-spacing:.26em;color:var(--nx-gold)}
+.chico-v2.nx-app .nx-podium{padding:15px 13px;--podium:#6acb96}
+.chico-v2.nx-app .nx-podium--mods{--podium:#b684ee}
+.chico-v2.nx-app .nx-podium-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:end;gap:6px;direction:ltr;padding-top:13px}
+.chico-v2.nx-app .nx-podium-person{position:relative;overflow:hidden;display:grid;justify-items:center;align-content:end;gap:3px;min-width:0;padding:9px 3px 7px;min-height:124px;border-radius:9px;background:linear-gradient(155deg,#303a47,#151b25);border:1px solid #b1bfce36;box-shadow:inset 0 1px #fff1;color:var(--ch-text);transition:transform var(--nx-speed)}
+.chico-v2.nx-app .nx-podium-person:hover{transform:translateY(-3px)}
+.chico-v2.nx-app .nx-podium-person.nx-position-1{min-height:146px;border-color:var(--podium);box-shadow:0 0 17px color-mix(in srgb,var(--podium) 20%,transparent),inset 0 1px #fff2}
+.chico-v2.nx-app .nx-podium-medal{position:absolute;top:5px;left:6px;font:850 10px/1.1 Inter,system-ui,sans-serif;color:#bfc4cc}
+.chico-v2.nx-app .nx-position-1 .nx-podium-medal{color:#efd08d}.chico-v2.nx-app .nx-position-3 .nx-podium-medal{color:#cc956c}
+.chico-v2.nx-app .nx-podium-person .v8-insignia{width:35px;height:38px}
+.chico-v2.nx-app .nx-podium-person b{width:100%;font-size:11px;line-height:1.3;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;text-align:center}
+.chico-v2.nx-app .nx-podium-person strong{font-size:16px;line-height:1.2;font-weight:900;font-variant-numeric:tabular-nums}
+.chico-v2.nx-app .nx-podium-person small{font-size:9px;color:var(--ch-muted)}
+.chico-v2.nx-app .nx-no-ranking{min-height:116px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;color:var(--ch-muted);font-size:12px}
+.chico-v2.nx-app .nx-no-ranking .v8-symbol{opacity:.56;width:40px;height:40px}
+.chico-v2.nx-app .x-kpi-grid.v8-kpi-grid{gap:var(--nx-space);margin-bottom:var(--nx-space)}
+.chico-v2.nx-app .x-kpi.v8-kpi{min-height:115px;padding:14px 17px;border-radius:15px;background:var(--nx-material);border:1px solid var(--nx-edge);border-top-color:#dfe9fb55;box-shadow:var(--nx-lift)}
+.chico-v2.nx-app .x-kpi.v8-kpi .v8-symbol{border-radius:12px;background:linear-gradient(135deg,#ffffff15,#ffffff02);box-shadow:inset 0 1px #fff2}
+.chico-v2.nx-app .x-kpi.v8-kpi .v8-symbol-corners,.chico-v2.nx-app .nx-dock .v8-symbol-corners{display:none}
+.chico-v2.nx-app .x-kpi.v8-kpi>strong{font-size:clamp(25px,3vw,40px);font-variant-numeric:tabular-nums}
+.chico-v2.nx-app .nx-stage .x-kpi-grid{margin:0 0 var(--nx-space)}
+.chico-v2.nx-app .nx-dock-wrap{
+ position:fixed;bottom:max(13px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);z-index:70;
+ width:min(780px,calc(100vw - 28px));display:grid;justify-items:center;gap:4px;direction:ltr;
+}
+.chico-v2.nx-app .nx-dock-toggle{height:19px;width:48px;border-radius:10px 10px 5px 5px;border:1px solid var(--nx-metal-edge);background:#191e27;color:#e2c284;line-height:1;font-size:16px;box-shadow:0 3px 12px #0005}
+.chico-v2.nx-app .nx-dock{
+ display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) 74px repeat(3,minmax(0,1fr));gap:5px;align-items:center;
+ width:100%;padding:8px 12px;border:1px solid #b4becd8c;border-top-color:#f3d59d;
+ border-radius:22px;background:linear-gradient(165deg,#3f4755ed,#141922f4 45%,#0b1018f5 82%);
+ box-shadow:0 16px 45px #000a,0 -2px 22px #edbf6e15,inset 0 1px #fff4;
+ backdrop-filter:blur(20px);
+}
+.chico-v2.nx-app .nx-dock[hidden]{display:none!important}
+.chico-v2.nx-app .nx-dock-item{position:relative;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:5px;min-height:52px;min-width:0;direction:rtl;border:1px solid transparent;border-radius:12px;background:transparent;color:#c7d0df;font-size:11px;font-weight:800;transition:background var(--nx-speed),color var(--nx-speed),border var(--nx-speed)}
+.chico-v2.nx-app .nx-dock-item .v8-symbol{width:27px;height:27px;border:0;background:none;box-shadow:none;color:currentColor}
+.chico-v2.nx-app .nx-dock-item.is-active{color:#fff1c3;border-color:#e3bf7c77;background:linear-gradient(155deg,#9b723e55,#71533130);box-shadow:inset 0 0 20px #e2b96e13}
+.chico-v2.nx-app .nx-dock-item.is-active:after{content:"";position:absolute;bottom:0;left:23%;right:23%;height:2px;border-radius:2px;background:#f6d78b;box-shadow:0 0 10px #efbe5899}
+.chico-v2.nx-app .nx-dock-item:hover{background:#f2dfb91a;color:#fff3ce}
+.chico-v2.nx-app .nx-dock-core{display:grid;justify-items:center;align-content:center;gap:2px;min-height:64px;border:1px solid #f6d799;border-radius:50%;background:radial-gradient(circle at 40% 5%,#5b626a,#12151b 68%);box-shadow:0 0 16px #e8b25c44,inset 0 0 0 3px #0b0e15;transform:translateY(-3px);color:#f5dfb0;font-size:9px;font-weight:850}
+.chico-v2.nx-app .nx-dock-core img{width:40px;height:40px;object-fit:contain;border-radius:50%}
+.chico-v2.nx-app .nx-dock-wrap.is-collapsed{width:max-content}
+.chico-v2.nx-app.x-light{
+ --nx-obsidian:#eef1f5;--nx-graphite:#f9fafc;--nx-edge:#b9c4d1;--nx-metal-edge:#ad8951;--nx-metal:#795a29;
+ --nx-gold:#76531c;--nx-material:linear-gradient(145deg,#ffffff,#e9edf2);
+ --nx-lift:0 12px 27px #40506b16,inset 0 1px white;--ch-text:#202938;--ch-muted:#4f5b6c;--ch-subtle:#5d6572;
+ --ch-surface:#fff;--ch-surface-alt:#e9edf2;--ch-bg:#eef1f5;
+ background:#eef1f5;
+}
+.chico-v2.nx-app.x-light .x-topbar,.chico-v2.nx-app.x-light .x-layout>.x-sidebar{background:#f9fafcec}
+.chico-v2.nx-app.x-light .nx-stage{background:radial-gradient(ellipse at 50% 40%,#cad5e5,#eff2f6 64%);border-color:#b4ab95}
+.chico-v2.nx-app.x-light .nx-ring-inner{background:#fafbfe}
+.chico-v2.nx-app.x-light .nx-podium-person{background:linear-gradient(145deg,#fff,#e4eaf1);color:#202938}
+.chico-v2.nx-app.x-light .nx-dock{background:linear-gradient(150deg,#fafbfe,#d9e0e9);border-color:#ac946a;box-shadow:0 12px 30px #36415130}
+.chico-v2.nx-app.x-light .nx-dock-item{color:#29374c}
+.chico-v2.nx-app.x-light .nx-dock-item.is-active{color:#65471b;background:#e9d4aa;border-color:#b79455}
+@media(max-width:1060px){
+ .chico-v2.nx-app .nx-stage-grid{grid-template-columns:1fr 1fr;align-items:stretch}
+ .chico-v2.nx-app .nx-wolf-stage{grid-column:1/-1;grid-row:1;min-height:290px}
+ .chico-v2.nx-app .nx-stage-wolf{width:min(66%,200px)}
+ .chico-v2.nx-app .nx-orbit{width:min(90%,260px)}
+ .chico-v2.nx-app .nx-orbit-inner{width:min(73%,220px)}
+ .chico-v2.nx-app .nx-wolf-halo{width:270px}
+ .chico-v2.nx-app .nx-stage-team,.chico-v2.nx-app .nx-stage-leaders{align-content:start}
+ .chico-v2.nx-app .x-status{display:none}
+}
+@media(max-width:640px){
+ .chico-v2.nx-app .x-topbar{padding:7px 9px;gap:5px;flex-wrap:wrap;min-height:54px}
+ .chico-v2.nx-app .nx-top-brand{gap:5px}
+ .chico-v2.nx-app .nx-top-brand img{width:28px;height:28px}
+ .chico-v2.nx-app .nx-top-brand b{font-size:10px}
+ .chico-v2.nx-app .nx-top-brand small{font-size:8px}
+ .chico-v2.nx-app .x-top-group{gap:5px}
+ .chico-v2.nx-app .x-date{display:none}
+ .chico-v2.nx-app .x-top-actions{gap:4px}
+ .chico-v2.nx-app .x-top-actions .x-icon{width:32px;height:32px}
+ .chico-v2.nx-app .x-main-content{padding:12px;padding-bottom:116px!important}
+ .chico-v2.nx-app .nx-stage{padding:13px;border-radius:18px}
+ .chico-v2.nx-app .nx-stage-head{gap:10px;margin-bottom:13px}
+ .chico-v2.nx-app .nx-stage-head h1{font-size:25px}
+ .chico-v2.nx-app .nx-stage-head .nx-button{padding:8px 11px;min-height:39px;font-size:12px}
+ .chico-v2.nx-app .nx-stage-grid{grid-template-columns:1fr}
+ .chico-v2.nx-app .nx-wolf-stage{grid-column:auto;min-height:272px}
+ .chico-v2.nx-app .nx-stage-team{grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch;gap:8px}
+ .chico-v2.nx-app .nx-glass{padding:10px}
+ .chico-v2.nx-app .nx-ring{width:min(105px,100%);padding:8px}
+ .chico-v2.nx-app .nx-panel-title h2{font-size:12px}
+ .chico-v2.nx-app .nx-active-total strong{font-size:24px}
+ .chico-v2.nx-app .nx-ring-inner strong{font-size:20px}
+ .chico-v2.nx-app .nx-link{font-size:11px}
+ .chico-v2.nx-app .nx-role{font-size:10px;gap:5px}
+ .chico-v2.nx-app .nx-dock-wrap{width:calc(100vw - 15px);bottom:max(6px,env(safe-area-inset-bottom))}
+ .chico-v2.nx-app .nx-dock{grid-template-columns:repeat(3,minmax(0,1fr)) 48px repeat(3,minmax(0,1fr));gap:1px;padding:5px 4px;border-radius:16px}
+ .chico-v2.nx-app .nx-dock-item{font-size:9px;min-height:46px;gap:3px;padding:2px 0}
+ .chico-v2.nx-app .nx-dock-item .v8-symbol{width:21px;height:21px}
+ .chico-v2.nx-app .nx-dock-core{min-height:46px;font-size:8px;transform:none;gap:0}
+ .chico-v2.nx-app .nx-dock-core img{width:27px;height:27px}
+ .chico-v2.nx-app .x-kpi-grid.v8-kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .chico-v2.nx-app .x-kpi.v8-kpi{padding:11px;min-height:100px}
+}
+@media(max-width:370px){.chico-v2.nx-app .nx-stage-team{grid-template-columns:1fr}.chico-v2.nx-app .nx-dock-item{font-size:8px}.chico-v2.nx-app .nx-stage-wolf{width:min(68%,190px)}}
+@media(prefers-reduced-motion:reduce){.chico-v2.nx-app .nx-stage *,.chico-v2.nx-app .nx-dock *{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+/* The official emblem stays in the masthead; the central sculpture is transparent original vector artwork. */
+.chico-v2.nx-app .nx-stage-wolf{width:min(89%,285px);aspect-ratio:360/380;margin:0 auto -8px;filter:drop-shadow(0 14px 16px #0009) drop-shadow(0 0 10px #b9c9e419)}
+.chico-v2.nx-app .nx-wolf-stage{min-height:370px}
+.chico-v2.nx-app .x-review-ribbon{pointer-events:none;position:relative;inset:auto;margin:0;min-height:24px;padding:4px 8px;font-size:10px;text-align:center;background:#252b34;color:#e5c58c;border-bottom:1px solid #ad936642}
+.chico-v2.nx-app .x-status{max-width:180px}
+@media(min-width:1061px) and (max-height:950px){
+ .chico-v2.nx-app .nx-stage{padding:21px}
+ .chico-v2.nx-app .nx-stage-head{margin-bottom:13px}
+ .chico-v2.nx-app .nx-stage-wolf{width:min(87%,252px)}
+ .chico-v2.nx-app .nx-wolf-stage{min-height:342px}
+ .chico-v2.nx-app .nx-stage-grid{gap:15px}
+ .chico-v2.nx-app .nx-stage-side{gap:9px}
+ .chico-v2.nx-app .nx-ring{width:min(118px,100%)}
+ .chico-v2.nx-app .nx-no-ranking{min-height:95px}
+ .chico-v2.nx-app .nx-stage .x-kpi.v8-kpi{min-height:110px;padding:12px 15px}
+}
+@media(max-width:1060px){
+ .chico-v2.nx-app .nx-stage-wolf{width:min(76%,224px)}
+ .chico-v2.nx-app .nx-wolf-stage{min-height:310px}
+}
+@media(max-width:640px){
+ .chico-v2.nx-app .nx-stage-wolf{width:min(76%,200px)}
+ .chico-v2.nx-app .nx-wolf-stage{min-height:290px}
+}
+
+/* NEXUS signature refinement — machined edges, spatial lighting, restrained material system. */
+.chico-v2.nx-app{
+ --nx-metal:linear-gradient(120deg,#8793a4,#dbe3ee 16%,#4c586a 29%,#121823 47%,#8b96a8 62%,#343e4c 83%,#b29b72);
+ --nx-glass:linear-gradient(150deg,rgba(62,74,93,.83),rgba(27,35,48,.96) 35%,rgba(12,18,27,.98) 86%);
+ --nx-material:linear-gradient(145deg,#273241,#171e2a 36%,#101620 95%);
+ --nx-lift:0 14px 28px #0005,inset 0 1px rgba(234,242,255,.18),inset 0 -1px #0008;
+}
+.chico-v2.nx-app .nx-stage{
+ border-radius:25px;border:1px solid #929eb06b;
+ background:
+ radial-gradient(ellipse at 49% 82%,#d4a86220,transparent 31%),
+ radial-gradient(ellipse at 48% 30%,#3c4c6273,transparent 54%),
+ linear-gradient(155deg,#151d29 0%,#080c13 46%,#111925 100%);
+ padding:clamp(17px,2vw,27px);box-shadow:0 22px 50px #0006,inset 0 1px #e5ebf223;
+}
+.chico-v2.nx-app .nx-stage::before{
+ opacity:1;background:
+ radial-gradient(ellipse 82% 123% at 50% -82%,transparent 72%,#9eafc82b 72.5%,#252e3b 73%,#111722 76%,#d9b37699 76.5%,transparent 77%),
+ radial-gradient(ellipse at 50% 0%,#8898af18,transparent 49%),
+ repeating-linear-gradient(114deg,transparent 0 180px,#c6d6ff04 181px 182px,transparent 183px 260px);
+}
+.chico-v2.nx-app .nx-stage::after{
+ content:"";position:absolute;left:-8%;right:-8%;bottom:-9%;height:31%;pointer-events:none;z-index:-1;
+ transform:perspective(270px) rotateX(48deg);transform-origin:bottom;
+ background:linear-gradient(180deg,#080b0f00,#c6ab6450 51%,#151f2a 52%,#49596d28 53%,#080d14 94%),
+ repeating-linear-gradient(90deg,transparent 0 115px,#a5bbd311 116px 117px,transparent 118px 230px);
+ border-top:1px solid #d1b77b77;box-shadow:0 -3px 25px #f9c66a13;
+}
+.chico-v2.nx-app .nx-stage-head{margin-bottom:17px}
+.chico-v2.nx-app .nx-stage-head h1{font-size:clamp(26px,2.7vw,38px);font-weight:920}
+.chico-v2.nx-app .nx-eyebrow{font-size:9px;letter-spacing:.21em;color:#e3c891}
+.chico-v2.nx-app .nx-command-rail{
+ display:grid;grid-template-columns:minmax(0,1fr) minmax(137px,15%);gap:13px;
+ align-items:stretch;margin-bottom:clamp(13px,1.6vw,24px);direction:ltr
+}
+.chico-v2.nx-app .nx-command-rail>.x-kpi-grid.v8-kpi-grid{
+ grid-template-columns:repeat(4,minmax(0,1fr));margin:0;gap:12px;direction:ltr
+}
+.chico-v2.nx-app .nx-command-rail .x-kpi{
+ position:relative;isolation:isolate;overflow:hidden;display:flex;flex-direction:column;justify-content:center;
+ min-height:145px;padding:14px 15px;background:linear-gradient(135deg,#354253 0%,#202735 25%,#121722 70%,#1c2432 100%);
+ border:1px solid color-mix(in srgb,var(--kpi-accent,#dab878) 44%,#6b7583 56%);
+ border-top-color:#d6e1f28f;border-radius:16px;box-shadow:0 11px 22px #0005,inset 0 1px #f7faff15,inset 0 -3px 15px color-mix(in srgb,var(--kpi-accent,#dab878) 13%,transparent)
+}
+.chico-v2.nx-app .nx-command-rail .x-kpi:before{
+ content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+ background:radial-gradient(ellipse at left bottom,color-mix(in srgb,var(--kpi-accent,#dab878) 32%,transparent),transparent 56%),
+ linear-gradient(122deg,#fff0 0 32%,#e6edff0c 33%,#fff0 54%);
+}
+.chico-v2.nx-app .nx-command-rail .x-kpi:after{content:"";position:absolute;left:12%;right:35%;bottom:0;height:1px;background:linear-gradient(90deg,transparent,var(--kpi-accent),transparent);box-shadow:0 0 12px var(--kpi-accent)}
+.chico-v2.nx-app .nx-command-rail .x-tone-violet{--kpi-accent:#b8a2ff;--kpi-glow:#8e72f328}
+.chico-v2.nx-app .nx-command-rail .x-tone-amethyst{--kpi-accent:#cf98ed;--kpi-glow:#bc79ec28}
+.chico-v2.nx-app .nx-command-rail .x-tone-gold{--kpi-accent:#f2ca7c;--kpi-glow:#efbf6826}
+.chico-v2.nx-app .nx-command-rail .x-tone-ice{--kpi-accent:#8fc9ff;--kpi-glow:#72b7ed28}
+.chico-v2.nx-app .nx-command-rail .x-kpi-title{direction:ltr;gap:9px;align-items:center}
+.chico-v2.nx-app .nx-command-rail .x-kpi-title>div{direction:rtl;min-width:0;text-align:right}
+.chico-v2.nx-app .nx-command-rail .x-kpi-title b{font-size:13px}
+.chico-v2.nx-app .nx-command-rail .x-kpi-title small{font-size:10px}
+.chico-v2.nx-app .nx-command-rail .x-kpi-title .v8-symbol{
+ width:48px;height:48px;min-width:48px;border:0;border-radius:0;background:none;box-shadow:none;filter:drop-shadow(0 4px 6px #0007)
+}
+.chico-v2.nx-app .nx-command-rail .x-kpi-title .v8-symbol svg{width:43px;height:43px}
+.chico-v2.nx-app .nx-command-rail .v8-symbol::after,.chico-v2.nx-app .nx-dock .v8-symbol::after{display:none}
+.chico-v2.nx-app .nx-command-rail .x-kpi>strong{font-weight:880;line-height:1.1;font-size:clamp(26px,3vw,41px);margin:5px 0 4px;direction:ltr;text-align:right}
+.chico-v2.nx-app .nx-command-rail .x-kpi>span{font-size:10px;color:#c4cddd;direction:rtl;text-align:right}
+.chico-v2.nx-app .nx-command-rail .v8-kpi-line{display:none}
+.chico-v2.nx-app .nx-command-rail .nx-rate-card{
+ min-width:0;display:grid;grid-template-rows:auto 1fr;place-items:center;padding:8px;background:radial-gradient(ellipse,#2c2b28,#111722 72%);border-color:#ac926958;
+}
+.chico-v2.nx-app .nx-command-rail .nx-rate-card .nx-panel-title h2{font-size:11px;letter-spacing:.025em}
+.chico-v2.nx-app .nx-command-rail .nx-ring{
+ width:min(108px,100%);margin:4px auto 0;padding:9px;
+ background:conic-gradient(from -90deg,#fbe7b2,#bf8a41 var(--nx-progress),#4a4c52 var(--nx-progress),#2d3540 100%);
+ box-shadow:0 0 0 4px #9faec32b,0 0 0 5px #d4b37b20,0 3px 18px #e0ab4a24,inset 0 2px 6px #0a0c11ab;
+}
+.chico-v2.nx-app .nx-command-rail .nx-ring-unrecorded{background:conic-gradient(#58606d,#353c49,#5a6573,#313947,#58606d)}
+.chico-v2.nx-app .nx-command-rail .nx-ring-inner{background:radial-gradient(ellipse at 40% 0%,#343b48,#111620 76%);border-color:#a7b7cb51}
+.chico-v2.nx-app .nx-command-rail .nx-ring-inner strong{font-size:26px}
+.chico-v2.nx-app .nx-command-rail .nx-ring-inner small{font-size:9px}
+.chico-v2.nx-app .nx-stage-grid{grid-template-columns:minmax(0,1fr) minmax(250px,1.16fr) minmax(0,1.13fr);align-items:stretch;gap:clamp(12px,1.6vw,24px)}
+.chico-v2.nx-app .nx-stage-side{align-content:stretch;grid-template-rows:auto 1fr;gap:15px}
+.chico-v2.nx-app .nx-stage-leaders{grid-template-rows:1fr 1fr}
+.chico-v2.nx-app .nx-glass{background:var(--nx-glass);border-color:#a6b4c449;border-top-color:#e5efff77;box-shadow:0 15px 27px #0005,inset 0 1px #e0e8f310,inset 0 -1px #06080c}
+.chico-v2.nx-app .nx-role-card{padding:15px 17px}
+.chico-v2.nx-app .nx-other-roles{display:flex;align-items:center;justify-content:space-between;direction:rtl;font-size:10px;color:var(--ch-muted);padding-top:8px;margin-top:8px;border-top:1px solid #aab5ce1a}
+.chico-v2.nx-app .nx-other-roles b{color:var(--ch-text)}
+.chico-v2.nx-app .nx-chart-compact{min-height:0;min-width:0;height:auto;border:1px solid #b2c0d04b;background:var(--nx-glass);box-shadow:var(--nx-lift);border-radius:17px}
+.chico-v2.nx-app .nx-chart-compact .v7-chart-head{padding:11px 12px;border-bottom-color:#99afc42a;gap:6px}
+.chico-v2.nx-app .nx-chart-compact .v7-chart-head b{font-size:12px}
+.chico-v2.nx-app .nx-chart-compact .v7-chart-head>div{gap:7px}
+.chico-v2.nx-app .nx-chart-compact .v7-chart-head>div>svg{width:17px;height:17px}
+.chico-v2.nx-app .nx-chart-compact .v7-chart-head label{padding:4px 6px;gap:4px}
+.chico-v2.nx-app .nx-chart-compact .v7-chart-head label svg{display:none}
+.chico-v2.nx-app .nx-chart-compact .v7-chart-head select{max-width:96px;font-size:10px}
+.chico-v2.nx-app .nx-chart-compact .v7-chart-empty{min-height:95px;gap:8px;padding:18px 10px;background:repeating-linear-gradient(0deg,transparent 0 25px,#abb9c80b 25px 26px)}
+.chico-v2.nx-app .nx-chart-compact .v7-chart-empty b{font-size:12px;color:var(--ch-muted)}
+.chico-v2.nx-app .nx-chart-compact .v7-chart-empty svg{width:24px;height:24px;opacity:.6}
+.chico-v2.nx-app .nx-chart-compact .v7-chart-area{min-height:0;padding:4px 8px}
+.chico-v2.nx-app .nx-chart-compact .v7-chart-area svg{height:auto;max-height:158px;max-width:100%}
+.chico-v2.nx-app .nx-wolf-stage{min-height:385px;justify-content:center;overflow:visible}
+.chico-v2.nx-app .nx-stage-wolf{width:min(92%,310px);filter:drop-shadow(6px 12px 9px #0009) drop-shadow(0 0 16px #dcae6245);z-index:2}
+.chico-v2.nx-app .nx-orbit-outer{width:min(104%,365px);top:0;mask:radial-gradient(farthest-side,transparent calc(100% - 6px),#000 calc(100% - 5px));background:conic-gradient(from -64deg,transparent 0deg,#c5d1df 25deg,#394556 55deg,transparent 76deg,#f9dfa3 95deg,#ae7934 139deg,transparent 163deg,#c6d5e151 202deg,transparent 230deg,#dbb276 260deg,#f5e6ba 281deg,transparent 312deg)}
+.chico-v2.nx-app .nx-orbit-inner{width:min(89%,318px);top:5%;border:1px solid #9eacbf70;box-shadow:0 0 0 5px #8397b216,inset 0 0 33px #b1bbd112}
+.chico-v2.nx-app .nx-stage-rim{position:absolute;top:2%;left:50%;transform:translateX(-50%) rotate(24deg);width:min(107%,365px);aspect-ratio:1;border-radius:50%;border:1px solid #e8c08322;border-left:9px solid #9eabb729;border-right:6px solid #a8905e40;z-index:-1;pointer-events:none}
+.chico-v2.nx-app .nx-stage-beam{position:absolute;top:-10%;bottom:18%;left:50%;width:min(95%,310px);transform:translateX(-50%);background:conic-gradient(from 153deg at 50% 0%,#dce9fb0e,#dce9fb04 15deg,#dce9fb17 25deg,#dce9fb05 37deg,transparent 55deg);filter:blur(9px);z-index:-1;pointer-events:none;clip-path:polygon(43% 0,58% 0,100% 100%,0 100%)}
+.chico-v2.nx-app .nx-wolf-halo{background:radial-gradient(ellipse,#b6cbef38,#cea3651c 40%,transparent 72%);width:min(105%,350px);top:0}
+.chico-v2.nx-app .nx-wolf-plinth{
+ width:min(95%,305px);height:43px;transform:perspective(220px) rotateX(18deg);border-radius:50%;z-index:1;
+ background:linear-gradient(180deg,#d1dae5 0%,#6b7789 11%,#1a2432 19%,#121821 43%,#414b5b 57%,#151921 74%,#dcb66e 80%,#735023 91%,#171a21);
+ border-color:#b4c0d0;border-bottom:3px solid #f2ce82;box-shadow:0 18px 23px #0009,0 4px 21px #e2b36b60,inset 0 -2px #f6d38c70;
+}
+.chico-v2.nx-app .nx-wolf-plinth:after{content:"";position:absolute;top:-12px;left:19%;right:19%;height:18px;border-radius:50%;background:radial-gradient(ellipse,#fff5c5 0%,#ffe2a2a0 20%,#cc8b3355 43%,transparent 72%);filter:blur(3px);z-index:-1}
+.chico-v2.nx-app .nx-stage-brand{margin:11px 0 6px}.chico-v2.nx-app .nx-stage-brand b{font-size:clamp(16px,1.7vw,24px);letter-spacing:.10em}
+.chico-v2.nx-app .nx-stage-brand small{font-size:9px;letter-spacing:.5em}
+.chico-v2.nx-app .nx-stage-report{font-size:11px;opacity:.9}
+.chico-v2.nx-app .nx-podium{position:relative;overflow:hidden;isolation:isolate;padding:12px 12px 11px;border-color:color-mix(in srgb,var(--podium) 26%,#8899b254)}
+.chico-v2.nx-app .nx-podium::before{position:absolute;content:"";inset:0;z-index:-1;pointer-events:none;background:radial-gradient(ellipse at 50% 105%,color-mix(in srgb,var(--podium) 18%,transparent),transparent 70%)}
+.chico-v2.nx-app .nx-podium-grid{gap:7px;padding-top:8px}
+.chico-v2.nx-app .nx-podium-person{min-height:103px;background:linear-gradient(150deg,#444f5f 0%,#222c3a 30%,#151b26 75%);border-top-color:#a7b9c887;box-shadow:inset 0 1px #f3faff0c,0 5px 12px #0005;padding:7px 4px}
+.chico-v2.nx-app .nx-podium-person.nx-position-1{min-height:121px;background:linear-gradient(150deg,color-mix(in srgb,var(--podium) 24%,#374155),#1b2331 56%,#171c25);box-shadow:0 0 14px color-mix(in srgb,var(--podium) 14%,transparent)}
+.chico-v2.nx-app .nx-vacant-crest{width:29px;height:33px;display:block;color:var(--podium);opacity:.56}
+.chico-v2.nx-app .nx-vacant-crest svg{width:100%;height:100%}
+.chico-v2.nx-app .nx-podium-person.nx-podium-vacant{opacity:.79;cursor:default;transform:none}
+.chico-v2.nx-app .nx-podium-vacant b{font-size:18px;color:var(--ch-muted)}
+.chico-v2.nx-app .nx-podium-vacant small{font-size:9px}
+.chico-v2.nx-app .nx-podium-note{font-size:10px;text-align:center;margin-top:7px;color:var(--ch-muted)}
+.chico-v2.nx-app .nx-dock{padding:9px 17px;background:linear-gradient(180deg,#4e5969ed,#1b2330f5 12%,#111721fa 55%,#090d14f8 96%);border-radius:26px 26px 20px 20px;border-top:2px solid #d7dbe3a9;border-bottom:1px solid #c7a66b9b;box-shadow:0 10px 35px #000b,inset 0 2px #e8effe12,inset 0 -2px #bc94502b}
+.chico-v2.nx-app .nx-dock-core{min-height:76px;border:2px solid #e4bd74;box-shadow:0 0 0 4px #171d25,0 0 0 5px #e6ba6f55,0 2px 25px #daa4555c,inset 0 1px #e7eafa44;background:radial-gradient(ellipse at 40% 15%,#717c8b72,#151b23 70%);transform:translateY(-8px)}
+.chico-v2.nx-app .nx-dock-core img{width:46px;height:46px;object-fit:contain;filter:drop-shadow(0 3px 4px #0008)}
+.chico-v2.nx-app .nx-dock-item{position:relative;font-size:12px;min-height:57px}
+.chico-v2.nx-app .nx-dock-item:not(.is-active):before{content:"";position:absolute;top:15%;bottom:15%;right:0;width:1px;background:linear-gradient(transparent,#8093a32d,transparent)}
+.chico-v2.nx-app .nx-dock-item.is-active{background:linear-gradient(140deg,#a77f3e45,#f5d79912);border-color:#f3d69d9e;box-shadow:inset 0 -4px 14px #d9ac4f34,0 0 13px #d9ac4f19}
+.chico-v2.nx-app .nx-dock-item .v8-symbol svg{width:29px;height:29px}
+.chico-v2.nx-app .nx-workspace-heading{display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:92px;padding:18px 22px;margin-bottom:16px;background:var(--nx-material);border:1px solid var(--nx-edge);border-top-color:#b3becd79;border-radius:18px;box-shadow:var(--nx-lift)}
+.chico-v2.nx-app .nx-workspace-heading h1{font-size:clamp(23px,2.7vw,33px);margin:2px 0 0;font-weight:900;color:var(--ch-text)}
+.chico-v2.nx-app .nx-workspace-symbol{display:grid;place-items:center;width:56px;height:56px;border:1px solid #d4b47a5a;background:linear-gradient(145deg,#ad956719,#101823);border-radius:14px}
+.chico-v2.nx-app .nx-workspace-symbol .v8-symbol{background:none;border:0;box-shadow:none;color:var(--nx-gold)}
+.chico-v2.nx-app :is(.v7-directory-board,.v7-directory-stat,.v9-entry-card,.v9-reading-history,.v9-poster-studio,.v7-workspace-card,.v9-tools-shell){background:var(--nx-material);border-color:var(--nx-edge);box-shadow:var(--nx-lift)}
+.chico-v2.nx-app .v7-directory-table thead th,.chico-v2.nx-app .x-op-table th,.chico-v2.nx-app .v9-history-table th{background:#222c3a;color:#dce7f4;border-bottom-color:#9eafc34b}
+.chico-v2.nx-app.x-light{
+ --nx-material:linear-gradient(145deg,#fff,#edf0f5);--nx-glass:linear-gradient(145deg,#fff,#e9edf3);--nx-lift:0 10px 23px #263c5415,inset 0 1px white;
+}
+.chico-v2.nx-app.x-light .nx-stage{background:radial-gradient(ellipse at 50% 39%,#c4d0df,#f0f3f7 70%);border-color:#b2bac6}
+.chico-v2.nx-app.x-light .nx-eyebrow{color:#77551e}
+.chico-v2.nx-app.x-light .nx-command-rail .x-kpi{background:linear-gradient(145deg,#fff,#e5eaf0);border-color:#adb9ca;box-shadow:var(--nx-lift)}
+.chico-v2.nx-app.x-light .nx-command-rail .x-kpi>span{color:#445266}
+.chico-v2.nx-app.x-light .nx-command-rail .x-tone-violet{--kpi-accent:#6443b0}
+.chico-v2.nx-app.x-light .nx-command-rail .x-tone-amethyst{--kpi-accent:#8846a2}
+.chico-v2.nx-app.x-light .nx-command-rail .x-tone-gold{--kpi-accent:#9a6512}
+.chico-v2.nx-app.x-light .nx-command-rail .x-tone-ice{--kpi-accent:#285e9d}
+.chico-v2.nx-app.x-light .nx-command-rail .nx-rate-card,.chico-v2.nx-app.x-light .nx-ring-inner{background:#f4f6fa}
+.chico-v2.nx-app.x-light .nx-podium-person{background:linear-gradient(145deg,#fff,#e4eaf2);border-color:#bcc9d8;color:#263247}
+.chico-v2.nx-app.x-light .nx-podium-person.nx-position-1{background:linear-gradient(145deg,#fff,#e2ece7);border-color:var(--podium)}
+.chico-v2.nx-app.x-light .nx-podium-medal{color:#625536}
+.chico-v2.nx-app.x-light .nx-dock{background:linear-gradient(145deg,#fff,#dfe5ee);border-color:#b6a078}
+.chico-v2.nx-app.x-light .nx-workspace-symbol{background:#eef2f7}
+.chico-v2.nx-app.x-light .v7-directory-table thead th,.chico-v2.nx-app.x-light .x-op-table th,.chico-v2.nx-app.x-light .v9-history-table th{background:#e1e7ef;color:#2c384a}
+@media(max-width:1100px){
+ .chico-v2.nx-app .nx-command-rail{grid-template-columns:minmax(0,1fr) minmax(120px,15%);gap:9px}
+ .chico-v2.nx-app .nx-command-rail>.x-kpi-grid.v8-kpi-grid{gap:8px}
+ .chico-v2.nx-app .nx-command-rail .x-kpi{padding:10px;min-height:122px}
+ .chico-v2.nx-app .nx-command-rail .x-kpi-title .v8-symbol{width:37px;height:37px;min-width:37px}
+ .chico-v2.nx-app .nx-command-rail .x-kpi-title .v8-symbol svg{width:35px;height:35px}
+ .chico-v2.nx-app .nx-command-rail .x-kpi-title b{font-size:11px}
+}
+@media(max-width:1060px){
+ .chico-v2.nx-app .nx-stage-grid{grid-template-columns:1fr 1fr;gap:12px}
+ .chico-v2.nx-app .nx-wolf-stage{grid-column:1/-1;grid-row:1;min-height:320px}
+ .chico-v2.nx-app .nx-stage-wolf{width:min(74%,230px)}
+ .chico-v2.nx-app .nx-orbit-outer,.chico-v2.nx-app .nx-stage-rim{width:min(85%,285px)}
+ .chico-v2.nx-app .nx-orbit-inner{width:min(67%,245px)}
+}
+@media(max-width:760px){
+ .chico-v2.nx-app .nx-command-rail{grid-template-columns:1fr}
+ .chico-v2.nx-app .nx-command-rail>.x-kpi-grid.v8-kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .chico-v2.nx-app .nx-command-rail .nx-rate-card{display:flex;justify-content:space-between;gap:12px;padding:8px 14px}
+ .chico-v2.nx-app .nx-command-rail .nx-ring{width:70px;margin:2px 0;padding:5px}
+ .chico-v2.nx-app .nx-command-rail .nx-ring-inner strong{font-size:18px}
+ .chico-v2.nx-app .nx-command-rail .nx-ring-inner small{font-size:7px}
+ .chico-v2.nx-app .nx-stage-grid{grid-template-columns:1fr}
+ .chico-v2.nx-app .nx-wolf-stage{grid-column:auto}
+ .chico-v2.nx-app .nx-stage-team{display:grid;grid-template-columns:1fr;grid-template-rows:auto auto}
+ .chico-v2.nx-app .nx-stage-side{gap:10px}
+ .chico-v2.nx-app .nx-stage-wolf{width:min(78%,210px)}
+ .chico-v2.nx-app .nx-wolf-stage{min-height:300px}
+ .chico-v2.nx-app .nx-dock{padding:6px 4px;border-radius:17px}
+ .chico-v2.nx-app .nx-dock-core{min-height:47px;border-width:1px;transform:none;box-shadow:0 0 11px #d2a35740}
+ .chico-v2.nx-app .nx-dock-core img{width:28px;height:28px}
+ .chico-v2.nx-app .nx-dock-item{min-height:46px;font-size:9px}
+ .chico-v2.nx-app .nx-dock-item .v8-symbol svg{width:22px;height:22px}
+ .chico-v2.nx-app .nx-command-rail .x-kpi{min-height:109px}
+ .chico-v2.nx-app .nx-workspace-heading{padding:12px 15px;min-height:75px;margin-bottom:12px}
+}
+@media(min-width:1061px) and (max-height:950px){
+ .chico-v2.nx-app .nx-stage{padding:19px}
+ .chico-v2.nx-app .nx-stage-head{margin-bottom:12px}
+ .chico-v2.nx-app .nx-command-rail{margin-bottom:13px}
+ .chico-v2.nx-app .nx-command-rail .x-kpi{min-height:130px;padding:10px 13px}
+ .chico-v2.nx-app .nx-wolf-stage{min-height:350px}
+ .chico-v2.nx-app .nx-stage-wolf{width:min(89%,270px)}
+ .chico-v2.nx-app .nx-stage-side{gap:10px}
+}
+
+/* CHICO TEAM / dark-only interaction and unified material finish */
+.chico-v2.nx-app{--ch-bg:#0b0f15;--ch-surface:#141a23;--ch-surface-alt:#1b2330;--ch-line:#9faec42b;--nx-edge:#a1b0c32b;--nx-metal-edge:#d5b67556;--nx-material:linear-gradient(145deg,#242e3d,#111720 75%);--nx-glass:linear-gradient(155deg,#26303d,#121923 70%);color-scheme:dark;background:radial-gradient(ellipse at 50% -10%,#29344470,transparent 55%),#090e15}
+.chico-v2.nx-app .ct-topbar{display:flex!important;flex-wrap:nowrap!important;align-items:center;justify-content:space-between;gap:10px;min-height:54px!important;height:54px;padding:5px clamp(10px,2vw,28px)!important;background:#0e141deF;position:sticky;top:0;z-index:45;border-bottom:1px solid #aebbd020;box-shadow:0 8px 22px #0003}
+.chico-v2.nx-app .ct-top-start,.chico-v2.nx-app .ct-top-actions{display:flex;align-items:center;gap:6px;flex-shrink:0;min-width:0}
+.chico-v2.nx-app .ct-brand{display:flex;align-items:center;gap:8px;direction:ltr;color:#f3f4f6;background:none;border:0;padding:0 4px;white-space:nowrap;font-size:13px;font-weight:850;letter-spacing:.035em}
+.chico-v2.nx-app .ct-brand img{height:32px;width:32px;object-fit:cover;border-radius:50%}
+.chico-v2.nx-app .ct-icon-button{position:relative;display:inline-grid!important;place-items:center;width:34px;height:34px;min-height:34px;min-width:34px;padding:0!important;border:1px solid transparent;border-radius:8px;color:#b8c2d1;background:transparent;transition:color 180ms,background 180ms,border-color 180ms}
+.chico-v2.nx-app .ct-icon-button:hover{color:#f4d59d;background:#d5b06e13;border-color:#dcb97130}
+.chico-v2.nx-app .ct-page-title{color:#a5afbe;font-size:12px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chico-v2.nx-app .ct-connection{width:6px;height:6px;border-radius:50%;background:#b29565;flex-shrink:0}
+.chico-v2.nx-app .ct-connection[data-ready=true]{background:#6cc799;box-shadow:0 0 8px #6cc79970}
+.chico-v2.nx-app .x-layout>.x-sidebar{width:min(284px,86vw)!important;padding:0 14px 12px!important;display:flex!important;flex-direction:column;gap:0;overflow:hidden!important;border-right:1px solid #858f9f55;box-shadow:14px 0 55px #000a;background:linear-gradient(165deg,#1b2531,#0e141e 70%)}
+.chico-v2.nx-app .x-layout.v10-nav-closed>.x-sidebar{display:none!important}
+.chico-v2.nx-app .x-layout.v10-nav-open>.x-sidebar{animation:ct-drawer-in .24s cubic-bezier(.2,.75,.25,1) both}
+@keyframes ct-drawer-in{from{translate:-100% 0;opacity:.5}to{translate:0 0;opacity:1}}
+.chico-v2.nx-app .v10-nav-head{display:flex!important;align-items:center;justify-content:space-between;gap:8px;padding:12px 0!important;min-height:64px;flex:none;border-bottom:1px solid #c9d5e214}
+.chico-v2.nx-app .v10-nav-head .x-brand{display:flex!important;flex-direction:row!important;align-items:center;justify-content:flex-start;gap:8px;padding:0!important;margin:0!important;direction:ltr}
+.chico-v2.nx-app .v10-nav-head .x-brand-wolf{width:36px!important;height:36px!important;min-width:36px;border:0;background:none;box-shadow:none}
+.chico-v2.nx-app .v10-nav-head .x-brand-wolf img{width:36px;height:36px;object-fit:cover;border-radius:50%}
+.chico-v2.nx-app .v10-nav-head .x-brand-words b{font:850 13px/1.2 system-ui,sans-serif;letter-spacing:.035em;color:#f4f5f8;white-space:nowrap}
+.chico-v2.nx-app .v10-nav-close{position:static!important;flex:none;width:32px;height:32px;border:0;background:none;color:#a8b4c4}
+.chico-v2.nx-app .v12-nav{display:flex;flex-direction:column;flex:1 1 0;min-height:0;overflow:auto;gap:7px;padding:12px 0 18px;scrollbar-width:thin;scrollbar-color:#475360 transparent}
+.chico-v2.nx-app .v12-nav-group{gap:2px;padding:0 0 8px;border-color:#a7b4cd13}
+.chico-v2.nx-app .v12-nav-label{padding:6px 8px;font-size:10px;color:#8491a3;font-weight:700}
+.chico-v2.nx-app .v12-nav .x-nav-link{display:flex!important;flex-direction:row;direction:rtl;justify-content:flex-start;align-items:center;gap:10px;min-height:42px;padding:7px 10px!important;border:1px solid transparent;border-radius:9px!important;background:transparent!important;box-shadow:none!important;color:#d3dae5;transform:none!important}
+.chico-v2.nx-app .v12-nav .x-nav-link:hover{background:#c7d6f00c!important;color:#f7e6c4;border-color:#b8c6dd19}
+.chico-v2.nx-app .v12-nav .x-nav-link.x-nav-active{background:linear-gradient(100deg,#cba56710,#cba56729)!important;border-color:#e0bc7855;color:#f9dfad;position:relative}
+.chico-v2.nx-app .v12-nav .x-nav-link.x-nav-active:before{content:"";position:absolute;right:0;top:10px;bottom:10px;width:2px;background:#eec987;border-radius:3px}
+.chico-v2.nx-app .v12-nav .x-nav-link span b{font-size:13px;font-weight:740;line-height:1.5}
+.chico-v2.nx-app .v12-nav .x-nav-link>.v8-symbol{width:25px!important;height:25px!important;min-width:25px!important;padding:0!important;border:0!important;background:none!important;box-shadow:none!important;color:#b4bfce}
+.chico-v2.nx-app .v12-nav .x-nav-active>.v8-symbol{color:#e6c082}
+.chico-v2.nx-app .x-sidebar-footer{position:static!important;inset:auto!important;flex:none;display:block!important;min-height:42px;padding:8px 0 0!important;margin:0!important;border-top:1px solid #c6d4e41a;background:transparent!important}
+.chico-v2.nx-app .x-sidebar-footer button{display:flex;align-items:center;gap:10px;color:#c2cbd7;font-size:12px;padding:8px;background:none;border:0;width:100%}
+.chico-v2.nx-app .v8-symbol{border:0!important;box-shadow:none!important;background:none!important;border-radius:0!important;filter:drop-shadow(0 2px 3px #0005)}
+.chico-v2.nx-app .v8-symbol:after,.chico-v2.nx-app .v8-symbol:before{display:none!important}
+.chico-v2.nx-app .v8-symbol svg{overflow:visible}
+.chico-v2.nx-app .ct-rank{background:none!important;border:0!important;box-shadow:none!important;padding:0!important;filter:drop-shadow(0 2px 2px #0007)}
+.chico-v2.nx-app .ct-rank svg{width:100%;height:100%}
+.chico-v2.nx-app .nx-stage{background:radial-gradient(ellipse at 50% 63%,#ac8a4930,transparent 34%),radial-gradient(ellipse at 50% 26%,#465b7938,transparent 60%),linear-gradient(150deg,#1b2431,#0d131c 56%,#101823);border:1px solid #9eacc83d;box-shadow:0 18px 45px #0005}
+.chico-v2.nx-app .nx-stage:before{background:linear-gradient(120deg,transparent 25%,#b8cde60a 38%,transparent 50%)}
+.chico-v2.nx-app .nx-stage:after{opacity:.28}
+.chico-v2.nx-app .nx-wolf-stage{min-height:310px;gap:10px}
+.chico-v2.nx-app .nx-stage-wolf{width:min(73%,225px)!important;aspect-ratio:1!important;object-fit:cover;border-radius:50%;border:1px solid #e0be7a8a;box-shadow:0 0 0 5px #d4ad6811,0 12px 45px #0009,0 0 38px #dab06d30;filter:none;animation:ct-emblem-float 6s ease-in-out infinite}
+.chico-v2.nx-app .nx-orbit-outer{width:min(92%,295px);top:6%;mask:radial-gradient(farthest-side,transparent calc(100% - 2px),#000 0);animation:ct-orbit 28s linear infinite;opacity:.8}
+.chico-v2.nx-app .nx-orbit-inner{width:min(81%,268px);top:9%;opacity:.55;box-shadow:none}
+.chico-v2.nx-app .nx-wolf-halo{animation:ct-halo 7s ease-in-out infinite;background:radial-gradient(ellipse,#dfb96f28,#91aacf14 44%,transparent 69%)}
+.chico-v2.nx-app .nx-stage-brand{margin:2px 0 0}
+.chico-v2.nx-app .nx-stage-brand b{font:900 clamp(18px,2vw,27px)/1.2 system-ui,sans-serif;letter-spacing:.12em;color:#e7d6b8}
+.chico-v2.nx-app .nx-stage-beam{opacity:.45}
+.chico-v2.nx-app .nx-dock-core img{border-radius:50%;object-fit:cover}
+.chico-v2.nx-app .nx-dock{border-radius:17px;background:linear-gradient(165deg,#27313e,#101721 70%);border-top:1px solid #a4b5ca60;box-shadow:0 8px 28px #0009}
+.chico-v2.nx-app .nx-dock-item{transition:transform .18s ease,background .18s,color .18s}
+.chico-v2.nx-app .nx-dock-item:hover{transform:translateY(-2px)}
+.chico-v2.nx-app .nx-dock-core{border-width:1px;min-height:64px;transform:none}
+.chico-v2.nx-app .nx-dock-item.is-active{box-shadow:inset 0 -3px 11px #d8ae4922;background:#cda05b19}
+.chico-v2.nx-app .x-action-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.chico-v2.nx-app .x-action-grid button{min-height:62px;padding:9px 10px;display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:8px;text-align:right;background:#ffffff04;border:1px solid #b2bfd525;border-radius:10px;transition:background .18s,border-color .18s,transform .18s}
+.chico-v2.nx-app .x-action-grid button:hover{background:#dcb56a13;border-color:#dfbf7b77;transform:translateY(-2px)}
+.chico-v2.nx-app .x-action-grid button .v8-symbol{width:30px;height:30px;min-width:30px;color:#dec18c}
+.chico-v2.nx-app .x-action-grid button span:last-child{font-size:12px;font-weight:750}
+.chico-v2.nx-app .x-kpi.v8-kpi,.chico-v2.nx-app .nx-glass{transition:transform .2s ease,border-color .2s,box-shadow .2s}
+.chico-v2.nx-app .x-kpi.v8-kpi:hover,.chico-v2.nx-app .nx-glass:hover{transform:translateY(-2px);border-color:#d8b98465;box-shadow:0 12px 35px #0006}
+.chico-v2.nx-app .ct-page-motion{animation:ct-page-in .28s ease-out both}
+.chico-v2.nx-app .nx-command-rail .x-kpi>strong{animation:ct-value-in .38s ease-out both}
+@keyframes ct-page-in{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+@keyframes ct-value-in{from{opacity:.15;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+@keyframes ct-emblem-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@keyframes ct-halo{0%,100%{opacity:.55}50%{opacity:1}}
+@keyframes ct-orbit{from{transform:translateX(-50%) rotate(0deg)}to{transform:translateX(-50%) rotate(360deg)}}
+@media(max-width:760px){.chico-v2.nx-app .ct-topbar{height:51px;min-height:51px!important;padding:4px 8px!important;gap:3px}.chico-v2.nx-app .ct-page-title{display:none}.chico-v2.nx-app .ct-top-start,.chico-v2.nx-app .ct-top-actions{gap:2px}.chico-v2.nx-app .ct-icon-button{width:29px;min-width:29px;height:32px}.chico-v2.nx-app .ct-brand{font-size:11px;gap:5px}.chico-v2.nx-app .ct-brand img{width:27px;height:27px}.chico-v2.nx-app .ct-connection{display:none}.chico-v2.nx-app .x-action-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.chico-v2.nx-app .nx-wolf-stage{min-height:285px}.chico-v2.nx-app .nx-stage-wolf{width:min(65%,180px)!important}.chico-v2.nx-app .nx-dock-core{min-height:47px}}
+@media(max-width:360px){.chico-v2.nx-app .ct-brand{font-size:10px}.chico-v2.nx-app .ct-icon-button{min-width:26px;width:26px}.chico-v2.nx-app .ct-top-actions{gap:0}}
+@media(prefers-reduced-motion:reduce){.chico-v2.nx-app .ct-page-motion,.chico-v2.nx-app .nx-stage-wolf,.chico-v2.nx-app .nx-wolf-halo,.chico-v2.nx-app .nx-orbit-outer,.chico-v2.nx-app .x-layout.v10-nav-open>.x-sidebar,.chico-v2.nx-app .nx-command-rail .x-kpi>strong{animation:none!important}.chico-v2.nx-app .nx-dock-item,.chico-v2.nx-app .x-kpi,.chico-v2.nx-app .nx-glass,.chico-v2.nx-app .x-action-grid button{transition:none!important}}
+
+/* Approved CHICO TEAM focus treatment: one clean edge, never nested gold rings. */
+.chico-v2.nx-app :is(input,select,textarea):focus{
+ outline:none!important;
+ border-color:#d4b27b!important;
+ box-shadow:0 0 0 1px #d4b27b26!important;
+}
+.chico-v2.nx-app :is(.v7-search,.x-input-shell,.x-command-search) :is(input,select,textarea){
+ background:transparent!important;border:0!important;box-shadow:none!important;outline:none!important;border-radius:0!important;min-width:0;
+}
+.chico-v2.nx-app :is(.v7-search,.x-input-shell,.x-command-search) :is(input,select,textarea):focus{
+ outline:none!important;border:0!important;box-shadow:none!important;
+}
+.chico-v2.nx-app :is(.v7-search,.x-input-shell):focus-within{
+ border-color:#d4b27b;box-shadow:0 0 0 1px #d4b27b26;
+}
+.chico-v2.nx-app .x-command-search:focus-within{
+ border-bottom-color:#d4b27b;box-shadow:none;
+}
+.chico-v2.nx-app .x-command-search{top:54px}
+.chico-v2.nx-app .v7-search input{min-height:0;height:100%;padding:0}
+.chico-v2.nx-app :is(button,a):focus-visible{
+ outline:2px solid #d4b27b;outline-offset:2px;box-shadow:none!important;
+}
+.chico-v2.nx-app .v12-nav button:focus-visible,
+.chico-v2.nx-app .x-topbar button:focus-visible{
+ outline:2px solid #d4b27b;outline-offset:2px;box-shadow:none!important;
+}
+@media(max-width:760px){.chico-v2.nx-app .x-command-search{top:51px}}
