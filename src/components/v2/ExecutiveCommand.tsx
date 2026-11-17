@@ -48,7 +48,8 @@ const navigationGroups:{label:string;en:string;items:Tab[]}[]=[
  {label:'العمل اليومي',en:'OPERATIONS',items:['updates','operations']},
  {label:'البيانات والتحليل',en:'DATA',items:['excel','server','weeks']},
  {label:'التقارير',en:'REPORTS',items:['daily','reports']},
- {label:'إدارة الفريق',en:'ADMINISTRATION',items:['salary','academy']},
+ {label:'الرواتب',en:'SALARY',items:['salary']},
+ {label:'التدريب',en:'ACADEMY',items:['academy']},
  {label:'النظام',en:'SYSTEM',items:['settings']}
 ];
 function pretty(v:number|null|undefined,kind?:'percent'|'rating'){
