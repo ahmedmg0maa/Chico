@@ -42,7 +42,7 @@ export default function ModalPortal({children,light=false,onEscape}:{
  },[ready]);
  if(!ready)return null;
  return createPortal(
-  <div ref={root} className={'chico-v2 v11-dialog-portal'+(light?' x-light':'')} dir="rtl">{children}</div>,
+  <div ref={root} className={'chico-v2 v11-dialog-portal ct-workspace-portal'+(light?' x-light':'')} dir="rtl">{children}</div>,
   document.body
  );
 }
