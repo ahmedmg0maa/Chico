@@ -2,7 +2,7 @@
 export type RankingInput={name:string;rank:string;order:number;tickets:number|null};
 export function buildReportGroups<T extends RankingInput>(entries:readonly T[]){
  const rosterOrder=(subset:T[])=>[...subset].sort((a,b)=>a.order-b.order||a.name.localeCompare(b.name,'en'));
- const ticketOrder=(subset:T[])=>[...subset].filter(r=>r.tickets!==null).sort((a,b)=>(b.tickets??0)-(a.tickets??0)||a.order-b.order||a.name.localeCompare(b.name,'en')).slice(0,3);
+ const ticketOrder=(subset:T[])=>[...subset].filter(r=>r.tickets!==null&&r.tickets>0).sort((a,b)=>(b.tickets??0)-(a.tickets??0)||a.order-b.order||a.name.localeCompare(b.name,'en')).slice(0,3);
  const helper=entries.filter(r=>r.rank==='Helper'||r.rank==='SN.Helper');
  const moderator=entries.filter(r=>r.rank==='Moderator');
  return [
