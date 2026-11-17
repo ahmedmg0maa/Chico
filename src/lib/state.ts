@@ -23,9 +23,9 @@ export async function loadState():Promise<State>{
   const monday=weekStart(cairoDate);
   const current=eligibleReadings(readings.filter(r=>r.week_start===monday),admins);
   const metrics=summarizeReadings(current);
-  const sums=new Map<string,number>();
-  current.forEach(r=>{if(r.tickets_delta!==null)sums.set(r.admin_id,(sums.get(r.admin_id)||0)+r.tickets_delta);});
-  const top=admins.filter(a=>isEvaluatedAdmin(a)&&isEligibleForTop(a.rank)&&sums.has(a.id)).sort((a,b)=>(sums.get(b.id)||0)-(sums.get(a.id)||0)).slice(0,3).map(a=>({id:a.id,name:a.name,rank:a.rank,tickets:sums.get(a.id)||0}));
+  const sums=new Map<string,number>();const incompleteTickets=new Set<string>();
+  current.forEach(r=>{if(r.tickets_delta===null)incompleteTickets.add(r.admin_id);else sums.set(r.admin_id,(sums.get(r.admin_id)||0)+r.tickets_delta);});
+  const top=admins.filter(a=>isEvaluatedAdmin(a)&&isEligibleForTop(a.rank)&&!incompleteTickets.has(a.id)&&(sums.get(a.id)||0)>0).sort((a,b)=>(sums.get(b.id)||0)-(sums.get(a.id)||0)||a.sort_order-b.sort_order||a.name.localeCompare(b.name,'en')).slice(0,3).map(a=>({id:a.id,name:a.name,rank:a.rank,tickets:sums.get(a.id)||0}));
   const alerts:Summary['alerts']=[];
   for(const admin of admins){
     if(!isEvaluatedAdmin(admin))continue;
