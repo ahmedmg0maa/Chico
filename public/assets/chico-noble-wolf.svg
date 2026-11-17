@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 430" role="img" aria-labelledby="title">
+<title id="title">CHICO TEAM — noble wolf</title>
+<defs>
+<linearGradient id="steel" x1="0%" y1="0%" x2="95%" y2="95%"><stop stop-color="#f8f5eb"/><stop offset=".17" stop-color="#a6b5c8"/><stop offset=".38" stop-color="#394556"/><stop offset=".58" stop-color="#a6b4c7"/><stop offset=".78" stop-color="#202a39"/><stop offset="1" stop-color="#707e91"/></linearGradient>
+<linearGradient id="bright" x1="10%" y1="0%" x2="80%" y2="100%"><stop stop-color="#fffdf5"/><stop offset=".25" stop-color="#bbc8d9"/><stop offset=".44" stop-color="#627083"/><stop offset=".69" stop-color="#e1e7ec"/><stop offset=".88" stop-color="#68788d"/><stop offset="1" stop-color="#28323f"/></linearGradient>
+<linearGradient id="dark" x1="0%" y1="0%" x2="100%" y2="80%"><stop stop-color="#78899f"/><stop offset=".27" stop-color="#2f3a4b"/><stop offset=".58" stop-color="#111924"/><stop offset=".82" stop-color="#596678"/><stop offset="1" stop-color="#171f2a"/></linearGradient>
+<linearGradient id="gold" x1="0%" y1="0%" x2="92%" y2="100%"><stop stop-color="#fff3cc"/><stop offset=".23" stop-color="#e7c78c"/><stop offset=".42" stop-color="#90602f"/><stop offset=".62" stop-color="#f2d094"/><stop offset=".84" stop-color="#ac7839"/><stop offset="1" stop-color="#523b21"/></linearGradient>
+<linearGradient id="ear" x1="0%" y1="0%" x2="100%" y2="100%"><stop stop-color="#cfdbed"/><stop offset=".34" stop-color="#4f6178"/><stop offset=".56" stop-color="#17202c"/><stop offset="1" stop-color="#ad8a5d"/></linearGradient>
+<linearGradient id="nose" x1="0%" y1="0%" x2="90%" y2="100%"><stop stop-color="#8a9bb0"/><stop offset=".48" stop-color="#243143"/><stop offset="1" stop-color="#090e16"/></linearGradient>
+<filter id="shadow" x="-20%" y="-15%" width="145%" height="145%"><feDropShadow dx="2" dy="9" stdDeviation="9" flood-opacity=".43"/></filter>
+</defs>
+<g filter="url(#shadow)" stroke-linejoin="round">
+<!-- Calm, forward-looking profile, sculpted curved mane -->
+<path d="M185 22C195 49 209 63 225 78L263 55Q267 93 286 119C310 132 321 151 331 169Q350 179 381 197C389 202 386 215 377 222Q365 230 342 231L326 237Q309 255 280 251C261 268 252 292 248 316Q237 356 213 400C194 369 177 350 151 332C108 302 87 262 91 225Q61 235 44 260C50 214 72 176 117 143Q131 109 152 91Q164 51 185 22Z" fill="url(#steel)" stroke="#a3adba" stroke-width="1"/>
+<path d="M221 80 263 55Q263 96 282 118L248 109Z" fill="url(#dark)" stroke="#a0acbc" stroke-width=".8"/>
+<path d="M239 84 259 64 266 104Z" fill="#151c29"/>
+<!-- outer flowing blades with smooth rounded tips -->
+<path d="M171 99C127 118 101 141 76 174C55 202 47 231 44 260C67 231 94 219 122 202C153 184 184 158 192 126Z" fill="url(#gold)"/>
+<path d="M171 114C133 133 103 155 78 188C64 207 55 230 50 249C80 217 101 208 138 189Q179 165 200 133Z" fill="url(#dark)"/>
+<path d="M162 161C111 182 87 207 84 244C82 287 112 324 151 343C128 307 111 279 121 240C129 213 151 196 184 183Z" fill="url(#bright)"/>
+<path d="M182 183C138 198 115 231 121 268C127 311 165 344 213 400C187 343 163 310 159 273C155 244 169 215 204 195Z" fill="url(#dark)"/>
+<path d="M200 198C166 221 152 253 165 287C177 319 199 350 213 400C216 366 236 325 244 287Q250 256 265 239Z" fill="url(#bright)"/>
+<path d="M228 224C195 248 187 276 194 305C199 331 210 353 213 400C231 359 248 320 248 316C254 281 262 264 280 251Z" fill="url(#dark)"/>
+<path d="M237 245C216 280 217 314 213 400C232 356 249 333 253 291Q261 267 280 251Z" fill="url(#gold)"/>
+<!-- main ear, softly bevelled -->
+<path d="M185 22C190 48 210 74 229 95L180 118 142 126C153 96 167 47 185 22Z" fill="url(#bright)" stroke="#d9e0e8" stroke-width="1.1"/>
+<path d="M185 43Q191 73 210 95L167 113Q164 96 185 43Z" fill="url(#ear)"/>
+<path d="M186 49Q184 86 173 103L196 93Z" fill="#111b27"/>
+<path d="M183 37Q165 75 153 111L163 111Q174 77 189 49Z" fill="url(#gold)"/>
+<!-- forehead / temple sweep -->
+<path d="M145 126C171 110 204 97 229 95C260 96 289 118 307 138Q322 150 332 170C308 165 288 154 266 150C224 143 175 157 132 177Z" fill="url(#bright)"/>
+<path d="M124 165C167 139 205 125 242 129C281 133 307 150 330 169C307 164 289 159 269 158C223 155 168 172 127 196Z" fill="url(#dark)"/>
+<path d="M125 177C172 145 206 137 243 141C214 141 183 152 152 172L123 193Z" fill="url(#gold)"/>
+<!-- eye, neutral eyebrow and rounded nasal bridge -->
+<path d="M216 166Q249 151 278 159Q301 164 314 178Q301 183 285 182L263 175Q241 177 225 187Z" fill="#1b2532"/>
+<path d="M272 170Q287 165 297 173Q289 181 280 178Z" fill="#d7a658"/>
+<ellipse cx="286" cy="174" rx="2.5" ry="3.8" fill="#17202a"/><circle cx="288" cy="172" r="1.2" fill="#fff1cb"/>
+<path d="M267 163Q285 158 304 171" fill="none" stroke="#b2bfd0" stroke-width="1.4" opacity=".7"/>
+<path d="M154 200C192 174 226 167 256 179L282 186Q310 183 331 169C349 181 365 190 381 197C389 204 386 215 377 222Q365 230 342 231L317 226C289 220 262 230 240 248Q219 264 210 287C206 251 221 228 240 215Q205 210 164 232Z" fill="url(#bright)"/>
+<path d="M280 190Q316 193 332 178L377 197L380 210Q348 202 321 209L294 213Q276 211 268 208Z" fill="url(#steel)"/>
+<path d="M375 197Q386 199 387 204L383 213 370 214Q365 208 375 197Z" fill="url(#nose)"/>
+<path d="M375 199Q379 199 383 201" fill="none" stroke="#ccd9e9" stroke-width="1" opacity=".72"/>
+<!-- closed mouth, no teeth or snarl -->
+<path d="M302 221Q326 226 342 226Q361 225 371 222" fill="none" stroke="#1d2631" stroke-width="2" stroke-linecap="round"/>
+<path d="M316 233Q331 238 342 231Q332 248 307 252L280 251Q261 254 249 268Q255 239 279 230Z" fill="url(#dark)"/>
+<path d="M167 224C186 209 207 199 232 198Q206 217 196 240C190 250 190 266 192 280C164 260 153 247 167 224Z" fill="url(#gold)"/>
+<path d="M169 227C187 211 208 205 226 202C205 222 197 244 195 265Q183 248 169 227Z" fill="url(#dark)"/>
+<path d="M153 111Q165 66 185 24M51 244Q70 192 124 154M88 243Q91 209 135 181M122 264Q115 226 162 195M185 116Q233 91 273 121M313 179Q343 178 368 198M214 393Q230 341 244 307" fill="none" stroke="#eff4fd" stroke-opacity=".46" stroke-width="1.3" stroke-linecap="round"/>
+</g>
+</svg>
