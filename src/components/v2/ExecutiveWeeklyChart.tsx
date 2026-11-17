@@ -2,26 +2,24 @@
 import {useMemo,useState} from 'react';
 import {Activity,BarChart3,CalendarDays} from 'lucide-react';
 import type {Reading} from '@/lib/types';
+import {summarizeReadings} from '@/lib/rules';
 
 export default function ExecutiveWeeklyChart({readings,compact=false}:{readings:Reading[];compact?:boolean}){
  const [limit,setLimit]=useState(8);
  const buckets=useMemo(()=>{
-  const byWeek=new Map<string,{tickets:number;flags:number;count:number}>();
+  const byWeek=new Map<string,Reading[]>();
   for(const r of readings){
    const week=r.week_start;
-   const entry=byWeek.get(week)||{tickets:0,flags:0,count:0};
-   if(r.tickets_delta!==null)entry.tickets+=r.tickets_delta;
-   if(r.flags_delta!==null)entry.flags+=r.flags_delta;
-   entry.count++;
-   byWeek.set(week,entry);
+   const entry=byWeek.get(week)||[];entry.push(r);byWeek.set(week,entry);
   }
-  return [...byWeek.entries()].sort((a,b)=>a[0].localeCompare(b[0])).slice(-limit).map(([week,data])=>({week,...data}));
+  return [...byWeek.entries()].sort((a,b)=>a[0].localeCompare(b[0])).slice(-limit).map(([week,data])=>({week,tickets:summarizeReadings(data).tickets}));
  },[readings,limit]);
- const max=Math.max(1,...buckets.map(b=>b.tickets));
+ const known=buckets.filter((b):b is {week:string;tickets:number}=>b.tickets!==null);
+ const max=Math.max(1,...known.map(b=>b.tickets));
  const x=(i:number)=>buckets.length<=1?340:48+(i/(buckets.length-1))*572;
  const y=(n:number)=>203-n/max*145;
- const points=buckets.map((b,i)=>x(i)+','+y(b.tickets)).join(' ');
- const area=buckets.length?x(0)+',203 '+points+' '+x(buckets.length-1)+',203':'';
+ const segments:string[][]=[];let segment:string[]=[];
+ buckets.forEach((b,i)=>{if(b.tickets===null){if(segment.length)segments.push(segment);segment=[];}else segment.push(x(i)+','+y(b.tickets));});if(segment.length)segments.push(segment);
  return <section className={'v7-chart-card '+(compact?'nx-chart-compact':'')}>
   <header className="v7-chart-head">
    <div><BarChart3 size={22}/><span><b>{compact?'اتجاه الأداء':'أداء الفريق خلال الأسابيع الأخيرة'}</b>{!compact&&<small>WEEKLY PERFORMANCE · TICKETS</small>}</span></div>
@@ -34,11 +32,10 @@ export default function ExecutiveWeeklyChart({readings,compact=false}:{readings:
       <linearGradient id="chico-v7-fill" x1="0" y1="0" x2="0" y2="1"><stop stopColor="#923a47" stopOpacity=".46"/><stop offset="1" stopColor="#923a47" stopOpacity="0"/></linearGradient></defs>
      {[0,.25,.5,.75,1].map(t=><g key={t}><line x1="48" x2="648" y1={y(max*t)} y2={y(max*t)} stroke="currentColor" opacity=".15" strokeWidth="1"/><text x="35" y={y(max*t)+4} fontSize="12" fill="currentColor" textAnchor="end">{Math.round(max*t)}</text></g>)}
      {buckets.map((b,i)=><line key={b.week} x1={x(i)} x2={x(i)} y1="48" y2="203" stroke="currentColor" strokeWidth=".6" opacity=".08"/>)}
-     {buckets.length>1&&<polygon points={area} fill="url(#chico-v7-fill)"/>}
-     {buckets.length>1&&<polyline points={points} stroke="url(#chico-v7-line)" strokeWidth="3.5" strokeLinejoin="round" strokeLinecap="round" fill="none" className="v7-chart-line"/>}
-     {buckets.map((b,i)=><g key={b.week}><circle cx={x(i)} cy={y(b.tickets)} r="5" stroke="#ffe4a7" strokeWidth="2" fill="#a95042"><title>{b.week}: {b.tickets} Tickets</title></circle><text x={x(i)} y="232" fill="currentColor" fontSize="11" textAnchor="middle">{b.week.slice(5)}</text></g>)}
+     {segments.filter(s=>s.length>1).map((s,i)=><polyline key={i} points={s.join(' ')} stroke="url(#chico-v7-line)" strokeWidth="3.5" strokeLinejoin="round" strokeLinecap="round" fill="none" className="v7-chart-line"/>)}
+     {buckets.map((b,i)=><g key={b.week}>{b.tickets!==null?<circle cx={x(i)} cy={y(b.tickets)} r="5" stroke="#ffe4a7" strokeWidth="2" fill="#a95042"><title>{b.week}: {b.tickets} Tickets</title></circle>:<text x={x(i)} y="188" fontSize="16" textAnchor="middle" fill="currentColor" opacity=".65"><title>{b.week}: Tickets غير مكتملة</title>—</text>}<text x={x(i)} y="232" fill="currentColor" fontSize="11" textAnchor="middle">{b.week.slice(5)}</text></g>)}
     </svg>
-    {!compact&&<p>الأسابيع التي لا تحتوي على قراءات لا تُعرض كنقاط افتراضية. كل نقطة مجموع Tickets المسجل للأسبوع.</p>}
+    {buckets.some(b=>b.tickets===null)&&<p className="ct-chart-incomplete">— بيانات Tickets غير مكتملة</p>}{!compact&&<p>كل نقطة مجموع Tickets المسجل للأسبوع؛ البيانات الناقصة ليست صفرًا.</p>}
    </div>:
    <div className="v7-chart-empty"><Activity size={32}/><b>{compact?'بانتظار البيانات':'لا توجد بيانات أسبوعية للرسم'}</b>{!compact&&<p>سيظهر الرسم تلقائيًا بعد إدخال قراءات فعلية، بدون أي أرقام تجريبية.</p>}</div>}
  </section>;
