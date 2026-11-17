@@ -6,7 +6,7 @@ import {
   CheckCircle2,ChevronDown,ChevronLeft,Clock3,Download,FileSpreadsheet,
   Flag,Home,KeyRound,LayoutDashboard,LockKeyhole,LogOut,Menu,Monitor,
   Moon,Plus,RefreshCw,Search,Settings2,Shield,ShieldAlert,Star,Sun,
-  Ticket,TrendingUp,Trophy,Users,UserRound,Workflow,Wallet,X
+  Ticket,TrendingUp,Trophy,Users,UserRound,Workflow,Wallet,BookOpen,X
 } from 'lucide-react';
 import type {Admin,Reading,State,Rank} from '@/lib/types';
 import dynamic from 'next/dynamic';
@@ -14,6 +14,7 @@ const WorkspaceLoading=()=> <div className="ct-workspace-loading" role="status">
 const ExecutiveOperations=dynamic(()=>import('./ExecutiveOperations'),{loading:WorkspaceLoading});
 const ExecutiveTeamStudio=dynamic(()=>import('./ExecutiveTeamStudio'),{loading:WorkspaceLoading});
 const ExecutiveOperationsWorkspace=dynamic(()=>import('./ExecutiveOperationsWorkspace'),{loading:WorkspaceLoading});
+const AcademyCenter=dynamic(()=>import('./AcademyCenter'),{loading:WorkspaceLoading});
 const SalaryCenter=dynamic(()=>import('./SalaryCenter'),{loading:WorkspaceLoading});
 const ExecutiveProfile=dynamic(()=>import('./ExecutiveProfile'),{loading:WorkspaceLoading});
 import DashboardWeekNotice from './DashboardWeekNotice';
@@ -22,12 +23,13 @@ import {previousRecordedWeek} from '@/lib/dashboard-history';
 import {CommandIcon,RankInsignia,RankLabel} from './ChicoVisualLanguage';
 import {isEvaluatedRank,isEvaluatedAdmin,eligibleReadings} from '@/lib/rules';
 
-export type Tab='dashboard'|'team'|'operations'|'updates'|'excel'|'server'|'daily'|'reports'|'weeks'|'alerts'|'settings'|'salary';
+export type Tab='dashboard'|'team'|'operations'|'updates'|'excel'|'server'|'daily'|'reports'|'weeks'|'alerts'|'settings'|'salary'|'academy';
 type Auth='checking'|'out'|'in';
 type Row={id:string;name:string;rank:Rank;active:boolean;tickets:number|null;flags:number|null;rating:number|null;hours:number|null;lastUpdate:string|null;in_reporting:boolean;admin_level?:number|null;shift_label?:string|null;full_name?:string|null;notes?:string|null;timezone?:string|null;supervisor_id?:string|null;joined_on?:string|null;sort_order?:number;flagsIncomplete?:boolean;periodFrom?:string|null};
 const links:{id:Tab;label:string;en:string;icon:typeof Home}[]=[
   {id:'dashboard',label:'مركز القيادة',en:'Command Center',icon:LayoutDashboard},
   {id:'team',label:'إدارة الفريق',en:'Team Management',icon:Users},
+  {id:'academy',label:'CHICO Academy',en:'Training Center',icon:BookOpen},
   {id:'salary',label:'Salary Center',en:'Salary Center',icon:Wallet},
   {id:'operations',label:'أدوات الإدارة',en:'Management Tools',icon:Workflow},
   {id:'updates',label:'تسجيل تقرير',en:'Log Reading',icon:Plus},
@@ -47,6 +49,7 @@ const navigationGroups:{label:string;en:string;items:Tab[]}[]=[
  {label:'البيانات والتحليل',en:'DATA',items:['excel','server','weeks']},
  {label:'التقارير',en:'REPORTS',items:['daily','reports']},
  {label:'الرواتب',en:'SALARY',items:['salary']},
+ {label:'التدريب',en:'ACADEMY',items:['academy']},
  {label:'النظام',en:'SYSTEM',items:['settings']}
 ];
 function pretty(v:number|null|undefined,kind?:'percent'|'rating'){
@@ -253,7 +256,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
           {label:'تسجيل تحديث',icon:Plus,id:'updates' as Tab},{label:'مساحة العمليات',icon:Workflow,id:'operations' as Tab},
           {label:'إدارة الفريق',icon:Users,id:'team' as Tab},{label:'إغلاق الأسبوع',icon:CalendarDays,id:'weeks' as Tab},
           {label:'التقرير اليومي',icon:Ticket,id:'daily' as Tab},
-           {label:'تقرير Discord',icon:Download,id:'reports' as Tab},{label:'Salary Center',icon:Wallet,id:'salary' as Tab}
+           {label:'تقرير Discord',icon:Download,id:'reports' as Tab},{label:'Salary Center',icon:Wallet,id:'salary' as Tab},{label:'CHICO Academy',icon:BookOpen,id:'academy' as Tab}
         ].map(({label,id})=><button key={id} onClick={()=>open(id)}><CommandIcon name={id}/><span>{label}</span></button>)}</div>
        </section>
        <section className="x-panel x-teamstatus"><CardTitle icon={Users} title="حالة الفريق" en="TEAM STATUS"/>
@@ -271,8 +274,9 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
         onClose={()=>setFocused(null)} onEdit={()=>{setEditTarget(focused.id);setFocused(null);}} onAddReading={()=>{setReadingTarget(focused.id);setFocused(null);open('updates');}}/>}
       </>}
       {tab==='operations'&&<ExecutiveOperationsWorkspace state={state} previewAdmins={reviewAdmins} review={review} onRefresh={refresh} onNavigate={open}/>}
+      {tab==='academy'&&<AcademyCenter review={review}/>}
       {tab==='salary'&&<SalaryCenter admins={review?reviewAdmins:state?.admins||[]} review={review}/>}
-      {tab!=='dashboard'&&tab!=='team'&&tab!=='operations'&&tab!=='salary'&&<ExecutiveOperations tab={tab} state={state} review={review} onRefresh={refresh} initialAdminId={readingTarget} initialPeriod={requestedReportPeriod}/>}
+      {tab!=='dashboard'&&tab!=='team'&&tab!=='operations'&&tab!=='salary'&&tab!=='academy'&&<ExecutiveOperations tab={tab} state={state} review={review} onRefresh={refresh} initialAdminId={readingTarget} initialPeriod={requestedReportPeriod}/>}
 
      <footer className="x-foot"><span>© CHICO TEAM</span></footer>
     </div>

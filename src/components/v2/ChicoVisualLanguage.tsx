@@ -10,7 +10,7 @@ import type {Rank} from '@/lib/types';
  */
 export type CommandSymbol =
  |'dashboard'|'team'|'operations'|'updates'|'excel'|'server'|'daily'|'reports'|'weeks'|'alerts'|'settings'
- |'salary'|'tickets'|'flags'|'rating'|'coverage'|'members'|'rate'|'history'|'shift'|'export';
+ |'academy'|'salary'|'tickets'|'flags'|'rating'|'coverage'|'members'|'rate'|'history'|'shift'|'export';
 type IconProps={name:CommandSymbol;compact?:boolean;className?:string};
 export const rankToken=(rank:Rank)=>rank==='SN.Helper'?'senior':rank==='Moderator'?'moderator':rank==='Administrator'?'administrator':rank==='Responsible'?'responsible':'helper';
 export function CommandIcon({name,compact=false,className=''}:IconProps){
@@ -29,6 +29,7 @@ export function CommandIcon({name,compact=false,className=''}:IconProps){
   weeks:<><rect x="7" y="12" width="36" height="32" rx="4" fill={finish} stroke={rim}/><path d="M8 21h34" stroke="#121923" strokeWidth="3"/><path d="M16 7v9m18-9v9" stroke={rim} strokeWidth="4"/><path d="m17 32 6 6 11-13" stroke="#17212c" strokeWidth="3"/></>,
   alerts:<><path d="M11 34h28l-5-7V17q0-10-9-10t-9 10v10z" fill={finish} stroke={rim}/><path d="M20 39a5 5 0 0 0 10 0" fill={finish} stroke={rim}/><path d="M20 16q1-5 6-5" stroke="#fff" strokeOpacity=".6"/></>,
   settings:<><path d="m21 6 8 0 2 6 5 3 6-1 4 7-4 5v5l4 5-4 7-6-1-5 3-2 5h-8l-2-5-5-3-6 1-4-7 4-5v-5l-4-5 4-7 6 1 5-3Z" transform="translate(2 -2) scale(.91)" fill={finish} stroke={rim}/><circle cx="25" cy="25" r="7" fill="#151e29" stroke={rim}/></>,
+  academy:<><path d="M5 10Q16 7 25 14Q34 7 45 10V39Q35 36 25 43Q15 36 5 39Z" fill={finish} stroke={rim}/><path d="M25 14V43M10 17l10 3M10 24l10 3M30 20l10-3M30 27l10-3" stroke="#16202a" strokeWidth="1.6" strokeLinecap="round"/><path d="M7 12Q16 10 23 15" stroke="#fff" strokeOpacity=".5"/></>,
   salary:<><path d="M8 14 35 7l6 13H8Z" fill={finish} stroke={rim}/><rect x="6" y="15" width="38" height="29" rx="5" fill={finish} stroke={rim}/><path d="M9 19h31" stroke="#fff" strokeOpacity=".42"/><rect x="28" y="24" width="18" height="12" rx="4" fill="#18212c" stroke={rim}/><circle cx="34" cy="30" r="2" fill={finish}/></>,
   tickets:<g transform="rotate(-27 25 25)"><path d="M7 14h36v7a5 5 0 0 0 0 10v7H7v-7a5 5 0 0 0 0-10Z" transform="translate(1 2)" fill="#07090e" opacity=".6" stroke="none"/><path d="M7 12h36v7a5 5 0 0 0 0 10v7H7v-7a5 5 0 0 0 0-10Z" fill={finish} stroke={rim}/><path d="M13 15h24M20 17v14" stroke="#ffffff" strokeOpacity=".48" strokeWidth="1.2"/><path d="m30 18 2 4 4.5.7-3.3 3.2.8 4.6-4-2.2-4 2.2.8-4.6-3.3-3.2 4.5-.7Z" fill="#111826" fillOpacity=".78" stroke="none"/></g>,
   flags:<><path d="M11 7v34" stroke={rim} strokeWidth="3.5"/><path d="M15 9C26 1 32 16 43 9v22C32 39 25 22 15 30Z" fill={finish} stroke={rim} strokeWidth="1.4"/><path d="M18 12c9-4 16 8 22 2" stroke="#fff" strokeOpacity=".5" strokeWidth="1.2"/><path d="M7 42h8" stroke={rim} strokeWidth="2.5"/></>,
