@@ -23,6 +23,6 @@ export default function ExecutiveOperationsWorkspace({state,review,onRefresh,onN
    {tools.map(t=><button key={t.id} type="button" className={selected===t.id?'active':''} onClick={()=>setSelected(t.id)} aria-current={selected===t.id?'page':undefined}>
     <CommandIcon name={t.id}/><span><b>{t.label}</b></span></button>)}
   </nav>
-  <div className="v9-tools-active ct-content-reveal" key={selected}><ExecutiveOperations tab={selected} state={state} review={review} onRefresh={onRefresh} compactHead/></div></div>
+  <div className="v9-tools-active ct-content-reveal"><ExecutiveOperations tab={selected} state={state} review={review} onRefresh={onRefresh} compactHead/></div></div>
  </section>;
 }
