@@ -1,6 +1,7 @@
 'use client';
 
 import {useEffect,useMemo,useRef,useState} from 'react';
+import {CommandIcon} from './ChicoVisualLanguage';
 import {CalendarDays,Download} from 'lucide-react';
 import type {State} from '@/lib/types';
 import {latestPeriod,selectPeriod,reportRows,reportTotals} from '@/lib/report-period';
@@ -66,13 +67,12 @@ export default function DailyReportStudio({state,review,initialPeriod}:Props){
  };
  const single=(date:string)=>{touched.current=true;setFrom(date);setTo(date);};
  const expandCoverage=()=>{touched.current=true;setFrom(period.expandFrom);setTo(period.expandTo);};
- return <section className="x-panel v9-poster-studio chico-daily-report">
+ return <section className="x-panel v9-poster-studio chico-daily-report ct-report-studio">
   <header className="v9-poster-intro">
-   <div><small>CHICO / PREMIUM STATISTICS</small><h2>التقرير اليومي</h2>
-    <p>تقرير بصري متغيّر حسب البيانات المحفوظة. إذا كان الملف يغطي أكثر من يوم، تظهر فترة التغطية الكاملة من غير اختراع توزيع يومي.</p>
-   </div>
+   <div className="ct-workspace-identity"><CommandIcon name="daily"/><div><h2>التقرير اليومي</h2><p>إحصائيات الفترة المحفوظة</p></div></div>
    <button className="v9-primary" type="button" disabled={!imageReady||downloading} onClick={download}><Download size={18}/>{downloading?'جاري تجهيز الصورة…':period.canExport&&!imageReady&&!review?'جاري رسم الصورة…':'تنزيل التقرير PNG'}</button>
   </header>
+  <div className="ct-report-layout"><div className="ct-report-controls"><div className="ct-report-panel-title"><CalendarDays size={18}/> فترة التقرير</div>
   <div className="v9-poster-filters">
    <label>من تاريخ<input type="date" value={from} onChange={e=>{touched.current=true;setFrom(e.target.value);}}/></label>
    <label>إلى تاريخ<input type="date" value={to} onChange={e=>{touched.current=true;setTo(e.target.value);}}/></label>
@@ -84,13 +84,14 @@ export default function DailyReportStudio({state,review,initialPeriod}:Props){
   {valid&&readings.length===0&&partial===0&&<p className="v9-warning" role="status">مفيش قراءات محفوظة للفترة المختارة. اختر آخر تقرير مسجّل لعرض بيانات حقيقية.</p>}
   {review&&<p className="v9-warning" role="status">دي معاينة التصميم فقط، بدون بيانات حية أو تصدير. رفع Excel واستخدام التقارير الفعلية من <a href="https://chicoteam.vercel.app/v2?tab=excel">الموقع الرسمي بعد تسجيل الدخول</a>.</p>}
   {error&&<p className="v9-warning" role="alert">{error}</p>}
+  </div><div className="ct-report-stage"><div className="ct-report-panel-title"><span className="ct-preview-dot"/> معاينة التقرير</div>
   <div className="v9-poster-preview" role="region" aria-label="معاينة صورة التقرير قابلة للتمرير أفقيًا على الشاشات الصغيرة" tabIndex={0} style={{display:period.canExport?'flex':'none'}}><canvas ref={canvas} role="img" aria-label={'تقرير CHICO '+label} style={{width:'100%',maxWidth:1100,height:'auto',aspectRatio:'auto'}}/></div>
   {readings.length===0&&partial===0&&<div className="v9-report-empty" role="status">
-    <b>التقرير جاهز للعرض بمجرد حفظ القراءات</b>
-    <p>مفيش بيانات مسجلة للفترة المختارة، لذلك مش هنعرض تقرير مليان شرط أو نتائج وهمية.</p>
+    <CommandIcon name="daily"/><b>لا توجد قراءات لهذه الفترة</b>
     <a href="/v2?tab=excel">افتح استيراد Excel</a>
    </div>}
   {period.canExport&&<p className="v9-poster-mobile-help">اسحب الصورة يمين وشمال لقراءة الأسماء والأرقام بحجم واضح. زر PNG ينزّل الصورة كاملة بالدقة الأصلية.</p>}
+  </div></div>
   <p className="v9-poster-note">الصورة تضم الإداريين اللي عندهم قراءات محفوظة في الفترة فقط، بترتيبهم الأصلي من Excel عند توفره. {missingCount>0&&<>هناك {missingCount} من أعضاء التقييم بلا قراءة خلال الفترة؛ ما اتشالوش من قائمة الفريق.</>} General وAdministrator خارج التقييم، وترتيب Top 3 حسب Tickets.</p>
  </section>;
 }
