@@ -213,7 +213,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
      <div className="ct-top-actions"><button className="ct-icon-button" onClick={()=>setSearchOpen(!searchOpen)} aria-label="البحث"><Search size={19}/></button><button className="ct-icon-button" onClick={()=>open('alerts')} aria-label="التنبيهات"><Bell size={19}/>{warnings.length>0&&<i className="x-notif-dot"/>}</button>{!review&&<button className="ct-icon-button" onClick={()=>void refresh()} aria-label="تحديث البيانات"><RefreshCw size={17}/></button>}<button className="ct-icon-button" onClick={()=>void logout()} aria-label="تسجيل الخروج من CHICO"><LogOut size={18}/></button><span className="ct-connection" role="status" title={review?'معاينة':state?'البيانات محمّلة':'جاري تحميل البيانات'} data-ready={review||!!state}/></div>
     </header>
     {searchOpen&&<div className="x-command-search"><Search size={18}/><input autoFocus type="search" aria-label="البحث عن إداري" placeholder="ابحث عن إداري…" value={filter} onChange={e=>{setFilter(e.target.value);open('team');}}/><button onClick={()=>{setSearchOpen(false);setFilter('');}} aria-label="إغلاق البحث"><X size={17}/></button></div>}
-    <div id="chico-main-content" tabIndex={-1} className="x-main-content v7-app-content ct-page-motion" key={tab}>
+    <div id="chico-main-content" tabIndex={-1} className={'x-main-content v7-app-content ct-page-motion ct-workspace-' + tab} key={tab}>
      {error&&<div className="x-error"><AlertTriangle size={17}/>{error}<button onClick={()=>void refresh()}>إعادة المحاولة</button></div>}
      {notice&&<div className="x-inline-notice"><Shield size={18}/>{notice}<button onClick={()=>setNotice('')}><X size={17}/></button></div>}
      {tab==='dashboard'&&<>
@@ -256,7 +256,6 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
       </section>
      </>}
      {tab==='team'&&<>
-       <section className="nx-workspace-heading"><div><h1>إدارة الفريق</h1></div><span className="nx-workspace-symbol"><CommandIcon name="team"/></span></section>
        <ExecutiveTeamStudio admins={review?reviewAdmins:state?.admins||[]} rows={rows} review={review} searchQuery={filter} onRefresh={refresh}
         onPreviewChange={updateReviewAdmins} onOpen={setFocused} editTarget={editTarget} light={light} onEditConsumed={()=>setEditTarget(null)}/>
        {focused&&<ExecutiveProfile member={focused} readings={review?[]:state?.readings||[]} admins={review?reviewAdmins:state?.admins||[]} review={review} light={light} mark={<RankMark rank={focused.rank}/>}
@@ -265,7 +264,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
       {tab==='operations'&&<ExecutiveOperationsWorkspace state={state} review={review} onRefresh={refresh} onNavigate={open}/>}
       {tab!=='dashboard'&&tab!=='team'&&tab!=='operations'&&<ExecutiveOperations tab={tab} state={state} review={review} onRefresh={refresh} initialAdminId={readingTarget} initialPeriod={requestedReportPeriod}/>}
 
-     <footer className="x-foot"><span>© CHICO TEAM · ONE STATE RP</span><span>{review?'VISUAL REVIEW — NOT LIVE DATA':'PROTECTED ADMINISTRATION PLATFORM'}</span></footer>
+     <footer className="x-foot"><span>© CHICO TEAM</span></footer>
     </div>
    </main>
    <NexusDock tab={tab} onNavigate={open} onMore={toggleMenu} menuOpen={menu}/>
