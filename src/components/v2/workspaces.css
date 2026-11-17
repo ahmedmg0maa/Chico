@@ -240,3 +240,21 @@
 @media(max-width:1000px){.chico-v2.nx-app .ct-salary-grid{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:520px){.chico-v2.nx-app .ct-salary-summary>div{padding:8px}.chico-v2.nx-app .ct-salary-summary strong{font-size:19px}.chico-v2.nx-app .ct-salary-summary small{font-size:10px}.chico-v2.nx-app .ct-salary-card{padding:11px}}
 @media(prefers-reduced-motion:reduce){.chico-v2.nx-app .ct-salary-card{animation:none!important}}
+
+/* Standalone salary directory, fast field copy and explicit privacy controls. */
+.chico-v2.nx-app .ct-salary-head h1{font-size:clamp(23px,3vw,32px);margin:0}
+.chico-v2.nx-app .ct-salary-head-actions{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.chico-v2.nx-app .ct-salary-head-actions button{display:inline-flex;align-items:center;gap:6px;min-height:37px;white-space:nowrap}
+.chico-v2.nx-app .ct-salary-field{display:flex;align-items:center;gap:8px;min-width:0}
+.chico-v2.nx-app .ct-salary-field>p,.chico-v2.nx-app .ct-salary-field>span{flex:1;min-width:0;overflow-wrap:anywhere}
+.chico-v2.nx-app .ct-salary-name-field{flex:1}
+.chico-v2.nx-app .ct-salary-field .ct-copy-field{color:#a9b9cf;background:#0e1620;border-color:#adbed135}
+.chico-v2.nx-app .ct-salary-field .ct-copy-field:not(:disabled):hover{color:#efd09a;border-color:#dab474}
+.chico-v2.nx-app .ct-salary-details{gap:6px}
+.chico-v2.nx-app .ct-salary-details .ct-salary-field{min-height:31px}
+.chico-v2.nx-app .ct-salary-details .ct-salary-field:first-child p{font-weight:750;font-size:16px}
+.chico-v2.nx-app .ct-salary-details .ct-client-id{font-variant-numeric:tabular-nums;font-size:12px}
+.chico-v2.nx-app .ct-workspace-salary .ct-salary-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(min-width:1550px){.chico-v2.nx-app .ct-workspace-salary .ct-salary-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:900px){.chico-v2.nx-app .ct-workspace-salary .ct-salary-grid{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:520px){.chico-v2.nx-app .ct-salary-head-actions{width:100%}.chico-v2.nx-app .ct-salary-head-actions button{font-size:11px;min-height:34px}.chico-v2.nx-app .ct-salary-details .ct-client-id{font-size:11px}}
