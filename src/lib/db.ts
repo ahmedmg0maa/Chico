@@ -46,6 +46,8 @@ export async function snapshot(sql: ReturnType<typeof postgres>,label:string){
   const shift_history=await sql`SELECT * FROM chico_next.shift_history`;
   const readings=await sql`SELECT * FROM chico_next.readings`;
   const weekly_status=await sql`SELECT * FROM chico_next.weekly_status`;
-  const payload={admins:[...admins],rank_history:[...rank_history],shift_history:[...shift_history],readings:[...readings],weekly_status:[...weekly_status]};
+  const salaryTable=await sql`SELECT to_regclass('chico_next.salary_profiles') IS NOT NULL AS present`;
+  const salary_profiles=salaryTable[0]?.present?await sql`SELECT * FROM chico_next.salary_profiles`:[];
+  const payload={salary_profiles:[...salary_profiles],admins:[...admins],rank_history:[...rank_history],shift_history:[...shift_history],readings:[...readings],weekly_status:[...weekly_status]};
   await sql`INSERT INTO chico_next.backups(label,snapshot) VALUES(${label},${sql.json(payload)})`;
 }

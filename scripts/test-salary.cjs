@@ -1,0 +1,10 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),ts=require('typescript');
+const src=fs.readFileSync('src/lib/salary.ts','utf8'),m={exports:{}};new Function('require','module','exports',ts.transpileModule(src,{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText)(require,m,m.exports);
+const p=m.exports,id='11111111-1111-4111-8111-111111111111';let row=p.emptySalary(id);
+assert.equal(p.salaryCopy('Example',row),null);row={...row,rp_name:'Roleplay Example',rp_server:'Example Server',client_id:'22222222-2222-4222-8222-222222222222'};
+assert.equal(p.salaryCopy('Example',row),'Example\nRoleplay Example\nExample Server\nClient ID: '+row.client_id);
+row=p.changeBonus(row,1);row=p.changeBonus(row,2);row=p.changeBonus(row,3);assert.equal(row.bonus_count,3);assert.equal(row.bonus_amount,null);row={...row,bonus_amount:12.5};assert.equal(p.changeBonus(row,2).bonus_amount,12.5);assert.equal(p.changeBonus(row,0).bonus_amount,null);
+assert.throws(()=>p.changeBonus(row,-1));assert.throws(()=>p.changeBonus(row,100));assert(!p.salaryInput.safeParse({...row,bonus_count:0}).success);assert(!p.salaryInput.safeParse({...row,client_id:'bad'}).success);assert(p.salaryInput.safeParse(row).success);
+const route=fs.readFileSync('src/app/api/salary/route.ts','utf8');assert.equal((route.match(/await requireOwner\(req\)/g)||[]).length,2);assert(route.includes('FOR UPDATE')&&route.includes('SALARY_CONFLICT'));
+const sql=fs.readFileSync('db/007_salary_profiles.sql','utf8');assert(sql.includes('ENABLE ROW LEVEL SECURITY')&&sql.includes('FROM PUBLIC, anon, authenticated'));
+console.log('PASS salary: exact copy, manual bonus ×1/×2/×3, removal clears amount, input validation, owner guards, revision conflict and private table.');
