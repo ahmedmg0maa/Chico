@@ -3,7 +3,7 @@ import {useMemo,useState} from 'react';
 import {Activity,BarChart3,CalendarDays} from 'lucide-react';
 import type {Reading} from '@/lib/types';
 
-export default function ExecutiveWeeklyChart({readings}:{readings:Reading[]}){
+export default function ExecutiveWeeklyChart({readings,compact=false}:{readings:Reading[];compact?:boolean}){
  const [limit,setLimit]=useState(8);
  const buckets=useMemo(()=>{
   const byWeek=new Map<string,{tickets:number;flags:number;count:number}>();
@@ -22,10 +22,10 @@ export default function ExecutiveWeeklyChart({readings}:{readings:Reading[]}){
  const y=(n:number)=>203-n/max*145;
  const points=buckets.map((b,i)=>x(i)+','+y(b.tickets)).join(' ');
  const area=buckets.length?x(0)+',203 '+points+' '+x(buckets.length-1)+',203':'';
- return <section className="v7-chart-card">
+ return <section className={'v7-chart-card '+(compact?'nx-chart-compact':'')}>
   <header className="v7-chart-head">
-   <div><BarChart3 size={22}/><span><b>أداء الفريق خلال الأسابيع الأخيرة</b><small>WEEKLY PERFORMANCE · TICKETS</small></span></div>
-   <label><CalendarDays size={17}/><select value={limit} onChange={e=>setLimit(Number(e.target.value))} aria-label="فترة الرسم البياني"><option value={4}>آخر 4 أسابيع مسجلة</option><option value={8}>آخر 8 أسابيع مسجلة</option></select></label>
+   <div><BarChart3 size={22}/><span><b>{compact?'اتجاه الأداء':'أداء الفريق خلال الأسابيع الأخيرة'}</b>{!compact&&<small>WEEKLY PERFORMANCE · TICKETS</small>}</span></div>
+   <label><CalendarDays size={17}/><select value={limit} onChange={e=>setLimit(Number(e.target.value))} aria-label="فترة الرسم البياني"><option value={4}>{compact?'4 أسابيع':'آخر 4 أسابيع مسجلة'}</option><option value={8}>{compact?'8 أسابيع':'آخر 8 أسابيع مسجلة'}</option></select></label>
   </header>
   {buckets.length?
    <div className="v7-chart-area">
@@ -38,8 +38,8 @@ export default function ExecutiveWeeklyChart({readings}:{readings:Reading[]}){
      {buckets.length>1&&<polyline points={points} stroke="url(#chico-v7-line)" strokeWidth="3.5" strokeLinejoin="round" strokeLinecap="round" fill="none" className="v7-chart-line"/>}
      {buckets.map((b,i)=><g key={b.week}><circle cx={x(i)} cy={y(b.tickets)} r="5" stroke="#ffe4a7" strokeWidth="2" fill="#a95042"><title>{b.week}: {b.tickets} Tickets</title></circle><text x={x(i)} y="232" fill="currentColor" fontSize="11" textAnchor="middle">{b.week.slice(5)}</text></g>)}
     </svg>
-    <p>الأسابيع التي لا تحتوي على قراءات لا تُعرض كنقاط افتراضية. كل نقطة مجموع Tickets المسجل للأسبوع.</p>
+    {!compact&&<p>الأسابيع التي لا تحتوي على قراءات لا تُعرض كنقاط افتراضية. كل نقطة مجموع Tickets المسجل للأسبوع.</p>}
    </div>:
-   <div className="v7-chart-empty"><Activity size={32}/><b>لا توجد بيانات أسبوعية للرسم</b><p>سيظهر الرسم تلقائيًا بعد إدخال قراءات فعلية، بدون أي أرقام تجريبية.</p></div>}
+   <div className="v7-chart-empty"><Activity size={32}/><b>{compact?'بانتظار البيانات':'لا توجد بيانات أسبوعية للرسم'}</b>{!compact&&<p>سيظهر الرسم تلقائيًا بعد إدخال قراءات فعلية، بدون أي أرقام تجريبية.</p>}</div>}
  </section>;
 }
