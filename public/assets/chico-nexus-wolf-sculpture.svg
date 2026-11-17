@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 380" role="img" aria-labelledby="title">
+<title id="title">NEXUS — layered titanium wolf sculpture</title>
+<defs>
+ <linearGradient id="shell" x1=".04" y1="0" x2=".91" y2=".9"><stop stop-color="#e4ebf3"/><stop offset=".18" stop-color="#8c9bad"/><stop offset=".37" stop-color="#202934"/><stop offset=".59" stop-color="#10151d"/><stop offset=".83" stop-color="#4b5868"/><stop offset="1" stop-color="#bc955c"/></linearGradient>
+ <linearGradient id="silver" x1=".17" y1="0" x2=".82" y2=".92"><stop stop-color="#f5f6f8"/><stop offset=".16" stop-color="#b6c2d4"/><stop offset=".38" stop-color="#52647b"/><stop offset=".64" stop-color="#1e2939"/><stop offset=".89" stop-color="#718198"/><stop offset="1" stop-color="#cbd4e0"/></linearGradient>
+ <linearGradient id="gunmetal" x1=".08" y1=".05" x2=".84" y2=".95"><stop stop-color="#667588"/><stop offset=".26" stop-color="#344152"/><stop offset=".55" stop-color="#0a1018"/><stop offset=".79" stop-color="#202b39"/><stop offset="1" stop-color="#8b7658"/></linearGradient>
+ <linearGradient id="blackblade" x1="0" y1=".2" x2=".8" y2=".8"><stop stop-color="#394556"/><stop offset=".34" stop-color="#111821"/><stop offset=".68" stop-color="#090d13"/><stop offset="1" stop-color="#6c5b41"/></linearGradient>
+ <linearGradient id="gold" x1="0" y1="0" x2=".8" y2="1"><stop stop-color="#bca17b"/><stop offset=".28" stop-color="#ffedbe"/><stop offset=".52" stop-color="#bb9257"/><stop offset=".76" stop-color="#69471e"/><stop offset="1" stop-color="#efd49f"/></linearGradient>
+ <linearGradient id="ear" x1=".05" y1="0" x2=".9" y2=".9"><stop stop-color="#e9eff8"/><stop offset=".24" stop-color="#738297"/><stop offset=".46" stop-color="#212c3b"/><stop offset=".78" stop-color="#090e16"/><stop offset="1" stop-color="#9b7c50"/></linearGradient>
+ <linearGradient id="nose" x1="0" y1="0" x2=".8" y2="1"><stop stop-color="#b5c6de"/><stop offset=".38" stop-color="#233449"/><stop offset=".7" stop-color="#060a0f"/><stop offset="1" stop-color="#101926"/></linearGradient>
+ <radialGradient id="eye"><stop stop-color="#fff7ce"/><stop offset=".3" stop-color="#ffdc74"/><stop offset=".75" stop-color="#d78b31"/><stop offset="1" stop-color="#5c3415"/></radialGradient>
+ <filter id="depth" x="-15%" y="-12%" width="138%" height="140%"><feDropShadow dx="0" dy="9" stdDeviation="9" flood-color="#000" flood-opacity=".48"/></filter>
+ <filter id="spark" x="-80%" y="-150%" width="260%" height="400%"><feGaussianBlur stdDeviation="2.8"/></filter>
+</defs>
+<g filter="url(#depth)" stroke-linejoin="round">
+ <!-- continuous profile: back ear, blade mane, tapered neck and titanium muzzle -->
+ <path d="M168 15 190 66 231 42 243 90 267 116 293 145 300 166 342 205 327 219 304 224 290 237 267 235 251 252 248 274 236 295 229 286 213 318 179 362 152 335 114 311 84 281 72 257 58 268 55 229 32 238 47 197 29 199 49 172 105 122 123 91 139 67Z"
+ fill="url(#shell)" stroke="#788599" stroke-width=".8"/>
+ <!-- rear ear -->
+ <path d="M190 66 231 42 243 90 219 96 190 84Z" fill="url(#silver)" stroke="#8d9bad" stroke-width=".8"/>
+ <path d="m204 70 25-22 8 43-18-9Z" fill="url(#blackblade)"/>
+ <path d="m231 44 12 46-5-3-8-28Z" fill="#a8b5c7" opacity=".7"/>
+ <!-- layered back mane -->
+ <path d="M123 91 105 122 49 172 29 199 88 175 130 136 167 94Z" fill="url(#silver)"/>
+ <path d="M113 130 78 170 29 199 70 181 117 158 157 116Z" fill="url(#gunmetal)"/>
+ <path d="M105 153 56 187 32 238 83 208 133 171 175 126Z" fill="url(#shell)"/>
+ <path d="M90 169 48 206 32 238 58 218 114 178 155 142Z" fill="url(#silver)"/>
+ <path d="M112 169 76 208 55 229 58 268 77 255 98 210 155 158Z" fill="url(#blackblade)"/>
+ <path d="M106 181 80 223 74 253 84 281 102 268 113 220 154 184Z" fill="url(#gunmetal)"/>
+ <path d="M136 180 106 224 99 260 114 311 132 321 114 278 126 233 170 186Z" fill="url(#silver)"/>
+ <path d="M147 200 123 236 119 278 152 335 179 362 154 300 147 259 180 215Z" fill="url(#blackblade)"/>
+ <path d="M181 208 153 251 157 293 179 362 192 319 180 273 204 234Z" fill="url(#silver)"/>
+ <path d="M206 225 178 267 183 307 179 362 213 318 231 280 229 260Z" fill="url(#gunmetal)"/>
+ <path d="M232 231 208 260 194 315 179 362 213 318 236 295 248 274 251 252Z" fill="url(#gold)" opacity=".82"/>
+ <path d="M236 243 220 262 209 309 192 338 229 286 229 297 248 274 251 249Z" fill="url(#blackblade)"/>
+ <path d="m254 239-12 13-8 45 14-23 3-22 16-17Z" fill="url(#gold)"/>
+ <!-- main ear and folded rim -->
+ <path d="M168 15 190 66 205 97 165 115 121 132 132 86 149 48Z" fill="url(#ear)" stroke="#c5cfdd" stroke-width=".9"/>
+ <path d="M168 22 177 68 192 90 166 104 144 111 150 72Z" fill="#080c14"/>
+ <path d="M168 25 168 62 154 95 145 110 150 72Z" fill="#3c4859"/>
+ <path d="M175 58 183 76 193 91 170 105 156 104 168 91 165 78Z" fill="url(#gunmetal)"/>
+ <path d="M168 16 153 54 138 91 131 120 145 111 153 72 172 29Z" fill="url(#silver)"/>
+ <path d="m142 103 22-17 8 12-16 13-29 21Z" fill="url(#gold)"/>
+ <!-- stacked forehead plates -->
+ <path d="M127 132 165 117 205 97 219 87 250 104 276 131 293 145 300 166 269 158 232 139 194 130Z" fill="url(#silver)"/>
+ <path d="M100 161 137 132 174 116 205 112 241 131 193 125 157 137Z" fill="url(#gold)"/>
+ <path d="M82 191 115 156 162 134 199 129 229 142 266 151 298 170 284 171 249 164 206 155 169 157 132 168Z" fill="url(#gunmetal)"/>
+ <path d="M82 191 119 158 157 144 190 143 167 152 131 169Z" fill="url(#silver)"/>
+ <path d="M153 137 194 130 232 139 267 158 291 170 270 171 239 155 205 149Z" fill="#131b27"/>
+ <path d="M215 109 242 115 269 135 293 155 299 166 280 158 252 135Z" fill="url(#silver)"/>
+ <!-- brow, illuminated eye and cheek -->
+ <path d="M164 158 203 153 237 160 264 174 276 179 257 193 234 182 205 176 183 182 144 201Z" fill="url(#blackblade)"/>
+ <path d="M243 167 263 177 270 186 253 186 245 178 235 170Z" fill="#b18146" opacity=".48"/>
+ <path d="M243 169 259 174 267 183 255 184 247 179Z" fill="#ffcf60" opacity=".65" filter="url(#spark)"/>
+ <path d="m243 169 16 5 8 9-12 1-8-5Z" fill="url(#eye)" stroke="#2b2118" stroke-width="1.2"/>
+ <path d="m257 175 2 7-3-1-1-4Z" fill="#0d1014"/>
+ <path d="M162 178 203 168 234 174 251 190 227 191 195 188 164 202 129 218Z" fill="url(#silver)"/>
+ <path d="M129 218 166 203 196 192 224 191 248 197 216 214 180 219 152 241Z" fill="url(#gold)"/>
+ <path d="M129 218 165 208 197 198 230 200 210 212 170 223 153 240Z" fill="url(#gunmetal)"/>
+ <!-- muzzle and nose: angular mirror facets -->
+ <path d="M284 169 300 166 342 205 327 219 304 224 273 211 243 204 207 201 226 187 251 190 269 185Z" fill="url(#silver)"/>
+ <path d="M282 171 300 169 335 199 319 198 289 180Z" fill="#91a1b7" opacity=".68"/>
+ <path d="M242 191 273 187 292 196 324 204 340 205 327 219 304 224 272 213 245 204 207 201Z" fill="url(#shell)"/>
+ <path d="M320 201 342 205 329 217 319 215 316 208Z" fill="url(#nose)" stroke="#142030" stroke-width=".8"/>
+ <path d="M320 201 333 204 326 206 318 205Z" fill="#a6bdd7"/>
+ <!-- jaw, dark throat and final gold rim -->
+ <path d="M208 202 243 204 273 213 304 224 290 237 267 235 251 252 235 249 220 230 179 231 194 217Z" fill="url(#blackblade)"/>
+ <path d="M230 216 252 218 275 226 303 225 290 236 267 235 251 245 235 240 218 227Z" fill="url(#gold)"/>
+ <path d="M195 218 226 216 251 221 273 231 290 231 284 236 267 235 251 247 231 239 213 231 179 234Z" fill="#242b34"/>
+ <path d="M167 226 193 216 208 219 191 237 180 257 183 291 170 271 166 252Z" fill="url(#silver)"/>
+ <!-- selected specular ridges, no outlines or surrounding static dashboard art -->
+ <path d="M169 16 139 67 126 102M49 172l57-46m-69 102 44-51m39-41 45-20 34-12m15 5 29 12 32 24m-87 42 35 1m-104 69 12 24 39 55m3 17 28-42 20-39" fill="none" stroke="#d7e1ec" stroke-width="1.5" stroke-linecap="round" opacity=".67"/>
+ <path d="m128 133 43-22m-69 53 31-17m15 55 39-14m47 50 18 7m-73 115 16-32" fill="none" stroke="#f7d996" stroke-width="1.35" opacity=".83"/>
+</g>
+</svg>
