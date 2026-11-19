@@ -1,4 +1,5 @@
 'use client';
+import WorkflowStatus from '../nexus/WorkflowStatus';
 import {useEffect,useState,useMemo,type FormEvent} from 'react';
 import {Gift,Copy,Edit3,Eye,EyeOff,Plus,Minus,X,Wallet,RefreshCw,Download} from 'lucide-react';
 import type {Admin} from '@/lib/types';
@@ -40,7 +41,7 @@ export default function SalaryCenter({admins,review}:{admins:Admin[];review:bool
  <div className="ct-salary-summary"><div><small>Team members</small><strong>{people.length}</strong></div><div><small>Complete profiles</small><strong>{people.filter(a=>salaryCopy(a.name,byId.get(a.id)||emptySalary(a.id))).length}</strong></div><div><small>Bonus recipients</small><strong>{people.filter(a=>(byId.get(a.id)?.bonus_count||0)>0).length}</strong></div></div>
  {review&&<p className="ct-salary-policy">Preview only · changes are not stored.</p>}
  <div className="ct-salary-toolbar"><input aria-label="Search salary profiles" placeholder="Search by name or RP server" value={search} onChange={e=>setSearch(e.target.value)}/><button type="button" className="v9-quiet-btn" aria-pressed={onlyBonus} onClick={()=>setOnlyBonus(v=>!v)}><Gift size={16}/> {onlyBonus?'All profiles':'Bonus only'}</button></div>
- {message&&<p className="ct-salary-status" role="status">{message}</p>}{error&&<p className="v9-warning" role="alert">{error}</p>}
+ <WorkflowStatus tone={status==='error'||error?'blocked':status==='loading'||pending||exporting?'working':message?'ready':'info'} title={status==='error'?'Salary records unavailable':error?'Check the operation':status==='loading'?'Loading salary records':pending?'Saving profile':exporting?'Preparing Excel':message||'Salary workspace'} detail={status==='ready'?list.length+' of '+people.length+' profiles visible':undefined}/>{error&&<p className="v9-warning" role="alert">{error}</p>}
  {status==='loading'?<p className="ct-admin-empty">Loading salary profiles…</p>:status==='error'?<p className="v9-warning" role="alert">Salary records unavailable. Refresh to retry.</p>:<div className="ct-salary-grid">
  {list.map(a=>{const row=byId.get(a.id)||emptySalary(a.id),editing=edit?.admin_id===a.id,hidden=hideAll?!hiddenIds.has(a.id):hiddenIds.has(a.id);return <article key={a.id} className="ct-salary-card" data-bonus={row.bonus_count>0}>
  <div className="ct-salary-name"><div className="ct-salary-field ct-salary-name-field"><h3 dir="auto">{a.name}</h3>{copyField(a.name,'Admin name')}</div>{row.bonus_count>0&&<span className="ct-bonus-mark"><Gift size={15}/> BONUS ×{row.bonus_count}</span>}</div>

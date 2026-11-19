@@ -56,9 +56,9 @@ export default function ExecutiveProfile({member,readings,admins=[],review,mark,
     <div><CommandIcon name="rating"/><small>آخر Rating</small><b>{n(lastRating,2)}</b></div>
    </div>
    <nav className="v9-profile-tabs" aria-label="أقسام ملف الإداري">
-    <button type="button" className={tab==='performance'?'selected':''} onClick={()=>setTab('performance')}><Activity size={17}/>الأداء</button>
-    <button type="button" className={tab==='readings'?'selected':''} onClick={()=>setTab('readings')}><CalendarDays size={17}/>سجل الأيام ({memberReadings.length})</button>
-    <button type="button" className={tab==='details'?'selected':''} onClick={()=>setTab('details')}><Shield size={17}/>البيانات والسجل الإداري</button>
+    <button type="button" className={tab==='performance'?'selected':''} aria-pressed={tab==='performance'} onClick={()=>setTab('performance')}><Activity size={17}/>الأداء</button>
+    <button type="button" className={tab==='readings'?'selected':''} aria-pressed={tab==='readings'} onClick={()=>setTab('readings')}><CalendarDays size={17}/>سجل الأيام ({memberReadings.length})</button>
+    <button type="button" className={tab==='details'?'selected':''} aria-pressed={tab==='details'} onClick={()=>setTab('details')}><Shield size={17}/>البيانات والسجل الإداري</button>
    </nav>
    <div className="v9-profile-content ct-content-reveal" key={tab}>
     {tab==='performance'&&<>

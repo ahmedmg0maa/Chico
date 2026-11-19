@@ -1,4 +1,5 @@
 'use client';
+import WorkflowStatus from '../nexus/WorkflowStatus';
 
 import {useEffect,useMemo,useRef,useState} from 'react';
 import {CommandIcon} from './ChicoVisualLanguage';
@@ -72,6 +73,7 @@ export default function DailyReportStudio({state,review,initialPeriod}:Props){
    <div className="ct-workspace-identity"><CommandIcon name="daily"/><div><h2>التقرير اليومي</h2><p>إحصائيات الفترة المحفوظة</p></div></div>
    <button className="v9-primary" type="button" disabled={!imageReady||downloading} onClick={download}><Download size={18}/>{downloading?'جاري تجهيز الصورة…':period.canExport&&!imageReady&&!review?'جاري رسم الصورة…':'تنزيل التقرير PNG'}</button>
   </header>
+  <WorkflowStatus tone={review?'info':!valid||partial>0||error?'blocked':imageReady?'ready':period.canExport?'working':'info'} title={review?'معاينة فقط':!valid?'الفترة غير صالحة':partial>0?'التغطية غير مكتملة — التصدير متوقف':error?'تعذر تجهيز التقرير':imageReady?'التقرير جاهز للتنزيل':period.canExport?'جارٍ تجهيز الصورة':'لا توجد بيانات متاحة للتصدير'} detail={from+' — '+to}/>
   <div className="ct-report-layout"><div className="ct-report-controls"><div className="ct-report-panel-title"><CalendarDays size={18}/> فترة التقرير</div>
   <div className="v9-poster-filters">
    <label>من تاريخ<input type="date" value={from} onChange={e=>{touched.current=true;setFrom(e.target.value);}}/></label>
