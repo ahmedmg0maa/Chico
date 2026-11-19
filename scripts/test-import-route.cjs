@@ -70,7 +70,7 @@ async function parseLegacy(periodYear=null){
  assert.equal(recovered.getWorksheet('CHICO_IMPORT').getCell('B1').value,'A & B');
 
  const {body,status}=await parse();
- assert.equal(status,200);
+ assert.equal(status,200,body.error);
  assert.equal(body.rows.length,30);
  assert.equal(body.imported,29);
  assert.equal(body.leaders,1);

@@ -1,3 +1,4 @@
+import {Readable} from 'node:stream';
 import ExcelJS from 'exceljs';
 import JSZip from 'jszip';
 import {SaxesParser} from 'saxes';
@@ -30,7 +31,7 @@ function normalizedPart(xml:string){
 export async function readWorkbook(bytes:Buffer){
  const workbook=new ExcelJS.Workbook();
  try{
-  await workbook.xlsx.load(Uint8Array.from(bytes).buffer);
+  await workbook.xlsx.read(Readable.from([bytes]));
   return workbook;
  }catch{
   const zip=await JSZip.loadAsync(bytes);
@@ -41,7 +42,7 @@ export async function readWorkbook(bytes:Buffer){
    zip.file(part.name,normalizedPart(await part.async('string')));
   }
   const normalized=new ExcelJS.Workbook();
-  await normalized.xlsx.load(await zip.generateAsync({type:'arraybuffer'}));
+  await normalized.xlsx.read(Readable.from([await zip.generateAsync({type:'nodebuffer'})]));
   return normalized;
  }
 }
