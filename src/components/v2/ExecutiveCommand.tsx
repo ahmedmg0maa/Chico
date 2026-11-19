@@ -203,14 +203,14 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
   {title:'الساعات',english:'Time',value:pretty(review?null:summary?.hours),glyph:'shift' as const,tone:'ice'}
  ];
  const isLogin=(auth!=='in')||previewLogin;
- if(isLogin)return <div className="chico-v2 nx-app x-auth-scene ct-auth-signature" dir="rtl">
+ if(isLogin)return <div className="chico-v2 nx-app x-auth-scene ct-auth-signature nxr-login" dir="rtl">
   {review&&<div className="x-review-ribbon">معاينة شاشة الدخول · لا اتصال ببيانات الإنتاج</div>}
   <header className="ct-auth-top"><div className="ct-auth-brand"><img src="/assets/chico-approved-wolf.avif" alt="" width={34} height={34}/><b>CHICO TEAM</b></div><span><Shield size={15}/> دخول الإدارة</span></header>
   <main className="ct-auth-main">
-   <div className="nx-stage ct-auth-stage">
-    <div className="ct-auth-visual"><WolfStage/><div className="nx-stage-brand"><b>CHICO TEAM</b></div></div>
+   <div className="nxr-login-grid">
+    <div className="nxr-login-art" aria-hidden="true"><div className="nxr-engraving">CHICO</div><div className="nxr-art-orbit"/><div className="nxr-art-orbit nxr-art-orbit-two"/><img src="/assets/chico-approved-wolf.avif" alt="" width={520} height={520}/><div className="nxr-art-caption"><span>01 / CHICO TEAM</span><b>COMMAND<br/>DIVISION.</b></div></div>
     <section className="ct-auth-panel" aria-labelledby="ct-auth-title">
-     <div className="ct-auth-heading"><span className="ct-auth-lock"><LockKeyhole size={24}/></span><h1 id="ct-auth-title">بوابة القيادة</h1></div>
+     <div className="nxr-login-kicker"><span/> PRIVATE WORKSPACE</div><div className="ct-auth-heading"><h1 id="ct-auth-title">بوابة<br/>القيادة<span className="nxr-period">.</span></h1></div><p className="nxr-login-description">إدارة الفريق وتقارير الأداء في مساحة عمل واحدة.</p>
      {review?<div className="x-review-login"><p>معاينة فقط — لا تحتاج إلى كلمة مرور.</p><button className="x-primary" onClick={()=>setPreviewLogin(false)}>الدخول إلى مركز القيادة <ArrowLeft size={17}/></button></div>:
      <form onSubmit={login} className="x-auth-fields ct-auth-fields"><label htmlFor="v2-pass">كلمة مرور الإدارة</label><div className="x-input-shell"><KeyRound size={19}/><input id="v2-pass" type={reveal?'text':'password'} value={pass} onChange={e=>setPass(e.target.value)} placeholder="أدخل كلمة المرور" required autoComplete="current-password" aria-invalid={!!error}/><button type="button" onClick={()=>setReveal(!reveal)} aria-pressed={reveal}>{reveal?'إخفاء':'إظهار'}</button></div>
       {error&&<div className="x-error" role="alert"><AlertTriangle size={17}/>{error}</div>}
@@ -222,7 +222,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
   </main>
  </div>;
 
- return <div className={'chico-v2 nx-app '+(light?'x-light':'')} dir="rtl">
+ return <div className={'chico-v2 nx-app nxr-shell '+(light?'x-light':'')} dir="rtl">
   <a className="v12-skip-link" href="#chico-main-content">تخطي إلى المحتوى الرئيسي</a>
   {review&&<div className="x-review-ribbon">معاينة · بدون إحصائيات · لا حفظ في الإنتاج</div>}
   <div className={"x-layout "+(menu?"v10-nav-open":"v10-nav-closed")}>
@@ -250,6 +250,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
      <span className="ct-page-title" aria-live="polite" aria-atomic="true">{links.find(l=>l.id===tab)?.label}</span>
      <div className="ct-top-actions"><button className="ct-icon-button" onClick={()=>setSearchOpen(v=>!v)} aria-label="التنقل السريع والبحث" aria-keyshortcuts="Control+K Meta+K" aria-haspopup="dialog" aria-expanded={searchOpen} title="التنقل السريع · Ctrl/⌘ + K"><Search size={19}/></button><button className="ct-icon-button" onClick={()=>open('alerts')} aria-label="التنبيهات"><Bell size={19}/>{warnings.length>0&&<i className="x-notif-dot"/>}</button>{!review&&<button className="ct-icon-button" onClick={()=>void refresh()} aria-label="تحديث البيانات"><RefreshCw size={17}/></button>}<button className="ct-icon-button" onClick={()=>void logout()} aria-label="تسجيل الخروج من CHICO"><LogOut size={18}/></button><span className="ct-connection" role="status" title={review?'معاينة':state?'البيانات محمّلة':'جاري تحميل البيانات'} data-ready={review||!!state}/></div>
     </header>
+    <NexusDock tab={tab} onNavigate={open} onMore={toggleMenu} menuOpen={menu}/>
     <NexusCommandPalette open={searchOpen} routes={links} members={rows}
      onClose={()=>setSearchOpen(false)} onNavigate={open}
      onMember={id=>{const member=rows.find(r=>r.id===id);if(member){open('team');setFocused(member);}}}/>
@@ -261,13 +262,15 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
        transition={{duration:0.22,ease:[0.22,1,0.36,1]}}> 
      {error&&<div className="x-error"><AlertTriangle size={17}/>{error}<button onClick={()=>void refresh()}>إعادة المحاولة</button></div>}
      {notice&&<div className="x-inline-notice"><Shield size={18}/>{notice}<button onClick={()=>setNotice('')}><X size={17}/></button></div>}
+     {tab!=='dashboard'&&<div className="nxr-workspace-index"><span>CHICO / {links.find(l=>l.id===tab)?.en}</span><button type="button" onClick={()=>open('dashboard')}><ArrowLeft size={14}/> مركز القيادة</button></div>}
      {tab==='dashboard'&&<>
       <NexusStage week={timeLabel} rate={totals.rate} coverage={totals.coverage} active={active} roles={roleCounts} helpers={top} moderators={moderatorTop} readings={review?[]:currentEligible} onTeam={()=>open('team')} onRead={()=>open('daily')} onRecord={()=>open('updates')} onOpen={id=>{const member=rows.find(r=>r.id===id);if(member){open('team');setFocused(member);}}}>
-      <div className="x-kpi-grid v8-kpi-grid">{kpis.map(({title,english,value,glyph,tone},index)=><div className={'x-kpi v8-kpi x-tone-'+tone} key={title} style={{animationDelay:(index*45)+'ms'}}><div className="x-kpi-title"><CommandIcon name={glyph}/><div><b>{english.replace("Weekly ","")}</b></div></div><motion.strong className="nx-kpi-number" key={english+':'+value} initial={{opacity:.4,y:7}} animate={{opacity:1,y:0}} transition={{duration:.32}}>{value}</motion.strong><span>{value==='—'?'غير مسجل': 'الأسبوع الحالي'}</span><i className="v8-kpi-line"/></div>)}</div>
+      <div className="x-kpi-grid v8-kpi-grid nxr-metric-strip">{kpis.map(({title,english,value,glyph,tone},index)=><div className={'x-kpi v8-kpi x-tone-'+tone} key={title} style={{animationDelay:(index*45)+'ms'}}><div className="x-kpi-title"><CommandIcon name={glyph}/><div><b>{english.replace("Weekly ","")}</b></div></div><motion.strong className="nx-kpi-number" key={english+':'+value} initial={{opacity:.4,y:7}} animate={{opacity:1,y:0}} transition={{duration:.32}}>{value}</motion.strong><span>{value==='—'?'غير مسجل': 'الأسبوع الحالي'}</span><i className="v8-kpi-line"/></div>)}</div>
       </NexusStage>
       {!review&&state&&!hasRegisteredWeek&&<DashboardWeekNotice currentWeek={summary?.week_start??'—'} previous={previousWeek} onReadReports={()=>{open('daily');if(previousWeek)setRequestedReportPeriod({from:previousWeek.from,to:previousWeek.to});}} onRecord={()=>open('updates')}/>}
 
-      <div className="x-triple">
+      <div className="nxr-detail-label"><span>02 / OPERATIONS</span><h2>متابعة العمل</h2></div>
+      <div className="x-triple nxr-workbench">
        <section className="x-panel x-alerts-panel"><CardTitle icon={Bell} title="تنبيهات القيادة" en="LEADERSHIP ALERTS" action={<button className="x-text-action" onClick={()=>open('alerts')}>عرض الكل <ArrowLeft size={14}/></button>}/>
         {alerts.length?alerts.map((a,i)=><button className={'x-alert x-alert-'+a.severity} key={i} onClick={()=>open('alerts')}><div><b>{a.label}</b><span>{a.desc}</span></div><AlertTriangle size={18}/></button>):<div className="x-empty"><CheckCircle2 size={24}/><b>لا توجد تنبيهات مسجلة</b></div>}
        </section>
@@ -283,7 +286,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
          </div>:<div className="x-empty"><Activity size={26}/><b>لا توجد قراءات مسجلة لهذا الأسبوع</b></div>}
        </section>
       </div>
-      <div className="v7-bottom-dashboard">
+      <div className="v7-bottom-dashboard nxr-shortcuts">
        <section className="x-panel x-quick"><CardTitle icon={Workflow} title="إجراءات سريعة" en="QUICK ACTIONS"/>
         <div className="x-action-grid">{[
           {label:'تسجيل تحديث',icon:Plus,id:'updates' as Tab},{label:'مساحة العمليات',icon:Workflow,id:'operations' as Tab},
@@ -316,7 +319,6 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
      </AnimatePresence>
     </MotionConfig>
    </main>
-   <NexusDock tab={tab} onNavigate={open} onMore={toggleMenu} menuOpen={menu}/>
   </div>
  </div>;
 }
