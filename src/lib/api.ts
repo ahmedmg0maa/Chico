@@ -5,6 +5,7 @@ import { isAuthenticated,sameOrigin } from './auth';
 export const runtime='nodejs';
 export function response(data:unknown,status=200){return NextResponse.json(data,{status,headers:{'Cache-Control':'no-store'}});}
 export function failure(error:unknown){
+ if(error instanceof Error&&error.message==='NOT_FOUND')return response({ok:false,error:'NOT_FOUND'},404);
  const raw=error instanceof Error?error.message:'UNKNOWN_ERROR';
  // Error codes are stable; never expose raw SQL messages or record names to the browser.
  const code=raw.startsWith('OVERLAPPING_PERIOD:')?'OVERLAPPING_PERIOD':raw;

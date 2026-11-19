@@ -94,6 +94,9 @@ async function parseLegacy(periodYear=null){
  assert.equal(year.status,200);
  assert.equal(year.body.imported,29);
  assert.equal(year.body.leaders,1);
+ assert.equal(year.body.fileTotals.people,29);
+ assert.equal(year.body.fileTotals.tickets,3301);
+ assert.equal(year.body.fileTotals.hours,283);
  assert.equal(year.body.sourceTotals.people,26);
  assert.equal(year.body.sourceTotals.tickets,3222);
  assert.equal(year.body.sourceTotals.flags,50);

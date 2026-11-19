@@ -1,7 +1,7 @@
 import type {Admin,Rank} from './types';
 
 export const LOCAL_ROSTER_HISTORY_KEY='chico-roster-history-local-v1';
-const VALID_RANKS:ReadonlyArray<Rank>=['Responsible','Administrator','Moderator','SN.Helper','Helper'];
+const VALID_RANKS:ReadonlyArray<Rank>=['Responsible','Administrator','M.','Moderator','SN.Helper','Helper'];
 
 export type LocalRosterEvent={
   admin_id:string;

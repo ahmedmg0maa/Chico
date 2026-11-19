@@ -26,5 +26,15 @@ check('Ranking excludes owner and Administrator',()=>{assert.equal(r.isEligibleF
 check('Only Helper and SN.Helper are eligible for Top 3',()=>{assert.equal(r.isEligibleForTop('Helper'),true);assert.equal(r.isEligibleForTop('SN.Helper'),true);assert.equal(r.isEligibleForTop('Moderator'),false);assert.equal(r.isEligibleForTop('Administrator'),false);assert.equal(r.isEligibleForTop('Responsible'),false);});
 check('Null is different from recorded zero',()=>{const base={id:'a',admin_id:'b',admin_name:'c',rank:'Helper',from_date:'2026-11-09',to_date:'2026-11-09',week_start:'2026-11-09',flags_counter:null,flags_delta:null,hours:null,rating:null,created_at:'',note:''};const s=r.summarizeReadings([{...base,tickets_delta:null,tickets_counter:null}]);assert.equal(s.tickets,null);const t=r.summarizeReadings([{...base,tickets_delta:0,tickets_counter:0}]);assert.equal(t.tickets,0);});
 check('Incomplete flags never show invented rate',()=>{const a={id:'a',admin_id:'b',admin_name:'c',rank:'Helper',from_date:'2026-11-09',to_date:'2026-11-09',week_start:'2026-11-09',flags_counter:25,flags_delta:null,hours:0,rating:4.8,created_at:'',note:'',tickets_delta:120,tickets_counter:120};const s=r.summarizeReadings([a]);assert.equal(s.flags,null);assert.equal(s.rate,null);});
+check('Weekly review requires both measured thresholds',()=>{
+ for(const [flags,rating,expected] of [[11,4.79,true],[10,4.79,false],[11,4.8,false],[null,4,false],[12,null,false]])assert.equal(r.needsWeeklyReview(flags,rating),expected);
+});
+check('Archive membership and rank are stable after roster edits',()=>{
+ const admin={id:'a',active:false,in_reporting:false,rank:'Administrator'};
+ const saved={admin_id:'a',rank:'Moderator',recorded_reporting:true};
+ assert.equal(r.eligibleReadings([saved],[admin]).length,1);
+ assert.equal(r.eligibleReadings([{...saved,rank:'M.'}],[admin]).length,0);
+ assert.equal(r.eligibleReadings([{...saved,recorded_reporting:false}],[admin]).length,0);
+});
 if(process.exitCode)process.exit(1);
 console.log('CHICO rules verified without seeded statistics');

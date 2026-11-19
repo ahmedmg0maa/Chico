@@ -29,6 +29,7 @@ export async function POST(req:NextRequest){
   const rosterChanges=p.rows.some(r=>r.roster_action!=='match');
   if(rosterChanges&&!approve_roster_sync)return response({ok:false,error:'ROSTER_SYNC_CONFIRMATION_REQUIRED'},422);
   const result=await sql.begin(async tx=>{
+   await tx`SELECT pg_advisory_xact_lock(72461119)`;
    const locked=await tx`SELECT payload,source_hash,committed_at FROM chico_next.import_staging WHERE id=${preview_id} AND created_at>now()-interval '1 hour' FOR UPDATE`;
    if(!locked.length||locked[0].committed_at)throw new Error('PREVIEW_EXPIRED_OR_USED');
    const current=payload(locked[0].payload),recheck=auditImport(current.rows);

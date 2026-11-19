@@ -20,10 +20,18 @@ export function isEvaluatedAdmin(admin:Pick<Admin,'active'|'in_reporting'|'rank'
  return admin.active&&admin.in_reporting&&isEvaluatedRank(admin.rank);
 }
 export function eligibleReadings(readings:readonly Reading[],admins:readonly Admin[]):Reading[]{
- const ids=new Set(admins.filter(isEvaluatedAdmin).map(a=>a.id));
- return readings.filter(r=>ids.has(r.admin_id));
+ const roster=new Map(admins.map(admin=>[admin.id,admin]));
+ return readings.filter(reading=>{
+   const admin=roster.get(reading.admin_id);
+   if(!admin)return false;
+   if(typeof reading.recorded_reporting==='boolean')return reading.recorded_reporting && isEvaluatedRank(reading.rank);
+   return isEvaluatedAdmin(admin);
+ });
 }
 
+export function needsWeeklyReview(flags:number|null,rating:number|null){
+ return flags!==null && flags>10 && rating!==null && rating<4.80;
+}
 export function serverFlagRate(flags:number|null,tickets:number|null){return flags===null||tickets===null||tickets<=0?null:Math.round(flags/tickets*10000)/100;}
 export function decimalHours(value:number){if(!Number.isFinite(value)||value<0||value>10000)throw new Error('INVALID_HOURS');return Math.round(value*100)/100;}
 export function ensureFirstTicketPeriod(from:string,week:string,current:number|null,previousInWeek:boolean){

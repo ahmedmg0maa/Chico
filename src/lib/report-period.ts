@@ -14,9 +14,10 @@ export function selectPeriod(readings:readonly Reading[],from:string,to:string){
 }
 
 export function reportRows(admins:readonly Admin[],readings:readonly Reading[]){
- const recorded=new Set(readings.map(r=>r.admin_id));
- return admins.filter(a=>isEvaluatedAdmin(a)&&recorded.has(a.id)).map(a=>{
-  const own=readings.filter(r=>r.admin_id===a.id)
+ const included=eligibleReadings(readings,admins);
+ const recorded=new Set(included.map(r=>r.admin_id));
+ return admins.filter(a=>recorded.has(a.id)).map(a=>{
+  const own=included.filter(r=>r.admin_id===a.id)
    .sort((x,y)=>y.to_date.localeCompare(x.to_date)||y.created_at.localeCompare(x.created_at));
   const completeTickets=own.length>0&&own.every(r=>r.tickets_delta!==null);
   const completeFlags=own.length>0&&own.every(r=>r.flags_delta!==null);
@@ -24,7 +25,7 @@ export function reportRows(admins:readonly Admin[],readings:readonly Reading[]){
   const source=own.find(r=>r.source_name&&canonicalName(r.source_name)===canonicalName(a.name));
   const ordered=own.find(r=>Number.isInteger(r.source_row)&&Number(r.source_row)>0);
   return {
-   id:a.id,name:source?.source_name||a.name,rank:a.rank,order:ordered?.source_row??a.sort_order,
+   id:a.id,name:source?.source_name||a.name,rank:own[0].recorded_reporting!=null?own[0].rank:a.rank,order:ordered?.source_row??a.sort_order,
    tickets:completeTickets?sum('tickets_delta'):null,
    flags:completeFlags?sum('flags_delta'):null,
    rating:own.find(r=>r.rating!==null)?.rating??null,

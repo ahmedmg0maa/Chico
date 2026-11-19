@@ -38,7 +38,7 @@ export default function DailyReportStudio({state,review,initialPeriod}:Props){
  const {valid,matching:readings}=period;
  const partial=period.partial.length;
  const rows=useMemo(()=>reportRows(state?.admins||[],readings),[state,readings]);
- const missingCount=Math.max(0,(state?.admins.filter(isEvaluatedAdmin).length||0)-rows.length);
+ const missingCount=(state?.admins||[]).filter(a=>isEvaluatedAdmin(a)&&!rows.some(r=>r.id===a.id)).length;
  const staff=state?.admins.filter(a=>a.active).length||0;
  const totals=useMemo(()=>reportTotals(readings,state?.admins||[]),[state,readings]);
  const label=from===to?from:from+'  —  '+to;

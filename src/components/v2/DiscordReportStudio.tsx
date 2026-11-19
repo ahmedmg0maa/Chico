@@ -32,7 +32,7 @@ export default function DiscordReportStudio({state,review}:Props){
  const {valid,matching}=period;
  const partial=period.partial.length;
  const rows=useMemo(()=>reportRows(state?.admins||[],matching),[state,matching]);
- const missingCount=Math.max(0,(state?.admins.filter(isEvaluatedAdmin).length||0)-rows.length);
+ const missingCount=(state?.admins||[]).filter(a=>isEvaluatedAdmin(a)&&!rows.some(r=>r.id===a.id)).length;
  const staff=state?.admins.filter(a=>a.active).length||0;
  const totals=useMemo(()=>reportTotals(matching,state?.admins||[]),[state,matching]);
  const title=mode==='day'?'إحصائيات يومية':mode==='week'?'ملخص الأسبوع حتى آخر قراءة':'إحصائيات الفترة المحددة';

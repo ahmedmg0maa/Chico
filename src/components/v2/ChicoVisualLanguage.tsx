@@ -12,7 +12,7 @@ export type CommandSymbol =
  |'dashboard'|'team'|'operations'|'updates'|'excel'|'server'|'daily'|'reports'|'weeks'|'alerts'|'settings'
  |'academy'|'salary'|'tickets'|'flags'|'rating'|'coverage'|'members'|'rate'|'history'|'shift'|'export';
 type IconProps={name:CommandSymbol;compact?:boolean;className?:string};
-export const rankToken=(rank:Rank)=>rank==='SN.Helper'?'senior':rank==='Moderator'?'moderator':rank==='Administrator'?'administrator':rank==='Responsible'?'responsible':'helper';
+export const rankToken=(rank:Rank)=>rank==='SN.Helper'?'senior':rank==='Moderator'?'moderator':rank==='Administrator'?'administrator':rank==='Responsible'?'responsible':rank==='M.'?'management':'helper';
 export function CommandIcon({name,compact=false,className=''}:IconProps){
  const uid=useId().replace(/[^a-zA-Z0-9_-]/g,'');
  const metal='nxMetal'+uid,edge='nxEdge'+uid;
