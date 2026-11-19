@@ -2,6 +2,7 @@
 
 import {useEffect,useState,useRef,type PointerEvent} from 'react';
 import ExecutiveWeeklyChart from '../v2/ExecutiveWeeklyChart';
+import WolfOrbit from './WolfOrbit';
 import {CommandIcon,RankInsignia} from '../v2/ChicoVisualLanguage';
 import type {Tab} from '../v2/ExecutiveCommand';
 import type {Rank,Reading} from '@/lib/types';
@@ -69,7 +70,7 @@ function Podium({title,leaders,onOpen,onTeam,variant}:{title:string;leaders:Lead
  </section>;
 }
 
-export function WolfStage(){
+export function WolfStage({immersive=false}:{immersive?:boolean}={}){
  const ref=useRef<HTMLDivElement>(null);
  const frame=useRef(0);
  useEffect(()=>()=>cancelAnimationFrame(frame.current),[]);
@@ -80,6 +81,7 @@ export function WolfStage(){
  }
  function reset(){cancelAnimationFrame(frame.current);ref.current?.style.setProperty('--wolf-x','0deg');ref.current?.style.setProperty('--wolf-y','0deg');}
  return <div className="ct-wolf-theater" ref={ref} onPointerMove={move} onPointerLeave={reset}>
+  {immersive&&<WolfOrbit/>}
   <div className="ct-theater-grid" aria-hidden="true"/><div className="ct-theater-cage" aria-hidden="true"/><div className="ct-theater-beam" aria-hidden="true"/>
   <div className="ct-theater-light" aria-hidden="true"/><div className="ct-theater-ring ct-ring-outer" aria-hidden="true"/><div className="ct-theater-ring ct-ring-inner" aria-hidden="true"/><div className="ct-theater-orbit" aria-hidden="true"/><div className="ct-wolf-float"><div className="ct-wolf-parallax"><img src="/assets/chico-noble-wolf.svg" alt="شعار الذئب CHICO TEAM" width={420} height={430} decoding="async"/></div></div><div className="ct-theater-platform" aria-hidden="true"><span/><i/></div>
  </div>;
@@ -107,7 +109,7 @@ export function NexusStage({week,rate,coverage,active,roles,helpers,moderators,o
     <ExecutiveWeeklyChart readings={readings} compact/>
    </div>
    <div className="nx-wolf-stage">
-    <WolfStage/>
+    <WolfStage immersive/>
     <div className="nx-stage-brand"><b>CHICO TEAM</b></div>
     <button type="button" className="nx-link nx-stage-report" onClick={onRead}>التقارير <span aria-hidden="true">↗</span></button>
    </div>
