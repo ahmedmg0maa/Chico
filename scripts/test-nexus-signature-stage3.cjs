@@ -34,10 +34,8 @@ assert(palette.includes("members.filter")&&palette.includes("routes.filter"),
 assert(!palette.includes("fetch(")&&!palette.includes("/api/"),
  'This enhancement must not add a new API or expose staff to anonymous users');
 
-for(const necessary of ['ct-theater-cage','ct-theater-grid','ct-theater-beam','nx-stage-aura','nx-stage-hardware']){
- assert(stage.includes(necessary),'The real wolf and command stage must include '+necessary);
- assert(css.includes(necessary),'Signature materials missing CSS for '+necessary);
-}
+assert(!stage.includes('ct-theater-grid')&&!stage.includes('nx-stage-aura'),'No decorative grid in identity or dashboard');
+assert(stage.includes('command-analysis')&&stage.includes('leader-lists'),'Data and leaderboard lead the dashboard composition');
 assert(shell.includes('<motion.strong className="nx-kpi-number"'),
  'Animated values must update from actual summary metrics, without replacing source calculation');
 assert(shell.includes("key={english+':'+value}"),

@@ -23,7 +23,7 @@ const tools:{id:OperationTab|AdminTool;label:string;desc:string}[]=[
  {id:'settings',label:'إعدادات الإدارة',desc:'النسخ والحماية'}
 ];
 export default function ExecutiveOperationsWorkspace({state,previewAdmins=[],review,onRefresh,onNavigate}:Props){
- const [selected,setSelected]=useState<OperationTab|AdminTool>('excel');
+ const [selected,setSelected]=useState<OperationTab|AdminTool>('shifts');
  const advanced=isAdminTool(selected);
  const [lastTool,setLastTool]=useState<OperationTab>('excel');
  return <section className="v9-tools-shell">

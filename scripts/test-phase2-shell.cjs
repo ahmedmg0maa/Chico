@@ -42,7 +42,7 @@ assert(!team.includes("||'CHICO GENERAL TEAM'"),'No fake fullname placeholder fo
 const operations=source('src/components/v2/ExecutiveOperationsWorkspace.tsx');
 const operationTabs=source('src/components/v2/ExecutiveOperations.tsx');
 assert(operations.includes('compactHead/>'),'Nested management subtools must request compact headings');
-assert(operationTabs.includes("{!compact&&<img className="),'Nested pages should not load redundant large artwork');
+assert(operationTabs.includes("compact?'studio-heading compact':'studio-heading'"),'Nested pages should not load redundant large artwork');
 assert(operations.includes("aria-current={selected===t.id?'page':undefined}"),'Management subnav must expose active state');
 assert(main.includes('const light=false;')&&!main.includes('switchAppearance')&&!main.includes("localStorage.getItem('chico-ui-theme')"),'CHICO TEAM must always render dark, regardless of old preference');
 assert(main.includes('ct-topbar')&&main.includes('<b>CHICO TEAM</b>'),'Compact canonical masthead must be present');
@@ -55,6 +55,5 @@ assert(css.includes('.v9-history-table th')&&css.includes('.x-op-table th'),'Exc
 console.log('PASS CHICO Stage 2: grouped navigation, 4 dashboard KPIs, semantic route state, responsive visual tokens');
 
 assert(nexus.includes("{id:'salary',label:'الرواتب'}")&&nexus.includes("{id:'academy',label:'التدريب'}"),'Both new standalone pages must be present in the dock');
-assert(nexus.includes('[0,1,2,6].map')&&nexus.includes('[3,4,5,7].map'),'Four direct destinations on both sides; legacy keyboard shortcut indexes retained');
-assert(source('src/components/v2/signature.css').includes('repeat(4,minmax(0,1fr)) 74px repeat(4,minmax(0,1fr))'),'Nine-slot dock layout');
-console.log('PASS dock salary and academy routes, balanced nine-slot layout.');
+assert(nexus.includes('[0,2,3].map')&&main.includes('className="studio-rail"'),'Compact mobile navigation and full desktop rail');
+console.log('PASS responsive desktop rail, mobile shortcuts and all routes.');

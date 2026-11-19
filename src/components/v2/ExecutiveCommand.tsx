@@ -4,7 +4,7 @@ import {useEffect,useMemo,useState,type FormEvent} from 'react';
 import {
   Activity,AlertTriangle,ArrowLeft,ArrowUpRight,BarChart3,Bell,CalendarDays,
   CheckCircle2,ChevronDown,ChevronLeft,Clock3,Download,FileSpreadsheet,
-  Flag,Home,KeyRound,LayoutDashboard,LockKeyhole,LogOut,Menu,Monitor,
+  Flag,Home,KeyRound,LayoutDashboard,LogOut,Menu,Monitor,
   Moon,Plus,RefreshCw,Search,Settings2,Shield,ShieldAlert,Star,Sun,
   Ticket,TrendingUp,Trophy,Users,UserRound,Workflow,Wallet,BookOpen,X
 } from 'lucide-react';
@@ -22,9 +22,12 @@ import DashboardWeekNotice from './DashboardWeekNotice';
 import {NexusDock,NexusStage,WolfStage} from '../nexus/NexusShell';
 import {NEXUS_SCENE_FAMILY,useNexusSpotlight} from '../nexus/experience';
 import NexusCommandPalette from '../nexus/NexusCommandPalette';
+import {reportRows} from '@/lib/report-period';
+import {buildReportGroups} from '@/lib/report-groups';
+import {availableWeeks} from '@/lib/performance-insights';
 import {previousRecordedWeek} from '@/lib/dashboard-history';
 import {CommandIcon,RankInsignia,RankLabel} from './ChicoVisualLanguage';
-import {isEvaluatedRank,isEvaluatedAdmin,eligibleReadings} from '@/lib/rules';
+import {summarizeReadings,isEvaluatedRank,isEvaluatedAdmin,eligibleReadings} from '@/lib/rules';
 
 export type Tab='dashboard'|'team'|'operations'|'updates'|'excel'|'server'|'daily'|'reports'|'weeks'|'alerts'|'settings'|'salary'|'academy';
 type Auth='checking'|'out'|'in';
@@ -120,12 +123,14 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
   const syncFromUrl=()=>{
    const requested=new URLSearchParams(window.location.search).get('tab') as Tab|null;
    setTab(requested&&valid.has(requested)?requested:'dashboard');
+   setFocused(null);setMenu(false);setSearchOpen(false);
   };
   syncFromUrl();
   window.addEventListener('popstate',syncFromUrl);
   return ()=>window.removeEventListener('popstate',syncFromUrl);
  },[]);
  const [menu,setMenu]=useState(false);
+ const [railCollapsed,setRailCollapsed]=useState(false);
  // CHICO TEAM uses a transient overlay, never a permanently expanded sidebar.
  const toggleMenu=()=>setMenu(current=>!current);
  const closeMenu=()=>setMenu(false);
@@ -156,18 +161,26 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
  const rows:Row[]=useMemo<Row[]>(()=>review?reviewAdmins.map(a=>({id:a.id,name:a.name,rank:a.rank,admin_level:a.admin_level,shift_label:a.shift_label,active:a.active,in_reporting:a.in_reporting,sort_order:a.sort_order,tickets:null,flags:null,rating:null,hours:null,lastUpdate:null})):latestRows(state),[review,reviewAdmins,state]);
  const visible=useMemo(()=>rows.filter(r=>(rank==='all'||r.rank===rank)&&(r.name.toLowerCase().includes(filter.toLowerCase()))),[rows,rank,filter]);
  const summary=state?.summary;
+ const [selectedWeek,setSelectedWeek]=useState('');
+ const weekOptions=useMemo(()=>availableWeeks(state?.readings||[],state?.weeks||[],summary?.week_start),[state,summary]);
+ const week=weekOptions.includes(selectedWeek)?selectedWeek:summary?.week_start;
  // Only evaluated readings can make this week's performance available.
  const currentEligible=useMemo(()=>!review&&state?eligibleReadings(state.readings,state.admins):[],[review,state]);
- const hasRegisteredWeek=currentEligible.some(r=>r.week_start===summary?.week_start);
+ const hasRegisteredWeek=currentEligible.some(r=>r.week_start===week);
  const previousWeek=useMemo(()=>!review&&state?previousRecordedWeek(state.admins,state.readings,state.summary.week_start):null,[review,state]);
  const active=rows.filter(r=>r.active).length;
  const evaluated=rows.filter(r=>isEvaluatedAdmin(r));
  const covered=evaluated.filter(r=>r.lastUpdate!==null).length;
- const totals={tickets:review?null:summary?.tickets??null,flags:review?null:summary?.flags??null,rate:review?null:summary?.rate??null,rating:review?null:summary?.rating??null,members:active,coverage:!review&&hasRegisteredWeek&&evaluated.length?Math.round(100*covered/evaluated.length):null};
- const top=rows.filter(r=>isEvaluatedAdmin(r)&&(r.rank==='Helper'||r.rank==='SN.Helper')&&r.tickets!==null&&r.tickets>0).sort((a,b)=>(b.tickets??0)-(a.tickets??0)||(a.sort_order??0)-(b.sort_order??0)||a.name.localeCompare(b.name,'en')).slice(0,3);
+ const periodReadings=useMemo(()=>currentEligible.filter(r=>r.week_start===week),[currentEligible,week]);
+ const stats=useMemo(()=>summarizeReadings(periodReadings),[periodReadings]);
+ const periodRows=useMemo(()=>reportRows(state?.admins||[],periodReadings),[state,periodReadings]);
+ const [helperGroup,moderatorGroup]=buildReportGroups(periodRows);
+ const participantCount=new Set([...evaluated.map(a=>a.id),...periodRows.map(r=>r.id)]).size;
+ const totals={...stats,coverage:week===summary?.week_start&&hasRegisteredWeek&&participantCount?Math.round(100*periodRows.length/participantCount):null};
+ const top=helperGroup.topRows;
+ const moderatorTop=moderatorGroup.topRows;
  const warnings=rows.filter(r=>isEvaluatedAdmin(r)&&(r.flagsIncomplete||(r.flags!==null&&r.flags>7)||(r.rating!==null&&r.rating<4.8)||(!r.lastUpdate&&r.active&&hasRegisteredWeek)));
- const timeLabel=review?'معاينة بلا إحصائيات':summary?.week_start||'الأسبوع الحالي';
- const moderatorTop=rows.filter(r=>isEvaluatedAdmin(r)&&r.rank==='Moderator'&&r.tickets!==null&&r.tickets>0).sort((a,b)=>(b.tickets??0)-(a.tickets??0)||(a.sort_order??0)-(b.sort_order??0)||a.name.localeCompare(b.name,'en')).slice(0,3);
+ const timeLabel=review?'معاينة':week||'الأسبوع الحالي';
  const roleCounts=[{label:'Helper',kind:'helper' as const,count:rows.filter(r=>r.active&&r.rank==='Helper').length},{label:'SN.Helper',kind:'senior' as const,count:rows.filter(r=>r.active&&r.rank==='SN.Helper').length},{label:'Moderator',kind:'moderator' as const,count:rows.filter(r=>r.active&&r.rank==='Moderator').length}];
  async function refresh(){
   if(review)return;
@@ -193,39 +206,42 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
  const open=(id:Tab)=>{setRequestedReportPeriod(null);setTab(id);setFocused(null);setMenu(false);setNotice('');const u=new URL(window.location.href);if(u.searchParams.get('tab')!==id){u.searchParams.set('tab',id);window.history.pushState({tab:id},'',u.pathname+u.search+u.hash);}};
  
 
- const intervalRows=currentEligible.filter(r=>r.week_start===summary?.week_start).sort((a,b)=>b.to_date.localeCompare(a.to_date)||b.created_at.localeCompare(a.created_at)).slice(0,8);
+ const intervalRows=currentEligible.filter(r=>r.week_start===week).sort((a,b)=>b.to_date.localeCompare(a.to_date)||b.created_at.localeCompare(a.created_at)).slice(0,8);
  const alerts=review?[]:warnings.filter(r=>r.lastUpdate!==null||r.flagsIncomplete).slice(0,3).map(r=>({label:r.name,desc:r.flagsIncomplete?'رصيد Flags السابق غير معروف':r.flags!==null&&r.flags>7?'Flags مرتفعة — '+r.flags:r.rating!==null&&r.rating<4.8?'التقييم '+pretty(r.rating,'rating'):'تحتاج مراجعة',severity:'warning'}));
  // NEXUS: four core measures; Flag Rate and Team Coverage remain separate in the command stage.
  const kpis=[
   {title:'تذاكر الأسبوع',english:'Weekly Tickets',value:pretty(totals.tickets),glyph:'tickets' as const,tone:'violet'},
   {title:'الفلاجات',english:'Weekly Flags',value:pretty(totals.flags),glyph:'flags' as const,tone:'amethyst'},
   {title:'التقييم',english:'Rating',value:pretty(totals.rating,'rating'),glyph:'rating' as const,tone:'gold'},
-  {title:'الساعات',english:'Time',value:pretty(review?null:summary?.hours),glyph:'shift' as const,tone:'ice'}
+  {title:'الساعات',english:'Time',value:pretty(stats.hours),glyph:'shift' as const,tone:'ice'}
  ];
  const isLogin=(auth!=='in')||previewLogin;
- if(isLogin)return <div className="chico-v2 nx-app x-auth-scene ct-auth-signature" dir="rtl">
-  {review&&<div className="x-review-ribbon">معاينة شاشة الدخول · لا اتصال ببيانات الإنتاج</div>}
-  <header className="ct-auth-top"><div className="ct-auth-brand"><img src="/assets/chico-approved-wolf.avif" alt="" width={34} height={34}/><b>CHICO TEAM</b></div><span><Shield size={15}/> دخول الإدارة</span></header>
-  <main className="ct-auth-main">
-   <div className="nx-stage ct-auth-stage">
-    <div className="ct-auth-visual"><WolfStage/><div className="nx-stage-brand"><b>CHICO TEAM</b></div></div>
-    <section className="ct-auth-panel" aria-labelledby="ct-auth-title">
-     <div className="ct-auth-heading"><span className="ct-auth-lock"><LockKeyhole size={24}/></span><h1 id="ct-auth-title">بوابة القيادة</h1></div>
+ if(isLogin)return <main className="chico-v2 gate" dir="rtl">
+  {review&&<div className="x-review-ribbon">معاينة الدخول</div>}
+  <div className="gate-layout">
+   <div className="gate-sculpture" aria-hidden="true"><img src="/assets/chico-approved-wolf.avif" alt="" width={512} height={512} fetchPriority="high"/></div>
+   <section className="gate-form" aria-labelledby="ct-auth-title">
+     <p className="gate-brand" dir="ltr">CHICO TEAM</p><h1 id="ct-auth-title">دخول الإدارة</h1>
      {review?<div className="x-review-login"><p>معاينة فقط — لا تحتاج إلى كلمة مرور.</p><button className="x-primary" onClick={()=>setPreviewLogin(false)}>الدخول إلى مركز القيادة <ArrowLeft size={17}/></button></div>:
      <form onSubmit={login} className="x-auth-fields ct-auth-fields"><label htmlFor="v2-pass">كلمة مرور الإدارة</label><div className="x-input-shell"><KeyRound size={19}/><input id="v2-pass" type={reveal?'text':'password'} value={pass} onChange={e=>setPass(e.target.value)} placeholder="أدخل كلمة المرور" required autoComplete="current-password" aria-invalid={!!error}/><button type="button" onClick={()=>setReveal(!reveal)} aria-pressed={reveal}>{reveal?'إخفاء':'إظهار'}</button></div>
       {error&&<div className="x-error" role="alert"><AlertTriangle size={17}/>{error}</div>}
       <button className="x-primary" disabled={working||auth==='checking'} type="submit">{working||auth==='checking'?'جارٍ التحقق…':'الدخول إلى مركز القيادة'} <ArrowLeft size={17}/></button>
      </form>}
-     <div className="ct-auth-foot"><Shield size={15}/> وصول مخصص للإدارة</div>
-    </section>
-   </div>
-  </main>
- </div>;
+   </section>
+  </div>
+ </main>;
 
- return <div className={'chico-v2 nx-app '+(light?'x-light':'')} dir="rtl">
+ return <div className={'chico-v2 studio '+(railCollapsed?'rail-folded':'')} dir="rtl">
   <a className="v12-skip-link" href="#chico-main-content">تخطي إلى المحتوى الرئيسي</a>
   {review&&<div className="x-review-ribbon">معاينة · بدون إحصائيات · لا حفظ في الإنتاج</div>}
-  <div className={"x-layout "+(menu?"v10-nav-open":"v10-nav-closed")}>
+  <div className="studio-layout">
+   <nav className="studio-rail" aria-label="تنقل الكمبيوتر">
+    <button type="button" className="rail-brand" onClick={()=>open('dashboard')} aria-label="مركز القيادة"><img src="/assets/chico-noble-wolf.svg" alt="" width="38" height="42"/><b dir="ltr">CHICO TEAM</b></button>
+    <div className="rail-groups">{navigationGroups.map(group=><div className="rail-group" key={group.en} aria-label={group.label}>
+      {group.items.map(id=>{const item=links.find(link=>link.id===id)!;const Icon=item.icon;return <button key={id} type="button" title={item.label} aria-label={item.label} aria-current={tab===id?'page':undefined} onClick={()=>open(id)}><Icon size={19}/><span>{item.label}</span></button>})}
+    </div>)}</div>
+    <button type="button" className="rail-fold" aria-expanded={!railCollapsed} onClick={()=>setRailCollapsed(v=>!v)} aria-label={railCollapsed?'توسيع القائمة':'طي القائمة'}><Menu size={18}/><span>طي القائمة</span></button>
+   </nav>
    <aside id="chico-main-navigation" className={"x-sidebar "+(menu?"x-sidebar-open":"")} aria-label="القائمة الرئيسية" aria-hidden={!menu} inert={!menu}>
     <div className="v10-nav-head"><Brand small/><button type="button" className="v10-nav-close" onClick={closeMenu} title="إغلاق القائمة" aria-label="إغلاق القائمة"><X size={19}/></button></div>
     
@@ -244,9 +260,9 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
     <div className="x-sidebar-footer"><button type="button" onClick={()=>void logout()} aria-label="تسجيل الخروج من القائمة"><LogOut size={18}/> تسجيل الخروج</button></div>
    </aside>
    {menu&&<button className="x-mobile-scrim" aria-label="إغلاق القائمة" onClick={closeMenu}/>}
-   <main className="x-body">
-    <header className="x-topbar ct-topbar">
-     <div className="ct-top-start"><button type="button" className="ct-icon-button v10-hamburger" onClick={toggleMenu} aria-label={menu?'إغلاق القائمة':'فتح القائمة'} aria-expanded={menu} aria-controls="chico-main-navigation"><Menu size={22}/></button><button type="button" className="ct-brand" onClick={()=>open('dashboard')} aria-label="CHICO TEAM — مركز القيادة"><img src="/assets/chico-approved-wolf.avif" alt="" width={32} height={32}/><b>CHICO TEAM</b></button></div>
+   <main className="studio-body">
+    <header className="studio-top ct-topbar">
+     <div className="ct-top-start studio-mobile-controls"><button type="button" className="ct-icon-button v10-hamburger" onClick={toggleMenu} aria-label={menu?'إغلاق القائمة':'فتح القائمة'} aria-expanded={menu} aria-controls="chico-main-navigation"><Menu size={22}/></button><button type="button" className="ct-brand" onClick={()=>open('dashboard')} aria-label="CHICO TEAM — مركز القيادة"><img src="/assets/chico-approved-wolf.avif" alt="" width={32} height={32}/><b>CHICO TEAM</b></button></div>
      <span className="ct-page-title" aria-live="polite" aria-atomic="true">{links.find(l=>l.id===tab)?.label}</span>
      <div className="ct-top-actions"><button className="ct-icon-button" onClick={()=>setSearchOpen(v=>!v)} aria-label="التنقل السريع والبحث" aria-keyshortcuts="Control+K Meta+K" aria-haspopup="dialog" aria-expanded={searchOpen} title="التنقل السريع · Ctrl/⌘ + K"><Search size={19}/></button><button className="ct-icon-button" onClick={()=>open('alerts')} aria-label="التنبيهات"><Bell size={19}/>{warnings.length>0&&<i className="x-notif-dot"/>}</button>{!review&&<button className="ct-icon-button" onClick={()=>void refresh()} aria-label="تحديث البيانات"><RefreshCw size={17}/></button>}<button className="ct-icon-button" onClick={()=>void logout()} aria-label="تسجيل الخروج من CHICO"><LogOut size={18}/></button><span className="ct-connection" role="status" title={review?'معاينة':state?'البيانات محمّلة':'جاري تحميل البيانات'} data-ready={review||!!state}/></div>
     </header>
@@ -255,15 +271,15 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
      onMember={id=>{const member=rows.find(r=>r.id===id);if(member){open('team');setFocused(member);}}}/>
     <MotionConfig reducedMotion="user">
      <AnimatePresence initial={false} mode="wait">
-      <motion.div id="chico-main-content" tabIndex={-1} role="region" aria-label={links.find(l=>l.id===tab)?.label} className={'x-main-content v7-app-content nx-experience-field ct-workspace-' + tab} data-nx-scene={NEXUS_SCENE_FAMILY[tab]} key={tab}
+      <motion.div id="chico-main-content" tabIndex={-1} role="region" aria-label={links.find(l=>l.id===tab)?.label} className={'studio-workspace nx-experience-field ct-workspace-' + tab} data-nx-scene={NEXUS_SCENE_FAMILY[tab]} key={tab}
        onPointerMove={spotlight.onPointerMove} onPointerLeave={spotlight.onPointerLeave}
        initial={{opacity:0,y:12}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-8}}
        transition={{duration:0.22,ease:[0.22,1,0.36,1]}}> 
      {error&&<div className="x-error"><AlertTriangle size={17}/>{error}<button onClick={()=>void refresh()}>إعادة المحاولة</button></div>}
      {notice&&<div className="x-inline-notice"><Shield size={18}/>{notice}<button onClick={()=>setNotice('')}><X size={17}/></button></div>}
      {tab==='dashboard'&&<>
-      <NexusStage week={timeLabel} rate={totals.rate} coverage={totals.coverage} active={active} roles={roleCounts} helpers={top} moderators={moderatorTop} readings={review?[]:currentEligible} onTeam={()=>open('team')} onRead={()=>open('daily')} onRecord={()=>open('updates')} onOpen={id=>{const member=rows.find(r=>r.id===id);if(member){open('team');setFocused(member);}}}>
-      <div className="x-kpi-grid v8-kpi-grid">{kpis.map(({title,english,value,glyph,tone},index)=><div className={'x-kpi v8-kpi x-tone-'+tone} key={title} style={{animationDelay:(index*45)+'ms'}}><div className="x-kpi-title"><CommandIcon name={glyph}/><div><b>{english.replace("Weekly ","")}</b></div></div><motion.strong className="nx-kpi-number" key={english+':'+value} initial={{opacity:.4,y:7}} animate={{opacity:1,y:0}} transition={{duration:.32}}>{value}</motion.strong><span>{value==='—'?'غير مسجل': 'الأسبوع الحالي'}</span><i className="v8-kpi-line"/></div>)}</div>
+      <NexusStage periodControl={weekOptions.length?<select aria-label="أسبوع الأداء" value={week} onChange={e=>setSelectedWeek(e.target.value)}>{weekOptions.map(w=><option key={w} value={w}>{w}</option>)}</select>:undefined} week={timeLabel} rate={totals.rate} coverage={totals.coverage} active={active} roles={roleCounts} helpers={top} moderators={moderatorTop} readings={review?[]:currentEligible.filter(r=>!week||r.week_start<=week)} onTeam={()=>open('team')} onRead={()=>{open('daily');if(periodReadings.length)setRequestedReportPeriod({from:periodReadings.reduce((a,r)=>r.from_date<a?r.from_date:a,periodReadings[0].from_date),to:periodReadings.reduce((a,r)=>r.to_date>a?r.to_date:a,periodReadings[0].to_date)});}} onRecord={()=>open('updates')} onOpen={id=>{const member=rows.find(r=>r.id===id);if(member){open('team');setFocused(member);}}}>
+      <div className="command-metrics">{kpis.map(({title,english,value,glyph,tone},index)=><div className={'command-metric x-tone-'+tone} key={title} style={{animationDelay:(index*45)+'ms'}}><div className="command-metric-label"><CommandIcon name={glyph}/><b>{title}</b></div><motion.strong className="nx-kpi-number" key={english+':'+value} initial={{opacity:.4,y:7}} animate={{opacity:1,y:0}} transition={{duration:.32}}>{value}</motion.strong><span>{value==='—'?'غير مسجل': 'الأسبوع الحالي'}</span></div>)}</div>
       </NexusStage>
       {!review&&state&&!hasRegisteredWeek&&<DashboardWeekNotice currentWeek={summary?.week_start??'—'} previous={previousWeek} onReadReports={()=>{open('daily');if(previousWeek)setRequestedReportPeriod({from:previousWeek.from,to:previousWeek.to});}} onRecord={()=>open('updates')}/>}
 
@@ -283,19 +299,6 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
          </div>:<div className="x-empty"><Activity size={26}/><b>لا توجد قراءات مسجلة لهذا الأسبوع</b></div>}
        </section>
       </div>
-      <div className="v7-bottom-dashboard">
-       <section className="x-panel x-quick"><CardTitle icon={Workflow} title="إجراءات سريعة" en="QUICK ACTIONS"/>
-        <div className="x-action-grid">{[
-          {label:'تسجيل تحديث',icon:Plus,id:'updates' as Tab},{label:'مساحة العمليات',icon:Workflow,id:'operations' as Tab},
-          {label:'إدارة الفريق',icon:Users,id:'team' as Tab},{label:'إغلاق الأسبوع',icon:CalendarDays,id:'weeks' as Tab},
-          {label:'التقرير اليومي',icon:Ticket,id:'daily' as Tab},
-           {label:'تقرير Discord',icon:Download,id:'reports' as Tab},{label:'Salary Center',icon:Wallet,id:'salary' as Tab},{label:'CHICO Academy',icon:BookOpen,id:'academy' as Tab}
-        ].map(({label,id})=><button key={id} onClick={()=>open(id)}><CommandIcon name={id}/><span>{label}</span></button>)}</div>
-       </section>
-       <section className="x-panel x-teamstatus"><CardTitle icon={Users} title="حالة الفريق" en="TEAM STATUS"/>
-        <div className="x-donut-wrap"><div className="x-donut" style={{background:'conic-gradient(#2bcc76 0 '+((rows.length)?active/(rows.length)*100:0)+'%, #c43e47 0 100%)'}}><div><strong>{rows.length}</strong><span>إداري</span></div></div><div className="x-donut-list"><p><i className="x-dot-green"/>نشط <b>{active}</b></p><p><i className="x-dot-red"/>غير نشط <b>{(rows.length)-active}</b></p><p><i className="x-dot-gold"/>بتحديثات <b>{covered}</b></p></div></div>
-       </section>
-      </div>
       <section className="x-panel x-table-panel"><CardTitle icon={Users} title="نظرة على الفريق" en="TEAM PERFORMANCE" action={<button className="x-text-action" onClick={()=>open('team')}>كل الإداريين <ArrowLeft size={15}/></button>}/>
        <TeamTable rows={rows.slice(0,7)} onFocus={r=>{open('team');setFocused(r);}}/>
       </section>
@@ -309,9 +312,9 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
       {tab==='operations'&&<ExecutiveOperationsWorkspace state={state} previewAdmins={reviewAdmins} review={review} onRefresh={refresh} onNavigate={open}/>}
       {tab==='academy'&&<AcademyCenter review={review}/>}
       {tab==='salary'&&<SalaryCenter admins={review?reviewAdmins:state?.admins||[]} review={review}/>}
-      {tab!=='dashboard'&&tab!=='team'&&tab!=='operations'&&tab!=='salary'&&tab!=='academy'&&<ExecutiveOperations tab={tab} state={state} review={review} onRefresh={refresh} initialAdminId={readingTarget} initialPeriod={requestedReportPeriod}/>}
+      {tab!=='dashboard'&&tab!=='team'&&tab!=='operations'&&tab!=='salary'&&tab!=='academy'&&<ExecutiveOperations tab={tab} state={state} review={review} onRefresh={refresh} onInputMethod={open} initialAdminId={readingTarget} initialPeriod={requestedReportPeriod}/>}
 
-     <footer className="x-foot"><span>© CHICO TEAM</span></footer>
+
       </motion.div>
      </AnimatePresence>
     </MotionConfig>

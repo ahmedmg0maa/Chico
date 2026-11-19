@@ -11,9 +11,9 @@ import {renderLuxuryPoster,loadLuxuryArt,type LuxuryPosterRow} from './PremiumPo
 export {renderLuxuryPoster,loadLuxuryArt};
 export type {LuxuryPosterRow,PremiumTotals} from './PremiumPosterRenderer';
 
-type Props={state:State|null;review:boolean;initialPeriod?:{from:string;to:string}|null};
+type Props={state:State|null;review:boolean;onInputMethod?:(tab:"updates"|"excel")=>void;initialPeriod?:{from:string;to:string}|null};
 const cairoToday=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'Africa/Cairo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
-export default function DailyReportStudio({state,review,initialPeriod}:Props){
+export default function DailyReportStudio({state,review,initialPeriod,onInputMethod}:Props){
  const today=useMemo(cairoToday,[]);
  const eligibleRecords=useMemo(()=>eligibleReadings(state?.readings||[],state?.admins||[]),[state]);
  const latestRecord=useMemo(()=>latestPeriod(eligibleRecords),[eligibleRecords]);
@@ -38,7 +38,7 @@ export default function DailyReportStudio({state,review,initialPeriod}:Props){
  const {valid,matching:readings}=period;
  const partial=period.partial.length;
  const rows=useMemo(()=>reportRows(state?.admins||[],readings),[state,readings]);
- const missingCount=Math.max(0,(state?.admins.filter(isEvaluatedAdmin).length||0)-rows.length);
+ const missingCount=(state?.admins||[]).filter(a=>isEvaluatedAdmin(a)&&!rows.some(r=>r.id===a.id)).length;
  const staff=state?.admins.filter(a=>a.active).length||0;
  const totals=useMemo(()=>reportTotals(readings,state?.admins||[]),[state,readings]);
  const label=from===to?from:from+'  —  '+to;
@@ -73,6 +73,7 @@ export default function DailyReportStudio({state,review,initialPeriod}:Props){
    <div className="ct-workspace-identity"><CommandIcon name="daily"/><div><h2>التقرير اليومي</h2><p>إحصائيات الفترة المحفوظة</p></div></div>
    <button className="v9-primary" type="button" disabled={!imageReady||downloading} onClick={download}><Download size={18}/>{downloading?'جاري تجهيز الصورة…':period.canExport&&!imageReady&&!review?'جاري رسم الصورة…':'تنزيل التقرير PNG'}</button>
   </header>
+  {onInputMethod&&<nav className="daily-input-method" aria-label="إضافة بيانات التقرير"><button type="button" onClick={()=>onInputMethod("updates")}>تسجيل يدوي</button><button type="button" onClick={()=>onInputMethod("excel")}>استيراد Excel</button></nav>}
   <WorkflowStatus tone={review?'info':!valid||partial>0||error?'blocked':imageReady?'ready':period.canExport?'working':'info'} title={review?'معاينة فقط':!valid?'الفترة غير صالحة':partial>0?'التغطية غير مكتملة — التصدير متوقف':error?'تعذر تجهيز التقرير':imageReady?'التقرير جاهز للتنزيل':period.canExport?'جارٍ تجهيز الصورة':'لا توجد بيانات متاحة للتصدير'} detail={from+' — '+to}/>
   <div className="ct-report-layout"><div className="ct-report-controls"><div className="ct-report-panel-title"><CalendarDays size={18}/> فترة التقرير</div>
   <div className="v9-poster-filters">
