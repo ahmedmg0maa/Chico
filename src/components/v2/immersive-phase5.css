@@ -1,0 +1,19 @@
+/* CHICO NEXUS / Phase 05: optional native 3D, scoped to the command center. */
+.chico-v2.nx-app .ct-wolf-theater .nx-orbit-canvas{
+ position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none;
+ opacity:0;transition:opacity .55s ease;
+}
+.chico-v2.nx-app .ct-wolf-theater .nx-orbit-canvas[data-ready="true"]{opacity:1;}
+.chico-v2.nx-app .ct-wolf-theater:has(.nx-orbit-canvas[data-ready="true"]) :is(.ct-ring-outer,.ct-theater-orbit){opacity:.16;animation:none;}
+.chico-v2.nx-app .ct-wolf-theater:has(.nx-orbit-canvas[data-ready="true"]) .ct-ring-inner{opacity:.35;}
+.chico-v2.nx-app .ct-wolf-theater .nx-orbit-toggle{
+ position:absolute;inset-inline-end:9px;top:8px;z-index:5;
+ min-width:40px;min-height:32px;padding:5px 8px;display:flex;align-items:center;justify-content:center;gap:5px;
+ border:1px solid #bfcee135;border-radius:9px;background:#101924df;color:#9dacc0;
+ font:600 10px system-ui,sans-serif;letter-spacing:.06em;cursor:pointer;
+}
+.chico-v2.nx-app .ct-wolf-theater .nx-orbit-toggle[aria-pressed="true"]{border-color:#d6b77b80;color:#e9c78e;background:#252315ea;}
+.chico-v2.nx-app .ct-wolf-theater .nx-orbit-toggle:focus-visible{outline:2px solid #e7c58a;outline-offset:3px;}
+@media(max-width:900px),(hover:none),(pointer:coarse),(prefers-reduced-motion:reduce),(forced-colors:active){
+ .chico-v2.nx-app .ct-wolf-theater :is(.nx-orbit-canvas,.nx-orbit-toggle){display:none;}
+}

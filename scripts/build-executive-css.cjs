@@ -6,7 +6,7 @@
  */
 const fs=require('node:fs'),path=require('node:path'),postcss=require('postcss');
 const root=path.resolve(__dirname,'..'),dir=path.join(root,'src/components/v2');
-const order=['executive.css','executive-v7.css','executive-v8.css','executive-v9.css','executive-v10.css','executive-v11.css','executive-v12.css','nexus.css','signature.css','workspaces.css','experience.css','signature-phase3.css','workflow-phase4.css'];
+const order=['executive.css','executive-v7.css','executive-v8.css','executive-v9.css','executive-v10.css','executive-v11.css','executive-v12.css','nexus.css','signature.css','workspaces.css','experience.css','signature-phase3.css','workflow-phase4.css','immersive-phase5.css'];
 const combined=postcss.root();
 for(const file of order){
  const source=fs.readFileSync(path.join(dir,file),'utf8');
