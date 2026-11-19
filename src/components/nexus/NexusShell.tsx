@@ -80,12 +80,14 @@ export function WolfStage(){
  }
  function reset(){cancelAnimationFrame(frame.current);ref.current?.style.setProperty('--wolf-x','0deg');ref.current?.style.setProperty('--wolf-y','0deg');}
  return <div className="ct-wolf-theater" ref={ref} onPointerMove={move} onPointerLeave={reset}>
+  <div className="ct-theater-grid" aria-hidden="true"/><div className="ct-theater-cage" aria-hidden="true"/><div className="ct-theater-beam" aria-hidden="true"/>
   <div className="ct-theater-light" aria-hidden="true"/><div className="ct-theater-ring ct-ring-outer" aria-hidden="true"/><div className="ct-theater-ring ct-ring-inner" aria-hidden="true"/><div className="ct-theater-orbit" aria-hidden="true"/><div className="ct-wolf-float"><div className="ct-wolf-parallax"><img src="/assets/chico-noble-wolf.svg" alt="شعار الذئب CHICO TEAM" width={420} height={430} decoding="async"/></div></div><div className="ct-theater-platform" aria-hidden="true"><span/><i/></div>
  </div>;
 }
 
 export function NexusStage({week,rate,coverage,active,roles,helpers,moderators,onTeam,onRead,onRecord,onOpen,readings,children}:{week:string;rate:number|null;coverage:number|null;active:number;roles:RoleCount[];helpers:Leader[];moderators:Leader[];onTeam:()=>void;onRead:()=>void;onRecord:()=>void;onOpen:(id:string)=>void;readings:Reading[];children?:React.ReactNode}){
  return <section className="nx-stage" aria-label="مركز قيادة CHICO">
+  <div className="nx-stage-aura" aria-hidden="true"/><div className="nx-stage-hardware" aria-hidden="true"/>
   <div className="nx-stage-head"><div><h1>مركز القيادة</h1><span className="nx-stage-week"><span className="nx-tiny-dot"/> <bdi>{week}</bdi></span></div>
    <button type="button" className="nx-button nx-primary" onClick={onRecord}><CommandIcon compact name="updates"/> تسجيل قراءة</button></div>
   <div className="nx-command-rail">

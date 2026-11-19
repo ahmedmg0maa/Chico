@@ -21,6 +21,7 @@ const ExecutiveProfile=dynamic(()=>import('./ExecutiveProfile'),{loading:Workspa
 import DashboardWeekNotice from './DashboardWeekNotice';
 import {NexusDock,NexusStage,WolfStage} from '../nexus/NexusShell';
 import {NEXUS_SCENE_FAMILY,useNexusSpotlight} from '../nexus/experience';
+import NexusCommandPalette from '../nexus/NexusCommandPalette';
 import {previousRecordedWeek} from '@/lib/dashboard-history';
 import {CommandIcon,RankInsignia,RankLabel} from './ChicoVisualLanguage';
 import {isEvaluatedRank,isEvaluatedAdmin,eligibleReadings} from '@/lib/rules';
@@ -139,6 +140,19 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
  const [focused,setFocused]=useState<Row|null>(null);
  const [previewLogin,setPreviewLogin]=useState(false);
  const [searchOpen,setSearchOpen]=useState(false);
+ // One keyboard-first command palette, shared by all 13 real destinations.
+ useEffect(()=>{
+  if(auth!=='in'||previewLogin)return;
+  const handler=(event:KeyboardEvent)=>{
+   if((event.metaKey||event.ctrlKey)&&!event.altKey&&event.key.toLowerCase()==='k'){
+    if(!searchOpen&&document.querySelector('[aria-modal="true"]'))return;
+    event.preventDefault();
+    setSearchOpen(true);
+   }
+  };
+  window.addEventListener('keydown',handler);
+  return ()=>window.removeEventListener('keydown',handler);
+ },[auth,previewLogin,searchOpen]);
  const rows:Row[]=useMemo<Row[]>(()=>review?reviewAdmins.map(a=>({id:a.id,name:a.name,rank:a.rank,admin_level:a.admin_level,shift_label:a.shift_label,active:a.active,in_reporting:a.in_reporting,sort_order:a.sort_order,tickets:null,flags:null,rating:null,hours:null,lastUpdate:null})):latestRows(state),[review,reviewAdmins,state]);
  const visible=useMemo(()=>rows.filter(r=>(rank==='all'||r.rank===rank)&&(r.name.toLowerCase().includes(filter.toLowerCase()))),[rows,rank,filter]);
  const summary=state?.summary;
@@ -175,7 +189,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
   const body=await r.json();if(!r.ok||!body.ok)throw new Error(body.error==='INVALID_PASSWORD'?'كلمة المرور غير صحيحة':'تعذر تسجيل الدخول الآن');
   setPass('');setAuth('in');await refresh();
  }catch(e){setError(e instanceof Error?e.message:'خطأ في الدخول');}finally{setWorking(false);}}
- async function logout(){if(review){setPreviewLogin(true);return;}await fetch('/api/auth',{method:'DELETE'});setAuth('out');setState(null);setPass('');}
+ async function logout(){setSearchOpen(false);if(review){setPreviewLogin(true);return;}await fetch('/api/auth',{method:'DELETE'});setAuth('out');setState(null);setPass('');}
  const open=(id:Tab)=>{setRequestedReportPeriod(null);setTab(id);setFocused(null);setMenu(false);setNotice('');const u=new URL(window.location.href);if(u.searchParams.get('tab')!==id){u.searchParams.set('tab',id);window.history.pushState({tab:id},'',u.pathname+u.search+u.hash);}};
  
 
@@ -234,9 +248,11 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
     <header className="x-topbar ct-topbar">
      <div className="ct-top-start"><button type="button" className="ct-icon-button v10-hamburger" onClick={toggleMenu} aria-label={menu?'إغلاق القائمة':'فتح القائمة'} aria-expanded={menu} aria-controls="chico-main-navigation"><Menu size={22}/></button><button type="button" className="ct-brand" onClick={()=>open('dashboard')} aria-label="CHICO TEAM — مركز القيادة"><img src="/assets/chico-approved-wolf.avif" alt="" width={32} height={32}/><b>CHICO TEAM</b></button></div>
      <span className="ct-page-title" aria-live="polite" aria-atomic="true">{links.find(l=>l.id===tab)?.label}</span>
-     <div className="ct-top-actions"><button className="ct-icon-button" onClick={()=>setSearchOpen(!searchOpen)} aria-label="البحث"><Search size={19}/></button><button className="ct-icon-button" onClick={()=>open('alerts')} aria-label="التنبيهات"><Bell size={19}/>{warnings.length>0&&<i className="x-notif-dot"/>}</button>{!review&&<button className="ct-icon-button" onClick={()=>void refresh()} aria-label="تحديث البيانات"><RefreshCw size={17}/></button>}<button className="ct-icon-button" onClick={()=>void logout()} aria-label="تسجيل الخروج من CHICO"><LogOut size={18}/></button><span className="ct-connection" role="status" title={review?'معاينة':state?'البيانات محمّلة':'جاري تحميل البيانات'} data-ready={review||!!state}/></div>
+     <div className="ct-top-actions"><button className="ct-icon-button" onClick={()=>setSearchOpen(v=>!v)} aria-label="التنقل السريع والبحث" aria-keyshortcuts="Control+K Meta+K" aria-haspopup="dialog" aria-expanded={searchOpen} title="التنقل السريع · Ctrl/⌘ + K"><Search size={19}/></button><button className="ct-icon-button" onClick={()=>open('alerts')} aria-label="التنبيهات"><Bell size={19}/>{warnings.length>0&&<i className="x-notif-dot"/>}</button>{!review&&<button className="ct-icon-button" onClick={()=>void refresh()} aria-label="تحديث البيانات"><RefreshCw size={17}/></button>}<button className="ct-icon-button" onClick={()=>void logout()} aria-label="تسجيل الخروج من CHICO"><LogOut size={18}/></button><span className="ct-connection" role="status" title={review?'معاينة':state?'البيانات محمّلة':'جاري تحميل البيانات'} data-ready={review||!!state}/></div>
     </header>
-    {searchOpen&&<div className="x-command-search"><Search size={18}/><input autoFocus type="search" aria-label="البحث عن إداري" placeholder="ابحث عن إداري…" value={filter} onChange={e=>{setFilter(e.target.value);open('team');}}/><button onClick={()=>{setSearchOpen(false);setFilter('');}} aria-label="إغلاق البحث"><X size={17}/></button></div>}
+    <NexusCommandPalette open={searchOpen} routes={links} members={rows}
+     onClose={()=>setSearchOpen(false)} onNavigate={open}
+     onMember={id=>{const member=rows.find(r=>r.id===id);if(member){open('team');setFocused(member);}}}/>
     <MotionConfig reducedMotion="user">
      <AnimatePresence initial={false} mode="wait">
       <motion.div id="chico-main-content" tabIndex={-1} role="region" aria-label={links.find(l=>l.id===tab)?.label} className={'x-main-content v7-app-content nx-experience-field ct-workspace-' + tab} data-nx-scene={NEXUS_SCENE_FAMILY[tab]} key={tab}
@@ -247,7 +263,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
      {notice&&<div className="x-inline-notice"><Shield size={18}/>{notice}<button onClick={()=>setNotice('')}><X size={17}/></button></div>}
      {tab==='dashboard'&&<>
       <NexusStage week={timeLabel} rate={totals.rate} coverage={totals.coverage} active={active} roles={roleCounts} helpers={top} moderators={moderatorTop} readings={review?[]:currentEligible} onTeam={()=>open('team')} onRead={()=>open('daily')} onRecord={()=>open('updates')} onOpen={id=>{const member=rows.find(r=>r.id===id);if(member){open('team');setFocused(member);}}}>
-      <div className="x-kpi-grid v8-kpi-grid">{kpis.map(({title,english,value,glyph,tone},index)=><div className={'x-kpi v8-kpi x-tone-'+tone} key={title} style={{animationDelay:(index*45)+'ms'}}><div className="x-kpi-title"><CommandIcon name={glyph}/><div><b>{english.replace("Weekly ","")}</b></div></div><strong>{value}</strong><span>{value==='—'?'غير مسجل': 'الأسبوع الحالي'}</span><i className="v8-kpi-line"/></div>)}</div>
+      <div className="x-kpi-grid v8-kpi-grid">{kpis.map(({title,english,value,glyph,tone},index)=><div className={'x-kpi v8-kpi x-tone-'+tone} key={title} style={{animationDelay:(index*45)+'ms'}}><div className="x-kpi-title"><CommandIcon name={glyph}/><div><b>{english.replace("Weekly ","")}</b></div></div><motion.strong className="nx-kpi-number" key={english+':'+value} initial={{opacity:.4,y:7}} animate={{opacity:1,y:0}} transition={{duration:.32}}>{value}</motion.strong><span>{value==='—'?'غير مسجل': 'الأسبوع الحالي'}</span><i className="v8-kpi-line"/></div>)}</div>
       </NexusStage>
       {!review&&state&&!hasRegisteredWeek&&<DashboardWeekNotice currentWeek={summary?.week_start??'—'} previous={previousWeek} onReadReports={()=>{open('daily');if(previousWeek)setRequestedReportPeriod({from:previousWeek.from,to:previousWeek.to});}} onRecord={()=>open('updates')}/>}
 
@@ -281,7 +297,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
        </section>
       </div>
       <section className="x-panel x-table-panel"><CardTitle icon={Users} title="نظرة على الفريق" en="TEAM PERFORMANCE" action={<button className="x-text-action" onClick={()=>open('team')}>كل الإداريين <ArrowLeft size={15}/></button>}/>
-       <TeamTable rows={rows.slice(0,7)} onFocus={r=>{setTab('team');setFocused(r);}}/>
+       <TeamTable rows={rows.slice(0,7)} onFocus={r=>{open('team');setFocused(r);}}/>
       </section>
      </>}
      {tab==='team'&&<>
