@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import type {Admin,Reading,State,Rank} from '@/lib/types';
 import dynamic from 'next/dynamic';
+import {AnimatePresence,MotionConfig,motion} from 'motion/react';
 const WorkspaceLoading=()=> <div className="ct-workspace-loading" role="status">جاري تحميل القسم…</div>;
 const ExecutiveOperations=dynamic(()=>import('./ExecutiveOperations'),{loading:WorkspaceLoading});
 const ExecutiveTeamStudio=dynamic(()=>import('./ExecutiveTeamStudio'),{loading:WorkspaceLoading});
@@ -111,7 +112,16 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
  const [editTarget,setEditTarget]=useState<string|null>(null);
  const [readingTarget,setReadingTarget]=useState<string|null>(null);
  const [requestedReportPeriod,setRequestedReportPeriod]=useState<{from:string;to:string}|null>(null);
- useEffect(()=>{const valid=links.map(l=>l.id);const initial=new URLSearchParams(window.location.search).get('tab') as Tab|null;if(initial&&valid.includes(initial))setTab(initial);},[]);
+ useEffect(()=>{
+  const valid=new Set<Tab>(links.map(l=>l.id));
+  const syncFromUrl=()=>{
+   const requested=new URLSearchParams(window.location.search).get('tab') as Tab|null;
+   setTab(requested&&valid.has(requested)?requested:'dashboard');
+  };
+  syncFromUrl();
+  window.addEventListener('popstate',syncFromUrl);
+  return ()=>window.removeEventListener('popstate',syncFromUrl);
+ },[]);
  const [menu,setMenu]=useState(false);
  // CHICO TEAM uses a transient overlay, never a permanently expanded sidebar.
  const toggleMenu=()=>setMenu(current=>!current);
@@ -164,7 +174,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
   setPass('');setAuth('in');await refresh();
  }catch(e){setError(e instanceof Error?e.message:'خطأ في الدخول');}finally{setWorking(false);}}
  async function logout(){if(review){setPreviewLogin(true);return;}await fetch('/api/auth',{method:'DELETE'});setAuth('out');setState(null);setPass('');}
- const open=(id:Tab)=>{setRequestedReportPeriod(null);setTab(id);setFocused(null);setMenu(false);setNotice('');const u=new URL(window.location.href);u.searchParams.set('tab',id);window.history.replaceState(null,'',u.pathname+u.search);};
+ const open=(id:Tab)=>{setRequestedReportPeriod(null);setTab(id);setFocused(null);setMenu(false);setNotice('');const u=new URL(window.location.href);if(u.searchParams.get('tab')!==id){u.searchParams.set('tab',id);window.history.pushState({tab:id},'',u.pathname+u.search+u.hash);}};
  
 
  const intervalRows=currentEligible.filter(r=>r.week_start===summary?.week_start).sort((a,b)=>b.to_date.localeCompare(a.to_date)||b.created_at.localeCompare(a.created_at)).slice(0,8);
@@ -221,11 +231,15 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
    <main className="x-body">
     <header className="x-topbar ct-topbar">
      <div className="ct-top-start"><button type="button" className="ct-icon-button v10-hamburger" onClick={toggleMenu} aria-label={menu?'إغلاق القائمة':'فتح القائمة'} aria-expanded={menu} aria-controls="chico-main-navigation"><Menu size={22}/></button><button type="button" className="ct-brand" onClick={()=>open('dashboard')} aria-label="CHICO TEAM — مركز القيادة"><img src="/assets/chico-approved-wolf.avif" alt="" width={32} height={32}/><b>CHICO TEAM</b></button></div>
-     <span className="ct-page-title">{links.find(l=>l.id===tab)?.label}</span>
+     <span className="ct-page-title" aria-live="polite" aria-atomic="true">{links.find(l=>l.id===tab)?.label}</span>
      <div className="ct-top-actions"><button className="ct-icon-button" onClick={()=>setSearchOpen(!searchOpen)} aria-label="البحث"><Search size={19}/></button><button className="ct-icon-button" onClick={()=>open('alerts')} aria-label="التنبيهات"><Bell size={19}/>{warnings.length>0&&<i className="x-notif-dot"/>}</button>{!review&&<button className="ct-icon-button" onClick={()=>void refresh()} aria-label="تحديث البيانات"><RefreshCw size={17}/></button>}<button className="ct-icon-button" onClick={()=>void logout()} aria-label="تسجيل الخروج من CHICO"><LogOut size={18}/></button><span className="ct-connection" role="status" title={review?'معاينة':state?'البيانات محمّلة':'جاري تحميل البيانات'} data-ready={review||!!state}/></div>
     </header>
     {searchOpen&&<div className="x-command-search"><Search size={18}/><input autoFocus type="search" aria-label="البحث عن إداري" placeholder="ابحث عن إداري…" value={filter} onChange={e=>{setFilter(e.target.value);open('team');}}/><button onClick={()=>{setSearchOpen(false);setFilter('');}} aria-label="إغلاق البحث"><X size={17}/></button></div>}
-    <div id="chico-main-content" tabIndex={-1} className={'x-main-content v7-app-content ct-page-motion ct-workspace-' + tab} key={tab}>
+    <MotionConfig reducedMotion="user">
+     <AnimatePresence initial={false} mode="wait">
+      <motion.div id="chico-main-content" tabIndex={-1} role="region" aria-label={links.find(l=>l.id===tab)?.label} className={'x-main-content v7-app-content ct-workspace-' + tab} key={tab}
+       initial={{opacity:0,y:12}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-8}}
+       transition={{duration:0.22,ease:[0.22,1,0.36,1]}}> 
      {error&&<div className="x-error"><AlertTriangle size={17}/>{error}<button onClick={()=>void refresh()}>إعادة المحاولة</button></div>}
      {notice&&<div className="x-inline-notice"><Shield size={18}/>{notice}<button onClick={()=>setNotice('')}><X size={17}/></button></div>}
      {tab==='dashboard'&&<>
@@ -279,7 +293,9 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
       {tab!=='dashboard'&&tab!=='team'&&tab!=='operations'&&tab!=='salary'&&tab!=='academy'&&<ExecutiveOperations tab={tab} state={state} review={review} onRefresh={refresh} initialAdminId={readingTarget} initialPeriod={requestedReportPeriod}/>}
 
      <footer className="x-foot"><span>© CHICO TEAM</span></footer>
-    </div>
+      </motion.div>
+     </AnimatePresence>
+    </MotionConfig>
    </main>
    <NexusDock tab={tab} onNavigate={open} onMore={toggleMenu} menuOpen={menu}/>
   </div>
