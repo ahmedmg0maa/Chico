@@ -143,7 +143,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
  // One keyboard-first command palette, shared by all 13 real destinations.
  useEffect(()=>{
   if(auth!=='in'||previewLogin)return;
-  const handler=(event:globalThis.KeyboardEvent)=>{
+  const handler=(event:KeyboardEvent)=>{
    if((event.metaKey||event.ctrlKey)&&!event.altKey&&event.key.toLowerCase()==='k'){
     if(!searchOpen&&document.querySelector('[aria-modal="true"]'))return;
     event.preventDefault();
@@ -189,7 +189,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
   const body=await r.json();if(!r.ok||!body.ok)throw new Error(body.error==='INVALID_PASSWORD'?'كلمة المرور غير صحيحة':'تعذر تسجيل الدخول الآن');
   setPass('');setAuth('in');await refresh();
  }catch(e){setError(e instanceof Error?e.message:'خطأ في الدخول');}finally{setWorking(false);}}
- async function logout(){if(review){setPreviewLogin(true);return;}await fetch('/api/auth',{method:'DELETE'});setAuth('out');setState(null);setPass('');}
+ async function logout(){setSearchOpen(false);if(review){setPreviewLogin(true);return;}await fetch('/api/auth',{method:'DELETE'});setAuth('out');setState(null);setPass('');}
  const open=(id:Tab)=>{setRequestedReportPeriod(null);setTab(id);setFocused(null);setMenu(false);setNotice('');const u=new URL(window.location.href);if(u.searchParams.get('tab')!==id){u.searchParams.set('tab',id);window.history.pushState({tab:id},'',u.pathname+u.search+u.hash);}};
  
 
