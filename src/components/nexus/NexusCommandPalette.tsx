@@ -48,7 +48,7 @@ export default function NexusCommandPalette({
  }
  function keys(e:KeyboardEvent<HTMLDivElement>){
   if(e.key==='Escape'){e.preventDefault();onClose();return;}
-  if(e.key==='ArrowDown'){e.preventDefault();setActive(v=>Math.min(entries.length-1,v+1));return;}
+  if(e.key==='ArrowDown'){e.preventDefault();setActive(v=>Math.max(0,Math.min(entries.length-1,v+1)));return;}
   if(e.key==='ArrowUp'){e.preventDefault();setActive(v=>Math.max(0,v-1));return;}
   if(e.key==='Enter'&&entries[selected]){e.preventDefault();activate(entries[selected]);return;}
   if(e.key==='Tab'){
