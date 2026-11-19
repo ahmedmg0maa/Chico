@@ -1,4 +1,5 @@
 'use client';
+import WorkflowStatus from '../nexus/WorkflowStatus';
 
 import {useEffect,useMemo,useRef,useState} from 'react';
 import {CommandIcon} from './ChicoVisualLanguage';
@@ -82,6 +83,7 @@ export default function DiscordReportStudio({state,review}:Props){
     <Download size={18}/>{downloading?'جاري تجهيز الصورة…':period.canExport&&!imageReady&&!review?'جاري رسم الصورة…':'تنزيل التقرير PNG'}
    </button>
   </header>
+  <WorkflowStatus tone={review?'info':!valid||partial>0||error?'blocked':imageReady?'ready':period.canExport?'working':'info'} title={review?'معاينة فقط':!valid?'الفترة غير صالحة':partial>0?'التغطية غير مكتملة — التصدير متوقف':error?'تعذر تجهيز التقرير':imageReady?'صورة Discord جاهزة':period.canExport?'جارٍ تجهيز الصورة':'لا توجد بيانات متاحة للتصدير'} detail={start+' — '+end}/>
   <div className="ct-report-layout"><div className="ct-report-controls"><div className="ct-report-panel-title"><CalendarDays size={18}/> فترة التقرير</div>
   <div className="v9-poster-filters">
    <label>نوع التقرير

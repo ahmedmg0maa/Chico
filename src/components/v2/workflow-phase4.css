@@ -1,0 +1,31 @@
+/* CHICO NEXUS · Phase 04 — task-oriented operational surfaces. */
+.chico-v2 :is(.nx-workflow-status,.v7-directory-board,.v9-entry-card,.v9-reading-history,.ct-admin-card,.ct-salary-card,.ct-report-controls,.ct-report-stage,.x-op-card){
+ --wf-edge:rgba(191,207,229,.21);--wf-top:rgba(233,211,175,.35);
+}
+.chico-v2 .nx-workflow-status{display:flex;align-items:center;gap:12px;min-width:0;margin:12px 0;padding:12px 14px;border:1px solid var(--wf-edge);border-radius:12px;background:linear-gradient(135deg,rgba(99,146,200,.085),rgba(15,22,32,.45));color:#a9c8ec;}
+.chico-v2 .nx-workflow-status[data-tone="ready"]{color:#87d6ab;background:linear-gradient(135deg,rgba(71,163,113,.105),rgba(15,22,32,.45));border-color:rgba(122,207,161,.27);}
+.chico-v2 .nx-workflow-status[data-tone="blocked"]{color:#edc18d;background:linear-gradient(135deg,rgba(193,130,65,.12),rgba(15,22,32,.5));border-color:rgba(231,173,109,.27);}
+.chico-v2 .nx-workflow-status[data-tone="working"]{color:#c3b5ed;}
+.chico-v2 .nx-workflow-icon{flex:none;width:34px;height:34px;border-radius:9px;display:grid;place-items:center;background:rgba(158,181,214,.07);border:1px solid currentColor;}
+.chico-v2 .nx-workflow-copy{display:grid;gap:4px;flex:1;min-width:0;}
+.chico-v2 .nx-workflow-copy b{font-size:13px;line-height:1.45;}
+.chico-v2 .nx-workflow-copy small{font-size:12px;color:#acbbcb;line-height:1.55;overflow-wrap:anywhere;}
+.chico-v2 .nx-workflow-status progress{width:min(110px,22%);height:8px;accent-color:#e0bd83;}
+.chico-v2.nx-app .nx-experience-field:not(.ct-workspace-dashboard) :is(.v7-directory-board,.v9-entry-card,.v9-reading-history,.ct-admin-card,.ct-salary-card,.ct-report-controls,.ct-report-stage,.x-op-card){border:1px solid var(--wf-edge);border-top-color:var(--wf-top);border-radius:18px;background:linear-gradient(150deg,#263343,#141e2a 42%,#111923 100%);box-shadow:0 13px 30px rgba(0,0,0,.23),inset 0 1px rgba(236,246,255,.055);}
+.chico-v2.nx-app .nx-experience-field:not(.ct-workspace-dashboard) :is(.ct-workspace-mast,.ct-admin-head,.ct-salary-head,.v9-tools-top,.v9-poster-intro,.x-illustrated-head){border-top-color:rgba(231,203,152,.42);}
+.chico-v2 .nx-filter-strip{display:flex;align-items:center;gap:7px;flex-wrap:wrap;padding:8px 0 4px;}
+.chico-v2 .nx-filter-strip button{display:inline-flex;align-items:center;gap:6px;min-height:37px;padding:6px 11px;border:1px solid rgba(183,202,224,.21);border-radius:9px;background:#131e2b;color:#becbda;font-size:12px;}
+.chico-v2 .nx-filter-strip button[aria-pressed="true"]{border-color:#cfb17b;background:rgba(210,177,114,.12);color:#f1d4a2;}
+.chico-v2 .nx-filter-strip button b{font-variant-numeric:tabular-nums;font-size:11px;}
+.chico-v2 .nx-lesson-state{display:block;margin-top:3px;font-size:10px;color:#9aacc1;}
+.chico-v2 .nx-lesson-state[data-ready="true"]{color:#8ad6ae;}
+.chico-v2 .nx-salary-count{display:block;margin:10px 0;color:#acbed2;font-size:12px;font-variant-numeric:tabular-nums;}
+.chico-v2 .ct-import-steps span[aria-current="step"]{border-color:#e0bf86;color:#f6dbab;background:rgba(216,180,112,.13);}
+.chico-v2 .ct-import-steps span[data-complete="true"]{color:#8bd3ac;}
+.chico-v2 :is(.v9-profile-tabs,.v7-layout-switch,.ct-academy-tabs) button[aria-pressed="true"]{border-color:#d9b981;}
+.chico-v2 .ct-salary-card[data-bonus="true"]{border-top-color:#d7b47c;}
+.chico-v2 :is(.v7-directory-table,.v9-history-table,.x-op-table,.ct-academy-table table) tbody tr:focus-within{background-color:rgba(181,202,235,.08);}
+.chico-v2 .nx-workflow-status button:focus-visible,.chico-v2 .nx-filter-strip button:focus-visible{outline:2px solid #e0bd83;outline-offset:2px;}
+@media(max-width:760px){.chico-v2 .nx-workflow-status{padding:10px;gap:9px;align-items:flex-start;flex-wrap:wrap;}.chico-v2 .nx-workflow-icon{width:29px;height:29px;}.chico-v2 .nx-workflow-copy{min-width:0;flex:1;}.chico-v2 .nx-workflow-status progress{width:100%;}.chico-v2.nx-app .nx-experience-field:not(.ct-workspace-dashboard) :is(.v7-directory-board,.v9-entry-card,.v9-reading-history,.ct-admin-card,.ct-salary-card,.ct-report-controls,.ct-report-stage,.x-op-card){border-radius:13px;}.chico-v2 .nx-filter-strip{gap:5px;}.chico-v2 .nx-filter-strip button{padding:5px 8px;min-height:36px;}}
+@media(prefers-reduced-motion:reduce){.chico-v2 .nx-workflow-status,.chico-v2 .nx-filter-strip button{animation:none!important;transition:none!important;}}
+@media(forced-colors:active){.chico-v2 .nx-workflow-status,.chico-v2 .nx-filter-strip button[aria-pressed="true"]{border:1px solid CanvasText;}}

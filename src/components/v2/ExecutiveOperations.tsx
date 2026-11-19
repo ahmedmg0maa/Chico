@@ -1,4 +1,5 @@
 'use client';
+import WorkflowStatus from '../nexus/WorkflowStatus';
 
 import {useRef,useState, type FormEvent} from 'react';
 import ReadingEntryStudio from './ReadingEntryStudio';
@@ -231,7 +232,8 @@ export default function ExecutiveOperations({tab,state,review,onRefresh,initialA
   <Head compact={compactHead} en="CHICO / XLSX REVIEW" title="استيراد Excel" description="معاينة جميع قراءات Excel والتواريخ وأرصدة Flags. لا تعديل أسماء أو رتب قبل موافقتك الصريحة."/><Hint review={review}/>
   <section className="x-panel x-op-card"><div className="x-op-cardhead"><FileSpreadsheet size={20}/><h2>مراجعة ملف اللعبة</h2></div>
    {review&&<p className="v9-warning" role="status">دي معاينة تصميم فقط؛ رفع Excel وتنزيل التقارير متعطلين عمدًا هنا. للبيانات الحقيقية افتح <a href="https://chicoteam.vercel.app/v2?tab=excel">الموقع الرسمي بعد تسجيل الدخول</a>.</p>}
-   <div className="ct-import-steps" aria-label="مراحل الاستيراد"><span className="is-current"><b>01</b> اختيار الملف</span><span className={importView?'is-current':''}><b>02</b> مراجعة البيانات</span><span className={importView&&acceptedImport?'is-current':''}><b>03</b> اعتماد الحفظ</span></div>
+   <div className="ct-import-steps" aria-label="مراحل الاستيراد"><span className="is-current" aria-current={!importView?'step':undefined} data-complete={!!importView}><b>01</b> اختيار الملف</span><span className={importView?'is-current':''} aria-current={importView&&!acceptedImport?'step':undefined} data-complete={!!importView&&acceptedImport}><b>02</b> مراجعة البيانات</span><span className={importView&&acceptedImport?'is-current':''} aria-current={importView&&acceptedImport?'step':undefined}><b>03</b> اعتماد الحفظ</span></div>
+   <WorkflowStatus tone={error?'blocked':busy?'working':success?'ready':importView?.warnings.length?'blocked':importView&&acceptedImport&&(!importView.rosterChanges||approvedRosterSync)?'ready':'info'} title={error?'العملية لم تكتمل':busy?'جارٍ تنفيذ العملية':success?'تمت عملية الاستيراد':importView?.warnings.length?'تصحيح البيانات مطلوب':importView&&acceptedImport&&(!importView.rosterChanges||approvedRosterSync)?'المراجعة مكتملة — الحفظ متاح':importView?'المعاينة جاهزة للمراجعة':file?'الملف محدد — لم تتم المعاينة بعد':'ابدأ باختيار ملف XLSX'} detail={importView?'لن تُحفظ البيانات قبل الموافقة الصريحة.':undefined}/>
    <div className="x-op-form ct-import-form">
     <label className="x-op-full ct-file-field">ملف Excel بصيغة XLSX
      <input ref={fileInputRef} type="file" accept=".xlsx" disabled={review||busy} onChange={e=>{setFile(e.target.files?.[0]||null);setImportView(null);setAcceptedImport(false);setApprovedRosterSync(false);}}/>

@@ -1,4 +1,5 @@
 'use client';
+import WorkflowStatus from '../nexus/WorkflowStatus';
 import {useEffect,useMemo,useState,type FormEvent} from 'react';
 import {CalendarDays,CheckCircle2,ChevronDown,Clock3,Download,History,Pencil,Plus,Save,Search,ShieldAlert,Trash2,X} from 'lucide-react';
 import {CommandIcon} from './ChicoVisualLanguage';
@@ -78,6 +79,7 @@ export default function ReadingEntryStudio({state,review,onRefresh,initialAdminI
  return <div className="v9-reading-studio ct-entry-workspace">
   <section id="chico-reading-entry" className="x-panel v9-entry-card">
    <header className="v9-entry-heading"><div className="ct-workspace-identity"><CommandIcon name="updates"/><div><h2>{editing?'تعديل تقرير محفوظ':'تسجيل تقرير'}</h2><p>العدادات كما تظهر في اللعبة</p></div></div>{editing&&<button type="button" className="v9-quiet-btn" onClick={startNew}><X size={16}/>إلغاء التعديل</button>}</header>
+   <WorkflowStatus tone={error?'blocked':busy?'working':notice?'ready':'info'} title={error?'راجع تفاصيل العملية':busy?'جارٍ تنفيذ العملية':notice?'تمت العملية':editing?'تعديل قراءة موجودة':'إدخال قراءة جديدة'} detail={draft.admin_id?draft.from_date+' — '+draft.to_date:'اختر الإداري وحدد الفترة قبل الحفظ.'}/>
    <form className="v9-reading-form" onSubmit={save}>
     <div className="v9-reading-step"><b>1</b><span>الإداري وتاريخ التقرير</span></div>
     <label className="v9-wide">الإداري
