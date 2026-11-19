@@ -30,7 +30,7 @@ function normalizedPart(xml:string){
 export async function readWorkbook(bytes:Buffer){
  const workbook=new ExcelJS.Workbook();
  try{
-  await workbook.xlsx.load(bytes as Parameters<typeof workbook.xlsx.load>[0]);
+  await workbook.xlsx.load(Uint8Array.from(bytes).buffer);
   return workbook;
  }catch{
   const zip=await JSZip.loadAsync(bytes);
@@ -41,7 +41,7 @@ export async function readWorkbook(bytes:Buffer){
    zip.file(part.name,normalizedPart(await part.async('string')));
   }
   const normalized=new ExcelJS.Workbook();
-  await normalized.xlsx.load(await zip.generateAsync({type:'nodebuffer'}) as Parameters<typeof normalized.xlsx.load>[0]);
+  await normalized.xlsx.load(await zip.generateAsync({type:'arraybuffer'}));
   return normalized;
  }
 }
