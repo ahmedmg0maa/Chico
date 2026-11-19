@@ -29,7 +29,7 @@ export function inferLegacyPeriod(headers:string[],year:number){
  const to=year+'-'+match[3].padStart(2,'0')+'-'+match[4].padStart(2,'0');
  return validateCoverage(from,to)?{from,to}:null;
 }
-export const validRanks:Rank[]=['Responsible','Administrator','Moderator','SN.Helper','Helper'];
+export const validRanks:Rank[]=['Responsible','Administrator','M.','Moderator','SN.Helper','Helper'];
 export function cleanName(name:string){return name.trim().replace(/\s+/g,' ');}
 export function canonicalName(name:string){
  return cleanName(name).toLowerCase().replace(/^(sn|m|a)\s*\.\s*/,'').replace(/[.\s_\-]/g,'');

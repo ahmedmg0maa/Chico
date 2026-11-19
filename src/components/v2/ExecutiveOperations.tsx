@@ -17,7 +17,7 @@ export type OperationTab = 'updates'|'excel'|'server'|'daily'|'reports'|'weeks'|
 type Props = {tab:OperationTab;state:State|null;review:boolean;onRefresh:()=>Promise<void>;initialAdminId?:string|null;initialPeriod?:{from:string;to:string}|null;compactHead?:boolean};
 type ReadForm={admin_id:string;from_date:string;to_date:string;tickets_counter:number|null;flags_counter:number|null;flags_baseline:number|null;hours:number|null;rating:number|null;note:string};
 type Imported={row:number;name:string;source_name?:string;admin_id:string|null;roster_name:string|null;source_rank?:string|null;rank:string|null;admin_level:number|null;roster_action:string;from_date:string|null;to_date:string|null;report_entered_on:string|null;tickets_counter:number|null;tickets_baseline:number|null;flags_counter:number|null;flags_baseline:number|null;hours:number|null;rating:number|null;skip_reading:boolean};
-type ImportView={preview_id:string;filename:string;sheet:string;rows:Imported[];warnings:string[];notices:string[];requiresConfirmation:boolean;imported:number;leaders:number;rosterChanges:number;sourceTotals?:{people:number;tickets:number|null;flags:number|null;hours:number|null;from:string|null;to:string|null}};
+type ImportView={preview_id:string;filename:string;sheet:string;rows:Imported[];warnings:string[];notices:string[];requiresConfirmation:boolean;imported:number;leaders:number;rosterChanges:number;fileTotals?:{people:number;tickets:number|null;flags:number|null;hours:number|null};sourceTotals?:{people:number;tickets:number|null;flags:number|null;hours:number|null;from:string|null;to:string|null}};
 const cairoDate=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'Africa/Cairo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
 const cairoYear=()=>new Intl.DateTimeFormat('en-US',{timeZone:'Africa/Cairo',year:'numeric'}).format(new Date());
 const emptyReading=():ReadForm=>({admin_id:'',from_date:cairoDate(),to_date:cairoDate(),tickets_counter:null,flags_counter:null,flags_baseline:null,hours:null,rating:null,note:''});
@@ -249,8 +249,9 @@ export default function ExecutiveOperations({tab,state,review,onRefresh,initialA
      <Metric label="القراءات التي سيتم حفظها" value={String(importView.imported)}/>
      <Metric label="General خارج التقييم" value={String(importView.leaders)}/>
      <Metric label="أسماء جديدة تحتاج الموافقة" value={String(importView.rosterChanges)}/>
+     {importView.fileTotals&&<Metric label="Tickets لكل صفوف الملف" value={fmt(importView.fileTotals.tickets,0)}/>}
      {importView.sourceTotals&&<>
-      <Metric label="الأعضاء المؤهلون للتقييم" value={String(importView.sourceTotals.people)}/>
+      <Metric label="صفوف رتب الأداء في الملف" value={String(importView.sourceTotals.people)}/>
       <Metric label="Tickets المصدر للمؤهلين" value={fmt(importView.sourceTotals.tickets,0)}/>
       <Metric label="Flags الجديدة من أرصدة البداية" value={fmt(importView.sourceTotals.flags,0)}/>
       <Metric label="TIME بالساعات العشرية" value={fmt(importView.sourceTotals.hours,2)}/>
@@ -321,8 +322,8 @@ export default function ExecutiveOperations({tab,state,review,onRefresh,initialA
   <section className="x-panel x-op-card"><div className="x-op-cardhead"><Archive size={20}/><h2>أرشيف الدورات المحفوظة</h2></div>{state?.weeks.length?<div className="x-op-mini-list">{state.weeks.map(w=><div key={w.week_start}><b>{w.week_start}</b><span>{w.status==='closed'?'مغلق':'مفتوح'}</span></div>)}</div>:<Empty text="لم تُسجّل عمليات إغلاق بعد"/>}</section>
  </>;
  if(tab==='alerts')return <>
-  <Head compact={compactHead} en="CHICO / LEADERSHIP WATCH" title="التنبيهات والمتابعة" description="ملاحظات تستند إلى Flags والتقييم والقراءات المسجلة؛ لا نصنع تنبيهات وهمية."/><Hint review={review}/>
-  <section className="x-panel x-op-card"><div className="x-op-cardhead"><AlertTriangle size={20}/><h2>حالات تحتاج مراجعة</h2></div>
+  <Head compact={compactHead} en="CHICO / LEADERSHIP WATCH" title="التنبيهات والمتابعة" description="أكثر من 10 Flags أسبوعية مع تقييم أقل من 4.80."/><Hint review={review}/>
+  <section className="x-panel x-op-card"><div className="x-op-cardhead"><AlertTriangle size={20}/><h2>المتابعة الأسبوعية</h2></div>
    {summary?.alerts.length?<div className="x-op-mini-list">{summary.alerts.map((a,i)=><div key={a.id+'-'+i}><b>{a.name}</b><span>{a.message}</span></div>)}</div>:<Empty text="لا توجد تنبيهات مستمدة من القراءات الحالية"/>}
    <p className="x-op-footnote">ظهور إنذار لا يثبت مخالفة؛ القرار بعد مراجعة البيانات وسياق الإداري.</p>
   </section>

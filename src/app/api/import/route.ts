@@ -1,5 +1,5 @@
 import type {NextRequest} from 'next/server';
-import ExcelJS from 'exceljs';
+import {readWorkbook} from '@/lib/read-workbook';
 import {createHash} from 'node:crypto';
 import {db} from '@/lib/db';
 import {requireOwner,response,failure} from '@/lib/api';
@@ -21,8 +21,9 @@ export async function POST(req:NextRequest){
  try{
   const body=await req.formData(),file=body.get('file');
   if(!(file instanceof File)||!file.name.toLowerCase().endsWith('.xlsx')||file.size>3_000_000||file.size<500)return response({ok:false,error:'INVALID_XLSX'},400);
-  const buf=Buffer.from(await file.arrayBuffer()),hash=createHash('sha256').update(buf).digest('hex'),book=new ExcelJS.Workbook();
-  await book.xlsx.load(buf as any);
+  const buf=Buffer.from(await file.arrayBuffer()),hash=createHash('sha256').update(buf).digest('hex');
+  let book;
+  try{book=await readWorkbook(buf);}catch{return response({ok:false,error:'INVALID_XLSX'},422);}
   const sheet=book.getWorksheet('CHICO_IMPORT')||book.worksheets[0];
   if(!sheet)return response({ok:false,error:'EMPTY_XLSX'},400);
   if(sheet.rowCount>502)return response({ok:false,error:'XLSX_TOO_MANY_ROWS'},422);
@@ -92,8 +93,9 @@ export async function POST(req:NextRequest){
     if(!validateCoverage(from,to))warnings.push('Row '+i+': invalid or missing report period');
     if(dateHours)notices.push('Row '+i+': TIME date-formatted cell converted to '+parsedHours.hours+' decimal hours — verify before approval');
     if(parsedHours.invalid)warnings.push('Row '+i+': invalid TIME; cannot safely convert it');
-    if(at(ratingCol)!==null&&at(ratingCol)!==''&&rating===null)warnings.push('Row '+i+': Rating must be between 0 and 5');
+    if(!isMissingCell(at(ratingCol))&&rating===null)warnings.push('Row '+i+': Rating must be between 0 and 5');
     if(flags!==null&&baseline===null)notices.push('Row '+i+': Flags baseline missing; the first delta cannot be assumed zero');
+    if(existing && sourceRank!==existing.rank && (sourceRank==='M.'||existing.rank==='M.'))warnings.push('Row '+i+': resolve the explicit M. rank conflict in the roster before saving');
     if(rank===null)warnings.push('Row '+i+': Rank required for new administrator');
     if(validInteger(at(ticketsBaseCol))!==null&&validInteger(at(ticketsBaseCol))!==0)warnings.push('Row '+i+': nonzero Tickets opening balance is not supported safely; split the period or adjust the file');
     for(const [label,col] of [['Tickets Counter',ticketsCol],['Tickets Baseline',ticketsBaseCol],['Flags Counter',flagsCol],['Flags Baseline',flagsBaseCol]] as const){
@@ -127,21 +129,25 @@ export async function POST(req:NextRequest){
    }
   }
   const evaluated=rows.filter(r=>!r.skip_reading&&['Helper','SN.Helper','Moderator'].includes(r.rank||''));
-  const count=(fn:(r:ExcelImportRow)=>number|null)=>{
-   const values=evaluated.map(fn);return values.length&&values.every(v=>v!==null)?values.reduce<number>((sum,v)=>sum+(v||0),0):null;
-  };
-  const sourceTotals={
-   people:evaluated.length,
-   tickets:count(r=>r.tickets_counter),
-   flags:count(r=>r.flags_counter===null||r.flags_baseline===null?null:r.flags_counter-r.flags_baseline),
-   hours:count(r=>r.hours),
-   from:[...new Set(evaluated.map(r=>r.from_date))].length===1?evaluated[0]?.from_date:null,
-   to:[...new Set(evaluated.map(r=>r.to_date))].length===1?evaluated[0]?.to_date:null
-  };
+  function aggregate(group:ExcelImportRow[]){
+   const count=(read:(row:ExcelImportRow)=>number|null)=>{
+    const values=group.map(read);
+    return values.length && values.every((v):v is number=>v!==null)?values.reduce((sum,v)=>sum+v,0):null;
+   };
+   return {
+    people:group.length,tickets:count(r=>r.tickets_counter),
+    flags:count(r=>r.flags_counter===null||r.flags_baseline===null?null:r.flags_counter-r.flags_baseline),
+    hours:count(r=>r.hours),
+    from:new Set(group.map(r=>r.from_date)).size===1?group[0].from_date:null,
+    to:new Set(group.map(r=>r.to_date)).size===1?group[0].to_date:null
+   };
+  }
+  const sourceTotals=aggregate(evaluated);
+  const fileTotals=aggregate(rows.filter(r=>!r.skip_reading));
   const stage=await sql`INSERT INTO chico_next.import_staging(source_hash,payload) VALUES(${hash},${sql.json({rows,warnings:[...new Set(warnings)]})}) RETURNING id`;
-  await sql`DELETE FROM chico_next.import_staging WHERE created_at < now()-interval '24 hours'`;
+  await sql`DELETE FROM chico_next.import_staging WHERE committed_at IS NULL AND created_at < now()-interval '24 hours'`;
   return response({ok:true,preview_id:String(stage[0].id),filename:file.name,sheet:sheet.name,rows,
-   imported:audit.imported,leaders:audit.leaders,sourceTotals,
+   imported:audit.imported,leaders:audit.leaders,sourceTotals,fileTotals,
    rosterChanges:rows.filter(r=>r.roster_action!=='match').length,
    warnings:[...new Set(warnings)],notices:[...new Set(notices)],requiresConfirmation:true});
  }catch(error){return failure(error);}

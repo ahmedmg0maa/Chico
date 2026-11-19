@@ -1,6 +1,6 @@
 import { db } from './db';
 import {dateOnly,timestamp} from './date-serialization';
-import { weekStart, isEligibleForTop, isEvaluatedAdmin, eligibleReadings, summarizeReadings } from './rules';
+import { weekStart, needsWeeklyReview, isEligibleForTop, isEvaluatedAdmin, eligibleReadings, summarizeReadings } from './rules';
 import type { Admin, Reading, State, Summary, Week } from './types';
 
 function mapAdmin(row:Record<string,unknown>):Admin{
@@ -8,7 +8,7 @@ function mapAdmin(row:Record<string,unknown>):Admin{
 }
 function mapReading(row:Record<string,unknown>):Reading{
   const n=(x:unknown)=>x===null||x===undefined?null:Number(x);
-  return {id:String(row.id),admin_id:String(row.admin_id),admin_name:String(row.admin_name),rank:row.rank as Reading['rank'],source_row:row.source_row===null||row.source_row===undefined?null:Number(row.source_row),source_name:row.source_name?String(row.source_name):null,from_date:dateOnly(row.from_date),to_date:dateOnly(row.to_date),week_start:dateOnly(row.week_start),tickets_counter:n(row.tickets_counter),tickets_delta:n(row.tickets_delta),flags_counter:n(row.flags_counter),flags_baseline:n(row.flags_baseline),flags_delta:n(row.flags_delta),hours:n(row.hours),rating:n(row.rating),note:String(row.note||''),created_at:timestamp(row.created_at),report_entered_on:row.report_entered_on?dateOnly(row.report_entered_on):new Intl.DateTimeFormat('en-CA',{timeZone:'Africa/Cairo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(timestamp(row.created_at)))};
+  return {id:String(row.id),admin_id:String(row.admin_id),admin_name:String(row.admin_name),rank:(row.recorded_rank??row.rank) as Reading['rank'],recorded_reporting:typeof row.recorded_reporting==='boolean'?row.recorded_reporting:null,source_row:row.source_row===null||row.source_row===undefined?null:Number(row.source_row),source_name:row.source_name?String(row.source_name):null,from_date:dateOnly(row.from_date),to_date:dateOnly(row.to_date),week_start:dateOnly(row.week_start),tickets_counter:n(row.tickets_counter),tickets_delta:n(row.tickets_delta),flags_counter:n(row.flags_counter),flags_baseline:n(row.flags_baseline),flags_delta:n(row.flags_delta),hours:n(row.hours),rating:n(row.rating),note:String(row.note||''),created_at:timestamp(row.created_at),report_entered_on:row.report_entered_on?dateOnly(row.report_entered_on):new Intl.DateTimeFormat('en-CA',{timeZone:'Africa/Cairo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(timestamp(row.created_at)))};
 }
 export async function loadState():Promise<State>{
   const sql=db();
@@ -30,16 +30,10 @@ export async function loadState():Promise<State>{
   for(const admin of admins){
     if(!isEvaluatedAdmin(admin))continue;
     const mine=current.filter(r=>r.admin_id===admin.id).sort((a,b)=>b.to_date.localeCompare(a.to_date));
-    const latest=mine[0];
-    const flags=mine.filter(r=>r.flags_delta!==null);
-    if(flags.length&&flags.length===mine.filter(r=>r.flags_counter!==null).length){
-      const weekFlags=flags.reduce((n,r)=>n+(r.flags_delta||0),0);
-      if(weekFlags>7)alerts.push({id:admin.id,name:admin.name,message:`${weekFlags} weekly Flags`,kind:'danger'});
-      else if(weekFlags>5)alerts.push({id:admin.id,name:admin.name,message:`${weekFlags} weekly Flags`,kind:'warning'});
-    }
-    const lastRating=mine.find(r=>r.rating!==null);
-    if(lastRating?.rating!==null&&lastRating?.rating!==undefined&&lastRating.rating<4.8){
-      alerts.push({id:admin.id,name:admin.name,message:`Rating ${lastRating.rating.toFixed(2)}`,kind:'warning'});
+    const flags=summarizeReadings(mine).flags;
+    const rating=mine.find(r=>r.rating!==null)?.rating??null;
+    if(needsWeeklyReview(flags,rating)){
+      alerts.push({id:admin.id,name:admin.name,message:`${flags} Weekly Flags · Rating ${rating!.toFixed(2)}`,kind:'warning'});
     }
   }
   const summary:Summary={week_start:monday,...metrics,members:admins.filter(a=>a.active).length,reported:new Set(current.map(r=>r.admin_id)).size,missing:admins.filter(a=>isEvaluatedAdmin(a)&&!current.some(r=>r.admin_id===a.id)).length,top,alerts};

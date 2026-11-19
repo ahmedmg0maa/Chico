@@ -19,6 +19,7 @@ let inserted=[],updates=[],recomputeIds=[],auditEvents=[],closed=false,overlap=f
 const response=(body,status=200)=>({body,status});
 const mockSQL=async(parts,...vals)=>{
  const q=parts.join('?');
+ if(q.includes('pg_advisory_xact_lock'))return [];
  if(q.includes('SELECT id,payload,committed_at FROM chico_next.import_staging'))return [{id:preview,...record}];
  if(q.includes('SELECT payload,source_hash,committed_at FROM chico_next.import_staging'))return [record];
  if(q.includes('SELECT 1 FROM chico_next.import_staging'))return duplicate?[{x:1}]:[];

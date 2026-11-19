@@ -1,5 +1,5 @@
 import type {Admin,Reading,Week} from './types';
-import {isEvaluatedAdmin,serverFlagRate,weekStart} from './rules';
+import {eligibleReadings,isEvaluatedAdmin,serverFlagRate,weekStart} from './rules';
 
 export type MemberWeek={id:string;name:string;rank:Admin['rank'];order:number;tickets:number|null;flags:number|null;hours:number|null;rating:number|null;from:string|null;to:string|null;complete:boolean;recorded:boolean;rankStable:boolean};
 export type RankedMember=MemberWeek&{place:number};
@@ -11,16 +11,20 @@ export function availableWeeks(readings:readonly Reading[],weeks:readonly Week[]
 }
 export function weeklyMembers(admins:readonly Admin[],readings:readonly Reading[],week:string):MemberWeek[]{
  if(!week)return [];
- const eligible=admins.filter(isEvaluatedAdmin);
+ const included=eligibleReadings(readings.filter(r=>r.week_start===week),admins);
+ const recorded=new Set(included.map(r=>r.admin_id));
+ const eligible=admins.filter(a=>isEvaluatedAdmin(a)||recorded.has(a.id));
  const grouped=new Map<string,Reading[]>();
- for(const r of readings){if(r.week_start!==week||r.from_date<week||r.to_date>weekEnd(week)||r.from_date>r.to_date)continue;const own=grouped.get(r.admin_id)||[];own.push(r);grouped.set(r.admin_id,own);}
+ for(const r of included){if(r.from_date<week||r.to_date>weekEnd(week)||r.from_date>r.to_date)continue;const own=grouped.get(r.admin_id)||[];own.push(r);grouped.set(r.admin_id,own);}
  return eligible.map(a=>{
   const own=(grouped.get(a.id)||[]).sort((x,y)=>x.from_date.localeCompare(y.from_date)||x.to_date.localeCompare(y.to_date)||x.created_at.localeCompare(y.created_at));
   const nonoverlap=own.every((r,i)=>i===0||r.from_date>own[i-1].to_date);
   const sum=(key:'tickets_delta'|'flags_delta'|'hours')=>own.length&&nonoverlap&&own.every(r=>typeof r[key]==='number'&&Number.isFinite(r[key])&&r[key]!>=0)?own.reduce((n,r)=>n+r[key]!,0):null;
   const contiguous=own.length>0&&own[0].from_date===week&&own.every((r,i)=>i===0||r.from_date===dayAfter(own[i-1].to_date))&&own[own.length-1].to_date===weekEnd(week);
   const rating=[...own].sort((x,y)=>y.to_date.localeCompare(x.to_date)||y.created_at.localeCompare(x.created_at)).find(r=>r.rating!==null)?.rating??null;
-  return {id:a.id,name:a.name,rank:a.rank,order:a.sort_order,tickets:sum('tickets_delta'),flags:sum('flags_delta'),hours:sum('hours'),rating,from:own[0]?.from_date??null,to:own[own.length-1]?.to_date??null,complete:contiguous,rankStable:own.every(r=>r.rank===a.rank),recorded:own.length>0};
+  const last=own.at(-1);
+  const rank=last?.recorded_reporting!=null?last.rank:a.rank;
+  return {id:a.id,name:a.name,rank,order:a.sort_order,tickets:sum('tickets_delta'),flags:sum('flags_delta'),hours:sum('hours'),rating,from:own[0]?.from_date??null,to:own[own.length-1]?.to_date??null,complete:contiguous,rankStable:own.every(r=>r.rank===rank),recorded:own.length>0};
  });
 }
 export function podium(members:readonly MemberWeek[],group:'helper'|'moderator'):RankedMember[]{

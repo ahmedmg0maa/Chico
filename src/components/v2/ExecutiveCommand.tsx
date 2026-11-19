@@ -24,7 +24,7 @@ import {NEXUS_SCENE_FAMILY,useNexusSpotlight} from '../nexus/experience';
 import NexusCommandPalette from '../nexus/NexusCommandPalette';
 import {previousRecordedWeek} from '@/lib/dashboard-history';
 import {CommandIcon,RankInsignia,RankLabel} from './ChicoVisualLanguage';
-import {isEvaluatedRank,isEvaluatedAdmin,eligibleReadings} from '@/lib/rules';
+import {needsWeeklyReview,isEvaluatedRank,isEvaluatedAdmin,eligibleReadings} from '@/lib/rules';
 
 export type Tab='dashboard'|'team'|'operations'|'updates'|'excel'|'server'|'daily'|'reports'|'weeks'|'alerts'|'settings'|'salary'|'academy';
 type Auth='checking'|'out'|'in';
@@ -74,7 +74,7 @@ function latestRows(state:State|null):Row[]{
 function normalizedGraph(series:number[],max:number){return series.map((n,i)=>(36+i*88)+','+(174-Math.max(0,n)/Math.max(1,max)*126)).join(' ');}
 function NavGlyph({tab}:{tab:Tab}){return <CommandIcon name={tab}/>;}
 function RankMark({rank}:{rank:Rank}){return <RankInsignia rank={rank} compact/>;}
-function statusFor(r:Row){return !r.active?'غير نشط':(r.rating!==null&&r.rating<4.8)||(r.flags!==null&&r.flags>7)?'متابعة':r.flagsIncomplete?'رصيد Flags غير مكتمل':!r.lastUpdate?'بلا تحديث':'نشط';}
+function statusFor(r:Row){return !r.active?'غير نشط':needsWeeklyReview(r.flags,r.rating)?'متابعة':r.flagsIncomplete?'رصيد Flags غير مكتمل':!r.lastUpdate?'بلا تحديث':'نشط';}
 function CardTitle({icon:Icon,title,en,action}:{icon:typeof Home;title:string;en:string;action?:React.ReactNode}){
  const symbol=en.includes('ALERT')?'alerts':en.includes('PERIOD')?'updates':en.includes('PERFORMER')?'team':en.includes('TEAM')?'team':en.includes('STATUS')?'members':'operations';
  return <div className="x-card-title"><div className="x-section-heading"><CommandIcon compact name={symbol}/><span>{title}</span></div>{action}</div>;
@@ -165,7 +165,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
  const covered=evaluated.filter(r=>r.lastUpdate!==null).length;
  const totals={tickets:review?null:summary?.tickets??null,flags:review?null:summary?.flags??null,rate:review?null:summary?.rate??null,rating:review?null:summary?.rating??null,members:active,coverage:!review&&hasRegisteredWeek&&evaluated.length?Math.round(100*covered/evaluated.length):null};
  const top=rows.filter(r=>isEvaluatedAdmin(r)&&(r.rank==='Helper'||r.rank==='SN.Helper')&&r.tickets!==null&&r.tickets>0).sort((a,b)=>(b.tickets??0)-(a.tickets??0)||(a.sort_order??0)-(b.sort_order??0)||a.name.localeCompare(b.name,'en')).slice(0,3);
- const warnings=rows.filter(r=>isEvaluatedAdmin(r)&&(r.flagsIncomplete||(r.flags!==null&&r.flags>7)||(r.rating!==null&&r.rating<4.8)||(!r.lastUpdate&&r.active&&hasRegisteredWeek)));
+ const warnings=rows.filter(r=>isEvaluatedAdmin(r)&&needsWeeklyReview(r.flags,r.rating));
  const timeLabel=review?'معاينة بلا إحصائيات':summary?.week_start||'الأسبوع الحالي';
  const moderatorTop=rows.filter(r=>isEvaluatedAdmin(r)&&r.rank==='Moderator'&&r.tickets!==null&&r.tickets>0).sort((a,b)=>(b.tickets??0)-(a.tickets??0)||(a.sort_order??0)-(b.sort_order??0)||a.name.localeCompare(b.name,'en')).slice(0,3);
  const roleCounts=[{label:'Helper',kind:'helper' as const,count:rows.filter(r=>r.active&&r.rank==='Helper').length},{label:'SN.Helper',kind:'senior' as const,count:rows.filter(r=>r.active&&r.rank==='SN.Helper').length},{label:'Moderator',kind:'moderator' as const,count:rows.filter(r=>r.active&&r.rank==='Moderator').length}];
