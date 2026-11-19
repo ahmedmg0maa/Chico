@@ -1,5 +1,5 @@
 import type {NextRequest} from 'next/server';
-import ExcelJS from 'exceljs';
+import {readWorkbook} from '@/lib/read-workbook';
 import {createHash} from 'node:crypto';
 import {db} from '@/lib/db';
 import {requireOwner,response,failure} from '@/lib/api';
@@ -21,8 +21,9 @@ export async function POST(req:NextRequest){
  try{
   const body=await req.formData(),file=body.get('file');
   if(!(file instanceof File)||!file.name.toLowerCase().endsWith('.xlsx')||file.size>3_000_000||file.size<500)return response({ok:false,error:'INVALID_XLSX'},400);
-  const buf=Buffer.from(await file.arrayBuffer()),hash=createHash('sha256').update(buf).digest('hex'),book=new ExcelJS.Workbook();
-  await book.xlsx.load(buf as any);
+  const buf=Buffer.from(await file.arrayBuffer()),hash=createHash('sha256').update(buf).digest('hex');
+  let book;
+  try{book=await readWorkbook(buf);}catch{return response({ok:false,error:'INVALID_XLSX'},422);}
   const sheet=book.getWorksheet('CHICO_IMPORT')||book.worksheets[0];
   if(!sheet)return response({ok:false,error:'EMPTY_XLSX'},400);
   if(sheet.rowCount>502)return response({ok:false,error:'XLSX_TOO_MANY_ROWS'},422);

@@ -9,6 +9,7 @@ function compile(pathName,required) {
   File,FormData,Buffer,Date,Intl,console,URL,TextEncoder,TextDecoder},{filename:full});
  return module.exports;
 }
+const workbookLoader=compile('src/lib/read-workbook.ts',{});
 const rules=compile('src/lib/rules.ts',{});
 const excel=compile('src/lib/excel-import.ts',{'./rules':rules});
 const roster=fixture.map((r,i)=>({id:'00000000-0000-4000-8000-'+String(i+1).padStart(12,'0'),name:r[1],rank:r[0],admin_level:rankLevel[r[0]],in_reporting:r[0]!=='Responsible'}));
@@ -29,7 +30,7 @@ const route=compile('src/app/api/import/route.ts',{
  'exceljs':ExcelJS,
  '@/lib/db':{db:()=>sql},
  '@/lib/api':{requireOwner:async()=>null,response:(body,status=200)=>({body,status}),failure:(err)=>{throw err;}},
- '@/lib/excel-import':excel
+ '@/lib/read-workbook':workbookLoader,'@/lib/excel-import':excel
 });
 async function parse(options={}){
  const wb=new ExcelJS.Workbook(),ws=wb.addWorksheet('CHICO_IMPORT');
@@ -59,6 +60,15 @@ async function parseLegacy(periodYear=null){
  return route.POST({formData:async()=>formData});
 }
 (async()=>{
+ // Reproduce the official workbook producer's namespace-prefixed root.
+ const referenceBook=new ExcelJS.Workbook();
+ referenceBook.addWorksheet('CHICO_IMPORT').addRow(['Name','A & B']);
+ const zip=await require('jszip').loadAsync(await referenceBook.xlsx.writeBuffer());
+ const xml=await zip.file('xl/workbook.xml').async('string');
+ zip.file('xl/workbook.xml',xml.replace('<workbook ','<x:workbook xmlns:x="http://schemas.openxmlformats.org/spreadsheetml/2006/main" ').replace('</workbook>','</x:workbook>'));
+ const recovered=await workbookLoader.readWorkbook(await zip.generateAsync({type:'nodebuffer'}));
+ assert.equal(recovered.getWorksheet('CHICO_IMPORT').getCell('B1').value,'A & B');
+
  const {body,status}=await parse();
  assert.equal(status,200);
  assert.equal(body.rows.length,30);
