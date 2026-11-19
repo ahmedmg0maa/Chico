@@ -20,6 +20,7 @@ const SalaryCenter=dynamic(()=>import('./SalaryCenter'),{loading:WorkspaceLoadin
 const ExecutiveProfile=dynamic(()=>import('./ExecutiveProfile'),{loading:WorkspaceLoading});
 import DashboardWeekNotice from './DashboardWeekNotice';
 import {NexusDock,NexusStage,WolfStage} from '../nexus/NexusShell';
+import {NEXUS_SCENE_FAMILY,useNexusSpotlight} from '../nexus/experience';
 import {previousRecordedWeek} from '@/lib/dashboard-history';
 import {CommandIcon,RankInsignia,RankLabel} from './ChicoVisualLanguage';
 import {isEvaluatedRank,isEvaluatedAdmin,eligibleReadings} from '@/lib/rules';
@@ -85,6 +86,7 @@ function Brand({small=false}:{small?:boolean}){return <div className={'x-brand '
 export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{review?:boolean;initialTab?:Tab}){
  const [auth,setAuth]=useState<Auth>(review?'in':'checking');
  const [state,setState]=useState<State|null>(null);
+ const spotlight=useNexusSpotlight();
  const [reviewAdmins,setReviewAdmins]=useState<Admin[]>([]);
  useEffect(()=>{
   if(!review)return;
@@ -237,7 +239,8 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
     {searchOpen&&<div className="x-command-search"><Search size={18}/><input autoFocus type="search" aria-label="البحث عن إداري" placeholder="ابحث عن إداري…" value={filter} onChange={e=>{setFilter(e.target.value);open('team');}}/><button onClick={()=>{setSearchOpen(false);setFilter('');}} aria-label="إغلاق البحث"><X size={17}/></button></div>}
     <MotionConfig reducedMotion="user">
      <AnimatePresence initial={false} mode="wait">
-      <motion.div id="chico-main-content" tabIndex={-1} role="region" aria-label={links.find(l=>l.id===tab)?.label} className={'x-main-content v7-app-content ct-workspace-' + tab} key={tab}
+      <motion.div id="chico-main-content" tabIndex={-1} role="region" aria-label={links.find(l=>l.id===tab)?.label} className={'x-main-content v7-app-content nx-experience-field ct-workspace-' + tab} data-nx-scene={NEXUS_SCENE_FAMILY[tab]} key={tab}
+       onPointerMove={spotlight.onPointerMove} onPointerLeave={spotlight.onPointerLeave}
        initial={{opacity:0,y:12}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-8}}
        transition={{duration:0.22,ease:[0.22,1,0.36,1]}}> 
      {error&&<div className="x-error"><AlertTriangle size={17}/>{error}<button onClick={()=>void refresh()}>إعادة المحاولة</button></div>}
