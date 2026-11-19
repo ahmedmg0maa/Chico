@@ -1,0 +1,89 @@
+/* CHICO NEXUS | Stage 2: reusable scene language across every operational workspace.
+   Decorative styling only; never overlays controls or fabricates data.
+   This is a source module. executive-unified.css is generated, not hand edited. */
+.chico-v2.nx-app .nx-experience-field {
+ --nx-scene-rgb:133,165,204;
+ --nx-ease:cubic-bezier(.22,1,.36,1);
+ --nx-motion-quick:160ms;
+ --nx-motion-medium:280ms;
+ --nx-spot-x:-400px;
+ --nx-spot-y:-400px;
+ position:relative;
+ isolation:isolate;
+ background-image:radial-gradient(ellipse 50% 16% at 50% 0%,rgba(var(--nx-scene-rgb),.13),transparent 100%);
+}
+.chico-v2.nx-app .nx-experience-field[data-nx-scene="people"] {--nx-scene-rgb:93,192,151;}
+.chico-v2.nx-app .nx-experience-field[data-nx-scene="operations"] {--nx-scene-rgb:117,157,226;}
+.chico-v2.nx-app .nx-experience-field[data-nx-scene="data"] {--nx-scene-rgb:111,183,221;}
+.chico-v2.nx-app .nx-experience-field[data-nx-scene="reports"] {--nx-scene-rgb:167,145,214;}
+.chico-v2.nx-app .nx-experience-field[data-nx-scene="vigilance"] {--nx-scene-rgb:227,167,105;}
+.chico-v2.nx-app .nx-experience-field[data-nx-scene="system"] {--nx-scene-rgb:157,169,189;}
+.chico-v2.nx-app .nx-experience-field[data-nx-scene="finance"] {--nx-scene-rgb:214,176,116;}
+.chico-v2.nx-app .nx-experience-field[data-nx-scene="learning"] {--nx-scene-rgb:127,195,187;}
+.chico-v2.nx-app .nx-experience-field::before {
+ content:"";
+ position:absolute;
+ inset:0 14px auto;
+ height:2px;
+ z-index:0;
+ pointer-events:none;
+ background:linear-gradient(90deg,transparent,rgba(var(--nx-scene-rgb),.75) 50%,transparent);
+ box-shadow:0 0 18px rgba(var(--nx-scene-rgb),.2);
+ transform:scaleX(.75);
+ transform-origin:center;
+ animation:nx-scene-arrive 620ms var(--nx-ease) both;
+}
+.chico-v2.nx-app .nx-experience-field::after {
+ content:"";
+ position:absolute;
+ z-index:-1;
+ top:0;
+ left:0;
+ width:300px;
+ height:300px;
+ border-radius:50%;
+ pointer-events:none;
+ background:radial-gradient(circle,rgba(var(--nx-scene-rgb),.13),rgba(var(--nx-scene-rgb),.045) 36%,transparent 70%);
+ transform:translate3d(var(--nx-spot-x),var(--nx-spot-y),0);
+ opacity:0;
+ transition:opacity var(--nx-motion-medium) ease;
+}
+.chico-v2.nx-app .nx-experience-field[data-nx-pointer="active"]::after {opacity:1;}
+.chico-v2.nx-app .nx-experience-field :is(.nx-glass,.x-panel,.ct-admin-card,.ct-salary-card,.ct-lesson-view){
+ transition:border-color var(--nx-motion-medium) ease,box-shadow var(--nx-motion-medium) ease,background-color var(--nx-motion-medium) ease;
+}
+.chico-v2.nx-app .nx-experience-field :is(button,a,input,select,textarea):focus-visible,
+.chico-v2.nx-app :is(.nx-dock-item,.nx-dock-core,.ct-icon-button):focus-visible{
+ outline:2px solid #e8c98e;
+ outline-offset:3px;
+}
+@media(hover:hover) and (pointer:fine){
+ .chico-v2.nx-app .nx-experience-field :is(.nx-glass,.x-panel,.ct-admin-card,.ct-salary-card,.ct-lesson-view):hover {
+  border-color:rgba(var(--nx-scene-rgb),.42);
+  box-shadow:0 16px 36px rgba(0,0,0,.22),inset 0 1px rgba(245,248,255,.075);
+ }
+ .chico-v2.nx-app .nx-experience-field :is(.x-action-grid button,.ct-academy-kind,.x-text-action):not(:disabled){
+  transition:transform var(--nx-motion-quick) var(--nx-ease),border-color var(--nx-motion-quick) ease,box-shadow var(--nx-motion-quick) ease;
+ }
+ .chico-v2.nx-app .nx-experience-field :is(.x-action-grid button,.ct-academy-kind,.x-text-action):not(:disabled):hover{
+  transform:translateY(-2px);
+ }
+}
+@keyframes nx-scene-arrive {
+ from{opacity:0;transform:scaleX(.55)}
+ to{opacity:1;transform:scaleX(1)}
+}
+@media(max-width:720px){
+ .chico-v2.nx-app .nx-experience-field {
+  background-image:radial-gradient(ellipse 82% 12% at 50% 0%,rgba(var(--nx-scene-rgb),.09),transparent);
+ }
+ .chico-v2.nx-app .nx-experience-field::after {display:none;}
+}
+@media(prefers-reduced-motion:reduce){
+ .chico-v2.nx-app .nx-experience-field::before{animation:none;transform:none;}
+ .chico-v2.nx-app .nx-experience-field::after{display:none;}
+ .chico-v2.nx-app .nx-experience-field :is(.nx-glass,.x-panel,.ct-admin-card,.ct-salary-card,.ct-lesson-view,.x-action-grid button,.ct-academy-kind,.x-text-action){transition:none!important;}
+}
+@media(forced-colors:active){
+ .chico-v2.nx-app .nx-experience-field::before,.chico-v2.nx-app .nx-experience-field::after{display:none;}
+}
