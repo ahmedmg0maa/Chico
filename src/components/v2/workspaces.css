@@ -446,3 +446,65 @@
  .studio .leader-list{padding:14px}
  .studio .studio-workspace{overflow-wrap:break-word}
 }
+
+/* CHICO interior: graphite, brushed alloy and gold from the team's reference. */
+.chico-v2.studio,.chico-v2.ct-workspace-portal{
+ --ground:#0b0d12;--well:#1d242e;--rule:#40434b;--alloy:#e9bf78;--paper:#f5f4f1;--dim:#bcc1ca;
+ --ct-surface:linear-gradient(155deg,#2d3441,#1a1d25 50%,#12151a);--ct-inset:#10151c;
+ --ct-gold:var(--alloy);--ct-muted:var(--dim);--ct-edge:#41454d;--ch-gold:var(--alloy)
+}
+.studio .studio-workspace{--ct-surface:linear-gradient(150deg,#282b34,#17191f 58%,#141519);--ct-inset:#10151c;--ct-edge:#41454d}
+.studio .studio-body{background:radial-gradient(ellipse at 50% 0%,#27252b,transparent 48rem),#0b0d12}
+.studio .studio-rail{background:linear-gradient(158deg,#25252b,#101115 24%,#121317 75%,#27201a);border-right:1px solid #665642}
+.studio .rail-brand{margin-bottom:8px;padding:6px 10px 13px;border-radius:0;border-bottom:1px solid #8e7551;letter-spacing:.11em}
+.studio .rail-brand img{object-fit:contain;border-radius:8px}
+.studio .rail-group button[aria-current=page],.studio .studio-mobile-nav button[aria-current=page]{background:linear-gradient(105deg,#5a4024,#312b22 70%);color:#ffe0a1;box-shadow:inset -3px 0 #ffda15}
+.studio .studio-top,.studio .studio-mobile-nav,.studio .x-sidebar-open{background:#14161b;border-color:#423c32}
+.studio .studio-top .ct-icon-button{background:var(--ct-surface);border:1px solid #444650;border-radius:8px;color:var(--paper);min-width:36px;min-height:36px}
+.studio .command-heading,.studio .studio-heading,.studio .ct-workspace-mast,.studio .ct-admin-head,.studio .v9-poster-intro,.studio .ct-salary-head,.studio .v9-tools-top{
+ background:linear-gradient(108deg,#31291e,#1c1e24 42%,#17191f 80%);border:1px solid #49443d;border-inline-start:4px solid #c59e69;border-radius:4px 15px;padding:clamp(14px,2.1vw,28px);margin-bottom:16px
+}
+.studio .command-heading h1{font-size:clamp(2rem,3.1vw,3.2rem)}
+.studio .studio-primary,.studio .v9-primary,.studio .x-primary{background:linear-gradient(155deg,#f8da9c,#d3a057);border:1px solid #e9bf78;border-radius:3px 10px;color:#20170a;box-shadow:inset 0 1px #fff5}
+.studio .command-summary{align-items:stretch;gap:12px;border:0;padding:0;margin:0 0 16px}
+.studio .command-metrics{gap:10px}
+.studio .command-metric,.studio .command-rate{padding:14px 16px;border:1px solid #535159;border-bottom:2px solid #b39566;border-radius:4px 13px;background:linear-gradient(150deg,#30333e,#1b1e26 52%,#17181f);min-width:0}
+.studio .command-rate{background:radial-gradient(ellipse at top right,#453825,#1e1d20 70%);border-color:#736043}
+.studio .command-floor{display:grid;grid-template-columns:minmax(160px,.75fr) minmax(180px,1fr) minmax(250px,1.15fr);grid-template-areas:"team emblem leaders";direction:ltr;gap:14px;align-items:stretch}
+.command-floor>*{direction:rtl;min-width:0}
+.studio .command-team{grid-area:team;padding:18px;background:var(--ct-surface);border-color:var(--ct-edge)}
+.studio .command-team p{margin:16px 0}.studio .command-roles{display:grid;gap:0}
+.command-roles span{display:flex;align-items:center;gap:8px;padding:7px 0;border-top:1px solid var(--rule)}
+.command-roles span:before{content:"";width:8px;height:8px;border-radius:50%;background:#27af69}
+.command-roles [data-rank=senior]:before{background:#2a84c7}.command-roles [data-rank=moderator]:before{background:#a773d3}
+.command-roles b{margin-inline-start:auto;color:var(--paper)}
+.command-emblem{grid-area:emblem;position:relative;display:grid;align-items:center;background:radial-gradient(ellipse,#463729,#15161b 65%,transparent 77%);min-height:210px}
+.command-emblem .ct-wolf-theater{position:relative;isolation:isolate;width:100%}
+.command-emblem .ct-wolf-float img{display:block;width:100%;max-width:434px;height:auto;margin:auto;mask-image:radial-gradient(ellipse,#000 50%,transparent 75%)}
+.command-emblem .nx-orbit-canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:-1}
+.command-emblem .nx-orbit-toggle{position:absolute;bottom:0;left:0;z-index:2;background:#16181d;color:var(--dim);border:1px solid #555;border-radius:6px}
+.studio .leader-lists{grid-area:leaders;grid-template-columns:1fr;gap:10px;margin:0}
+.studio .leader-list{background:var(--ct-surface);border:1px solid #4d4955;border-inline-start:3px solid var(--rank-line);padding:13px 16px}
+.studio .leader-list.helpers{--rank-line:#49bf85}.studio .leader-list.mods{--rank-line:#b27ada}
+.studio .command-analysis{display:block;margin:16px 0 0}
+.studio .command-analysis>.v7-chart-card,.studio-workspace .x-op-card,.studio .v9-entry-card,.studio .v9-reading-history,.studio .ct-report-controls,.studio .ct-report-stage,.studio .ct-admin-card,.studio .v7-directory-board{background:var(--ct-surface);border:1px solid var(--ct-edge);border-radius:5px 14px}
+.studio :is(.x-op-metrics,.v7-directory-summary,.ct-admin-metrics,.academy-toolbar,.v9-tools-nav){background:#1c1e25}
+.studio :is(input:not([type=checkbox]),select,textarea),.studio .academy-find{background-color:#14161b;border-color:#525058}
+.studio .ct-file-field{background:#211f1c;border-color:#b39462}
+.studio :is(.ct-academy-table,.x-table,.x-op-table,.v9-history-table) th{background:#2a292a;color:#f3ddba}
+.studio :is(.ct-academy-table,.x-table,.x-op-table,.v9-history-table) tbody tr:hover{background:#302d2a}
+.studio :is(.ct-academy-tabs,.academy-kinds,.v9-tools-nav) button[aria-pressed=true]{background:#463a28;color:#ffe1a5}
+@media(min-width:1180px){
+ .studio .ct-entry-workspace{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);align-items:start;gap:15px}
+ .studio .ct-entry-workspace>section{min-width:0;margin:0}
+}
+@media(max-width:799px){
+ .studio .command-floor{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"team emblem" "leaders leaders"}
+ .studio .leader-lists{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .studio .command-metric,.studio .command-rate{padding:12px}
+}
+@media(max-width:650px){
+ .studio .command-summary{display:grid;grid-template-columns:1fr}.studio .command-rate{margin:0}
+ .studio .command-floor{gap:8px}.studio .command-emblem{min-height:140px}.studio .leader-lists{grid-template-columns:1fr}
+ .studio .command-team{padding:12px}.studio .command-team header{flex-wrap:wrap}
+}
