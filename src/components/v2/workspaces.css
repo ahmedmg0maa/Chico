@@ -508,3 +508,54 @@
  .studio .command-floor{gap:8px}.studio .command-emblem{min-height:140px}.studio .leader-lists{grid-template-columns:1fr}
  .studio .command-team{padding:12px}.studio .command-team header{flex-wrap:wrap}
 }
+
+/* Cinematic stage and task-specific work surfaces. */
+.chico-v2.studio {--ground:#0d0c0d;--paper:#faf6ee;--well:#201e20;--alloy:#f3ca86;--rule:#50483f}
+.studio .studio-body{background:radial-gradient(ellipse at 84% 5%,#322821,transparent 40rem),#100f11}
+.studio .studio-workspace{width:min(1600px,100%);padding:clamp(14px,2.2vw,36px)}
+.studio .command-heading{isolation:isolate;display:flex;position:relative;flex-direction:column;align-items:start;justify-content:center;gap:18px;overflow:hidden;min-height:clamp(250px,21vw,355px);padding:clamp(22px,3.2vw,54px);border:1px solid #736048;border-radius:18px 4px;background:#171518}
+.studio .command-heading:after{content:"";position:absolute;inset:0;pointer-events:none;z-index:-1;background:linear-gradient(90deg,transparent 28%,#0e0d1070 57%,#100e11ec 100%)}
+.studio .command-heading .command-emblem{position:absolute;inset:0;z-index:-2;display:block;background:none;min-height:0}
+.command-heading .ct-wolf-theater,.command-heading .ct-wolf-float,.command-heading .ct-wolf-parallax{height:100%}
+.command-heading .ct-wolf-float{background:linear-gradient(90deg,transparent,#13101388),url('/assets/chico-atelier-hall.webp') center 58%/cover}
+.command-heading .command-emblem .ct-wolf-float img{display:block;width:auto;height:100%;margin:0 auto 0 0;max-width:82%;object-fit:cover;object-position:left center;mask-image:linear-gradient(90deg,#000 64%,transparent)}
+@media(max-width:650px){.command-heading .command-emblem .ct-wolf-float img{max-width:87%}}
+.command-heading .command-emblem .nx-orbit-canvas{z-index:1;inset:auto auto 1% 3%;width:25%;height:42%;opacity:.45}
+.command-heading .command-emblem .nx-orbit-toggle{bottom:10px;left:10px}
+.studio .command-heading h1{font-size:clamp(2.3rem,4.5vw,5rem);text-shadow:0 2px 16px #000}
+.studio .command-caption span{display:flex;align-items:center;gap:8px;color:#f0dfc5}
+.studio .command-floor{grid-template-columns:minmax(130px,.62fr) minmax(0,1.4fr) minmax(180px,.94fr);grid-template-areas:"team analysis leaders";align-items:stretch}
+.studio .command-floor .command-analysis{grid-area:analysis;margin:0;min-width:0}
+.studio .command-analysis .v7-chart-card{height:100%;padding:14px}
+.studio .command-metric,.studio .command-rate{position:relative;border-radius:12px 4px;background:linear-gradient(128deg,#323033,#1a181c 68%);box-shadow:inset 0 1px #ffffff17,0 8px 16px #0003}
+.studio .command-metric:before{content:"";height:2px;width:30%;position:absolute;inset-inline-start:14px;bottom:-1px;background:linear-gradient(90deg,transparent,#ffdd98,transparent)}
+.studio .command-metric-label{color:#ded3c3}
+.studio .leader-list{background:linear-gradient(140deg,#27252a,#19181b);border-radius:14px 4px}
+.studio .leader-list li:first-child .leader-place{border-radius:50%;border:1px solid #c79d60;background:#41331e;color:#ffe1ab}
+.studio .studio-workspace :is(.studio-heading:not(.compact),.ct-workspace-mast,.ct-salary-head,.v9-poster-intro,.v9-tools-top,.ct-admin-head){background:linear-gradient(270deg,#151317ee,#1714189c 55%,#17141842),url('/assets/chico-atelier-hall.webp') center 48%/cover;min-height:clamp(92px,9vw,145px);border:1px solid #6c5b44;border-radius:14px 4px;padding:clamp(16px,2.4vw,34px)}
+.studio .ct-workspace-salary .ct-salary-head{background-position:center 72%}
+.studio .ct-workspace-excel .studio-heading,.studio .ct-workspace-reports .v9-poster-intro{background-position:center 62%}
+.studio .ct-workspace-academy .ct-admin-head{background-position:center 32%}
+.studio .v9-entry-heading{border-inline-start:3px solid var(--alloy);padding-inline-start:12px}
+.studio .ct-report-layout .ct-report-controls{border-inline-start:2px solid #b99560}
+.studio .ct-report-layout .ct-report-stage{background:radial-gradient(ellipse at top,#373038,transparent 65%),#121113}
+.studio .v7-board-actions,.studio .ct-salary-head-actions{flex-wrap:wrap}
+.chico-v2.gate{background:#131115}
+.gate .gate-sculpture{position:absolute;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
+.gate .gate-sculpture img{width:100%;height:100%;object-fit:cover;object-position:32% center;mask-image:linear-gradient(90deg,#000 15%,#000b 52%,transparent 90%);filter:none}
+.gate .gate-sculpture:after{display:none}
+.gate .gate-form{grid-column:2;padding:clamp(22px,3vw,42px);background:linear-gradient(125deg,#201c1aea,#141316f2);border:1px solid #63533e;border-radius:18px 4px;box-shadow:0 24px 65px #0005}
+@media(min-width:1050px){.studio .ct-directory{display:grid;grid-template-columns:minmax(0,1fr) 160px;gap:12px}.studio .ct-directory>.ct-workspace-mast{grid-column:1/-1;margin:0}.studio .ct-directory>.v7-directory-summary{grid-column:2;grid-row:2;display:flex;flex-direction:column;align-self:start;margin:0}.studio .ct-directory>.v7-directory-summary>.v7-directory-stat{flex:auto;padding:16px;border-bottom:1px solid var(--rule)}.studio .ct-directory>.v7-directory-board{grid-column:1;grid-row:2;min-width:0}}
+@media(hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference){
+ .command-heading .ct-wolf-parallax{transform:perspective(900px) scale(1.055) rotateY(calc(var(--wolf-x,0deg)*.28)) rotateX(calc(var(--wolf-y,0deg)*.24));transition:transform .25s ease-out}
+ .studio .command-metric,.studio .leader-list li button,.studio .studio-primary{transition:transform .22s,box-shadow .22s}
+ .studio .command-metric:hover{transform:perspective(750px) translateY(-3px) rotateX(2deg);box-shadow:0 10px 22px #0005}
+ .studio .studio-primary:hover,.studio .leader-list li button:hover{transform:translateY(-2px)}
+}
+@media(max-width:959px){.studio .command-floor{grid-template-columns:minmax(130px,.65fr) minmax(0,1.35fr);grid-template-areas:"team analysis" "leaders leaders"}.studio .leader-lists{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){
+ .studio .studio-workspace{padding:14px 12px 92px}.studio .command-heading{min-height:205px;padding:15px;gap:11px}.studio .command-heading h1{font-size:2rem}
+ .studio .command-floor{grid-template-columns:1fr;grid-template-areas:"leaders" "analysis" "team"}.studio .leader-lists{grid-template-columns:1fr}
+ .gate .gate-layout{display:flex;align-items:end;min-height:70dvh}.gate .gate-form{margin:0 auto}.gate .gate-sculpture{height:55dvh}.gate .gate-sculpture img{object-position:25% 44%;mask-image:linear-gradient(#000 65%,transparent)}
+ .studio .studio-workspace :is(.ct-workspace-mast,.v9-tools-top,.ct-admin-head,.ct-salary-head){min-height:80px}
+}

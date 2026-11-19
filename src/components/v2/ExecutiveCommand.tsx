@@ -219,7 +219,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
  if(isLogin)return <main className="chico-v2 gate" dir="rtl">
   {review&&<div className="x-review-ribbon">معاينة الدخول</div>}
   <div className="gate-layout">
-   <div className="gate-sculpture" aria-hidden="true"><img src="/assets/chico-approved-wolf.avif" alt="" width={512} height={512} fetchPriority="high"/></div>
+   <div className="gate-sculpture" aria-hidden="true"><img src="/assets/chico-atelier-wolf.webp" alt="" width={1536} height={1024} fetchPriority="high"/></div>
    <section className="gate-form" aria-labelledby="ct-auth-title">
      <p className="gate-brand" dir="ltr">CHICO TEAM</p><h1 id="ct-auth-title">دخول الإدارة</h1>
      {review?<div className="x-review-login"><p>معاينة فقط — لا تحتاج إلى كلمة مرور.</p><button className="x-primary" onClick={()=>setPreviewLogin(false)}>الدخول إلى مركز القيادة <ArrowLeft size={17}/></button></div>:

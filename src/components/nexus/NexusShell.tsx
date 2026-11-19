@@ -69,25 +69,24 @@ export function WolfStage({immersive=false}:{immersive?:boolean}={}){
  function reset(){cancelAnimationFrame(frame.current);ref.current?.style.setProperty('--wolf-x','0deg');ref.current?.style.setProperty('--wolf-y','0deg');}
  return <div className="ct-wolf-theater" ref={ref} onPointerMove={move} onPointerLeave={reset}>
   {immersive&&<WolfOrbit/>}
-  <div className="ct-theater-light" aria-hidden="true"/><div className="ct-theater-ring ct-ring-outer" aria-hidden="true"/><div className="ct-theater-ring ct-ring-inner" aria-hidden="true"/><div className="ct-theater-orbit" aria-hidden="true"/><div className="ct-wolf-float"><div className="ct-wolf-parallax"><img src={immersive?"/assets/chico-command-wolf.webp":"/assets/chico-noble-wolf.svg"} alt="شعار الذئب CHICO TEAM" width={434} height={368} decoding="async"/></div></div><div className="ct-theater-platform" aria-hidden="true"><span/><i/></div>
+  <div className="ct-theater-light" aria-hidden="true"/><div className="ct-theater-ring ct-ring-outer" aria-hidden="true"/><div className="ct-theater-ring ct-ring-inner" aria-hidden="true"/><div className="ct-theater-orbit" aria-hidden="true"/><div className="ct-wolf-float"><div className="ct-wolf-parallax"><img src={immersive?"/assets/chico-atelier-wolf.webp":"/assets/chico-noble-wolf.svg"} alt="شعار الذئب CHICO TEAM" width={434} height={368} decoding="async"/></div></div><div className="ct-theater-platform" aria-hidden="true"><span/><i/></div>
  </div>;
 }
 
 export function NexusStage({periodControl,week,rate,coverage,active,roles,helpers,moderators,onTeam,onRead,onRecord,onOpen,readings,children}:{periodControl?:React.ReactNode;week:string;rate:number|null;coverage:number|null;active:number;roles:RoleCount[];helpers:Leader[];moderators:Leader[];onTeam:()=>void;onRead:()=>void;onRecord:()=>void;onOpen:(id:string)=>void;readings:Reading[];children?:React.ReactNode}){
  return <section className="command-overview" aria-label="مركز قيادة CHICO">
-  <header className="command-heading"><div><h1>مركز القيادة</h1><span>الأسبوع {periodControl||<bdi>{week}</bdi>}</span></div>
+  <header className="command-heading"><div className="command-emblem"><WolfStage immersive/></div><div className="command-caption"><h1>مركز القيادة</h1><span>الأسبوع {periodControl||<bdi>{week}</bdi>}</span></div>
    <button className="studio-primary" onClick={onRecord}><CommandIcon compact name="updates"/>تسجيل قراءة</button></header>
   <div className="command-summary">{children}<div className="command-rate"><span>Weekly Flag %</span><strong>{rate===null?'—':display(rate)+'%'}</strong><small>تغطية التقييم {coverage===null?'—':display(coverage)+'%'}</small></div></div>
   <div className="command-floor">
+   <div className="command-analysis"><ExecutiveWeeklyChart readings={readings} compact/></div>
    <section className="command-team">
     <header><h2>الفريق</h2><button onClick={onTeam}>إدارة الفريق</button></header>
     <p><strong>{active}</strong> إداري نشط</p>
     <div className="command-roles">{roles.map(r=><span key={r.kind} data-rank={r.kind}>{r.label} <b>{r.count}</b></span>)}</div>
    </section>
-   <div className="command-emblem"><WolfStage immersive/></div>
    <div className="leader-lists"><Podium title="Top 3 Helpers" leaders={helpers} variant="helpers" onOpen={onOpen} onTeam={onTeam}/><Podium title="Top 3 Moderators" leaders={moderators} variant="mods" onOpen={onOpen} onTeam={onTeam}/></div>
   </div>
-  <div className="command-analysis"><ExecutiveWeeklyChart readings={readings} compact/></div>
   <button type="button" className="command-reports" onClick={onRead}>فتح تقارير الفترة</button>
  </section>;
 }

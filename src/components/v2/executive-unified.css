@@ -3247,8 +3247,7 @@
  font-family:Tajawal,Inter,"Segoe UI",sans-serif;font-size:16px;font-variant-numeric:tabular-nums
 }
 .studio :focus-visible,.gate :focus-visible{outline:2px solid #f4dbad;outline-offset:3px}
-.chico-v2.gate{display:grid;align-content:center;position:relative;padding:70px max(6vw,24px);isolation:isolate;
- background:radial-gradient(ellipse at 24% 50%,#33434f 0,#202b34 21%,#141b22 47%,#0c1117 78%)}
+.chico-v2.gate{display:grid;align-content:center;position:relative;padding:70px max(6vw,24px);isolation:isolate}
 .gate-brand{margin:0;text-align:right;color:#dfc49b;letter-spacing:.18em;font:700 1rem Inter,sans-serif}
 .gate-layout{display:grid;direction:ltr;align-items:center;grid-template-columns:1.08fr 1fr;gap:7vw;width:min(1100px,100%);margin:auto}
 .gate-sculpture{position:relative;display:grid;place-items:center;isolation:isolate;min-height:430px}
@@ -3339,9 +3338,8 @@
 /* The shared shell sets the reading order and visual hierarchy for every desk. */
 .studio .studio-workspace{--ct-shadow:none;--ct-muted:var(--dim)}
 .studio .studio-top{background:#101a24}
-.studio .command-heading{padding:clamp(18px,3vw,38px);background:linear-gradient(112deg,#243e52,#172633 52%,#17212b);border:1px solid var(--rule);border-radius:16px;margin:0}
+.studio .command-heading{margin:0}
 .studio .command-heading h1{line-height:1.35}
-.studio .leader-list{border-radius:4px 12px 12px 4px}
 .leader-list.helpers{--rank-line:#70bca0}.leader-list.mods{--rank-line:#bba0e5}
 .studio .leader-place{min-width:2rem;text-align:center;color:var(--rank-line);font:600 1.35rem/1.3 system-ui}
 .studio .leader-name{font-size:1.05rem}
@@ -3361,8 +3359,7 @@
  .studio .ct-workspace-settings>.x-op-card,.studio .ct-workspace-weeks>.x-op-card{max-width:1050px}
 }
 @media(max-width:650px){
- .studio .command-heading{padding:16px;flex-wrap:wrap}
- .studio .command-heading h1{font-size:2rem}
+ .studio .command-heading{flex-wrap:wrap}
  .studio .leader-list{padding:14px}
  .studio .studio-workspace{overflow-wrap:break-word}
 }
@@ -3374,7 +3371,6 @@
  --ct-gold:var(--alloy);--ct-muted:var(--dim);--ct-edge:#41454d;--ch-gold:var(--alloy)
 }
 .studio .studio-workspace{--ct-surface:linear-gradient(150deg,#282b34,#17191f 58%,#141519);--ct-inset:#10151c;--ct-edge:#41454d}
-.studio .studio-body{background:radial-gradient(ellipse at 50% 0%,#27252b,transparent 48rem),#0b0d12}
 .studio .studio-rail{background:linear-gradient(158deg,#25252b,#101115 24%,#121317 75%,#27201a);border-right:1px solid #665642}
 .studio .rail-brand{margin-bottom:8px;padding:6px 10px 13px;border-radius:0;border-bottom:1px solid #8e7551;letter-spacing:.11em}
 .studio .rail-brand img{object-fit:contain;border-radius:8px}
@@ -3384,13 +3380,12 @@
 .studio .command-heading,.studio .studio-heading,.studio .ct-workspace-mast,.studio .ct-admin-head,.studio .v9-poster-intro,.studio .ct-salary-head,.studio .v9-tools-top{
  background:linear-gradient(108deg,#31291e,#1c1e24 42%,#17191f 80%);border:1px solid #49443d;border-inline-start:4px solid #c59e69;border-radius:4px 15px;padding:clamp(14px,2.1vw,28px);margin-bottom:16px
 }
-.studio .command-heading h1{font-size:clamp(2rem,3.1vw,3.2rem)}
 .studio .studio-primary,.studio .v9-primary,.studio .x-primary{background:linear-gradient(155deg,#f8da9c,#d3a057);border:1px solid #e9bf78;border-radius:3px 10px;color:#20170a;box-shadow:inset 0 1px #fff5}
 .studio .command-summary{align-items:stretch;gap:12px;border:0;padding:0;margin:0 0 16px}
 .studio .command-metrics{gap:10px}
-.studio .command-metric,.studio .command-rate{padding:14px 16px;border:1px solid #535159;border-bottom:2px solid #b39566;border-radius:4px 13px;background:linear-gradient(150deg,#30333e,#1b1e26 52%,#17181f);min-width:0}
+.studio .command-metric,.studio .command-rate{padding:14px 16px;border:1px solid #535159;border-bottom:2px solid #b39566;min-width:0}
 .studio .command-rate{background:radial-gradient(ellipse at top right,#453825,#1e1d20 70%);border-color:#736043}
-.studio .command-floor{display:grid;grid-template-columns:minmax(160px,.75fr) minmax(180px,1fr) minmax(250px,1.15fr);grid-template-areas:"team emblem leaders";direction:ltr;gap:14px;align-items:stretch}
+.studio .command-floor{display:grid;direction:ltr;gap:14px}
 .command-floor>*{direction:rtl;min-width:0}
 .studio .command-team{grid-area:team;padding:18px;background:var(--ct-surface);border-color:var(--ct-edge)}
 .studio .command-team p{margin:16px 0}.studio .command-roles{display:grid;gap:0}
@@ -3404,7 +3399,7 @@
 .command-emblem .nx-orbit-canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:-1}
 .command-emblem .nx-orbit-toggle{position:absolute;bottom:0;left:0;z-index:2;background:#16181d;color:var(--dim);border:1px solid #555;border-radius:6px}
 .studio .leader-lists{grid-area:leaders;grid-template-columns:1fr;gap:10px;margin:0}
-.studio .leader-list{background:var(--ct-surface);border:1px solid #4d4955;border-inline-start:3px solid var(--rank-line);padding:13px 16px}
+.studio .leader-list{border:1px solid #4d4955;border-inline-start:3px solid var(--rank-line);padding:13px 16px}
 .studio .leader-list.helpers{--rank-line:#49bf85}.studio .leader-list.mods{--rank-line:#b27ada}
 .studio .command-analysis{display:block;margin:16px 0 0}
 .studio .command-analysis>.v7-chart-card,.studio-workspace .x-op-card,.studio .v9-entry-card,.studio .v9-reading-history,.studio .ct-report-controls,.studio .ct-report-stage,.studio .ct-admin-card,.studio .v7-directory-board{background:var(--ct-surface);border:1px solid var(--ct-edge);border-radius:5px 14px}
@@ -3425,8 +3420,59 @@
 }
 @media(max-width:650px){
  .studio .command-summary{display:grid;grid-template-columns:1fr}.studio .command-rate{margin:0}
- .studio .command-floor{gap:8px}.studio .command-emblem{min-height:140px}.studio .leader-lists{grid-template-columns:1fr}
+ .studio .command-floor{gap:8px}.studio .command-emblem{min-height:140px}
  .studio .command-team{padding:12px}.studio .command-team header{flex-wrap:wrap}
+}
+
+/* Cinematic stage and task-specific work surfaces. */
+.chico-v2.studio {--ground:#0d0c0d;--paper:#faf6ee;--well:#201e20;--alloy:#f3ca86;--rule:#50483f}
+.studio .studio-body{background:radial-gradient(ellipse at 84% 5%,#322821,transparent 40rem),#100f11}
+.studio .studio-workspace{width:min(1600px,100%);padding:clamp(14px,2.2vw,36px)}
+.studio .command-heading{isolation:isolate;display:flex;position:relative;flex-direction:column;align-items:start;justify-content:center;gap:18px;overflow:hidden;min-height:clamp(250px,21vw,355px);padding:clamp(22px,3.2vw,54px);border:1px solid #736048;border-radius:18px 4px;background:#171518}
+.studio .command-heading:after{content:"";position:absolute;inset:0;pointer-events:none;z-index:-1;background:linear-gradient(90deg,transparent 28%,#0e0d1070 57%,#100e11ec 100%)}
+.studio .command-heading .command-emblem{position:absolute;inset:0;z-index:-2;display:block;background:none;min-height:0}
+.command-heading .ct-wolf-theater,.command-heading .ct-wolf-float,.command-heading .ct-wolf-parallax{height:100%}
+.command-heading .ct-wolf-float{background:linear-gradient(90deg,transparent,#13101388),url('/assets/chico-atelier-hall.webp') center 58%/cover}
+.command-heading .command-emblem .ct-wolf-float img{display:block;width:auto;height:100%;margin:0 auto 0 0;max-width:82%;object-fit:cover;object-position:left center;mask-image:linear-gradient(90deg,#000 64%,transparent)}
+@media(max-width:650px){.command-heading .command-emblem .ct-wolf-float img{max-width:87%}}
+.command-heading .command-emblem .nx-orbit-canvas{z-index:1;inset:auto auto 1% 3%;width:25%;height:42%;opacity:.45}
+.command-heading .command-emblem .nx-orbit-toggle{bottom:10px;left:10px}
+.studio .command-heading h1{font-size:clamp(2.3rem,4.5vw,5rem);text-shadow:0 2px 16px #000}
+.studio .command-caption span{display:flex;align-items:center;gap:8px;color:#f0dfc5}
+.studio .command-floor{grid-template-columns:minmax(130px,.62fr) minmax(0,1.4fr) minmax(180px,.94fr);grid-template-areas:"team analysis leaders";align-items:stretch}
+.studio .command-floor .command-analysis{grid-area:analysis;margin:0;min-width:0}
+.studio .command-analysis .v7-chart-card{height:100%;padding:14px}
+.studio .command-metric,.studio .command-rate{position:relative;border-radius:12px 4px;background:linear-gradient(128deg,#323033,#1a181c 68%);box-shadow:inset 0 1px #ffffff17,0 8px 16px #0003}
+.studio .command-metric:before{content:"";height:2px;width:30%;position:absolute;inset-inline-start:14px;bottom:-1px;background:linear-gradient(90deg,transparent,#ffdd98,transparent)}
+.studio .command-metric-label{color:#ded3c3}
+.studio .leader-list{background:linear-gradient(140deg,#27252a,#19181b);border-radius:14px 4px}
+.studio .leader-list li:first-child .leader-place{border-radius:50%;border:1px solid #c79d60;background:#41331e;color:#ffe1ab}
+.studio .studio-workspace :is(.studio-heading:not(.compact),.ct-workspace-mast,.ct-salary-head,.v9-poster-intro,.v9-tools-top,.ct-admin-head){background:linear-gradient(270deg,#151317ee,#1714189c 55%,#17141842),url('/assets/chico-atelier-hall.webp') center 48%/cover;min-height:clamp(92px,9vw,145px);border:1px solid #6c5b44;border-radius:14px 4px;padding:clamp(16px,2.4vw,34px)}
+.studio .ct-workspace-salary .ct-salary-head{background-position:center 72%}
+.studio .ct-workspace-excel .studio-heading,.studio .ct-workspace-reports .v9-poster-intro{background-position:center 62%}
+.studio .ct-workspace-academy .ct-admin-head{background-position:center 32%}
+.studio .v9-entry-heading{border-inline-start:3px solid var(--alloy);padding-inline-start:12px}
+.studio .ct-report-layout .ct-report-controls{border-inline-start:2px solid #b99560}
+.studio .ct-report-layout .ct-report-stage{background:radial-gradient(ellipse at top,#373038,transparent 65%),#121113}
+.studio .v7-board-actions,.studio .ct-salary-head-actions{flex-wrap:wrap}
+.chico-v2.gate{background:#131115}
+.gate .gate-sculpture{position:absolute;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
+.gate .gate-sculpture img{width:100%;height:100%;object-fit:cover;object-position:32% center;mask-image:linear-gradient(90deg,#000 15%,#000b 52%,transparent 90%);filter:none}
+.gate .gate-sculpture:after{display:none}
+.gate .gate-form{grid-column:2;padding:clamp(22px,3vw,42px);background:linear-gradient(125deg,#201c1aea,#141316f2);border:1px solid #63533e;border-radius:18px 4px;box-shadow:0 24px 65px #0005}
+@media(min-width:1050px){.studio .ct-directory{display:grid;grid-template-columns:minmax(0,1fr) 160px;gap:12px}.studio .ct-directory>.ct-workspace-mast{grid-column:1/-1;margin:0}.studio .ct-directory>.v7-directory-summary{grid-column:2;grid-row:2;display:flex;flex-direction:column;align-self:start;margin:0}.studio .ct-directory>.v7-directory-summary>.v7-directory-stat{flex:auto;padding:16px;border-bottom:1px solid var(--rule)}.studio .ct-directory>.v7-directory-board{grid-column:1;grid-row:2;min-width:0}}
+@media(hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference){
+ .command-heading .ct-wolf-parallax{transform:perspective(900px) scale(1.055) rotateY(calc(var(--wolf-x,0deg)*.28)) rotateX(calc(var(--wolf-y,0deg)*.24));transition:transform .25s ease-out}
+ .studio .command-metric,.studio .leader-list li button,.studio .studio-primary{transition:transform .22s,box-shadow .22s}
+ .studio .command-metric:hover{transform:perspective(750px) translateY(-3px) rotateX(2deg);box-shadow:0 10px 22px #0005}
+ .studio .studio-primary:hover,.studio .leader-list li button:hover{transform:translateY(-2px)}
+}
+@media(max-width:959px){.studio .command-floor{grid-template-columns:minmax(130px,.65fr) minmax(0,1.35fr);grid-template-areas:"team analysis" "leaders leaders"}.studio .leader-lists{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){
+ .studio .studio-workspace{padding:14px 12px 92px}.studio .command-heading{min-height:205px;padding:15px;gap:11px}.studio .command-heading h1{font-size:2rem}
+ .studio .command-floor{grid-template-columns:1fr;grid-template-areas:"leaders" "analysis" "team"}.studio .leader-lists{grid-template-columns:1fr}
+ .gate .gate-layout{display:flex;align-items:end;min-height:70dvh}.gate .gate-form{margin:0 auto}.gate .gate-sculpture{height:55dvh}.gate .gate-sculpture img{object-position:25% 44%;mask-image:linear-gradient(#000 65%,transparent)}
+ .studio .studio-workspace :is(.ct-workspace-mast,.v9-tools-top,.ct-admin-head,.ct-salary-head){min-height:80px}
 }
 /* CHICO source: experience.css *//* CHICO NEXUS | Stage 2: reusable scene language across every operational workspace.
    Decorative styling only; never overlays controls or fabricates data.
