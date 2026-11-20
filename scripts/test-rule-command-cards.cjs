@@ -47,7 +47,9 @@ assert.equal(rulebook.WRITTEN_RULES.find(r=>r.code==='CHAT7').penalty,'حظر ا
 assert.equal(card.getCardCommand(rulebook.WRITTEN_RULES.find(r=>r.code==='CHAT9')).isGameMenuName,false);
 assert.equal(card.getCardCommand(rulebook.WRITTEN_RULES.find(r=>r.code==='ALERT7')).punishmentCode,'By senior administration');
 const ui=read('src/components/v2/RulebookCards.tsx'),css=read('src/components/v2/rulebook.css');
-assert(ui.includes('rb-command-name')&&ui.includes('rb-command-sanction')&&ui.includes('rb-discord-prefix'));
-assert(!ui.includes('copyCardText')&&!ui.includes('navigator.clipboard')&&!ui.includes('نسخ البطاقة')&&!ui.includes('نسخ كود')&&ui.includes('اسم وصفي غير موثق'));
-assert(css.includes('.rb-command-sanction')&&css.includes('.rb-arabic-desc')&&css.includes('font-size:.94rem')&&css.includes('min(100%,350px)'));
+assert(ui.includes('rb-command-name')&&ui.includes('rb-command-sanction')&&ui.includes('rb-card--compact')&&ui.includes('عرض التفاصيل'));
+assert(!ui.includes('rb-arabic-mini')&&!ui.includes('rb-arabic-desc'),'Compact cards must not render Arabic descriptions by default');
+assert(ui.includes('rb-dialog-body')&&ui.includes('selected.description')&&ui.includes('selected.penalty'),'Detailed rules must remain available');
+assert(!ui.includes('copyCardText')&&!ui.includes('navigator.clipboard')&&!ui.includes('نسخ البطاقة')&&!ui.includes('نسخ كود')&&ui.includes('اسم إنجليزي وصفي'));
+assert(css.includes('.rb-card--compact')&&css.includes('min(100%,290px)')&&css.includes('min-height:235px'));
 console.log('PASS command cards: 58 cards; English names & sanction notation; readable hierarchy; no copy controls; missing menu names visibly labeled; full written penalties intact.');
