@@ -2,6 +2,7 @@
 import {useMemo,useRef,useState} from 'react';
 import {BookOpen,Check,ChevronLeft,Copy,Filter,Search,ShieldAlert,X} from 'lucide-react';
 import {RULES} from '@/lib/academy';
+import {copyCardText,displayRuleCode,getCardCommand} from '@/lib/rule-card-fields';
 import {RULE_GROUPS,RULE_TYPE_LABELS,WRITTEN_RULES,type RulebookEntry,type RuleCategory,type RulePunishment} from '@/lib/rulebook';
 
 const allGroups:RuleCategory[]=['RP','CHAT','TCHAT','ABUSE','ALERT','NAME','CLAN'];
@@ -12,7 +13,7 @@ const allKinds:RulePunishment[]=['Jail','Mute','Ban','Kick','Other'];
 const legacyExtras:RulebookEntry[]=RULES.filter(r=>/^(Name|Clan)/i.test(r.code)).map(r=>({
  code:r.code.toUpperCase(),
  title:r.arabic,
- description:r.name+(r.note?' — '+r.note:''),
+ description:r.note || 'النص التفصيلي غير مذكور في جدول NAME/CLAN السابق.',
  penalty:r.kind+' · '+r.duration,
  types:[r.kind],
  category:r.code.toUpperCase().startsWith('NAME')?'NAME':'CLAN',
@@ -40,7 +41,7 @@ export default function RulebookCards(){
   return ALL_ACADEMY_RULES.filter(r=>
    (group==='all'||r.category===group)&&
    (kind==='all'||r.types.includes(kind))&&
-   (!needle||normalize([r.code,r.title,r.description,r.penalty].join(' ')).includes(needle))
+   (!needle||normalize([r.code,displayRuleCode(r.code),r.title,r.description,r.penalty,getCardCommand(r).englishName,getCardCommand(r).punishmentCode].join(' ')).includes(needle))
   );
  },[group,kind,search]);
  const grouped=allGroups.map(id=>({id,items:found.filter(r=>r.category===id)})).filter(g=>g.items.length);
@@ -68,20 +69,26 @@ export default function RulebookCards(){
    return <section key={id} className="rb-collection" data-category={id} aria-label={info.title}>
     <header className="rb-section-head"><div><span className="rb-section-code" dir="ltr">{id}</span><div><h3>{info.title}</h3><p>{info.subtitle}</p></div></div><span className="rb-section-count">{items.length} قاعدة</span></header>
     {id==='NAME'||id==='CLAN'?<p className="rb-legacy-explainer"><ShieldAlert size={16}/> هذه البنود محفوظة من جدول التدريب السابق؛ النصوص الكاملة والعقوبات بحاجة إلى تأكيد من المرجع الجديد.</p>:null}
-    <div className="rb-grid">{items.map(r=><article key={r.code} className="rb-card" data-tone={penaltyTone(r)} data-source={r.source}>
-     <div className="rb-card-top"><span className="rb-card-code" dir="ltr">{r.code}</span><button className="rb-icon-btn" type="button" onClick={()=>void copy(r.code,r.code)} title={'نسخ '+r.code} aria-label={'نسخ كود '+r.code}>{copied===r.code?<Check size={16}/>:<Copy size={16}/>}</button></div>
-     <h4>{r.title}</h4><p className="rb-excerpt">{r.description}</p>
-     <div className="rb-penalty"><span className="rb-penalty-heading">{r.source==='legacy'?'العقوبة في الجدول القديم':'العقوبة'}</span><strong>{r.penalty}</strong></div>
-     <div className="rb-card-foot"><button type="button" onClick={()=>show(r)} aria-label={'عرض التفاصيل الكاملة لقاعدة '+r.code}>النص الكامل <ChevronLeft size={17}/></button>{r.source==='legacy'&&<span>بحاجة للمراجعة</span>}</div>
-    </article>)}</div>
+    <div className="rb-grid">{items.map(r=>{
+     const cmd=getCardCommand(r);
+     return <article key={r.code} className="rb-card rb-code-first" data-tone={penaltyTone(r)} data-source={r.source}>
+      <div className="rb-card-top"><span className="rb-card-code" dir="ltr">{cmd.code}</span><button className="rb-icon-btn" type="button" onClick={()=>void copy(r.code,r.code)} title={'نسخ '+cmd.code} aria-label={'نسخ كود '+cmd.code}>{copied===r.code?<Check size={16}/>:<Copy size={16}/>}</button></div>
+      <div className="rb-command-stack"><h4 className="rb-command-name" dir="ltr">{cmd.englishName}</h4><strong className="rb-command-sanction" dir="ltr">{cmd.punishmentCode}</strong>{!cmd.isGameMenuName&&<small className="rb-english-unverified">اسم وصفي غير موثق في قائمة اللعبة</small>}</div>
+      <div className="rb-arabic-mini">
+       <p className="rb-arabic-title"><span className="rb-discord-prefix" dir="ltr">-#</span><span>{r.title}</span></p>
+       <p className="rb-arabic-desc"><span className="rb-discord-prefix" dir="ltr">-#</span><span>{r.description}</span></p>
+      </div>
+      <div className="rb-card-foot"><button type="button" onClick={()=>show(r)} aria-label={'عرض التفاصيل الكاملة لقاعدة '+r.code}>التفاصيل <ChevronLeft size={17}/></button><button type="button" onClick={()=>void copy(copyCardText(r),'card:'+r.code)} aria-label={'نسخ البطاقة كاملة '+r.code}>{copied==='card:'+r.code?<Check size={15}/>:<Copy size={15}/>} نسخ البطاقة</button></div>
+     </article>;
+    })}</div>
    </section>;
   })}</div>:<div className="rb-empty"><Search size={26}/><strong>لا توجد نتائج مطابقة</strong><p>جرّب البحث بكود مختلف أو امسح الفلاتر.</p><button type="button" onClick={clear}>عرض كل القوانين</button></div>}
-  <p className="rb-source-note"><ShieldAlert size={16}/> النص المكتوب الذي أرسلته هو المرجع الحالي لقوانين RP وCHAT وTCHAT وABUSE وALERT. أي اختلاف عن الصور أو الجداول القديمة لا يُحسم تلقائيًا، وتحديد صلاحيات تنفيذ العقوبات يرجع لسياسة الفريق.</p>
+  <p className="rb-source-note"><ShieldAlert size={16}/> الاسم الإنجليزي والعقوبة المختصرة مأخوذان من جدول اللعبة حيث وُجدا؛ تفاصيل القوانين والعقوبات البديلة من النص المكتوب. أي اختلاف بين المصدرين لا يُعدّ قرارًا تلقائيًا بتغيير العقوبة.</p>
   <dialog ref={dialog} className="rb-dialog" onClose={()=>setSelected(null)} aria-label={selected?'تفاصيل القاعدة '+selected.code:'تفاصيل القاعدة'}>
    {selected&&<div className="rb-dialog-content" dir="rtl">
-    <header><div><span className="rb-card-code" dir="ltr">{selected.code}</span><span className="rb-dialog-category">{groupTitle(selected.category)}</span></div><button type="button" onClick={close} aria-label="إغلاق التفاصيل"><X size={21}/></button></header>
-    <div className="rb-dialog-body"><h2>{selected.title}</h2><h3>نص القاعدة</h3><p>{selected.description}</p><h3>العقوبة المعتمدة في المرجع</h3><div className="rb-dialog-penalty" data-tone={penaltyTone(selected)}>{selected.penalty}</div>{selected.source==='legacy'&&<p className="rb-legacy-explainer">هذا البند مأخوذ من الجدول القديم، وليس من النص المكتوب الجديد. يحتاج مطابقة قبل اعتماده.</p>}</div>
-    <footer><button type="button" className="rb-copy-full" onClick={()=>void copy('['+selected.code+'] - '+selected.title+'\n'+selected.description+'\nالعقوبة: '+selected.penalty,'full:'+selected.code)}>{copied==='full:'+selected.code?<Check size={17}/>:<Copy size={17}/>} {copied==='full:'+selected.code?'تم النسخ':'نسخ القاعدة والعقوبة'}</button><button type="button" className="rb-close" onClick={close}>إغلاق</button></footer>
+    <header><div><span className="rb-card-code" dir="ltr">{displayRuleCode(selected.code)}</span><span className="rb-dialog-category">{groupTitle(selected.category)}</span></div><button type="button" onClick={close} aria-label="إغلاق التفاصيل"><X size={21}/></button></header>
+    <div className="rb-dialog-body"><div className="rb-dialog-command"><strong dir="ltr">{getCardCommand(selected).englishName}</strong><span dir="ltr">{getCardCommand(selected).punishmentCode}</span></div><h2>{selected.title}</h2><h3>نص القاعدة</h3><p>{selected.description}</p><h3>العقوبة المعتمدة في المرجع</h3><div className="rb-dialog-penalty" data-tone={penaltyTone(selected)}>{selected.penalty}</div>{selected.source==='legacy'&&<p className="rb-legacy-explainer">هذا البند مأخوذ من الجدول القديم، وليس من النص المكتوب الجديد. يحتاج مطابقة قبل اعتماده.</p>}</div>
+    <footer><button type="button" className="rb-copy-full" onClick={()=>void copy(copyCardText(selected),'full:'+selected.code)}>{copied==='full:'+selected.code?<Check size={17}/>:<Copy size={17}/>} {copied==='full:'+selected.code?'تم النسخ':'نسخ القاعدة والعقوبة'}</button><button type="button" className="rb-close" onClick={close}>إغلاق</button></footer>
    </div>}
   </dialog>
  </div>;
