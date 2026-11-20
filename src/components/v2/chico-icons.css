@@ -1,0 +1,18 @@
+.chico-v2 .chico-glyph{display:inline-grid;place-items:center;flex:none;width:2rem;height:2rem;color:#edd0a0;background:transparent;border:0;box-shadow:none;padding:0}
+.chico-v2 .chico-glyph svg{display:block;width:78%;height:78%;overflow:visible}
+.chico-v2 .chico-glyph.v8-symbol--compact{width:1.375rem;height:1.375rem}
+.studio .rail-group .chico-glyph svg,.studio .studio-mobile-nav .chico-glyph svg{width:20px;height:20px}
+.studio .rail-group button:not([aria-current=page]) .chico-glyph{color:#c3c5cb}
+.studio .command-metric-label .chico-glyph{width:2rem;height:2rem;background:#29242a;border-radius:8px;color:#efd392}
+.studio .command-metric-label .chico-glyph svg{width:22px;height:22px}
+.studio .command-metric-label [data-symbol=flags]{color:#d4a4ec}
+.studio .command-metric-label [data-symbol=shift]{color:#a8cded}
+.chico-v2 .lucide{flex-shrink:0;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+.chico-v2 .ct-rank.v8-rank--helper{color:#76d9a4}
+.chico-v2 .ct-rank.v8-rank--senior{color:#81c5ff}
+.chico-v2 .ct-rank.v8-rank--moderator{color:#c69af2}
+@media (hover:hover) and (prefers-reduced-motion:no-preference){
+ .chico-v2 button .chico-glyph,.chico-v2 button>.lucide{transition:transform .16s ease-out}
+ .chico-v2 button:hover:not(:disabled) .chico-glyph,.chico-v2 button:hover:not(:disabled)>.lucide{transform:translateY(-1px)}
+}
+.studio.rail-folded .rail-group button .chico-glyph{display:inline-grid}

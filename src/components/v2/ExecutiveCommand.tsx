@@ -238,7 +238,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
    <nav className="studio-rail" aria-label="تنقل الكمبيوتر">
     <button type="button" className="rail-brand" onClick={()=>open('dashboard')} aria-label="مركز القيادة"><img src="/assets/chico-command-mark.webp" alt="" width="38" height="42"/><b dir="ltr">CHICO TEAM</b></button>
     <div className="rail-groups">{navigationGroups.map(group=><div className="rail-group" key={group.en} aria-label={group.label}>
-      {group.items.map(id=>{const item=links.find(link=>link.id===id)!;const Icon=item.icon;return <button key={id} type="button" title={item.label} aria-label={item.label} aria-current={tab===id?'page':undefined} onClick={()=>open(id)}><Icon size={19}/><span>{item.label}</span></button>})}
+      {group.items.map(id=>{const item=links.find(link=>link.id===id)!;return <button key={id} type="button" title={item.label} aria-label={item.label} aria-current={tab===id?'page':undefined} onClick={()=>open(id)}><CommandIcon name={id} compact/><span>{item.label}</span></button>})}
     </div>)}</div>
     <button type="button" className="rail-fold" aria-expanded={!railCollapsed} onClick={()=>setRailCollapsed(v=>!v)} aria-label={railCollapsed?'توسيع القائمة':'طي القائمة'}><Menu size={18}/><span>طي القائمة</span></button>
    </nav>
