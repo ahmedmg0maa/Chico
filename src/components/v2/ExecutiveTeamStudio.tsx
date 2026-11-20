@@ -48,6 +48,12 @@ function CSVExport({items}:{items:DirectoryRow[]}){
  };
  return <button type="button" className="v7-btn v7-btn-muted" onClick={download}><ArrowDownToLine size={17}/>تصدير CSV</button>;
 }
+function MemberMark({name,rank}:{name:string;rank:Rank}){
+ const words=name.trim().replace(/^(?:SN|M|A)\.\s*/i,'').split(/\s+/u);
+ const first=Array.from(words[0]||'');
+ const initials=(first[0]||'')+(words.length>1?Array.from(words[words.length-1])[0]:first[1]||'');
+ return <span className={'member-monogram mark-'+rankToken(rank)} dir="auto" aria-hidden="true">{initials.toLocaleUpperCase()}</span>;
+}
 function RoleSeal({rank}:{rank:Rank}){return <RankInsignia rank={rank} compact/>;}
 function Stat({title,value,icon:Icon,tone}:{title:string;value:number;icon:typeof Users;tone?:string}){
  const glyph=title.includes('إجمالي')?'members':title.includes('نشط حاليًا')?'coverage':title.includes('غير نشط')?'alerts':'updates';
@@ -158,7 +164,7 @@ export default function ExecutiveTeamStudio({admins,rows,review,onRefresh,onPrev
   void run('DELETE',{confirm:'DELETE'});
  };
  return <div className="v7-team-studio ct-directory">
-  <div className="ct-workspace-mast"><div className="ct-workspace-identity"><CommandIcon name="team"/><div><h1>إدارة الفريق</h1><span>الأسماء والرتب والمناوبات</span></div></div></div>
+  <header className="team-mast"><img src="/assets/chico-atelier-wolf.webp" alt="" width={1500} height={1000}/><div className="team-mast-title"><div><h1>إدارة الفريق</h1><span>الأسماء والرتب والمناوبات</span></div></div></header>
   <div className="v7-directory-summary">
    <Stat title="إجمالي الإداريين" value={rows.length} icon={Users}/>
    <Stat title="نشط حاليًا" value={rows.filter(r=>r.active).length} icon={CheckCircle2} tone="v7-green"/>
@@ -198,7 +204,7 @@ export default function ExecutiveTeamStudio({admins,rows,review,onRefresh,onPrev
      const current=admins.find(a=>a.id===row.id);
      return <tr key={row.id}>
       <td className="v7-index">{String((selectedPage-1)*size+i+1).padStart(2,'0')}</td>
-      <td><div className="v7-person-name"><RoleSeal rank={row.rank}/><div><button type="button" className="ct-person-link" onClick={()=>onOpen(row)} dir="auto">{row.name}</button>{(current as AdminExtra)?.full_name&&<small dir="auto">{(current as AdminExtra).full_name}</small>}</div></div></td>
+      <td><div className="v7-person-name"><MemberMark name={row.name} rank={row.rank}/><div><button type="button" className="ct-person-link" onClick={()=>onOpen(row)} dir="auto">{row.name}</button>{(current as AdminExtra)?.full_name&&<small dir="auto">{(current as AdminExtra).full_name}</small>}</div></div></td>
       <td><RankLabel rank={row.rank}/></td>
       <td>{row.admin_level??'—'}</td><td>{row.shift_label||'—'}</td>
       <td className="v7-figure">{format(row.tickets)}</td>
@@ -209,7 +215,7 @@ export default function ExecutiveTeamStudio({admins,rows,review,onRefresh,onPrev
       <td><div className="v7-row-actions"><button type="button" onClick={()=>onOpen(row)} aria-label={'ملف '+row.name} title="عرض الملف"><Eye size={17}/></button><button type="button" data-chico-edit-id={row.id} onClick={()=>current&&beginEdit(current)} aria-label={'تعديل '+row.name} title="تعديل"><Pencil size={17}/></button><button type="button" className="destructive" onClick={()=>{if(current){beginEdit(current);setConfirmDelete(true);}}} aria-label={'حذف '+row.name} title="حذف"><Trash2 size={17}/></button></div></td>
      </tr>;
     })}</tbody>
-   </table></div>:<div className="v7-team-cards">{shown.map(row=>{const a=admins.find(x=>x.id===row.id);return <article className="v7-person-card" key={row.id}><RoleSeal rank={row.rank}/><h3>{row.name}</h3><p><RankLabel rank={row.rank}/> · المستوى {row.admin_level||'—'}</p><span className={'v7-state-chip '+(row.active?'on':'off')}>{row.active?'نشط':'غير نشط'}</span><div><span>Tickets: {format(row.tickets)}</span><span>Flags: {format(row.flags)}</span></div><footer><button onClick={()=>onOpen(row)}>فتح الملف</button><button onClick={()=>a&&beginEdit(a)}>تعديل</button></footer></article>;})}</div>}
+   </table></div>:<div className="v7-team-cards">{shown.map(row=>{const a=admins.find(x=>x.id===row.id);return <article className="v7-person-card" key={row.id}><MemberMark name={row.name} rank={row.rank}/><h3>{row.name}</h3><p><RankLabel rank={row.rank}/> · المستوى {row.admin_level||'—'}</p><span className={'v7-state-chip '+(row.active?'on':'off')}>{row.active?'نشط':'غير نشط'}</span><div><span>Tickets: {format(row.tickets)}</span><span>Flags: {format(row.flags)}</span></div><footer><button onClick={()=>onOpen(row)}>فتح الملف</button><button onClick={()=>a&&beginEdit(a)}>تعديل</button></footer></article>;})}</div>}
    {!filtered.length&&<div className="v7-empty-people"><Users size={33}/><b>لا يوجد إداريون مطابقون</b><p>غيّر البحث أو أزل الفلاتر، أو أضف إداريًا جديدًا.</p></div>}
    <div className="v7-table-footer"><label>صفوف لكل صفحة<select value={size} onChange={e=>{setSize(Number(e.target.value));setPage(1);}}><option value={10}>10</option><option value={20}>20</option><option value={50}>50</option></select></label><div className="v7-paginator"><button disabled={selectedPage===1} onClick={()=>setPage(p=>Math.max(1,p-1))} aria-label="الصفحة السابقة"><ChevronRight size={17}/></button><b>{selectedPage} / {pages}</b><button disabled={selectedPage===pages} onClick={()=>setPage(p=>Math.min(pages,p+1))} aria-label="الصفحة التالية"><ChevronLeft size={17}/></button></div></div>
   </section>

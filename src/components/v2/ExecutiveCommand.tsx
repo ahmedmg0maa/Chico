@@ -276,7 +276,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
        onPointerMove={spotlight.onPointerMove} onPointerLeave={spotlight.onPointerLeave}
        initial={{opacity:0,y:12}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-8}}
        transition={{duration:0.22,ease:[0.22,1,0.36,1]}}> 
-     {tab!=='dashboard'&&<img className="section-panorama" src={'/assets/banners/'+tab+'.webp'} alt="" width={1024} height={213}/>}
+     {tab!=='dashboard'&&tab!=='team'&&<img className="section-panorama" src={'/assets/banners/'+tab+'.webp'} alt="" width={1024} height={213}/>}
      {error&&<div className="x-error"><AlertTriangle size={17}/>{error}<button onClick={()=>void refresh()}>إعادة المحاولة</button></div>}
      {notice&&<div className="x-inline-notice"><Shield size={18}/>{notice}<button onClick={()=>setNotice('')}><X size={17}/></button></div>}
      {tab==='dashboard'&&<>
