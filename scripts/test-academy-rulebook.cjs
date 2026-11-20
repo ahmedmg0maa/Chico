@@ -2,11 +2,11 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const ts=require('typescript');
 const read=p=>fs.readFileSync(p,'utf8');
-const exports={};
+const modExports={};
 new Function('require','exports','module',ts.transpileModule(read('src/lib/rulebook.ts'),{
  compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}
-}).outputText)(require,exports,{exports});
-const rules=exports.WRITTEN_RULES;
+}).outputText)(require,modExports,{exports:modExports});
+const rules=modExports.WRITTEN_RULES;
 assert.equal(rules.length,49,'The owner's written rules cover exactly 49 codes');
 assert.equal(new Set(rules.map(r=>r.code)).size,49,'Unique codes');
 assert.deepEqual(Object.fromEntries(['RP','CHAT','TCHAT','ABUSE','ALERT'].map(g=>[g,rules.filter(r=>r.category===g).length])),{
