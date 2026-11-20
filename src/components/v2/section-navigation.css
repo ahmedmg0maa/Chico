@@ -18,8 +18,6 @@
 .team-mast>img{position:absolute;left:0;top:0;width:65%;height:100%;object-fit:cover;object-position:35% 37%;mask-image:linear-gradient(90deg,#000 57%,transparent);z-index:-1}
 .studio .team-mast-title h1{font-size:clamp(1.8rem,3vw,3rem);line-height:1.3;margin:0}
 .team-mast-title span{color:#d3c5b3}
-.studio .member-monogram{display:inline-grid;place-items:center;flex:none;width:34px;height:34px;border-radius:50%;color:#f3eddf;background:linear-gradient(145deg,#3b3b3b,#222329);border:1px solid #797066;border-bottom:2px solid var(--mark-accent,#d0ae77);font:650 .84rem/1 system-ui,sans-serif;letter-spacing:.025em}
-.member-monogram.mark-helper{--mark-accent:#72bfa0}.member-monogram.mark-senior{--mark-accent:#77ace0}.member-monogram.mark-moderator{--mark-accent:#b397d3}
 @media(max-width:650px){.studio .ct-directory>.team-mast{min-height:115px;margin-bottom:12px}.team-mast>img{width:65%;object-position:18% 45%}}
 
 .studio .studio-workspace.ct-workspace-excel >.studio-heading {background:linear-gradient(270deg,#121115f2 4%,#141317b3 47%,#100e1129),url("/assets/banners/excel.webp") 24% center/cover!important;min-height:clamp(100px,10vw,155px);border:1px solid #65513d;border-radius:12px;padding:clamp(14px,2vw,28px);color:#fff}
@@ -33,3 +31,7 @@
 .studio .studio-workspace.ct-workspace-updates .v9-entry-card>.v9-entry-heading {background:linear-gradient(270deg,#121115f2 4%,#141317b3 47%,#100e1129),url("/assets/banners/updates.webp") 24% center/cover!important;min-height:clamp(100px,10vw,155px);border:1px solid #65513d;border-radius:12px;padding:clamp(14px,2vw,28px);color:#fff}
 .studio .studio-workspace.ct-workspace-academy .ct-academy>.ct-admin-head {background:linear-gradient(270deg,#121115f2 4%,#141317b3 47%,#100e1129),url("/assets/banners/academy.webp") 24% center/cover!important;min-height:clamp(100px,10vw,155px);border:1px solid #65513d;border-radius:12px;padding:clamp(14px,2vw,28px);color:#fff}
 .studio .studio-workspace.ct-workspace-salary .ct-salary>.ct-salary-head {background:linear-gradient(270deg,#121115f2 4%,#141317b3 47%,#100e1129),url("/assets/banners/salary.webp") 24% center/cover!important;min-height:clamp(100px,10vw,155px);border:1px solid #65513d;border-radius:12px;padding:clamp(14px,2vw,28px);color:#fff}
+.studio .ct-directory :is(.v7-person-name,.person-rank-heading)>.ct-rank{display:inline-grid;place-items:center;flex:none;width:34px;height:36px;padding:4px;border-radius:9px 4px;background:linear-gradient(145deg,#3c3835,#1a1b20 60%);border:1px solid #706559;box-shadow:inset 0 1px #f9dca025,0 2px 4px #0005}
+.studio .ct-directory :is(.v7-person-name,.person-rank-heading) .grade-glyph{width:24px;height:24px}
+.studio .person-rank-heading{display:flex;align-items:center;gap:10px;min-width:0}
+.studio .person-rank-heading h3{margin:0;overflow-wrap:anywhere}

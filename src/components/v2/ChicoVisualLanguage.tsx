@@ -58,6 +58,6 @@ export function RankInsignia({rank,compact=false}:{rank:Rank;compact?:boolean}){
  <RankGlyph rank={rank}/>
  </span>;
 }
-export function RankLabel({rank}:{rank:Rank}){
- return <span className={'v8-rank-label v8-rank--'+rankToken(rank)}><RankGlyph rank={rank}/>{rank}</span>;
+export function RankLabel({rank,showGlyph=true}:{rank:Rank;showGlyph?:boolean}){
+ return <span className={'v8-rank-label v8-rank--'+rankToken(rank)}>{showGlyph&&<RankGlyph rank={rank}/>}{rank}</span>;
 }
