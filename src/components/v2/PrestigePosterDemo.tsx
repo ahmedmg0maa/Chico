@@ -1,7 +1,8 @@
 'use client';
 
 import {useEffect,useRef,useState} from 'react';
-import {loadLuxuryArt,renderLuxuryPoster,type LuxuryPosterRow} from './PremiumPosterRenderer';
+import {editablePoster,posterMasthead,drawEditable,downloadEditable} from './EditableDiscordPoster';
+import {type LuxuryPosterRow} from './PremiumPosterRenderer';
 
 // Original CHICO 30-row Excel source fixture: 26 evaluated members, 2026-11-09..12.
 // Never used in production statistics, rankings or real team reports.
@@ -269,20 +270,18 @@ const SAMPLE:LuxuryPosterRow[] = [
 ];
 
 export default function PrestigePosterDemo(){
+ const source=useRef('');
  const canvas=useRef<HTMLCanvasElement>(null);
  const [ready,setReady]=useState(false);
  const [error,setError]=useState('');
  useEffect(()=>{
   let cancelled=false;
   (async()=>{
-   const art=await Promise.all([
-    loadLuxuryArt('/assets/chico-command-mark.webp'),
-    loadLuxuryArt('/assets/banners/reports.webp')
-   ]);
-   await document.fonts?.ready;
+   const svg=editablePoster(SAMPLE,'2026-11-09 — 2026-11-12','إحصائيات الفترة المحددة',{tickets:3222,flags:50,rating:null},'#791b20',await posterMasthead());
    if(cancelled||!canvas.current)return;
-   renderLuxuryPoster(canvas.current,SAMPLE,'2026-11-09 — 2026-11-12',30,29,art,
-    'إحصائيات الفترة المحددة',{tickets:3222,flags:50,rating:null});
+   await drawEditable(canvas.current,svg);
+   if(cancelled)return;
+   source.current=svg;
    setReady(true);
   })().catch(e=>{if(!cancelled)setError(e instanceof Error?e.message:'تعذّر رسم المعاينة');});
   return ()=>{cancelled=true};
@@ -301,6 +300,7 @@ export default function PrestigePosterDemo(){
    <header style={{display:'flex',flexWrap:'wrap',justifyContent:'space-between',alignItems:'center',gap:12,marginBottom:18}}>
     <div><h1 style={{margin:'0 0 7px',fontSize:23}}>معاينة تصميم CHICO الجديد</h1>
      <p style={{margin:0,fontSize:13,color:'#d5ba86'}}>معاينة ببيانات ملف الاختبار المحفوظ • ليست تقريرًا مباشرًا ولا تغيّر بيانات الفريق</p></div>
+    <button type="button" disabled={!ready} onClick={()=>downloadEditable(source.current,'CHICO-template')}>تنزيل القالب القابل للتعديل SVG</button>
     <button type="button" disabled={!ready} onClick={download}
      style={{padding:'12px 20px',borderRadius:9,background:'#d6a44c',color:'#17100a',fontWeight:850,opacity:ready?1:.5,cursor:ready?'pointer':'not-allowed',border:0}}>
      تنزيل صورة الاختبار PNG</button>

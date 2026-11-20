@@ -7,7 +7,7 @@ import {CalendarDays,Download,Ticket} from 'lucide-react';
 import {weekStart,eligibleReadings,isEvaluatedAdmin} from '@/lib/rules';
 import {latestPeriod,latestSingleDay,selectPeriod,reportRows,reportTotals} from '@/lib/report-period';
 import type {State} from '@/lib/types';
-import {renderLuxuryPoster,loadLuxuryArt} from './PremiumPosterRenderer';
+import {editablePoster,posterMasthead,drawEditable,downloadEditable} from './EditableDiscordPoster';
 
 type Props={state:State|null;review:boolean};
 type Mode='day'|'range'|'week';
@@ -33,12 +33,15 @@ export default function DiscordReportStudio({state,review}:Props){
  const partial=period.partial.length;
  const rows=useMemo(()=>reportRows(state?.admins||[],matching),[state,matching]);
  const missingCount=Math.max(0,(state?.admins.filter(isEvaluatedAdmin).length||0)-rows.length);
- const staff=state?.admins.filter(a=>a.active).length||0;
+ const [customTitle,setCustomTitle]=useState('');
+ const [accent,setAccent]=useState('#791b20');
+ const source=useRef('');
  const totals=useMemo(()=>reportTotals(matching,state?.admins||[]),[state,matching]);
- const title=mode==='day'?'إحصائيات يومية':mode==='week'?'ملخص الأسبوع حتى آخر قراءة':'إحصائيات الفترة المحددة';
+ const defaultTitle=mode==='day'?'إحصائيات يومية':mode==='week'?'ملخص الأسبوع حتى آخر قراءة':'إحصائيات الفترة المحددة';
+ const title=customTitle.trim()||defaultTitle;
  const dateLabel=start===end?start:start+'  —  '+end;
  // Prevent exporting a previous date range or the default empty 300x150 canvas.
- const renderKey=useMemo(()=>JSON.stringify({start,end,title,mode,rows,totals}),[start,end,title,mode,rows,totals]);
+ const renderKey=useMemo(()=>JSON.stringify({start,end,title,mode,rows,totals,accent}),[start,end,title,mode,rows,totals,accent]);
  const imageReady=Boolean(state&&!review&&period.canExport&&renderedKey===renderKey);
  const expandCoverage=()=>{touched.current=true;setMode('range');setStart(period.expandFrom);setEnd(period.expandTo);};
  const setPeriod=(next:Mode)=>{
@@ -50,14 +53,16 @@ export default function DiscordReportStudio({state,review}:Props){
   if(!canvas.current||!period.canExport)return;
   let cancelled=false;
   (async()=>{
-   const art=await Promise.all([loadLuxuryArt('/assets/chico-command-mark.webp'),loadLuxuryArt('/assets/banners/reports.webp')]);
-   await document.fonts?.ready;
-   if(!cancelled&&canvas.current){renderLuxuryPoster(canvas.current,rows,dateLabel,staff,matching.length,art,title,totals);setRenderedKey(renderKey);}
-  })().catch(()=>{
-   if(!cancelled&&canvas.current){try{renderLuxuryPoster(canvas.current,rows,dateLabel,staff,matching.length,[null,null,null,null,null,null],title,totals);setRenderedKey(renderKey);}catch{setError('تعذّر رسم تقرير Discord');}}
-  });
+   const svg=editablePoster(rows,dateLabel,title,totals,accent,await posterMasthead());
+   if(cancelled)return;
+   const buffer=document.createElement('canvas');await drawEditable(buffer,svg);
+   if(cancelled||!canvas.current)return;
+   canvas.current.width=buffer.width;canvas.current.height=buffer.height;
+   canvas.current.getContext('2d')!.drawImage(buffer,0,0);
+   source.current=svg;setError('');setRenderedKey(renderKey);
+  })().catch(()=>{if(!cancelled)setError('تعذّر رسم تقرير Discord');});
   return ()=>{cancelled=true;};
- },[rows,dateLabel,staff,matching.length,title,valid,totals,renderKey,period.canExport]);
+ },[rows,dateLabel,title,totals,accent,renderKey,period.canExport]);
  const download=()=>{
   if(!canvas.current||!imageReady||downloading)return;
   setError('');setDownloading(true);
@@ -93,6 +98,11 @@ export default function DiscordReportStudio({state,review}:Props){
     <input type="date" value={end} disabled={mode==='day'} onChange={e=>{touched.current=true;setEnd(e.target.value);setMode('range');}}/>
    </label>
    {latestDaily&&<button className="v9-primary" type="button" onClick={()=>setPeriod('day')}><CalendarDays size={17}/>آخر تقرير يومي</button>}
+  </div>
+  <div className="v9-poster-filters">
+   <label>عنوان البوستر<input maxLength={65} value={customTitle} placeholder={defaultTitle} onChange={e=>setCustomTitle(e.target.value)}/></label>
+   <label>لون شريط العنوان<input type="color" value={accent} onChange={e=>setAccent(e.target.value)}/></label>
+   <button className="v9-quiet-btn" type="button" disabled={!imageReady} onClick={()=>downloadEditable(source.current,'CHICO_'+start+'_'+end)}>تنزيل نسخة قابلة للتعديل SVG</button>
   </div>
   {!valid&&<p className="v9-warning" role="alert">الفترة لازم تكون داخل أسبوع واحد من الإثنين للأحد، لأن عداد Tickets بيتصفّر بداية الأسبوع.</p>}
   {partial>0&&<div className="v9-warning" role="alert">توجد {partial} قراءة متداخلة لكن مش داخلة في الحساب. تم إيقاف التصدير منعًا لتقرير ناقص. <button type="button" className="v9-quiet-btn" onClick={expandCoverage}>عرض فترة التغطية كاملة ({period.expandFrom} — {period.expandTo})</button></div>}
