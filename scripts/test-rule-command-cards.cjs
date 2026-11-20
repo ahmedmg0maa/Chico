@@ -34,7 +34,7 @@ for(const r of entries){
  assert(v.code.length>3&&v.englishName&&v.punishmentCode,r.code);
  assert(!v.englishName.includes('Not listed'),r.code);
  assert(!v.punishmentCode.includes('See full'),r.code);
- assert(v.code.startsWith(r.category)+' ',r.code);
+ assert(v.code.startsWith(r.category+' '),r.code);
 }
 const rp1=card.getCardCommand(rulebook.WRITTEN_RULES.find(r=>r.code==='RP1'));
 assert.deepEqual({code:rp1.code,name:rp1.englishName,punishment:rp1.punishmentCode},
