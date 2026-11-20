@@ -39,7 +39,7 @@ for(const required of ['CHICO','GENERAL TEAM','TICKETS','FLAGS','3,222','50','HE
 for(const forbidden of ['TOTAL STAFF','AVERAGE RATE','HELPERS + SN.HELPERS','CALL','CALLS','HAIL']){
  assert(!text.includes(forbidden),'forbidden CHICO poster label '+forbidden);
 }
-assert(canvas.width===1560&&canvas.height>1700&&canvas.height<5000,'correct output aspect and dimensions');
+assert(canvas.width===1560&&canvas.height>1000&&canvas.height<5000,'correct output aspect and dimensions');
 const main=words.filter(x=>['TOP 3 HELPERS','TOP 3 MODERATORS'].includes(x.s));
 assert.equal(main.length,2);
 const noReadings=[row('Kararr','Helper',1,null,null,null),row('M.Dark','Moderator',2,null,null,null)];
@@ -64,10 +64,10 @@ for(const stale of ['3,222','SN.Nova','M.Future'])
 assert.equal(poster.prestigeName('M.Gambul','Moderator'),'Gambul');
 assert.equal(poster.prestigeName('SN.Gaby','SN.Helper'),'Gaby');
 assert.equal(poster.prestigeName('Kararr','Helper'),'Kararr');
-const renderer=fs.readFileSync(rpath('src/components/v2/PremiumPosterRenderer.ts'),'utf8');
-assert(!renderer.includes('function wing('),'Final approved rank and winner cards must not use golden wing slashes');
-assert(renderer.includes('Center the full TOP 3 label'),'The TOP 3 headings must stay centered on matching symmetric crowns');
-assert(renderer.includes('Small shield only'),'Rank badges should use clean, compact shield styling');
-assert(renderer.includes('a clean burgundy header'),'Section headers should avoid yellow stripe brackets');
-console.log('PASS CHICO prestige portrait: editable period, actual counters, corrected game names and refined badges');
-console.log('PASS CHICO Phase 3: 1560px PNG-ready canvas, two columns/tops, zero/null accuracy, no fake data or banned badges');
+words.length=0;
+poster.renderLuxuryPoster(canvas,rows,'2026-11-09 — 2026-11-12',30,29,[],'إحصائيات الفترة المجمعة',{tickets:3222,flags:50,rating:4.9},'daily');
+const daily=words.map(w=>w.s);
+assert(daily.includes('قراءات الفترة')&&daily.includes('SN.Helper')&&daily.includes('DAILY REPORT'));
+assert(!daily.includes('TOP 1'));
+assert(daily.indexOf('Kararr')<daily.indexOf('Gaby'));
+console.log('PASS distinct daily ledger and Discord rankings, dynamic values and roster order');

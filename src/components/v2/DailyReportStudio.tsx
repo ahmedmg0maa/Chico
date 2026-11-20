@@ -49,10 +49,9 @@ export default function DailyReportStudio({state,review,initialPeriod,onInputMet
  useEffect(()=>{
   if(!canvas.current||!period.canExport)return;
   let cancelled=false;
-  const paths=['/assets/chico-approved-onestate.avif','/assets/chico-approved-wolf.avif','/assets/chico-banner-original.png','/assets/medal-gold.png','/assets/medal-silver.png','/assets/medal-bronze.png'];
-  (async()=>{const art=await Promise.all(paths.map(loadLuxuryArt));await document.fonts?.ready;
-   if(!cancelled&&canvas.current){renderLuxuryPoster(canvas.current,rows,label,staff,readings.length,art,title,totals);setRenderedKey(renderKey);}
-  })().catch(()=>{if(!cancelled&&canvas.current){try{renderLuxuryPoster(canvas.current,rows,label,staff,readings.length,[null,null,null,null,null,null],title,totals);setRenderedKey(renderKey);}catch{setError('تعذّر رسم التقرير');}}});
+  (async()=>{const art=await Promise.all([loadLuxuryArt('/assets/chico-command-mark.webp'),loadLuxuryArt('/assets/banners/daily.webp')]);await document.fonts?.ready;
+   if(!cancelled&&canvas.current){renderLuxuryPoster(canvas.current,rows,label,staff,readings.length,art,title,totals,'daily');setRenderedKey(renderKey);}
+  })().catch(()=>{if(!cancelled&&canvas.current){try{renderLuxuryPoster(canvas.current,rows,label,staff,readings.length,[],title,totals,'daily');setRenderedKey(renderKey);}catch{setError('تعذّر رسم التقرير');}}});
   return ()=>{cancelled=true;};
  },[rows,label,staff,readings.length,title,totals,valid,renderKey,period.canExport]);
  const download=()=>{

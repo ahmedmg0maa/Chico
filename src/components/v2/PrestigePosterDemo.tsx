@@ -276,8 +276,8 @@ export default function PrestigePosterDemo(){
   let cancelled=false;
   (async()=>{
    const art=await Promise.all([
-    loadLuxuryArt('/assets/chico-approved-onestate.avif'),
-    loadLuxuryArt('/assets/chico-approved-wolf.avif')
+    loadLuxuryArt('/assets/chico-command-mark.webp'),
+    loadLuxuryArt('/assets/banners/reports.webp')
    ]);
    await document.fonts?.ready;
    if(cancelled||!canvas.current)return;

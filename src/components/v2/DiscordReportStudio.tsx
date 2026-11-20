@@ -50,14 +50,7 @@ export default function DiscordReportStudio({state,review}:Props){
   if(!canvas.current||!period.canExport)return;
   let cancelled=false;
   (async()=>{
-   const art=await Promise.all([
-    loadLuxuryArt('/assets/chico-approved-onestate.avif'),
-    loadLuxuryArt('/assets/chico-approved-wolf.avif'),
-    loadLuxuryArt('/assets/chico-banner-original.png'),
-    loadLuxuryArt('/assets/medal-gold.png'),
-    loadLuxuryArt('/assets/medal-silver.png'),
-    loadLuxuryArt('/assets/medal-bronze.png')
-   ]);
+   const art=await Promise.all([loadLuxuryArt('/assets/chico-command-mark.webp'),loadLuxuryArt('/assets/banners/reports.webp')]);
    await document.fonts?.ready;
    if(!cancelled&&canvas.current){renderLuxuryPoster(canvas.current,rows,dateLabel,staff,matching.length,art,title,totals);setRenderedKey(renderKey);}
   })().catch(()=>{
