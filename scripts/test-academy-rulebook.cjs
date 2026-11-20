@@ -7,7 +7,7 @@ new Function('require','exports','module',ts.transpileModule(read('src/lib/ruleb
  compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}
 }).outputText)(require,modExports,{exports:modExports});
 const rules=modExports.WRITTEN_RULES;
-assert.equal(rules.length,49,'The owner's written rules cover exactly 49 codes');
+assert.equal(rules.length,49,'Written rulebook must contain 49 unique rule codes');
 assert.equal(new Set(rules.map(r=>r.code)).size,49,'Unique codes');
 assert.deepEqual(Object.fromEntries(['RP','CHAT','TCHAT','ABUSE','ALERT'].map(g=>[g,rules.filter(r=>r.category===g).length])),{
  RP:17,CHAT:17,TCHAT:2,ABUSE:6,ALERT:7
