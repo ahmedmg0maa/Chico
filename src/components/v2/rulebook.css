@@ -99,27 +99,38 @@
 @media(prefers-reduced-motion:reduce){.rb-card{transition:none}.rb-card:hover{transform:none}.rb-dialog::backdrop{backdrop-filter:none}}
 
 
-/* Compact source-first command cards: code / English menu name / sanction / small Arabic. */
-.rb .rb-grid{grid-template-columns:repeat(auto-fill,minmax(min(100%,268px),1fr));gap:13px}
-.rb .rb-card.rb-code-first{min-height:256px;padding:15px 16px 13px;border-color:#544b42;background:linear-gradient(150deg,#252327,#18191d 86%)}
-.rb-code-first .rb-card-top{margin-bottom:9px}
-.rb-code-first .rb-card-code{font-size:1rem;font-weight:850;letter-spacing:.055em;padding:8px 12px;color:#f7dfb7;border-color:#9f7f50;background:linear-gradient(150deg,#4c3927,#242222)}
-.rb-code-first .rb-command-stack{display:flex;flex-direction:column;align-items:flex-start;gap:6px;min-width:0}
-.rb-code-first h4.rb-command-name{font-size:1.08rem;line-height:1.3;font-weight:850;color:#f9f4eb;margin:0;letter-spacing:-.01em;overflow-wrap:anywhere;text-align:left;width:100%}
-.rb-code-first .rb-command-sanction{display:inline-flex;align-items:center;min-height:34px;padding:6px 12px;background:color-mix(in srgb,var(--rb-accent) 12%,#14181a);color:var(--rb-accent);border:1px solid color-mix(in srgb,var(--rb-accent) 48%,transparent);border-radius:9px;font-size:1rem;font-weight:850;line-height:1.4;letter-spacing:.015em;text-align:left;max-width:100%;white-space:normal;overflow-wrap:anywhere}
-.rb-code-first .rb-english-unverified{font-size:.63rem;line-height:1.6;color:#c3a880;letter-spacing:0}
-.rb-code-first .rb-arabic-mini{display:flex;flex-direction:column;gap:4px;margin:11px 0 4px;padding:9px 0 0;border-top:1px solid #4d453d;min-width:0}
-.rb-code-first .rb-arabic-mini p{display:flex;align-items:flex-start;gap:7px;margin:0;text-align:right;white-space:normal;color:#c2bab1}
-.rb-code-first .rb-arabic-mini .rb-discord-prefix{display:inline-block;flex:none;color:#b89d79;font-size:.7rem;font-weight:760;line-height:1.6}
-.rb-code-first .rb-arabic-mini .rb-arabic-title{font-size:.7rem;line-height:1.65;font-weight:730;color:#e8ddd0}
-.rb-code-first .rb-arabic-mini .rb-arabic-desc{font-size:.65rem;line-height:1.7;font-weight:460;color:#c7beb4}
-.rb-code-first .rb-arabic-desc>span:last-child{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;white-space:pre-line;overflow-wrap:anywhere;min-width:0}
-.rb-code-first .rb-card-foot{margin-top:auto;padding-top:12px;gap:10px;border-top:0}
-.rb-code-first .rb-card-foot button{display:inline-flex;align-items:center;gap:5px;font-size:.75rem;font-weight:750;white-space:nowrap}
-.rb-code-first .rb-card-foot button:last-child{color:#aedad6}
+/* Readable rule cards: clarity first, 2-up on typical desktops, no copy controls. */
+.rb .rb-grid{grid-template-columns:repeat(auto-fill,minmax(min(100%,350px),1fr));gap:18px}
+.rb .rb-card.rb-code-first{min-height:330px;padding:22px 24px 19px;gap:0;border-color:#66594b;background:linear-gradient(150deg,#292629,#1a1b1e 88%);box-shadow:0 10px 26px #0005,inset 0 1px #ffffff10}
+.rb-code-first .rb-card-top{margin-bottom:17px}
+.rb-code-first .rb-card-code{font-size:1.2rem;line-height:1.25;font-weight:850;letter-spacing:.045em;padding:9px 16px;color:#ffe4b5;border-color:#b39163;background:linear-gradient(150deg,#534029,#282423)}
+.rb-code-first .rb-command-stack{display:flex;flex-direction:column;align-items:flex-start;gap:10px;min-width:0}
+.rb-code-first h4.rb-command-name{font-size:clamp(1.18rem,1.5vw,1.37rem);line-height:1.4;font-weight:850;color:#fffaf2;margin:0;letter-spacing:0;overflow-wrap:anywhere;text-align:left;width:100%}
+.rb-code-first .rb-command-sanction{display:inline-flex;align-items:center;min-height:43px;padding:9px 15px;background:color-mix(in srgb,var(--rb-accent) 14%,#161a1c);color:var(--rb-accent);border:1px solid color-mix(in srgb,var(--rb-accent) 55%,transparent);border-radius:10px;font-size:1.1rem;font-weight:850;line-height:1.45;text-align:left;max-width:100%;white-space:normal;overflow-wrap:anywhere}
+.rb-code-first .rb-english-unverified{font-size:.83rem;line-height:1.7;color:#e3c494;font-weight:570}
+.rb-code-first .rb-arabic-mini{display:flex;flex-direction:column;gap:10px;margin:20px 0 16px;padding:16px 0 0;border-top:1px solid #655749;min-width:0}
+.rb-code-first .rb-arabic-mini p{display:flex;align-items:flex-start;gap:10px;margin:0;text-align:right;white-space:normal}
+.rb-code-first .rb-arabic-mini .rb-discord-prefix{display:inline-block;flex:none;color:#e4bc84;font-size:.94rem;font-weight:800;line-height:1.75}
+.rb-code-first .rb-arabic-mini .rb-arabic-title{font-size:1rem;line-height:1.8;font-weight:760;color:#f5e6d6}
+.rb-code-first .rb-arabic-mini .rb-arabic-desc{font-size:.94rem;line-height:1.95;font-weight:500;color:#e2d7cc}
+.rb-code-first .rb-arabic-desc>span:last-child{display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden;white-space:pre-line;overflow-wrap:anywhere;min-width:0}
+.rb-code-first .rb-card-foot{display:flex;justify-content:flex-start;margin-top:auto;padding-top:16px;gap:0;border-top:1px solid #544a40}
+.rb-code-first .rb-card-foot button{display:inline-flex;align-items:center;gap:9px;min-height:42px;font-size:.96rem;font-weight:800;color:#f7d9ad}
 .rb-code-first .rb-card-foot button:hover{color:#fff}
-.rb-dialog .rb-dialog-command{display:flex;flex-direction:column;align-items:flex-start;gap:8px;margin-bottom:20px;padding:14px;border-radius:11px;border:1px solid #665b50;background:#28272a}
-.rb-dialog .rb-dialog-command strong{font-size:1.13rem;line-height:1.5;color:#f4ede6;overflow-wrap:anywhere}
-.rb-dialog .rb-dialog-command span{display:inline-block;font-size:1rem;font-weight:850;color:#ddbe8b;line-height:1.6}
-@media(max-width:700px){.rb .rb-grid{grid-template-columns:repeat(auto-fill,minmax(min(100%,250px),1fr))}}
-@media(max-width:430px){.rb .rb-grid{grid-template-columns:minmax(0,1fr)}.rb .rb-card.rb-code-first{min-height:235px}.rb-code-first .rb-arabic-mini .rb-arabic-desc{font-size:.68rem}}
+.rb-dialog .rb-dialog-command{display:flex;flex-direction:column;align-items:flex-start;gap:10px;margin-bottom:24px;padding:18px;border-radius:11px;border:1px solid #746353;background:#29272a}
+.rb-dialog .rb-dialog-command strong{font-size:1.32rem;line-height:1.55;color:#fff5e8;overflow-wrap:anywhere}
+.rb-dialog .rb-dialog-command span{display:inline-block;font-size:1.14rem;font-weight:850;color:#f1cf9b;line-height:1.6}
+.rb-dialog .rb-dialog-body>p{font-size:1.04rem;line-height:2}
+.rb-dialog .rb-dialog-body h3{font-size:1rem}
+.rb-dialog .rb-dialog-penalty{font-size:1.04rem}
+.rb-dialog .rb-close{font-size:1rem;min-width:110px}
+.rb .rb-group-pill{font-size:.92rem}
+.rb .rb-kind-controls button{font-size:.92rem}
+.rb .rb-search input{font-size:1rem}
+.rb .rb-result-bar{font-size:.92rem}
+.rb .rb-section-head p{font-size:.88rem}
+.rb .rb-section-count{font-size:.87rem}
+.rb .rb-source-note{font-size:.86rem}
+@media(max-width:800px){.rb .rb-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr))}}
+@media(max-width:540px){.rb .rb-grid{grid-template-columns:minmax(0,1fr)}.rb .rb-card.rb-code-first{min-height:0;padding:19px 18px}.rb-code-first .rb-arabic-mini .rb-arabic-desc{font-size:.96rem}.rb-code-first h4.rb-command-name{font-size:1.25rem}}
+@media(prefers-reduced-motion:reduce){.rb .rb-card.rb-code-first:hover{transform:none}}
