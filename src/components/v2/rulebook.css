@@ -134,3 +134,17 @@
 @media(max-width:800px){.rb .rb-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr))}}
 @media(max-width:540px){.rb .rb-grid{grid-template-columns:minmax(0,1fr)}.rb .rb-card.rb-code-first{min-height:0;padding:19px 18px}.rb-code-first .rb-arabic-mini .rb-arabic-desc{font-size:.96rem}.rb-code-first h4.rb-command-name{font-size:1.25rem}}
 @media(prefers-reduced-motion:reduce){.rb .rb-card.rb-code-first:hover{transform:none}}
+
+
+/* Academy concise-first rule cards. Detailed Arabic remains in the detail dialog. */
+.rb .rb-grid{grid-template-columns:repeat(auto-fill,minmax(min(100%,290px),1fr));gap:14px}
+.rb .rb-card.rb-code-first.rb-card--compact{min-height:235px;padding:19px 21px 13px;gap:0}
+.rb-card--compact .rb-card-top{margin-bottom:15px}
+.rb-card--compact .rb-command-stack{gap:11px}
+.rb-card--compact h4.rb-command-name{font-size:1.22rem;line-height:1.48;min-height:0;text-align:left}
+.rb-card--compact .rb-command-sanction{font-size:1.08rem;line-height:1.5;min-height:41px;padding:8px 13px}
+.rb-card--compact .rb-card-foot{margin-top:auto;padding-top:10px}
+.rb-card--compact .rb-card-foot button{min-height:42px;font-size:.91rem}
+.rb-dialog .rb-english-unverified{display:block;margin-top:3px;color:#f0cd97;font-size:.85rem;font-weight:650;line-height:1.7}
+@media(max-width:800px){.rb .rb-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr))}}
+@media(max-width:540px){.rb .rb-grid{grid-template-columns:minmax(0,1fr)}.rb .rb-card.rb-code-first.rb-card--compact{min-height:205px;padding:18px 20px 13px}}
