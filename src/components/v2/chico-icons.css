@@ -16,3 +16,7 @@
  .chico-v2 button:hover:not(:disabled) .chico-glyph,.chico-v2 button:hover:not(:disabled)>.lucide{transform:translateY(-1px)}
 }
 .studio.rail-folded .rail-group button .chico-glyph{display:inline-grid}
+
+.chico-v2 .grade-glyph{display:inline-block;vertical-align:middle;flex:none;width:1.1rem;height:1.1rem}
+.chico-v2 .ct-rank>.grade-glyph{width:78%;height:78%}
+.grade-helper{color:#76d9a4}.grade-senior{color:#81c5ff}.grade-moderator{color:#c69af2}.grade-administrator{color:#f1c47e}.grade-responsible{color:#efa9a7}

@@ -11,11 +11,8 @@
  .studio .x-sidebar-open .x-nav-link{min-height:44px;gap:7px}
 }
 
-.studio .section-panorama{display:block;width:100%;height:clamp(115px,14vw,208px);object-fit:cover;object-position:25% center;border-radius:12px 12px 0 0;border-bottom:1px solid #b2925e}
-.studio .studio-workspace:has(.section-panorama) :is(.studio-heading,.ct-workspace-mast,.v9-tools-top,.ct-admin-head,.ct-salary-head,.v9-poster-intro){background:#191819;min-height:0;border-radius:0 0 9px 9px;padding:14px 18px}
 .studio .command-heading .command-emblem .ct-wolf-float img{width:100%;height:100%;max-width:none;mask-image:none;object-fit:cover;object-position:27% center}
 .studio .studio-workspace :is(.ct-workspace-identity,.studio-heading)>.v8-symbol{display:none}
-@media(max-width:650px){.studio .section-panorama{height:100px;object-position:20% center}.studio .command-heading .command-emblem .ct-wolf-float img{object-position:20% center}}
 
 .studio .ct-directory>.team-mast{grid-column:1/-1;isolation:isolate;position:relative;display:flex;align-items:center;min-height:clamp(132px,12vw,184px);padding:22px clamp(20px,3vw,44px);overflow:hidden;border-radius:12px;background:#181517;border:1px solid #65503a}
 .team-mast>img{position:absolute;left:0;top:0;width:65%;height:100%;object-fit:cover;object-position:35% 37%;mask-image:linear-gradient(90deg,#000 57%,transparent);z-index:-1}
@@ -24,3 +21,15 @@
 .studio .member-monogram{display:inline-grid;place-items:center;flex:none;width:34px;height:34px;border-radius:50%;color:#f3eddf;background:linear-gradient(145deg,#3b3b3b,#222329);border:1px solid #797066;border-bottom:2px solid var(--mark-accent,#d0ae77);font:650 .84rem/1 system-ui,sans-serif;letter-spacing:.025em}
 .member-monogram.mark-helper{--mark-accent:#72bfa0}.member-monogram.mark-senior{--mark-accent:#77ace0}.member-monogram.mark-moderator{--mark-accent:#b397d3}
 @media(max-width:650px){.studio .ct-directory>.team-mast{min-height:115px;margin-bottom:12px}.team-mast>img{width:65%;object-position:18% 45%}}
+
+.studio .studio-workspace.ct-workspace-excel >.studio-heading {background:linear-gradient(270deg,#121115f2 4%,#141317b3 47%,#100e1129),url("/assets/banners/excel.webp") 24% center/cover!important;min-height:clamp(100px,10vw,155px);border:1px solid #65513d;border-radius:12px;padding:clamp(14px,2vw,28px);color:#fff}
+.studio .studio-workspace.ct-workspace-server >.studio-heading {background:linear-gradient(270deg,#121115f2 4%,#141317b3 47%,#100e1129),url("/assets/banners/server.webp") 24% center/cover!important;min-height:clamp(100px,10vw,155px);border:1px solid #65513d;border-radius:12px;padding:clamp(14px,2vw,28px);color:#fff}
+.studio .studio-workspace.ct-workspace-weeks >.studio-heading {background:linear-gradient(270deg,#121115f2 4%,#141317b3 47%,#100e1129),url("/assets/banners/weeks.webp") 24% center/cover!important;min-height:clamp(100px,10vw,155px);border:1px solid #65513d;border-radius:12px;padding:clamp(14px,2vw,28px);color:#fff}
+.studio .studio-workspace.ct-workspace-alerts >.studio-heading {background:linear-gradient(270deg,#121115f2 4%,#141317b3 47%,#100e1129),url("/assets/banners/alerts.webp") 24% center/cover!important;min-height:clamp(100px,10vw,155px);border:1px solid #65513d;border-radius:12px;padding:clamp(14px,2vw,28px);color:#fff}
+.studio .studio-workspace.ct-workspace-settings >.studio-heading {background:linear-gradient(270deg,#121115f2 4%,#141317b3 47%,#100e1129),url("/assets/banners/settings.webp") 24% center/cover!important;min-height:clamp(100px,10vw,155px);border:1px solid #65513d;border-radius:12px;padding:clamp(14px,2vw,28px);color:#fff}
+.studio .studio-workspace.ct-workspace-operations .v9-tools-top {background:linear-gradient(270deg,#121115f2 4%,#141317b3 47%,#100e1129),url("/assets/banners/operations.webp") 24% center/cover!important;min-height:clamp(100px,10vw,155px);border:1px solid #65513d;border-radius:12px;padding:clamp(14px,2vw,28px);color:#fff}
+.studio .studio-workspace.ct-workspace-daily .v9-poster-intro {background:linear-gradient(270deg,#121115f2 4%,#141317b3 47%,#100e1129),url("/assets/banners/daily.webp") 24% center/cover!important;min-height:clamp(100px,10vw,155px);border:1px solid #65513d;border-radius:12px;padding:clamp(14px,2vw,28px);color:#fff}
+.studio .studio-workspace.ct-workspace-reports .v9-poster-intro {background:linear-gradient(270deg,#121115f2 4%,#141317b3 47%,#100e1129),url("/assets/banners/reports.webp") 24% center/cover!important;min-height:clamp(100px,10vw,155px);border:1px solid #65513d;border-radius:12px;padding:clamp(14px,2vw,28px);color:#fff}
+.studio .studio-workspace.ct-workspace-updates .v9-entry-card>.v9-entry-heading {background:linear-gradient(270deg,#121115f2 4%,#141317b3 47%,#100e1129),url("/assets/banners/updates.webp") 24% center/cover!important;min-height:clamp(100px,10vw,155px);border:1px solid #65513d;border-radius:12px;padding:clamp(14px,2vw,28px);color:#fff}
+.studio .studio-workspace.ct-workspace-academy .ct-academy>.ct-admin-head {background:linear-gradient(270deg,#121115f2 4%,#141317b3 47%,#100e1129),url("/assets/banners/academy.webp") 24% center/cover!important;min-height:clamp(100px,10vw,155px);border:1px solid #65513d;border-radius:12px;padding:clamp(14px,2vw,28px);color:#fff}
+.studio .studio-workspace.ct-workspace-salary .ct-salary>.ct-salary-head {background:linear-gradient(270deg,#121115f2 4%,#141317b3 47%,#100e1129),url("/assets/banners/salary.webp") 24% center/cover!important;min-height:clamp(100px,10vw,155px);border:1px solid #65513d;border-radius:12px;padding:clamp(14px,2vw,28px);color:#fff}

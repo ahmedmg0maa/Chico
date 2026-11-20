@@ -43,16 +43,21 @@ export function CommandIcon({name,compact=false,className=''}:IconProps){
  </span>;
 }
 const grades={
- helper:'m7 14 5-4 5 4',senior:'m7 11 5-4 5 4m-10 5 5-4 5 4',
- moderator:'m12 6 4 6-4 5-4-5z',administrator:'M7 9l3 2 2-5 2 5 3-2-1 7H8z',
- responsible:'m12 6 5 6-5 6-5-6z M12 10v4'
+ helper:'M3 6l9 6 9-6v5l-9 6-9-6z',
+ senior:'M3 3l9 5 9-5v4l-9 5-9-5z M3 12l9 5 9-5v4l-9 5-9-5z',
+ moderator:'M12 2l8 9-8 11-8-11z M12 7l-3 4 3 5 3-5z',
+ administrator:'M3 7l5 4 4-8 4 8 5-4-2 10H5z M6 21h12',
+ responsible:'M12 2l2.4 6.6 7 .4-5.5 4.6 1.9 7-5.8-4.1-5.8 4.1 1.9-7L2.6 9l7-.4z'
 };
+export function RankGlyph({rank}:{rank:Rank}){
+ return <svg className={'grade-glyph grade-'+rankToken(rank)} viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="currentColor" fillOpacity=".24" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round"><path d={grades[rankToken(rank)]} fillRule="evenodd"/></svg>;
+}
 export function RankInsignia({rank,compact=false}:{rank:Rank;compact?:boolean}){
  const token=rankToken(rank);
  return <span className={'v8-insignia ct-rank ct-signature-rank v8-rank--'+token+' '+(compact?'v8-insignia--compact':'')} role="img" aria-label={'رتبة '+rank} title={rank}>
- <svg viewBox="0 0 24 26" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round"><path d="M12 2l9 3v8q0 6-9 11-9-5-9-11V5z" fill="currentColor" fillOpacity=".13"/><path d={grades[token]} strokeWidth="2.2" strokeLinecap="round"/></svg>
+ <RankGlyph rank={rank}/>
  </span>;
 }
 export function RankLabel({rank}:{rank:Rank}){
- return <span className={'v8-rank-label v8-rank--'+rankToken(rank)}><span className="v8-rank-label-dot"/>{rank}</span>;
+ return <span className={'v8-rank-label v8-rank--'+rankToken(rank)}><RankGlyph rank={rank}/>{rank}</span>;
 }

@@ -3,7 +3,7 @@
 import {useEffect,useState,useRef,type PointerEvent} from 'react';
 import ExecutiveWeeklyChart from '../v2/ExecutiveWeeklyChart';
 import WolfOrbit from './WolfOrbit';
-import {CommandIcon,RankInsignia} from '../v2/ChicoVisualLanguage';
+import {CommandIcon,RankInsignia,RankLabel} from '../v2/ChicoVisualLanguage';
 import type {Tab} from '../v2/ExecutiveCommand';
 import type {Rank,Reading} from '@/lib/types';
 
@@ -52,7 +52,7 @@ function Podium({title,leaders,onOpen,onTeam,variant}:{title:string;leaders:Lead
  return <section className={'leader-list '+variant} aria-label={title}>
   <header><h2 dir="ltr">{title}</h2><button type="button" onClick={onTeam}>الفريق</button></header>
   <ol>{leaders.map((r,i)=><li key={r.id}><button type="button" onClick={()=>onOpen(r.id)}>
-   <span className="leader-place">{i+1}</span><span className="leader-name" dir="auto">{r.name}<small>{r.rank}</small></span><b>{display(r.tickets)} <small>Tickets</small></b></button></li>)}</ol>
+   <span className="leader-place">{i+1}</span><span className="leader-name" dir="auto">{r.name}<small><RankLabel rank={r.rank}/></small></span><b>{display(r.tickets)} <small>Tickets</small></b></button></li>)}</ol>
   {!leaders.length&&<p>يظهر الترتيب بعد تسجيل التذاكر.</p>}
  </section>;
 }

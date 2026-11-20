@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 import type {Admin,Rank} from '@/lib/types';
 import {RANKS} from '@/lib/types';
-import {CommandIcon,RankInsignia,RankLabel,rankToken} from './ChicoVisualLanguage';
+import {CommandIcon,RankInsignia,RankGlyph,RankLabel,rankToken} from './ChicoVisualLanguage';
 import ModalPortal from './ModalPortal';
 import {applyLocalRosterChange,LOCAL_ROSTER_HISTORY_KEY,type LocalRosterEvent,type LocalRosterAction} from '@/lib/localRoster';
 
@@ -191,7 +191,7 @@ export default function ExecutiveTeamStudio({admins,rows,review,onRefresh,onPrev
    </div>
    <div className="nx-filter-strip" role="group" aria-label="فلترة حالة الإداري">{([{id:'all',label:'الكل',count:rows.length},{id:'active',label:'نشط',count:rows.filter(r=>r.active).length},{id:'inactive',label:'غير نشط',count:rows.filter(r=>!r.active).length},{id:'unreported',label:'بلا قراءات',count:rows.filter(r=>r.lastUpdate===null).length}] as const).map(t=><button key={t.id} type="button" aria-pressed={status===t.id} onClick={()=>{setStatus(t.id);setPage(1);}}>{t.label}<b>{t.count}</b></button>)}</div>
    <div className="v7-role-filter" role="group" aria-label="فلترة حسب الرتب">
-    {[{id:'all',label:'الكل'},...RANKS.map(r=>({id:r,label:r}))].map(r=><button key={r.id} type="button" className={(rank===r.id?'active ':'')+(r.id==='all'?'':'v8-rank-filter v8-rank--'+rankToken(r.id as Rank))} onClick={()=>setFilterRole(r.id as 'all'|Rank)}>{r.label}<b>{r.id==='all'?rows.length:rows.filter(a=>a.rank===r.id).length}</b></button>)}
+    {[{id:'all',label:'الكل'},...RANKS.map(r=>({id:r,label:r}))].map(r=><button key={r.id} type="button" className={(rank===r.id?'active ':'')+(r.id==='all'?'':'v8-rank-filter v8-rank--'+rankToken(r.id as Rank))} onClick={()=>setFilterRole(r.id as 'all'|Rank)}>{r.id!=='all'&&<RankGlyph rank={r.id as Rank}/>} {r.label}<b>{r.id==='all'?rows.length:rows.filter(a=>a.rank===r.id).length}</b></button>)}
    </div>
    {showAdvanced&&<div className="v7-advanced-filter">
     <label><Filter size={16}/>حالة الإداري <select value={status} onChange={e=>{setStatus(e.target.value as typeof status);setPage(1);}}><option value="all">الكل</option><option value="active">نشط</option><option value="inactive">غير نشط</option><option value="unreported">بلا قراءات مسجلة</option></select></label>
