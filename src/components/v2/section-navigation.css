@@ -1,38 +1,18 @@
-.ct-workspace-dashboard{--section-art:url("/assets/sections/dashboard.webp")}
-.ct-workspace-team{--section-art:url("/assets/sections/team.webp")}
-.ct-workspace-operations{--section-art:url("/assets/sections/operations.webp")}
-.ct-workspace-updates{--section-art:url("/assets/sections/updates.webp")}
-.ct-workspace-excel{--section-art:url("/assets/sections/excel.webp")}
-.ct-workspace-server{--section-art:url("/assets/sections/server.webp")}
-.ct-workspace-daily{--section-art:url("/assets/sections/daily.webp")}
-.ct-workspace-reports{--section-art:url("/assets/sections/reports.webp")}
-.ct-workspace-weeks{--section-art:url("/assets/sections/weeks.webp")}
-.ct-workspace-alerts{--section-art:url("/assets/sections/alerts.webp")}
-.ct-workspace-settings{--section-art:url("/assets/sections/settings.webp")}
-.ct-workspace-salary{--section-art:url("/assets/sections/salary.webp")}
-.ct-workspace-academy{--section-art:url("/assets/sections/academy.webp")}
-.studio .studio-workspace :is(.studio-heading:not(.compact),.ct-workspace-mast,.ct-salary-head,.v9-poster-intro,.v9-tools-top,.ct-admin-head),.studio .ct-workspace-updates .v9-entry-card .v9-entry-heading{
- background:linear-gradient(90deg,transparent 0%,#15141822 12%,#151418 40%),var(--section-art) left center/auto 100% no-repeat,#151418;
- padding-inline-end:clamp(70px,18%,240px);min-height:100px;border-radius:12px 3px;border:1px solid #61513e
-}
-.studio .ct-salary .ct-salary-head{background:linear-gradient(270deg,transparent,#151418 40%),var(--section-art) right center/auto 100% no-repeat,#151418}
-.studio .section-thumb{width:40px;height:28px;flex:none;object-fit:cover;border-radius:5px;box-shadow:0 0 0 1px #dac49e32}
 .studio .rail-search{display:flex;align-items:center;gap:10px;padding:9px;color:#e6d9c7;background:#222023;border:1px solid #514638;border-radius:7px}
 .studio.rail-folded .rail-search span{display:none}
 @media(min-width:960px){
  .studio .studio-rail{margin:10px 0 10px 8px;top:10px;height:calc(100dvh - 20px);border:1px solid #554839;border-radius:14px;padding:8px;box-shadow:0 8px 25px #0004}
  .studio .rail-group button{gap:8px;min-height:40px}
  .studio.rail-folded .rail-group button{justify-content:center;padding-inline:0}
- .studio.rail-folded .section-thumb{width:32px;height:25px}
 }
 @media(max-width:959px){
  .studio .x-sidebar.x-sidebar-open{inset:auto 0 0;width:100%;height:auto;max-height:84dvh;border:1px solid #67563e;border-radius:18px 18px 0 0;background:#19191d;overflow-y:auto;padding-bottom:env(safe-area-inset-bottom)}
  .studio .x-sidebar-open .v12-nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;overflow-y:auto}
  .studio .x-sidebar-open .x-nav-link{min-height:44px;gap:7px}
 }
-@media(max-width:650px){
- .studio .studio-workspace :is(.studio-heading:not(.compact),.ct-workspace-mast,.ct-salary-head,.v9-poster-intro,.v9-tools-top,.ct-admin-head),.studio .ct-workspace-updates .v9-entry-card .v9-entry-heading{padding:12px;background-image:linear-gradient(90deg,#13121699,#131216f5 65%),var(--section-art)}
-}
-.studio .rail-group button .section-thumb,.studio .x-nav-link .section-thumb{order:2;margin-inline-start:auto;width:34px;height:24px}
-.studio.rail-folded .rail-group button .section-thumb{display:none}
-@media(max-width:480px){.studio .x-nav-link .section-thumb{display:none}}
+
+.studio .section-panorama{display:block;width:100%;height:clamp(115px,14vw,208px);object-fit:cover;object-position:25% center;border-radius:12px 12px 0 0;border-bottom:1px solid #b2925e}
+.studio .studio-workspace:has(.section-panorama) :is(.studio-heading,.ct-workspace-mast,.v9-tools-top,.ct-admin-head,.ct-salary-head,.v9-poster-intro){background:#191819;min-height:0;border-radius:0 0 9px 9px;padding:14px 18px}
+.studio .command-heading .command-emblem .ct-wolf-float img{width:100%;height:100%;max-width:none;mask-image:none;object-fit:cover;object-position:27% center}
+.studio .studio-workspace :is(.ct-workspace-identity,.studio-heading)>.v8-symbol{display:none}
+@media(max-width:650px){.studio .section-panorama{height:100px;object-position:20% center}.studio .command-heading .command-emblem .ct-wolf-float img{object-position:20% center}}

@@ -69,7 +69,7 @@ export function WolfStage({immersive=false}:{immersive?:boolean}={}){
  function reset(){cancelAnimationFrame(frame.current);ref.current?.style.setProperty('--wolf-x','0deg');ref.current?.style.setProperty('--wolf-y','0deg');}
  return <div className="ct-wolf-theater" ref={ref} onPointerMove={move} onPointerLeave={reset}>
   {immersive&&<WolfOrbit/>}
-  <div className="ct-theater-light" aria-hidden="true"/><div className="ct-theater-ring ct-ring-outer" aria-hidden="true"/><div className="ct-theater-ring ct-ring-inner" aria-hidden="true"/><div className="ct-theater-orbit" aria-hidden="true"/><div className="ct-wolf-float"><div className="ct-wolf-parallax"><img src={immersive?"/assets/chico-atelier-wolf.webp":"/assets/chico-noble-wolf.svg"} alt="شعار الذئب CHICO TEAM" width={434} height={368} decoding="async"/></div></div><div className="ct-theater-platform" aria-hidden="true"><span/><i/></div>
+  <div className="ct-theater-light" aria-hidden="true"/><div className="ct-theater-ring ct-ring-outer" aria-hidden="true"/><div className="ct-theater-ring ct-ring-inner" aria-hidden="true"/><div className="ct-theater-orbit" aria-hidden="true"/><div className="ct-wolf-float"><div className="ct-wolf-parallax"><img src={immersive?"/assets/banners/dashboard.webp":"/assets/chico-noble-wolf.svg"} alt="شعار الذئب CHICO TEAM" width={434} height={368} decoding="async"/></div></div><div className="ct-theater-platform" aria-hidden="true"><span/><i/></div>
  </div>;
 }
 

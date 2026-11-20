@@ -239,7 +239,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
     <button type="button" className="rail-brand" onClick={()=>open('dashboard')} aria-label="مركز القيادة"><img src="/assets/chico-command-mark.webp" alt="" width="38" height="42"/><b dir="ltr">CHICO TEAM</b></button>
     <button type="button" className="rail-search" title="بحث سريع" aria-label="بحث سريع" onClick={()=>setSearchOpen(true)}><Search size={18}/><span>بحث سريع</span></button>
     <div className="rail-groups">{navigationGroups.map(group=><div className="rail-group" key={group.en} aria-label={group.label}>
-      {group.items.map(id=>{const item=links.find(link=>link.id===id)!;return <button key={id} type="button" title={item.label} aria-label={item.label} aria-current={tab===id?'page':undefined} onClick={()=>open(id)}><CommandIcon name={id} compact/><img className="section-thumb" src={'/assets/sections/'+id+'.webp'} alt="" width={40} height={28}/><span>{item.label}</span></button>})}
+      {group.items.map(id=>{const item=links.find(link=>link.id===id)!;return <button key={id} type="button" title={item.label} aria-label={item.label} aria-current={tab===id?'page':undefined} onClick={()=>open(id)}><CommandIcon name={id} compact/><span>{item.label}</span></button>})}
     </div>)}</div>
     <button type="button" className="rail-fold" aria-expanded={!railCollapsed} onClick={()=>setRailCollapsed(v=>!v)} aria-label={railCollapsed?'توسيع القائمة':'طي القائمة'}><Menu size={18}/><span>طي القائمة</span></button>
    </nav>
@@ -253,7 +253,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
         const item=links.find(link=>link.id===id);
         if(!item)return null;
         return <button type="button" key={id} className={'x-nav-link '+(tab===id?'x-nav-active':'')} onClick={()=>open(id)} aria-current={tab===id?'page':undefined}>
-         <CommandIcon name={id} compact/><img className="section-thumb" src={'/assets/sections/'+id+'.webp'} alt="" width={40} height={28}/><span><b>{item.label}</b></span>
+         <CommandIcon name={id} compact/><span><b>{item.label}</b></span>
         </button>;
        })}
       </section>
@@ -276,6 +276,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
        onPointerMove={spotlight.onPointerMove} onPointerLeave={spotlight.onPointerLeave}
        initial={{opacity:0,y:12}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-8}}
        transition={{duration:0.22,ease:[0.22,1,0.36,1]}}> 
+     {tab!=='dashboard'&&<img className="section-panorama" src={'/assets/banners/'+tab+'.webp'} alt="" width={1024} height={213}/>}
      {error&&<div className="x-error"><AlertTriangle size={17}/>{error}<button onClick={()=>void refresh()}>إعادة المحاولة</button></div>}
      {notice&&<div className="x-inline-notice"><Shield size={18}/>{notice}<button onClick={()=>setNotice('')}><X size={17}/></button></div>}
      {tab==='dashboard'&&<>
