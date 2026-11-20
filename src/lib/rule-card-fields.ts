@@ -51,12 +51,3 @@ export function getCardCommand(rule:RulebookEntry):CardCommand{
  return {code,englishName:'Not listed in command table',
   punishmentCode:'See full punishment',isGameMenuName:false,source:'written'};
 }
-export function copyCardText(rule:RulebookEntry){
- const cmd=getCardCommand(rule);
- const desc=rule.source==='legacy' && !rule.description.trim() ?
-  'التفاصيل غير مذكورة في الجدول الأصلي.' :rule.description;
- const lines=[cmd.code,cmd.englishName,cmd.punishmentCode,
- '-# '+rule.title,...desc.split(/\r?\n/).map(line=>'-# '+line)];
- if(!cmd.isGameMenuName)lines.push('-# الاسم الإنجليزي وصفي وليس اسمًا موثقًا داخل قائمة اللعبة.');
- return lines.join('\n');
-}

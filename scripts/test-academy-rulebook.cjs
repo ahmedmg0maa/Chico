@@ -25,7 +25,7 @@ const academy=read('src/components/v2/AcademyCenter.tsx');
 const style=read('src/components/v2/rulebook.css');
 assert(ui.includes('ALL_ACADEMY_RULES')&&ui.includes('legacyExtras')&&ui.includes('source:\'legacy\''));
 assert(ui.includes('rb-grid')&&ui.includes('rb-card')&&ui.includes('rb-search')&&ui.includes('rb-dialog'));
-assert(ui.includes('navigator.clipboard.writeText')&&ui.includes('showModal()')&&ui.includes('aria-pressed'));
+assert(!ui.includes('navigator.clipboard.writeText')&&!ui.includes('copyCardText')&&ui.includes('showModal()')&&ui.includes('aria-pressed'));
 assert(academy.includes("tab==='rules'?<RulebookCards/>")&&!academy.includes('ct-academy-table'));
 assert(academy.includes('ct-academy-lessons')&&academy.includes('LESSONS.map')&&academy.includes('video controls'));
 assert(style.includes('grid-template-columns')&&style.includes('@media(max-width:700px)')&&style.includes('prefers-reduced-motion'));

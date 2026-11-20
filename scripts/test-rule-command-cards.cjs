@@ -34,9 +34,7 @@ for(const r of entries){
  assert(v.code.length>3&&v.englishName&&v.punishmentCode,r.code);
  assert(!v.englishName.includes('Not listed'),r.code);
  assert(!v.punishmentCode.includes('See full'),r.code);
- const copied=card.copyCardText(r);
- assert(copied.startsWith(v.code+'\n'+v.englishName+'\n'+v.punishmentCode+'\n-# '+r.title),r.code);
- assert(copied.includes('\n-# '),r.code);
+ assert(v.code.startsWith(r.category+' '),r.code);
 }
 const rp1=card.getCardCommand(rulebook.WRITTEN_RULES.find(r=>r.code==='RP1'));
 assert.deepEqual({code:rp1.code,name:rp1.englishName,punishment:rp1.punishmentCode},
@@ -50,6 +48,6 @@ assert.equal(card.getCardCommand(rulebook.WRITTEN_RULES.find(r=>r.code==='CHAT9'
 assert.equal(card.getCardCommand(rulebook.WRITTEN_RULES.find(r=>r.code==='ALERT7')).punishmentCode,'By senior administration');
 const ui=read('src/components/v2/RulebookCards.tsx'),css=read('src/components/v2/rulebook.css');
 assert(ui.includes('rb-command-name')&&ui.includes('rb-command-sanction')&&ui.includes('rb-discord-prefix'));
-assert(ui.includes('copyCardText')&&ui.includes('اسم وصفي غير موثق'));
-assert(css.includes('.rb-command-sanction')&&css.includes('.rb-arabic-desc')&&css.includes('font-size:.65rem'));
-console.log('PASS command cards: 58 cards; English names & sanction notation; full RP1 copy block; missing menu names visibly labeled; full written penalties intact.');
+assert(!ui.includes('copyCardText')&&!ui.includes('navigator.clipboard')&&!ui.includes('نسخ البطاقة')&&!ui.includes('نسخ كود')&&ui.includes('اسم وصفي غير موثق'));
+assert(css.includes('.rb-command-sanction')&&css.includes('.rb-arabic-desc')&&css.includes('font-size:.94rem')&&css.includes('min(100%,350px)'));
+console.log('PASS command cards: 58 cards; English names & sanction notation; readable hierarchy; no copy controls; missing menu names visibly labeled; full written penalties intact.');

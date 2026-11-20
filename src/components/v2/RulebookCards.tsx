@@ -1,8 +1,8 @@
 'use client';
 import {useMemo,useRef,useState} from 'react';
-import {BookOpen,Check,ChevronLeft,Copy,Filter,Search,ShieldAlert,X} from 'lucide-react';
+import {BookOpen,ChevronLeft,Filter,Search,ShieldAlert,X} from 'lucide-react';
 import {RULES} from '@/lib/academy';
-import {copyCardText,displayRuleCode,getCardCommand} from '@/lib/rule-card-fields';
+import {displayRuleCode,getCardCommand} from '@/lib/rule-card-fields';
 import {RULE_GROUPS,RULE_TYPE_LABELS,WRITTEN_RULES,type RulebookEntry,type RuleCategory,type RulePunishment} from '@/lib/rulebook';
 
 const allGroups:RuleCategory[]=['RP','CHAT','TCHAT','ABUSE','ALERT','NAME','CLAN'];
@@ -33,7 +33,6 @@ export default function RulebookCards(){
  const [group,setGroup]=useState<RuleCategory|'all'>('all');
  const [kind,setKind]=useState<RulePunishment|'all'>('all');
  const [search,setSearch]=useState('');
- const [copied,setCopied]=useState('');
  const [selected,setSelected]=useState<RulebookEntry|null>(null);
  const dialog=useRef<HTMLDialogElement>(null);
  const found=useMemo(()=>{
@@ -46,10 +45,6 @@ export default function RulebookCards(){
  },[group,kind,search]);
  const grouped=allGroups.map(id=>({id,items:found.filter(r=>r.category===id)})).filter(g=>g.items.length);
  const writtenCount=WRITTEN_RULES.length;
- async function copy(value:string,key:string){
-  try{await navigator.clipboard.writeText(value);setCopied(key);}
-  catch{setCopied('');}
- }
  function show(rule:RulebookEntry){setSelected(rule);dialog.current?.showModal();}
  function close(){dialog.current?.close();setSelected(null);}
  function clear(){setGroup('all');setKind('all');setSearch('');}
@@ -72,13 +67,13 @@ export default function RulebookCards(){
     <div className="rb-grid">{items.map(r=>{
      const cmd=getCardCommand(r);
      return <article key={r.code} className="rb-card rb-code-first" data-tone={penaltyTone(r)} data-source={r.source}>
-      <div className="rb-card-top"><span className="rb-card-code" dir="ltr">{cmd.code}</span><button className="rb-icon-btn" type="button" onClick={()=>void copy(r.code,r.code)} title={'نسخ '+cmd.code} aria-label={'نسخ كود '+cmd.code}>{copied===r.code?<Check size={16}/>:<Copy size={16}/>}</button></div>
+      <div className="rb-card-top"><span className="rb-card-code" dir="ltr">{cmd.code}</span></div>
       <div className="rb-command-stack"><h4 className="rb-command-name" dir="ltr">{cmd.englishName}</h4><strong className="rb-command-sanction" dir="ltr">{cmd.punishmentCode}</strong>{!cmd.isGameMenuName&&<small className="rb-english-unverified">اسم وصفي غير موثق في قائمة اللعبة</small>}</div>
       <div className="rb-arabic-mini">
        <p className="rb-arabic-title"><span className="rb-discord-prefix" dir="ltr">-#</span><span>{r.title}</span></p>
        <p className="rb-arabic-desc"><span className="rb-discord-prefix" dir="ltr">-#</span><span>{r.description}</span></p>
       </div>
-      <div className="rb-card-foot"><button type="button" onClick={()=>show(r)} aria-label={'عرض التفاصيل الكاملة لقاعدة '+r.code}>التفاصيل <ChevronLeft size={17}/></button><button type="button" onClick={()=>void copy(copyCardText(r),'card:'+r.code)} aria-label={'نسخ البطاقة كاملة '+r.code}>{copied==='card:'+r.code?<Check size={15}/>:<Copy size={15}/>} نسخ البطاقة</button></div>
+      <div className="rb-card-foot"><button type="button" onClick={()=>show(r)} aria-label={'عرض التفاصيل الكاملة لقاعدة '+r.code}>قراءة القانون كاملًا <ChevronLeft size={17}/></button></div>
      </article>;
     })}</div>
    </section>;
@@ -88,7 +83,7 @@ export default function RulebookCards(){
    {selected&&<div className="rb-dialog-content" dir="rtl">
     <header><div><span className="rb-card-code" dir="ltr">{displayRuleCode(selected.code)}</span><span className="rb-dialog-category">{groupTitle(selected.category)}</span></div><button type="button" onClick={close} aria-label="إغلاق التفاصيل"><X size={21}/></button></header>
     <div className="rb-dialog-body"><div className="rb-dialog-command"><strong dir="ltr">{getCardCommand(selected).englishName}</strong><span dir="ltr">{getCardCommand(selected).punishmentCode}</span></div><h2>{selected.title}</h2><h3>نص القاعدة</h3><p>{selected.description}</p><h3>العقوبة المعتمدة في المرجع</h3><div className="rb-dialog-penalty" data-tone={penaltyTone(selected)}>{selected.penalty}</div>{selected.source==='legacy'&&<p className="rb-legacy-explainer">هذا البند مأخوذ من الجدول القديم، وليس من النص المكتوب الجديد. يحتاج مطابقة قبل اعتماده.</p>}</div>
-    <footer><button type="button" className="rb-copy-full" onClick={()=>void copy(copyCardText(selected),'full:'+selected.code)}>{copied==='full:'+selected.code?<Check size={17}/>:<Copy size={17}/>} {copied==='full:'+selected.code?'تم النسخ':'نسخ القاعدة والعقوبة'}</button><button type="button" className="rb-close" onClick={close}>إغلاق</button></footer>
+    <footer><button type="button" className="rb-close" onClick={close}>إغلاق</button></footer>
    </div>}
   </dialog>
  </div>;
