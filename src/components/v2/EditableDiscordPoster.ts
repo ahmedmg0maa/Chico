@@ -7,38 +7,72 @@ function text(value:string,x:number,y:number,size:number,color='#f7ead4',anchor=
  const fit=width&&value.length*size*.65>width?' textLength="'+width+'" lengthAdjust="spacingAndGlyphs"':'';
  return '<text x="'+x+'" y="'+y+'" fill="'+color+'" font-family="'+font+'" font-size="'+size+'" font-weight="bold" text-anchor="'+anchor+'"'+fit+'>'+escape(value)+'</text>';
 }
-function plate(x:number,y:number,w:number,h:number,fill:string,stroke='url(#gold)',cut=10){
- return '<path d="M '+(x+cut)+' '+y+' h '+(w-2*cut)+' l '+cut+' '+cut+' v '+(h-2*cut)+' l -'+cut+' '+cut+' h -'+(w-2*cut)+' l -'+cut+' -'+cut+' v -'+(h-2*cut)+' Z" fill="'+fill+'" stroke="'+stroke+'" stroke-width="2"/>';
-}
 export async function posterMasthead(){
- const response=await fetch('/assets/chico-poster-masthead.jpg');
+ const response=await fetch('/assets/chico-atelier-wolf.webp');
  if(!response.ok)throw Error('masthead');
  const blob=await response.blob();
  return new Promise<string>((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result));reader.onerror=reject;reader.readAsDataURL(blob);});
 }
 export function editablePoster(rows:LuxuryPosterRow[],date:string,title:string,totals:PremiumTotals,accent:string,brand:string){
- const groups=buildReportGroups(rows),n=Math.max(3,...groups.map(g=>g.rows.length));
- const yTable=387,rowH=30,tableH=102+n*rowH,yTop=yTable+tableH+20,height=yTop+240;
- const red=/^#[0-9a-f]{6}$/i.test(accent)?accent:'#791b20';
- const parts=['<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1122" height="'+height+'" viewBox="0 0 1122 '+height+'"><title>'+escape(title)+'</title><defs><linearGradient id="gold" x2="1" y2="1" gradientUnits="objectBoundingBox"><stop stop-color="#a26723"/><stop offset=".22" stop-color="#ffdfa0"/><stop offset=".47" stop-color="#bc832e"/><stop offset=".73" stop-color="#ffe4a0"/><stop offset="1" stop-color="#885023"/></linearGradient><linearGradient id="ribbon"><stop stop-color="'+red+'"/><stop offset=".8" stop-color="#1c1214"/><stop offset="1" stop-color="#100f10"/></linearGradient></defs>'];
- parts.push('<rect width="1122" height="'+height+'" fill="#100f10"/>',plate(9,9,1104,height-18,'none'),'<image id="brand" x="0" y="0" width="1122" height="194" xlink:href="'+escape(brand)+'"/>');
- parts.push('<g id="report-heading">',plate(102,187,918,70,'url(#ribbon)'),text(title,561,232,36,'#ffe2a4','middle','Arial',840),plate(343,247,436,32,'#181419'),text(date,561,269,19),'</g>');
- ['TICKETS','FLAGS'].forEach((v,i)=>{const x=27+i*543;parts.push('<g id="'+v+'">',plate(x,295,525,76,'#201c1b'),plate(x+15,309,51,48,'url(#ribbon)'),'<g transform="translate('+(x+25)+' 319)" fill="none" stroke="#ffd88b" stroke-width="2.5">'+(i?'<path d="M4 28V2 Q12 -2 19 3 T33 4 L31 18 Q22 21 16 16 T4 17"/>':'<path d="M1 4h31v6q-7 4 0 8v6H1v-6q7-4 0-8z"/><path stroke-dasharray="2 2" d="M22 5v18"/>')+'</g>',text(v,x+82,342,20,'#e2c7a0','start','Georgia'),text(number(i?totals.flags:totals.tickets),x+497,347,39,'#ffe0a0','end','Georgia'),'</g>');});
+ const groups=buildReportGroups(rows);
+ const tableY=604, rowH=37;
+ const height=tableY+113+Math.max(1,...groups.map(g=>g.rows.length))*rowH+48;
+ const ribbon=/^#[0-9a-f]{6}$/i.test(accent)?accent:'#791b20';
+ const paper='#f4e9d5',gold='#eac78c',muted='#b0aca8';
+ const rect=(x:number,y:number,w:number,h:number,fill:string)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}"/>`;
+ const rule=(x:number,y:number,w:number)=>rect(x,y,w,1,'#423c39');
+ const parts=[
+  `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1122" height="${height}" viewBox="0 0 1122 ${height}"><title>${escape(title)}</title>
+  <defs><linearGradient id="fade"><stop offset=".13" stop-color="#151317" stop-opacity="0"/><stop offset=".98" stop-color="#151317"/></linearGradient>
+  <linearGradient id="ribbon"><stop stop-color="${ribbon}"/><stop offset="1" stop-color="#18151a"/></linearGradient>
+  <clipPath id="header-crop"><rect width="645" height="268"/></clipPath></defs>`,
+  rect(0,0,1122,height,'#131215'),rect(0,0,1122,268,'#151317'),
+  `<image clip-path="url(#header-crop)" x="0" y="-56" width="645" height="352" preserveAspectRatio="xMidYMid slice" xlink:href="${escape(brand)}"/>`,
+  rect(0,0,650,268,'url(#fade)'),rect(684,43,46,4,gold),
+  text('GENERAL TEAM',744,51,15,muted,'start'),text('CHICO',674,148,108,paper,'start','Georgia'),
+  rect(590,164,488,43,'url(#ribbon)'),text(title,836,194,25,paper,'middle','Arial',450),
+  text(date,1074,241,19,gold,'end'),rect(0,268,1122,76,'#e9d4b0')
+ ];
+ ['TICKETS','FLAGS'].forEach((key,i)=>{
+  const x=41+i*547;
+  parts.push(text(key,x,315,19,'#534333','start'),text(number(i?totals.flags:totals.tickets),x+483,322,44,'#231d1d','end','Georgia'));
+ });
+ parts.push(rect(560,286,1,40,'#aa9273'));
  groups.forEach((g,i)=>{
-  const x=27+i*543,name=i?'MODERATORS':'HELPERS';
-  parts.push('<g id="'+g.id+'">',plate(x,yTable,525,tableH,'#151416'),plate(x+5,yTable+5,515,50,'url(#ribbon)'),text(name,x+20,yTable+38,28,'#ffdb93','start','Georgia'),text(String(g.rows.length),x+489,yTable+37,24));
-  const cols=[26,58,232,319,403,478];
-  ['#','NAME','','TICKETS','FLAGS','RATE'].forEach((s,j)=>parts.push(text(s,x+cols[j],yTable+82,15,'#ddbd82',j===1?'start':'middle','Georgia')));
-  g.rows.forEach((r,j)=>{
-   const y=yTable+94+j*rowH,ink=r.rank==='Moderator'?'#79529b':r.rank==='SN.Helper'?'#335c83':'#39644d';
-   parts.push('<g id="'+g.id+'-row-'+(j+1)+'"><rect x="'+(x+6)+'" y="'+y+'" width="513" height="29" fill="'+(j%2?'#211f20':'#191719')+'"/>',text(String(j+1).padStart(2,'0'),x+26,y+21,15,'#cfaf73'),text(prestigeName(r.name,r.rank),x+58,y+21,18,'#fff3e2','start','Arial',150),plate(x+213,y+4,39,21,ink,'#d8b66e',5),text(r.rank==='SN.Helper'?'SH':i?'M':'H',x+232,y+20,14),text(number(r.tickets),x+319,y+21,18),text(number(r.flags),x+403,y+21,18,r.flags===0?'#87d8aa':(r.flags??0)>7?'#ff9b8f':(r.flags??0)>5?'#edc16d':'#f7ead4'),text(number(r.rating,2),x+478,y+21,18,r.rating===null?'#c3bcb3':r.rating>=4.8?'#87d8aa':'#ff9b8f'),'</g>');
+  const x=35+i*539, w=514;
+  const name=i?'MODERATORS':'HELPERS', tone=i?'#d7b9ee':'#9bdabe';
+  parts.push(`<g id="${g.id}-podium">`,rect(x,372,5,21,tone),text('TOP 3 '+name,x+16,390,22,paper,'start','Georgia'),
+   rect(x,406,w,94,'#242025'),rect(x,406,w,2,gold));
+  if(!g.topRows.length)parts.push(text('لا يوجد ترتيب موثق',x+w/2,465,20,muted));
+  g.topRows.forEach((r,k)=>{
+   const who=prestigeName(r.name,r.rank);
+   if(k===0){
+    parts.push(text('01',x+17,476,61,gold,'start','Georgia'),text(who,x+110,462,26,paper,'start','Arial',226),
+     text(number(r.tickets),x+w-16,462,33,gold,'end','Georgia'),text('TICKETS',x+w-16,486,12,muted,'end'));
+   }else{
+    const xx=x+(k-1)*260;
+    parts.push(rect(xx,508,254,67,'#1f1d21'),text(k===1?'02':'03',xx+11,549,24,k===1?'#c6c8d2':'#d3a483','start','Georgia'),
+     text(who,xx+53,536,17,paper,'start','Arial',185),text(number(r.tickets)+' tickets',xx+53,559,15,muted,'start'));
+   }
   });
-  parts.push('</g><g id="'+g.id+'-podium">',plate(x,yTop,525,174,'#1a1717'),text('TOP 3 '+name,x+262,yTop+36,23,'#ffe0a0','middle','Georgia'));
-  if(!g.topRows.length)parts.push(text('لا يوجد ترتيب موثق',x+262,yTop+110,20));
-  g.topRows.forEach((r,j)=>{const a=x+13+j*168,metal=['#edc875','#c7cdd3','#df9d72'][j];parts.push(plate(a,yTop+52,158,105,'#252020',metal),text('TOP '+(j+1),a+79,yTop+76,16,metal,'middle','Georgia'),text(prestigeName(r.name,r.rank),a+79,yTop+108,19,'#fff3df','middle','Arial',139),text(number(r.tickets),a+79,yTop+141,25,metal,'middle','Georgia'));});
+  parts.push('</g>',`<g id="${g.id}-standings">`,text(name,x,tableY+26,31,paper,'start','Georgia'),
+   text(String(g.rows.length).padStart(2,'0'),x+w-4,tableY+25,21,tone,'end'),rule(x,tableY+43,w));
+  const col=[18,83,328,407,478];
+  ['#','NAME','TICKETS','FLAGS','RATE'].forEach((v,k)=>parts.push(text(v,x+col[k],tableY+70,14,muted,k===1?'start':'middle')));
+  g.rows.forEach((r,k)=>{
+   const y=tableY+84+k*rowH;
+   const senior=r.rank==='SN.Helper', rank=i?'M':senior?'SH':'H',ink=i?'#d7b9ee':senior?'#9bcbef':'#9bdabe';
+   parts.push(`<g id="${g.id}-row-${k+1}">`,rect(x,y,w,rowH-1,k%2?'#19181b':'#211f22'),
+    text(String(k+1).padStart(2,'0'),x+18,y+24,15,muted),
+    `<path d="M${x+45} ${y+6}h25v15l-12.5 8-12.5-8z" fill="#29282c" stroke="${ink}"/>`,
+    text(rank,x+57.5,y+21,12,ink),text(prestigeName(r.name,r.rank),x+83,y+25,19,paper,'start','Arial',202),
+    text(number(r.tickets),x+328,y+25,19,paper),text(number(r.flags),x+407,y+25,19,r.flags===0?'#9bdabe':(r.flags??0)>7?'#f69d97':(r.flags??0)>5?gold:paper),
+    text(number(r.rating,2),x+478,y+25,19,r.rating===null?muted:r.rating>=4.8?'#9bdabe':'#f69d97'),'</g>');
+  });
   parts.push('</g>');
  });
- parts.push(text('C H I C O',561,height-24,17,'#d7b67a','middle','Georgia'),'</svg>');return parts.join('');
+ parts.push(rule(35,height-54,1053),text('CHICO   /   GENERAL TEAM',35,height-25,14,gold,'start'),text(date,1087,height-25,14,muted,'end'),'</svg>');
+ return parts.join('');
 }
 export function downloadEditable(svg:string,name:string){
  const url=URL.createObjectURL(new Blob([svg],{type:'image/svg+xml;charset=utf-8'}));
