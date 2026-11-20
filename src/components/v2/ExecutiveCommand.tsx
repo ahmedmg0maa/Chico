@@ -1,5 +1,6 @@
 'use client';
 
+import './section-navigation.css';
 import {useEffect,useMemo,useState,type FormEvent} from 'react';
 import {
   Activity,AlertTriangle,ArrowLeft,ArrowUpRight,BarChart3,Bell,CalendarDays,
@@ -75,7 +76,6 @@ function latestRows(state:State|null):Row[]{
  });
 }
 function normalizedGraph(series:number[],max:number){return series.map((n,i)=>(36+i*88)+','+(174-Math.max(0,n)/Math.max(1,max)*126)).join(' ');}
-function NavGlyph({tab}:{tab:Tab}){return <CommandIcon name={tab}/>;}
 function RankMark({rank}:{rank:Rank}){return <RankInsignia rank={rank} compact/>;}
 function statusFor(r:Row){return !r.active?'غير نشط':(r.rating!==null&&r.rating<4.8)||(r.flags!==null&&r.flags>7)?'متابعة':r.flagsIncomplete?'رصيد Flags غير مكتمل':!r.lastUpdate?'بلا تحديث':'نشط';}
 function CardTitle({icon:Icon,title,en,action}:{icon:typeof Home;title:string;en:string;action?:React.ReactNode}){
@@ -237,8 +237,9 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
   <div className="studio-layout">
    <nav className="studio-rail" aria-label="تنقل الكمبيوتر">
     <button type="button" className="rail-brand" onClick={()=>open('dashboard')} aria-label="مركز القيادة"><img src="/assets/chico-command-mark.webp" alt="" width="38" height="42"/><b dir="ltr">CHICO TEAM</b></button>
+    <button type="button" className="rail-search" title="بحث سريع" aria-label="بحث سريع" onClick={()=>setSearchOpen(true)}><Search size={18}/><span>بحث سريع</span></button>
     <div className="rail-groups">{navigationGroups.map(group=><div className="rail-group" key={group.en} aria-label={group.label}>
-      {group.items.map(id=>{const item=links.find(link=>link.id===id)!;return <button key={id} type="button" title={item.label} aria-label={item.label} aria-current={tab===id?'page':undefined} onClick={()=>open(id)}><CommandIcon name={id} compact/><span>{item.label}</span></button>})}
+      {group.items.map(id=>{const item=links.find(link=>link.id===id)!;return <button key={id} type="button" title={item.label} aria-label={item.label} aria-current={tab===id?'page':undefined} onClick={()=>open(id)}><CommandIcon name={id} compact/><img className="section-thumb" src={'/assets/sections/'+id+'.webp'} alt="" width={40} height={28}/><span>{item.label}</span></button>})}
     </div>)}</div>
     <button type="button" className="rail-fold" aria-expanded={!railCollapsed} onClick={()=>setRailCollapsed(v=>!v)} aria-label={railCollapsed?'توسيع القائمة':'طي القائمة'}><Menu size={18}/><span>طي القائمة</span></button>
    </nav>
@@ -252,7 +253,7 @@ export default function ExecutiveCommand({review=false,initialTab='dashboard'}:{
         const item=links.find(link=>link.id===id);
         if(!item)return null;
         return <button type="button" key={id} className={'x-nav-link '+(tab===id?'x-nav-active':'')} onClick={()=>open(id)} aria-current={tab===id?'page':undefined}>
-         <NavGlyph tab={id}/><span><b>{item.label}</b></span>
+         <CommandIcon name={id} compact/><img className="section-thumb" src={'/assets/sections/'+id+'.webp'} alt="" width={40} height={28}/><span><b>{item.label}</b></span>
         </button>;
        })}
       </section>
